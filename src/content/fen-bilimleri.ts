@@ -2,8 +2,7 @@ import type { SubjectContent } from "./types";
 
 /**
  * Fen Bilimleri (LGS 8. sınıf) üniteleri.
- * İçerikler (youtubeId, cards, article) kullanıcı tarafından sağlanacak;
- * şimdilik yer tutucu. Doldurmak için her topic'in alanlarını güncelle.
+ * İçerik girilmeyen alanlar konu sayfasında "yakında" görünür.
  */
 export const FEN_BILIMLERI: SubjectContent = {
   slug: "fen-bilimleri",
@@ -13,25 +12,173 @@ export const FEN_BILIMLERI: SubjectContent = {
       id: "mevsimler-ve-iklim",
       name: "Mevsimler ve İklim",
       summary: "Mevsimlerin oluşumu, iklim ve hava olayları.",
-      youtubeId: "",
-      cards: [],
-      article: "",
+      youtubeId: "ExVCYz3M5RQ",
+      mindMap: {
+        center: "Mevsimler ve İklim",
+        branches: [
+          "Mevsimlerin Oluşumu",
+          "İklim ve Hava Hareketleri",
+          "Küresel İklim Değişikliği",
+        ],
+      },
+      cards: [
+        {
+          front: "Mevsimler neden oluşur?",
+          back: "Dünya'nın ekseninin 23,5° eğik olması ve Güneş etrafında dolanması nedeniyle; bu, birim yüzeye düşen enerji miktarını ve ışınların düşme açısını değiştirir.",
+        },
+        {
+          front: "21 Haziran'da ne olur?",
+          back: "Güneş ışınları Yengeç Dönencesi'ne dik (90°) düşer. Kuzey Yarım Küre'de en uzun gündüz yaşanır ve yaz başlar; Güney Yarım Küre'de kış başlar.",
+        },
+        {
+          front: "21 Aralık'ta ne olur?",
+          back: "Güneş ışınları Oğlak Dönencesi'ne dik düşer. Kuzey Yarım Küre'de en uzun gece yaşanır ve kış başlar; Güney Yarım Küre'de yaz başlar.",
+        },
+        {
+          front: "Ekinoks (21 Mart / 23 Eylül) nedir?",
+          back: "Güneş ışınları Ekvator'a dik düşer; tüm dünyada gece ve gündüz eşit (12-12 saat) olur. Bahar mevsimlerinin başlangıcıdır.",
+        },
+        {
+          front: "Rüzgar nasıl oluşur?",
+          back: "Yüksek basınçtan alçak basınca doğru yatay hava hareketidir. Isınan hava yükselip alçak basıncı, soğuyan hava alçalıp yüksek basıncı oluşturur.",
+        },
+        {
+          front: "Hava olayları ile iklim arasındaki fark nedir?",
+          back: "Hava olayları kısa sürelidir (meteoroloji inceler). İklim ise geniş bölgelerde uzun yıllar (30-40 yıl) süren hava olaylarının ortalamasıdır (klimatoloji inceler).",
+        },
+        {
+          front: "Yağış türleri nerede oluşur?",
+          back: "Gökyüzüne yakın: yağmur, kar, dolu. Yeryüzüne yakın: çiğ, kırağı, sis.",
+        },
+      ],
+      article: `## Mevsimlerin Oluşumu
+Mevsimler, Dünya'nın Güneş etrafında dolanması ve dönme ekseninin 23,5° eğik olması nedeniyle oluşur. Eksen eğikliği, birim yüzeye düşen enerji miktarını ve Güneş ışınlarının düşme açısını değiştirir. Işınların dik geldiği bölgelerde sıcaklık artar ve gölge boyu kısalır. Bu yüzden aynı anda iki yarım kürede farklı mevsimler yaşanır.
+
+## Önemli Tarihler
+21 Haziran (Yaz Gündönümü): Güneş ışınları Yengeç Dönencesi'ne 90° dik düşer. Kuzey Yarım Küre'de en uzun gündüz yaşanır ve yaz başlar; Yengeç Dönencesi'nde öğle vakti gölge boyu sıfır olur. Güney Yarım Küre'de kış başlar.
+
+21 Aralık (Kış Gündönümü): Güneş ışınları Oğlak Dönencesi'ne dik düşer. Kuzey Yarım Küre'de en uzun gece yaşanır ve kış başlar. Güney Yarım Küre'de yaz başlar.
+
+Ekinokslar (21 Mart ve 23 Eylül): Eksen eğikliğinin etkisi ortadan kalkar; ışınlar Ekvator'a dik düşer. Dünya'nın her yerinde gece ve gündüz süreleri eşittir (12-12 saat). Bahar mevsimlerinin başlangıcıdır.
+
+## Hava Olayları ve Basınç
+Sıcaklık farkları yoğunluk değişimine yol açar: ısınan hava yükselerek alçak basınç, soğuyan hava alçalarak yüksek basınç oluşturur. Rüzgar, yüksek basınçtan alçak basınca doğru yatay hava hareketidir. Alçak basınç alanlarında bulut ve yağış ihtimali yüksektir. Hava olaylarını meteoroloji bilim dalı (meteorolog) inceler.
+
+## Yağış Türleri
+Havadaki nemin sıcaklık düşüşüyle yoğuşması ya da donmasıyla yağışlar oluşur. Gökyüzüne yakın oluşanlar: yağmur, kar, dolu. Yeryüzüne yakın oluşanlar: çiğ, kırağı, sis.
+
+## İklim ve İklim Değişikliği
+İklim, geniş bölgelerde uzun yıllar (30-40 yıl) süren hava olaylarının ortalamasıdır ve klimatoloji (klimatolog) tarafından incelenir. Fosil yakıt kullanımının artması sera gazlarını çoğaltır ve küresel ısınmaya yol açar. Sonuçta buzullar erir, deniz seviyesi yükselir ve sel, kuraklık gibi aşırı hava olayları artar.`,
     },
     {
       id: "dna-ve-genetik-kod",
       name: "DNA ve Genetik Kod",
       summary: "DNA, genler, kalıtım ve mutasyonlar.",
-      youtubeId: "",
-      cards: [],
-      article: "",
+      youtubeId: "eS9XWivFxR4",
+      mindMap: {
+        center: "DNA ve Genetik Kod",
+        branches: [
+          "Kalıtsal Yapıların Hiyerarşisi",
+          "Nükleotit Bileşenleri",
+          "DNA Eşleşme Kuralları",
+          "DNA'nın Kendini Eşlemesi",
+          "Hatalar ve Onarım",
+          "Kalıtım Kavramları",
+          "Cinsiyet Belirlenmesi",
+        ],
+      },
+      cards: [
+        {
+          front: "Kalıtsal yapıları büyükten küçüğe sırala.",
+          back: "Kromozom > DNA > Gen > Nükleotit. Kromozom en karmaşık, nükleotit en küçük yapı birimidir.",
+        },
+        {
+          front: "Kromozom nedir?",
+          back: "Hücre çekirdeğinde bulunan, DNA'nın protein kılıfla kaplanmasıyla oluşan yapıdır. Hücre bölünmesi öncesinde kısalıp kalınlaşarak belirginleşir.",
+        },
+        {
+          front: "DNA'nın görevi nedir?",
+          back: "Hücrenin yönetici molekülüdür; solunum, beslenme, üreme gibi yaşamsal faaliyetleri kontrol eder. Çift zincirli sarmal yapıdadır.",
+        },
+        {
+          front: "Gen nedir?",
+          back: "DNA'nın anlamlı parçalarıdır; göz rengi, kan grubu gibi belirli kalıtsal özelliklerin ortaya çıkmasını sağlar.",
+        },
+        {
+          front: "Nükleotit neyden oluşur?",
+          back: "Fosfat, şeker ve organik bazdan (Adenin, Timin, Guanin, Sitozin). İçerdiği organik baza göre adlandırılır.",
+        },
+        {
+          front: "DNA kendini nasıl eşler?",
+          back: "Hücre bölünmesinden önce çift zincir açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Böylece kalıtsal bilgi kopyalanır.",
+        },
+      ],
+      article: `## Kalıtsal Yapıların Hiyerarşisi
+Kalıtsal yapılar büyükten küçüğe doğru şöyle sıralanır: Kromozom > DNA > Gen > Nükleotit.
+
+Kromozom: Hücrenin çekirdeğinde bulunan, canlılık özelliklerini taşıyan ve DNA'nın protein kılıfla kaplanmasıyla oluşan en karmaşık yapıdır. Hücre bölünmesi öncesinde DNA'nın kısalıp kalınlaşmasıyla belirginleşir ve kalıtsal bilginin nesillere aktarılmasını sağlar.
+
+DNA (Deoksiribonükleik Asit): Hücrenin yönetici molekülüdür; solunum, beslenme, üreme gibi yaşamsal faaliyetleri kontrol eder. Çift zincirli sarmal yapıdadır ve bölünmeden önce kendini eşler.
+
+Gen: DNA'nın anlamlı parçalarıdır; göz rengi, kan grubu gibi belirli kalıtsal özelliklerin ortaya çıkmasını sağlayan görev birimleridir.
+
+Nükleotit: Kalıtsal yapıların en küçük parçası ve DNA'nın yapı birimidir.
+
+## Nükleotit Bileşenleri
+Bir nükleotit üç kısımdan oluşur: fosfat, şeker ve organik baz. Organik bazlar Adenin, Timin, Guanin ve Sitozin'dir. Nükleotit, içerdiği organik baza göre adlandırılır. Nükleotitlerin sayı ve diziliş farkları biyolojik çeşitliliği oluşturur.
+
+## DNA'nın Kendini Eşlemesi
+Hücre bölünmesinden önce DNA'nın çift zinciri açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Böylece birbirinin aynısı iki DNA molekülü meydana gelir ve kalıtsal bilgi yeni hücrelere eksiksiz aktarılır.`,
     },
     {
       id: "basinc",
       name: "Basınç",
       summary: "Katı, sıvı ve gaz basıncı; günlük hayatta basınç.",
-      youtubeId: "",
-      cards: [],
-      article: "",
+      youtubeId: "ND2vISQNLUM",
+      mindMap: {
+        center: "Basınç",
+        branches: ["Katı Basıncı", "Sıvı Basıncı", "Gaz Basıncı"],
+      },
+      cards: [
+        {
+          front: "Katı basıncı neye bağlıdır?",
+          back: "Ağırlığa (kuvvet) ve yüzey alanına. P = G / S. Ağırlık artınca basınç artar (doğru orantı); yüzey alanı artınca basınç azalır (ters orantı).",
+        },
+        {
+          front: "Katı basıncını nasıl artırırız/azaltırız?",
+          back: "Yüzey alanını küçültmek basıncı artırır (bıçağın keskin ucu, çivinin sivri ucu). Yüzeyi genişletmek azaltır (kar ayakkabısı, iş makinesi paletleri).",
+        },
+        {
+          front: "Sıvı basıncı neye bağlıdır?",
+          back: "Sıvının derinliğine (h) ve yoğunluğuna (d); ikisi de artarsa basınç artar. Kabın şekline ve sıvı miktarına bağlı DEĞİLDİR.",
+        },
+        {
+          front: "Pascal Prensibi nedir?",
+          back: "Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının her noktasına ve kabın iç yüzeyine aynen iletilir. Hidrolik frenler bu ilkeyle çalışır.",
+        },
+        {
+          front: "Açık hava basıncı yükseklikle nasıl değişir?",
+          back: "Deniz seviyesinden yukarı çıkıldıkça açık hava (gaz) basıncı azalır (ters orantı).",
+        },
+        {
+          front: "Açık hava basıncını ölçen deney hangisidir?",
+          back: "Torricelli deneyi.",
+        },
+      ],
+      article: `## Katı Basıncı
+Katı basıncı, birim yüzeye etki eden dik kuvvettir ve P = G / S (Ağırlık / Yüzey Alanı) ile hesaplanır. Ağırlık arttıkça basınç artar (doğru orantı); temas yüzeyi arttıkça basınç azalır (ters orantı).
+
+Günlük hayat örnekleri: bıçağın keskin ucu, çivinin sivri ucu ve krampon çivileri yüzeyi küçülterek basıncı artırır. Kar ayakkabıları, tırların çok sayıda tekerleği ve iş makinelerinin paletleri ise yüzeyi genişleterek basıncı azaltır.
+
+## Sıvı Basıncı
+Sıvı basıncı, sıvının derinliği (h) ve yoğunluğu (d) ile doğru orantılıdır; kabın şekline ve sıvı miktarına bağlı değildir. Bu yüzden su depoları yüksek yerlere kurulur ve baraj duvarlarının alt kısımları daha kalın yapılır.
+
+Pascal Prensibi: Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının her noktasına ve kabın iç yüzeyine aynen iletilir. Hidrolik fren sistemleri ve itfaiye merdivenleri bu ilkeyle çalışır.
+
+## Gaz (Açık Hava) Basıncı
+Atmosferdeki havanın ağırlığı, temas ettiği yüzeylere basınç uygular. Deniz seviyesinden yukarı çıkıldıkça açık hava basıncı azalır (ters orantı). Açık hava basıncı ilk kez Torricelli deneyi ile ölçülmüştür.
+
+Günlük hayat örnekleri: pipetle içecek içilmesi, vantuzlu askıların duvara yapışması, meyve suyu kutusunun büzülmesi ve vakumlu poşetler açık hava basıncıyla açıklanır.`,
     },
     {
       id: "madde-ve-endustri",

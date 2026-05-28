@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, Layers, Video } from "lucide-react";
+import { ArrowLeft, FileText, Layers, Network, Video } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Article } from "@/components/study/Article";
 import { Flashcards } from "@/components/study/Flashcards";
+import { MindMap } from "@/components/study/MindMap";
 import { TopicStudyController } from "@/components/study/TopicStudyController";
 import { YouTubeEmbed } from "@/components/study/YouTubeEmbed";
 import { getSubjectContent, getTopic } from "@/content";
@@ -21,6 +22,7 @@ export default async function TopicPage({
 
   const user = await getShellUser();
   const hasVideo = Boolean(topicData.youtubeId);
+  const hasMindMap = Boolean(topicData.mindMap?.branches.length);
   const hasCards = (topicData.cards?.length ?? 0) > 0;
   const hasArticle = Boolean(topicData.article && topicData.article.trim());
 
@@ -48,6 +50,13 @@ export default async function TopicPage({
         </div>
         <TopicStudyController subjectSlug={subject} topicId={topic} />
       </header>
+
+      {/* Konu haritası */}
+      {hasMindMap && (
+        <Section icon={<Network className="h-5 w-5" />} title="Konu haritası">
+          <MindMap data={topicData.mindMap!} />
+        </Section>
+      )}
 
       {/* Video */}
       <Section icon={<Video className="h-5 w-5" />} title="Videolu özet">
