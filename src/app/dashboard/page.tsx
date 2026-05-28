@@ -1,6 +1,7 @@
 import { Sparkles } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
+import { StatsPanel } from "@/components/stats/StatsPanel";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { getShellUser } from "@/lib/user";
 
@@ -38,6 +39,19 @@ export default async function DashboardPage() {
           ya da &quot;Türkçe&apos;ye gir&quot; yazarak hızlıca gezinebilirsin.
         </span>
       </div>
+
+      {/* İstatistikler */}
+      <section className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-extrabold text-rehberim-navy">
+            Çalışma takibin
+          </h2>
+          <p className="text-sm text-rehberim-navy/55">
+            İlerlemeni ve çalışma alışkanlığını takip et
+          </p>
+        </div>
+        <StatsPanel />
+      </section>
 
       {/* Dersler */}
       <section id="dersler" className="mt-8 scroll-mt-20">

@@ -91,3 +91,22 @@ Rehber Baykuş'a (sağ alttaki buton) sor:
   sohbeti, ders kartları/ikonları, auth ve profil bileşenleri.
 - `src/lib` — Supabase istemcileri, Gemini + kural sistem mesajı, kullanıcı yardımcıları.
 - `public/` — `logo.png` / `mascot.png` koyarsan SVG yerine otomatik kullanılır.
+
+## 7. Çalışma takibi (Aşama 2) — veritabanı kurulumu
+
+Çalışma süresi, konu ilerlemesi, seri (streak) ve istatistiklerin kalıcı
+saklanması için iki tablo gerekir. Tek seferlik:
+
+1. Supabase paneli → sol menü **SQL Editor** → **New query**.
+2. Depodaki **`supabase/schema.sql`** dosyasının tamamını yapıştır → **Run**.
+3. "Success. No rows returned" görürsen tamamdır.
+
+Sonra giriş yapıp bir Fen konusunda **Derse Başla → (çalış) → Dersi Bitir**
+yaptığında oturum kaydedilir; dashboard'daki **Çalışma takibin** bölümünde
+haftalık grafik, seri ve günlük hedef dolar.
+
+### Fen içeriklerini ekleme
+`src/content/fen-bilimleri.ts` içinde her ünitenin `youtubeId`, `cards` ve
+`article` alanları var. YouTube linkini, kart metinlerini ve makaleyi bana
+verirsen bu dosyaya işlerim (ya da kendin doldurabilirsin). Alan boşsa o
+bölüm konu sayfasında "yakında" olarak görünür.
