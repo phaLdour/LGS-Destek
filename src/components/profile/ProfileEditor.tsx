@@ -68,10 +68,11 @@ export function ProfileEditor({
       setAvatarUrl(busted);
       setMsg({ type: "ok", text: "Profil fotoğrafın güncellendi." });
       router.refresh();
-    } catch {
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
       setMsg({
         type: "err",
-        text: "Yükleme başarısız. 'avatars' deposunun oluşturulduğundan emin ol.",
+        text: `Yükleme başarısız: ${detail}. (İpucu: Supabase'de 'avatars' bucket'ı ve yükleme policy'si gerekli.)`,
       });
     } finally {
       setUploading(false);
