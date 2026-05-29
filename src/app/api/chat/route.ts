@@ -12,6 +12,7 @@ export async function POST(request: Request) {
         reply:
           "AI henüz bağlı değil. Kurulum için GEMINI_API_KEY anahtarını ekleyin.",
         navigate: null,
+        topicRoute: null,
         configured: false,
       },
       { status: 200 },

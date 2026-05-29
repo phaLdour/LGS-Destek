@@ -7,7 +7,7 @@ import { ChatPanel, type ChatMessage } from "./ChatPanel";
 
 const GREETING: ChatMessage = {
   role: "model",
-  text: "Merhaba! Ben Rehber Baykuş 🦉 Rehberim platformunda sana yardımcı olurum. İstersen bir dersi açayım — örneğin \"matematiğe gir\" ya da \"profilime git\" yazman yeterli.",
+  text: "Merhaba! Ben Rehber Baykuş 🦉 Derslerinle ilgili sorularını yanıtlayabilir ya da seni doğru sayfaya götürebilirim. Örneğin \"suyun pH değeri kaç?\" diye sorabilir veya \"matematiğe gir\" diyebilirsin.",
 };
 
 export function MascotButton() {
@@ -37,7 +37,12 @@ export function MascotButton() {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { role: "model", text: data.reply ?? "Bir sorun oluştu." },
+        {
+          role: "model",
+          text: data.reply ?? "Bir sorun oluştu.",
+          topicRoute:
+            typeof data.topicRoute === "string" ? data.topicRoute : null,
+        },
       ]);
 
       if (data.navigate && typeof data.navigate === "string") {
@@ -69,6 +74,10 @@ export function MascotButton() {
           setInput={setInput}
           onSend={handleSend}
           onClose={() => setOpen(false)}
+          onOpenTopic={(route) => {
+            setOpen(false);
+            router.push(route);
+          }}
         />
       )}
 

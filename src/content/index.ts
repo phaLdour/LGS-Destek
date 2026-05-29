@@ -19,4 +19,23 @@ export function getTopic(slug: string, topicId: string): Topic | null {
   return subject?.topics.find((t) => t.id === topicId) ?? null;
 }
 
+/** İçeriği olan tüm konuların listesi (AI'ın "Konuyu çöz" yönlendirmesi için). */
+export function getTopicCatalog(): {
+  route: string;
+  subjectName: string;
+  topicName: string;
+}[] {
+  const out: { route: string; subjectName: string; topicName: string }[] = [];
+  for (const subject of Object.values(CONTENT)) {
+    for (const t of subject.topics) {
+      out.push({
+        route: `/ders/${subject.slug}/${t.id}`,
+        subjectName: subject.name,
+        topicName: t.name,
+      });
+    }
+  }
+  return out;
+}
+
 export type { SubjectContent, Topic };

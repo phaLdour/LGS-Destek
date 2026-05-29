@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Send, X } from "lucide-react";
+import { BookOpen, Send, X } from "lucide-react";
 import { OwlSvg } from "@/components/brand/Owl";
 
-export type ChatMessage = { role: "user" | "model"; text: string };
+export type ChatMessage = {
+  role: "user" | "model";
+  text: string;
+  topicRoute?: string | null;
+};
 
 export function ChatPanel({
   messages,
@@ -13,6 +17,7 @@ export function ChatPanel({
   setInput,
   onSend,
   onClose,
+  onOpenTopic,
 }: {
   messages: ChatMessage[];
   loading: boolean;
@@ -20,6 +25,7 @@ export function ChatPanel({
   setInput: (v: string) => void;
   onSend: () => void;
   onClose: () => void;
+  onOpenTopic: (route: string) => void;
 }) {
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +58,9 @@ export function ChatPanel({
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex flex-col gap-2 ${
+              m.role === "user" ? "items-end" : "items-start"
+            }`}
           >
             <div
               className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-sm ${
@@ -63,6 +71,15 @@ export function ChatPanel({
             >
               {m.text}
             </div>
+            {m.role === "model" && m.topicRoute && (
+              <button
+                onClick={() => onOpenTopic(m.topicRoute!)}
+                className="flex items-center gap-1.5 rounded-xl bg-rehberim-accent px-3.5 py-2 text-sm font-bold text-white shadow-soft transition hover:bg-rehberim-accent-dark"
+              >
+                <BookOpen className="h-4 w-4" />
+                Konuyu çöz
+              </button>
+            )}
           </div>
         ))}
         {loading && (
