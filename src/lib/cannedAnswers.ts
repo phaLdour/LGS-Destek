@@ -566,6 +566,37 @@ const CONCEPTS: Concept[] = [
       "Dik silindirin hacmi π·r²·h, yüzey alanı ise 2πr² + 2πrh'dir.",
     topicRoute: "/ders/matematik/geometrik-cisimler",
   },
+  // ---------- Din Kültürü ----------
+  {
+    all: ["kader"],
+    answer:
+      "Kader, Allah'ın olacak her şeyi önceden bilmesi ve belirlemesidir. Kaza ise kaderde belirlenenin zamanı gelince gerçekleşmesidir.",
+    topicRoute: "/ders/din/kader-inanci",
+  },
+  {
+    all: ["tevekkul"],
+    answer:
+      "Tevekkül, gereken çabayı gösterdikten sonra sonucu Allah'a bırakmaktır; çalışmayı bırakmak değildir.",
+    topicRoute: "/ders/din/kader-inanci",
+  },
+  {
+    all: ["zekat"],
+    answer:
+      "Zekât, belirli zenginliğe (nisaba) ulaşan Müslümanın malının kırkta birini (1/40) ihtiyaç sahiplerine vermesidir; farzdır.",
+    topicRoute: "/ders/din/zekat-sadaka-hac",
+  },
+  {
+    all: ["hac"],
+    answer:
+      "Hac, imkânı olan Müslümanların ömründe bir kez Mekke'deki Kâbe'yi ziyaret ederek yaptığı ibadettir; farzdır.",
+    topicRoute: "/ders/din/zekat-sadaka-hac",
+  },
+  {
+    all: ["kuran"],
+    answer:
+      "Kur'an-ı Kerim, Hz. Muhammed'e Cebrail aracılığıyla yaklaşık 23 yılda indirilen son ilahi kitaptır. 114 sureden oluşur; ilk suresi Fatiha'dır.",
+    topicRoute: "/ders/din/kuran-i-kerim-ve-ozellikleri",
+  },
 ];
 
 function tryConcepts(input: string, tokens: string[]): CannedResult | null {

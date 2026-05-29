@@ -3,12 +3,14 @@ import { FEN_BILIMLERI } from "./fen-bilimleri";
 import { TURKCE } from "./turkce";
 import { INKILAP } from "./inkilap";
 import { MATEMATIK } from "./matematik";
+import { DIN } from "./din";
 
 const CONTENT: Record<string, SubjectContent> = {
   [FEN_BILIMLERI.slug]: FEN_BILIMLERI,
   [TURKCE.slug]: TURKCE,
   [INKILAP.slug]: INKILAP,
   [MATEMATIK.slug]: MATEMATIK,
+  [DIN.slug]: DIN,
 };
 
 /** İçeriği olan ders varsa döner, yoksa null (ders sayfası "yakında" gösterir). */
