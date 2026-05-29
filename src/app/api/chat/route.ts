@@ -1,24 +1,12 @@
 import { NextResponse } from "next/server";
 import { generateReply, isGeminiConfigured } from "@/lib/gemini";
+import { matchCanned } from "@/lib/cannedAnswers";
 
 export const runtime = "nodejs";
 
 type IncomingMessage = { role?: string; text?: string };
 
 export async function POST(request: Request) {
-  if (!isGeminiConfigured()) {
-    return NextResponse.json(
-      {
-        reply:
-          "AI henüz bağlı değil. Kurulum için GEMINI_API_KEY anahtarını ekleyin.",
-        navigate: null,
-        topicRoute: null,
-        configured: false,
-      },
-      { status: 200 },
-    );
-  }
-
   let body: { messages?: IncomingMessage[] };
   try {
     body = await request.json();
@@ -44,16 +32,42 @@ export async function POST(request: Request) {
     );
   }
 
+  // 1) Kalıp cevap katmanı: uyan varsa Gemini'ye gitmeden (tokensiz) yanıtla.
+  const canned = matchCanned(history[history.length - 1].text);
+  if (canned) {
+    return NextResponse.json({
+      reply: canned.reply,
+      navigate: canned.navigate ?? null,
+      topicRoute: canned.topicRoute ?? null,
+      configured: true,
+      source: "canned",
+    });
+  }
+
+  // 2) Kalıp yoksa Gemini'ye düş (yapılandırılmışsa).
+  if (!isGeminiConfigured()) {
+    return NextResponse.json(
+      {
+        reply:
+          "Bunu tam olarak yanıtlayamadım. (AI henüz bağlı değil — kurulum için GEMINI_API_KEY ekleyin.)",
+        navigate: null,
+        topicRoute: null,
+        configured: false,
+      },
+      { status: 200 },
+    );
+  }
+
   try {
     const result = await generateReply(history);
-    return NextResponse.json({ ...result, configured: true });
+    return NextResponse.json({ ...result, configured: true, source: "ai" });
   } catch (err) {
     console.error("Gemini hatası:", err);
     return NextResponse.json(
       {
-        reply:
-          "Şu an yanıt veremiyorum. Lütfen biraz sonra tekrar deneyin.",
+        reply: "Şu an yanıt veremiyorum. Lütfen biraz sonra tekrar deneyin.",
         navigate: null,
+        topicRoute: null,
         configured: true,
       },
       { status: 200 },
