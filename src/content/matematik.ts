@@ -19,19 +19,34 @@ export const MATEMATIK: SubjectContent = {
         branches: [
           {
             label: `Asal Sayılar ve Çarpanlara Ayırma`,
-            detail: `Asal sayı yalnız 1'e ve kendisine bölünür (2, 3, 5, 7, 11...). En küçük asal sayı 2'dir. Bir sayı asal çarpanlarının çarpımı olarak yazılabilir: 60 = 2² · 3 · 5.`,
+            sections: [
+              { kind: "tanim", content: `Asal sayı yalnız 1'e ve kendisine bölünür (2, 3, 5, 7, 11...). En küçük asal 2'dir.` },
+              { kind: "formul", content: `Asal çarpanlara ayırma: 60 = 2² · 3 · 5.` },
+              { kind: "tuzak", content: `1 asal DEĞİLDİR; en küçük asal sayı 2'dir.` },
+            ],
           },
           {
             label: `Bölünebilme Kuralları`,
-            detail: `2: son rakam çift. 3: rakamlar toplamı 3'ün katı. 5: son rakam 0 veya 5. 9: rakamlar toplamı 9'un katı. 10: son rakam 0.`,
+            sections: [
+              { kind: "kural", content: `2: son rakam çift • 3: rakam toplamı 3'ün katı • 5: son rakam 0/5 • 9: rakam toplamı 9'un katı • 10: son rakam 0.` },
+              { kind: "ornek", content: `432 → 4+3+2 = 9 olduğu için hem 3'e hem 9'a bölünür.` },
+            ],
           },
           {
             label: `EBOB (En Büyük Ortak Bölen)`,
-            detail: `İki sayının ortak bölenlerinin en büyüğüdür. Ortak asal çarpanların en küçük üslüleri çarpılarak bulunur.`,
+            sections: [
+              { kind: "formul", content: `Ortak asal çarpanların EN KÜÇÜK üslüleri çarpılır.` },
+              { kind: "ornek", content: `12 = 2²·3, 18 = 2·3² → EBOB = 2·3 = 6.` },
+              { kind: "soru", content: `'En uzun eşit parçalara bölme' tarzı sorular EBOB'tur.` },
+            ],
           },
           {
             label: `EKOK (En Küçük Ortak Kat)`,
-            detail: `İki sayının ortak katlarının en küçüğüdür. Tüm asal çarpanların en büyük üslüleri çarpılarak bulunur.`,
+            sections: [
+              { kind: "formul", content: `Tüm asal çarpanların EN BÜYÜK üslüleri çarpılır.` },
+              { kind: "ornek", content: `4 = 2², 6 = 2·3 → EKOK = 2²·3 = 12.` },
+              { kind: "tuzak", content: `Her zaman EBOB ≤ sayılar ≤ EKOK; EBOB, EKOK'tan büyük olamaz.` },
+            ],
           },
         ],
       },
@@ -42,14 +57,26 @@ export const MATEMATIK: SubjectContent = {
         { front: `EBOB nasıl bulunur?`, back: `Ortak asal çarpanların en küçük üslüleri çarpılır.` },
         { front: `EKOK nasıl bulunur?`, back: `Tüm asal çarpanların en büyük üslüleri çarpılır.` },
       ],
-      article: `## Asal Sayılar ve Asal Çarpanlara Ayırma
-Asal sayı, yalnızca 1'e ve kendisine bölünebilen, 1'den büyük doğal sayıdır (2, 3, 5, 7, 11, 13...). En küçük asal sayı 2'dir ve 2, tek çift asal sayıdır. Her sayı, asal çarpanlarının çarpımı biçiminde yazılabilir: 60 = 2² · 3 · 5.
+      article: `# Asal Sayılar ve Çarpanlara Ayırma
+Asal sayı, yalnızca **1'e ve kendisine** bölünebilen 1'den büyük doğal sayıdır (2, 3, 5, 7, 11, 13...).
+[kural] En küçük asal sayı **2**'dir ve 2, tek **çift** asal sayıdır.
+[formül] Asal çarpanlara ayırma: **60 = 2² · 3 · 5**.
+[tuzak] **1 asal değildir.** En küçük asal sayı 2'dir.
 
-## Bölünebilme Kuralları
-2: son rakam çift. 3: rakamlar toplamı 3'ün katı. 5: son rakam 0 veya 5. 9: rakamlar toplamı 9'un katı. 10: son rakam 0.
+# Bölünebilme Kuralları
+[kural] **2:** son rakam çift • **3:** rakam toplamı 3'ün katı • **5:** son rakam 0/5 • **9:** rakam toplamı 9'un katı • **10:** son rakam 0.
+[örnek] 432 sayısı: 4+3+2 = 9 olduğundan hem 3'e hem 9'a bölünür.
 
-## EBOB ve EKOK
-EBOB (en büyük ortak bölen), sayıların ortak bölenlerinin en büyüğüdür; ortak asal çarpanların en küçük üslüleri çarpılarak bulunur. EKOK (en küçük ortak kat), sayıların ortak katlarının en küçüğüdür; tüm asal çarpanların en büyük üslüleri çarpılarak bulunur. Her zaman EBOB ≤ sayılar ≤ EKOK olur.`,
+# EBOB (En Büyük Ortak Bölen)
+[formül] Ortak asal çarpanların **en küçük** üslüleri çarpılır.
+[örnek] 12 = 2²·3 ve 18 = 2·3² → EBOB = 2·3 = **6**.
+[soru] "İki ipi eşit ve en uzun parçalara bölme" tarzı sorular EBOB ile çözülür.
+
+# EKOK (En Küçük Ortak Kat)
+[formül] Tüm asal çarpanların **en büyük** üslüleri çarpılır.
+[örnek] 4 = 2² ve 6 = 2·3 → EKOK = 2²·3 = **12**.
+[tuzak] Her zaman **EBOB ≤ sayılar ≤ EKOK**; EBOB, EKOK'tan büyük olamaz.
+[soru] "Kaç dakikada bir aynı anda çalarlar / tekrar buluşurlar" tarzı sorular EKOK'tur.`,
       tips: [
         { trap: `1'in asal sayı olduğu sanılır.`, wrong: `1 asal sayıdır.`, correct: `1 asal değildir; en küçük asal sayı 2'dir.` },
         { trap: `EBOB ve EKOK karıştırılır.`, wrong: `İki sayının EBOB'u, EKOK'undan büyüktür.`, correct: `EBOB ortak bölenlerin en büyüğü (küçük), EKOK ortak katların en küçüğüdür (büyük). EBOB ≤ EKOK.` },
@@ -156,10 +183,34 @@ EBOB (en büyük ortak bölen), sayıların ortak bölenlerinin en büyüğüdü
       mindMap: {
         center: `Kareköklü İfadeler`,
         branches: [
-          { label: `Karekök ve Tam Kareler`, detail: `√a ifadesinde a ≥ 0 olmalıdır. Tam kareler: 1, 4, 9, 16, 25, 36... √16 = 4.` },
-          { label: `Çarpma ve Bölme`, detail: `√a · √b = √(a·b); √a / √b = √(a/b).` },
-          { label: `Kök İçine/Dışına Alma`, detail: `√12 = √(4·3) = 2√3. Tersi: 2√3 = √12.` },
-          { label: `Toplama ve Çıkarma`, detail: `Yalnız kök içleri aynı olan ifadeler toplanır/çıkarılır: 2√3 + 5√3 = 7√3.` },
+          {
+            label: `Karekök ve Tam Kareler`,
+            sections: [
+              { kind: "tanim", content: `√a (a ≥ 0): karesi a olan pozitif sayı. √16 = 4.` },
+              { kind: "ornek", content: `Tam kareler: 1, 4, 9, 16, 25, 36, 49, 64...` },
+            ],
+          },
+          {
+            label: `Çarpma ve Bölme`,
+            sections: [
+              { kind: "formul", content: `√a · √b = √(a·b)   ve   √a ÷ √b = √(a÷b)` },
+              { kind: "ornek", content: `√2 · √8 = √16 = 4.` },
+            ],
+          },
+          {
+            label: `Kök Dışına Alma`,
+            sections: [
+              { kind: "formul", content: `Kök içindeki tam kare çarpan dışarı çıkar: √12 = √(4·3) = 2√3.` },
+              { kind: "ornek", content: `2√3 = √(4·3) = √12 (tersi).` },
+            ],
+          },
+          {
+            label: `Toplama ve Çıkarma`,
+            sections: [
+              { kind: "kural", content: `Yalnız kök içleri AYNI olanlar toplanır: 2√3 + 5√3 = 7√3.` },
+              { kind: "tuzak", content: `√(9+16) ≠ √9 + √16. Doğrusu √25 = 5; karekök toplamaya dağılmaz.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -169,14 +220,18 @@ EBOB (en büyük ortak bölen), sayıların ortak bölenlerinin en büyüğüdü
         { front: `2√3 + 5√3 kaçtır?`, back: `7√3 (kök içleri aynıysa katsayılar toplanır).` },
         { front: `√(a+b) = √a + √b doğru mu?`, back: `Hayır! Karekök toplama üzerine dağılmaz.` },
       ],
-      article: `## Karekök ve Tam Kareler
-Bir sayının karekökü, karesi o sayıya eşit olan pozitif sayıdır: √16 = 4. Karekök içindeki sayı negatif olamaz (a ≥ 0). Tam kare sayılar: 1, 4, 9, 16, 25, 36, 49, 64...
+      article: `# Karekök ve Tam Kareler
+Bir sayının karekökü, karesi o sayıya eşit olan **pozitif** sayıdır: √16 = 4. Kök içi negatif olamaz (a ≥ 0).
+[örnek] Tam kareler: 1, 4, 9, 16, 25, 36, 49, 64...
 
-## Çarpma, Bölme ve Sadeleştirme
-√a · √b = √(a·b) ve √a / √b = √(a/b) kurallarıyla işlem yapılır. Kök içindeki sayı tam kare çarpan içeriyorsa kök dışına alınır: √12 = √(4·3) = 2√3.
+# Çarpma, Bölme ve Sadeleştirme
+[formül] **√a · √b = √(a·b)**  •  **√a ÷ √b = √(a÷b)**
+[örnek] √2 · √8 = √16 = **4**. Sadeleştirme: √12 = √(4·3) = **2√3**.
 
-## Toplama ve Çıkarma
-Kareköklü ifadelerde yalnızca kök içleri aynı olan terimler toplanıp çıkarılabilir: 2√3 + 5√3 = 7√3. Kök içleri farklıysa işlem yapılamaz.`,
+# Toplama ve Çıkarma
+[kural] Yalnızca **kök içleri aynı** olan terimler toplanıp çıkarılır: 2√3 + 5√3 = **7√3**.
+[tuzak] √(9+16) = √9 + √16 = 7 **YANLIŞTIR**. Doğrusu √(9+16) = √25 = **5**; karekök toplama üzerine dağılmaz.
+[soru] "2√2 + 3√3 = ?" → kök içleri farklı olduğu için toplanamaz, olduğu gibi kalır.`,
       tips: [
         { trap: `Karekök toplamaya dağıtılır sanılır.`, wrong: `√(9+16) = √9 + √16 = 3+4 = 7.`, correct: `√(9+16) = √25 = 5. Karekök toplama üzerine dağılmaz.` },
         { trap: `Farklı kökler toplanır sanılır.`, wrong: `2√2 + 3√3 = 5√5.`, correct: `Kök içleri farklı olduğundan toplanamaz; 2√2 + 3√3 olduğu gibi kalır.` },
@@ -200,10 +255,35 @@ Kareköklü ifadelerde yalnızca kök içleri aynı olan terimler toplanıp çı
       mindMap: {
         center: `Veri Analizi`,
         branches: [
-          { label: `Aritmetik Ortalama`, detail: `Verilerin toplamının veri sayısına bölünmesidir.` },
-          { label: `Ortanca (Medyan)`, detail: `Veriler sıralanır; ortadaki değerdir. Veri sayısı çiftse ortadaki iki değerin ortalaması alınır.` },
-          { label: `Tepe Değer (Mod)`, detail: `Bir veri grubunda en çok tekrar eden değerdir.` },
-          { label: `Açıklık ve Grafikler`, detail: `Açıklık = en büyük veri − en küçük veri. Daire, sütun ve çizgi grafikleri verileri görselleştirir.` },
+          {
+            label: `Aritmetik Ortalama`,
+            sections: [
+              { kind: "formul", content: `Ortalama = verilerin toplamı ÷ veri sayısı.` },
+              { kind: "ornek", content: `4, 6, 8, 10 → 28 ÷ 4 = 7.` },
+            ],
+          },
+          {
+            label: `Ortanca (Medyan)`,
+            sections: [
+              { kind: "kural", content: `Veriler SIRALANIR, ortadaki değerdir. Veri sayısı çiftse ortadaki ikisinin ortalaması alınır.` },
+              { kind: "ornek", content: `10, 20, 30, 40 → (20+30) ÷ 2 = 25.` },
+              { kind: "tuzak", content: `Sıralamadan medyan alınmaz: 5,1,3 → sıralı (1,3,5) → ortanca 3.` },
+            ],
+          },
+          {
+            label: `Tepe Değer (Mod)`,
+            sections: [
+              { kind: "tanim", content: `En çok tekrar eden değerdir.` },
+              { kind: "ornek", content: `3, 7, 7, 2, 9 → mod 7.` },
+            ],
+          },
+          {
+            label: `Açıklık ve Grafikler`,
+            sections: [
+              { kind: "formul", content: `Açıklık = en büyük veri − en küçük veri.` },
+              { kind: "ipucu", content: `Bütünün parçalara (yüzde) dağılımı için daire grafiği uygundur.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -213,14 +293,19 @@ Kareköklü ifadelerde yalnızca kök içleri aynı olan terimler toplanıp çı
         { front: `Açıklık nedir?`, back: `En büyük veri − en küçük veri.` },
         { front: `Bir bütünün parçalara dağılımı hangi grafikle gösterilir?`, back: `Daire grafiği.` },
       ],
-      article: `## Aritmetik Ortalama
-Verilerin toplamının veri sayısına bölünmesiyle bulunur. Örnek: 4, 6, 8, 10 için ortalama = (4+6+8+10)/4 = 28/4 = 7.
+      article: `# Aritmetik Ortalama
+[formül] **Ortalama = Verilerin toplamı ÷ Veri sayısı**
+[örnek] 4, 6, 8, 10 → (4+6+8+10) ÷ 4 = 28 ÷ 4 = **7**.
 
-## Ortanca (Medyan) ve Tepe Değer (Mod)
-Ortanca, veriler küçükten büyüğe sıralandığında ortadaki değerdir; veri sayısı çiftse ortadaki iki değerin ortalaması alınır. Mod ise en çok tekrar eden veridir.
+# Ortanca (Medyan) ve Tepe Değer (Mod)
+[kural] **Ortanca:** veriler küçükten büyüğe **sıralanır**, ortadaki değerdir. Veri sayısı **çift** ise ortadaki iki değerin ortalaması alınır.
+[örnek] 10, 20, 30, 40 → (20+30) ÷ 2 = **25**. **Mod:** en çok tekrar eden değer (3,7,7,2,9 → 7).
+[tuzak] Medyan bulurken sıralamayı unutma: "5, 1, 3" → sıralı (1,3,5) → ortanca **3** (1 değil!).
 
-## Açıklık ve Grafikler
-Açıklık, en büyük veri ile en küçük veri arasındaki farktır. Veriler; daire, sütun ve çizgi grafikleriyle görselleştirilir. Bir bütünün parçalara (yüzdelere) dağılımı için daire grafiği uygundur.`,
+# Açıklık ve Grafikler
+[formül] **Açıklık = En büyük veri − En küçük veri**
+[örnek] 2, 5, 9 → 9 − 2 = **7**.
+[ipucu] Bir bütünün parçalara (yüzde) dağılımı için **daire grafiği** uygundur.`,
       tips: [
         { trap: `Ortanca bulunurken sıralama unutulur.`, wrong: `5, 1, 3 verisinin ortancası 1'dir.`, correct: `Önce sıralanır (1, 3, 5); ortanca ortadaki değer olan 3'tür.` },
         { trap: `Ortalama ile mod karıştırılır.`, wrong: `En çok tekrar eden değere ortalama denir.`, correct: `En çok tekrar eden değer MOD'dur; ortalama toplam/veri sayısıdır.` },
@@ -244,9 +329,28 @@ Açıklık, en büyük veri ile en küçük veri arasındaki farktır. Veriler; 
       mindMap: {
         center: `Olasılık`,
         branches: [
-          { label: `Olasılık Tanımı`, detail: `Bir olayın olma olasılığı = istenen çıktı sayısı / tüm olası çıktı sayısı. Sonuç daima 0 ile 1 arasındadır.` },
-          { label: `Kesin ve İmkânsız Olay`, detail: `Kesin olayın olasılığı 1, imkânsız olayın olasılığı 0'dır.` },
-          { label: `Örnekler`, detail: `Zar atma, para atma, torbadan top çekme gibi deneylerde olasılık hesaplanır.` },
+          {
+            label: `Olasılık Tanımı`,
+            sections: [
+              { kind: "formul", content: `Olasılık = istenen çıktı sayısı ÷ tüm olası çıktı sayısı.` },
+              { kind: "kural", content: `Sonuç daima 0 ile 1 arasındadır.` },
+              { kind: "ornek", content: `Hilesiz zarda 3 gelme: 1 ÷ 6 = 1/6.` },
+            ],
+          },
+          {
+            label: `Kesin ve İmkânsız Olay`,
+            sections: [
+              { kind: "kural", content: `Kesin olayın olasılığı 1, imkânsız olayın olasılığı 0'dır.` },
+              { kind: "tuzak", content: `Olasılık 1'den büyük olamaz; '1,5 olasılık' yoktur.` },
+            ],
+          },
+          {
+            label: `Örnekler`,
+            sections: [
+              { kind: "ornek", content: `Zarda çift (2,4,6): 3 ÷ 6 = 1/2. Torbada 3 kırmızı/5 top → 3/5.` },
+              { kind: "soru", content: `'1–10 arasından seçilen sayı asal mı?' → 4/10 = 2/5.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -256,14 +360,18 @@ Açıklık, en büyük veri ile en küçük veri arasındaki farktır. Veriler; 
         { front: `İmkânsız olayın olasılığı?`, back: `0.` },
         { front: `Hilesiz zarda 3 gelme olasılığı?`, back: `1/6.` },
       ],
-      article: `## Olasılık Tanımı
-Bir olayın olma olasılığı, istenen çıktı sayısının tüm olası çıktı sayısına bölünmesiyle bulunur. Olasılık değeri her zaman 0 ile 1 arasındadır.
+      article: `# Olasılık Tanımı
+[formül] **Olasılık = İstenen çıktı sayısı ÷ Tüm olası çıktı sayısı**
+[kural] Olasılık değeri **daima 0 ile 1 arasındadır**.
+[örnek] Hilesiz zarda 3 gelme olasılığı = 1 ÷ 6 = **1/6**.
 
-## Kesin ve İmkânsız Olay
-Gerçekleşmesi kesin olan olayın olasılığı 1, gerçekleşmesi imkânsız olan olayın olasılığı 0'dır.
+# Kesin ve İmkânsız Olay
+[kural] **Kesin olayın** olasılığı **1**, **imkânsız olayın** olasılığı **0**'dır.
+[tuzak] Olasılık 1'den büyük olamaz; "1,5 olasılık" diye bir şey yoktur.
 
-## Örnekler
-Hilesiz bir zarda 3 gelme olasılığı 1/6'dır (6 eşit olası sonuçtan biri). Hilesiz bir parada tura gelme olasılığı 1/2'dir.`,
+# Örnekler
+[örnek] Zarda çift sayı (2,4,6) gelme: 3 ÷ 6 = **1/2**. Torbada 3 kırmızı + 2 mavi top → kırmızı çekme = **3/5**.
+[soru] "1–10 arasından seçilen sayı asal mı?" → asallar 2,3,5,7 → 4/10 = **2/5**.`,
       tips: [
         { trap: `Olasılığın 1'den büyük olabileceği sanılır.`, wrong: `Bir olayın olasılığı 1,5 olabilir.`, correct: `Olasılık daima 0 ile 1 arasındadır; 1'den büyük olamaz.` },
         { trap: `Para atışında olasılık karıştırılır.`, wrong: `Hilesiz parada tura gelme olasılığı 1'dir.`, correct: `Tura gelme olasılığı 1/2'dir (iki eşit sonuçtan biri).` },
@@ -287,9 +395,29 @@ Hilesiz bir zarda 3 gelme olasılığı 1/6'dır (6 eşit olası sonuçtan biri)
       mindMap: {
         center: `Cebirsel İfadeler`,
         branches: [
-          { label: `Cebirsel İfadeler`, detail: `Değişken (harf) içeren ifadelerdir. 3x+5 ifadesinde 3 katsayı, x değişken, 5 sabit terimdir. Benzer terimler toplanabilir.` },
-          { label: `Özdeşlikler`, detail: `(a+b)² = a²+2ab+b²; (a−b)² = a²−2ab+b²; a²−b² = (a−b)(a+b).` },
-          { label: `Çarpanlara Ayırma`, detail: `Ortak çarpan parantezine alma ve özdeşliklerden yararlanarak ifadeyi çarpımlara ayırma.` },
+          {
+            label: `Cebirsel İfadeler`,
+            sections: [
+              { kind: "tanim", content: `Değişken (harf) içeren ifade. 3x+5: 3 katsayı, x değişken, 5 sabit terim.` },
+              { kind: "kural", content: `Yalnız benzer terimler toplanır: 3x + 2x = 5x.` },
+              { kind: "tuzak", content: `3x + 2 = 5x YANLIŞ; 3x ile 2 benzer terim değildir.` },
+            ],
+          },
+          {
+            label: `Özdeşlikler`,
+            sections: [
+              { kind: "formul", content: `(a+b)² = a²+2ab+b² • (a−b)² = a²−2ab+b² • a²−b² = (a−b)(a+b)` },
+              { kind: "ornek", content: `(x+3)² = x² + 6x + 9.` },
+              { kind: "tuzak", content: `(a+b)² ≠ a²+b²; ortadaki 2ab terimi unutulmaz.` },
+            ],
+          },
+          {
+            label: `Çarpanlara Ayırma`,
+            sections: [
+              { kind: "formul", content: `Ortak çarpan parantezine alma veya özdeşlik kullanma.` },
+              { kind: "ornek", content: `4x+8 = 4(x+2) • x²−25 = (x−5)(x+5).` },
+            ],
+          },
         ],
       },
       cards: [
@@ -299,14 +427,20 @@ Hilesiz bir zarda 3 gelme olasılığı 1/6'dır (6 eşit olası sonuçtan biri)
         { front: `Benzer terim nedir?`, back: `Değişkeni ve derecesi aynı olan terimlerdir: 3x ve 2x benzerdir.` },
         { front: `4x+8 ifadesinin ortak çarpanı?`, back: `4(x+2).` },
       ],
-      article: `## Cebirsel İfadeler
-İçinde değişken (harf) bulunan ifadelere cebirsel ifade denir. 3x + 5 ifadesinde 3 katsayı, x değişken, 5 ise sabit terimdir. Yalnızca benzer terimler (değişkeni ve derecesi aynı olanlar) toplanıp çıkarılabilir: 3x + 2x = 5x.
+      article: `# Cebirsel İfadeler
+İçinde **değişken (harf)** bulunan ifadelerdir. **3x + 5** ifadesinde 3 katsayı, x değişken, 5 sabit terimdir.
+[kural] Yalnızca **benzer terimler** (değişkeni ve derecesi aynı olanlar) toplanıp çıkarılır: 3x + 2x = 5x.
+[tuzak] **3x + 2 = 5x YANLIŞTIR**; 3x ile 2 benzer terim değildir, toplanamaz.
 
-## Özdeşlikler
-Her değer için doğru olan eşitliklere özdeşlik denir: (a+b)² = a²+2ab+b²; (a−b)² = a²−2ab+b²; a²−b² = (a−b)(a+b).
+# Özdeşlikler
+[formül] **(a+b)² = a²+2ab+b²**  •  **(a−b)² = a²−2ab+b²**  •  **a²−b² = (a−b)(a+b)**
+[örnek] (x+3)² = x² + 2·x·3 + 3² = **x²+6x+9**.
+[tuzak] **(a+b)² ≠ a²+b².** Ortadaki **2ab** terimi unutulmamalı.
 
-## Çarpanlara Ayırma
-Bir ifadeyi çarpımlar biçiminde yazmaya çarpanlara ayırma denir. Ortak çarpan parantezine alınır (4x+8 = 4(x+2)) veya özdeşlikler kullanılır (x²−25 = (x−5)(x+5)).`,
+# Çarpanlara Ayırma
+Bir ifadeyi çarpımlar biçiminde yazmaktır.
+[örnek] Ortak çarpan: 4x+8 = **4(x+2)**. Özdeşlikle (iki kare farkı): x²−25 = **(x−5)(x+5)**.
+[soru] "x²−25 çarpanlarına nasıl ayrılır?" → a²−b² kuralıyla (x−5)(x+5).`,
       tips: [
         { trap: `(a+b)² = a²+b² sanılır.`, wrong: `(a+b)² = a² + b².`, correct: `(a+b)² = a² + 2ab + b². Ortadaki 2ab terimi unutulmamalı.` },
         { trap: `Benzer olmayan terimler toplanır.`, wrong: `3x + 2 = 5x.`, correct: `3x ile 2 benzer terim değildir; toplanamaz. Yalnız 3x + 2x = 5x.` },
@@ -330,10 +464,34 @@ Bir ifadeyi çarpımlar biçiminde yazmaya çarpanlara ayırma denir. Ortak çar
       mindMap: {
         center: `Doğrusal Denklemler`,
         branches: [
-          { label: `Birinci Dereceden Denklemler`, detail: `ax+b=c biçimindedir; bilinmeyen yalnız bırakılarak çözülür. Taraf değiştiren terimin işareti değişir. 2x+3=11 → x=4.` },
-          { label: `Koordinat Sistemi`, detail: `Nokta (x, y) ile gösterilir; x apsis, y ordinattır.` },
-          { label: `Doğrunun Eğimi`, detail: `Eğim = y'deki değişim / x'teki değişim (dikey değişim / yatay değişim).` },
-          { label: `Doğru Grafiği`, detail: `Doğrusal bir denklemin grafiği bir doğrudur.` },
+          {
+            label: `Birinci Dereceden Denklemler`,
+            sections: [
+              { kind: "kural", content: `Bilinmeyen yalnız bırakılır; taraf değiştiren terimin işareti değişir.` },
+              { kind: "ornek", content: `2x+3=11 → 2x=8 → x=4.` },
+              { kind: "tuzak", content: `x+5=2 → x=7 YANLIŞ; doğrusu x = 2−5 = −3.` },
+            ],
+          },
+          {
+            label: `Koordinat Sistemi`,
+            sections: [
+              { kind: "tanim", content: `Nokta (x, y) ile gösterilir; x apsis, y ordinattır.` },
+              { kind: "ornek", content: `(0, 5) noktası y ekseni üzerindedir.` },
+            ],
+          },
+          {
+            label: `Doğrunun Eğimi`,
+            sections: [
+              { kind: "formul", content: `Eğim = y'deki değişim ÷ x'teki değişim (dikey ÷ yatay).` },
+              { kind: "tuzak", content: `Eğim = x ÷ y değildir; doğrusu y ÷ x'tir.` },
+            ],
+          },
+          {
+            label: `Doğru Grafiği`,
+            sections: [
+              { kind: "tanim", content: `Doğrusal bir denklemin grafiği koordinat düzleminde bir doğrudur.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -343,14 +501,20 @@ Bir ifadeyi çarpımlar biçiminde yazmaya çarpanlara ayırma denir. Ortak çar
         { front: `Doğrunun eğimi nasıl bulunur?`, back: `y'deki değişim / x'teki değişim.` },
         { front: `Doğrusal denklemin grafiği nedir?`, back: `Bir doğrudur.` },
       ],
-      article: `## Birinci Dereceden Bir Bilinmeyenli Denklemler
-Bilinmeyeni (x) yalnız bırakarak denklem çözülür. Bir terim eşitliğin diğer tarafına geçerken işareti değişir: 2x + 3 = 11 → 2x = 11 − 3 = 8 → x = 4.
+      article: `# Birinci Dereceden Denklemler
+Bilinmeyeni (x) **yalnız bırakarak** çözülür.
+[kural] Bir terim eşitliğin diğer tarafına geçerken **işareti değişir**.
+[örnek] 2x + 3 = 11 → 2x = 11 − 3 = 8 → **x = 4**.
+[tuzak] x + 5 = 2 → x = 7 **YANLIŞTIR**. Doğrusu x = 2 − 5 = **−3**.
 
-## Koordinat Sistemi
-Düzlemdeki her nokta (x, y) sıralı ikilisiyle gösterilir. x değerine apsis, y değerine ordinat denir.
+# Koordinat Sistemi
+[kural] Her nokta **(x, y)** ile gösterilir; x **apsis**, y **ordinat**tır.
+[örnek] (3, −2) noktasının apsisi 3'tür. (0, 5) noktası **y ekseni** üzerindedir.
 
-## Doğrunun Eğimi
-Bir doğrunun eğimi, y'deki (dikey) değişimin x'teki (yatay) değişime oranıdır. Doğrusal bir denklemin grafiği koordinat düzleminde bir doğru oluşturur.`,
+# Doğrunun Eğimi
+[formül] **Eğim = y'deki değişim ÷ x'teki değişim** (dikey ÷ yatay)
+[tuzak] Eğim = x ÷ y **değildir**; doğrusu y ÷ x'tir.
+[ipucu] Doğrusal bir denklemin grafiği koordinat düzleminde bir **doğru**dur.`,
       tips: [
         { trap: `Denklemde taraf değiştirirken işaret unutulur.`, wrong: `x + 5 = 2 → x = 7.`, correct: `x + 5 = 2 → x = 2 − 5 = −3. Taraf değiştiren terimin işareti değişir.` },
         { trap: `Eğim formülü ters yazılır.`, wrong: `Eğim = x'teki değişim / y'deki değişim.`, correct: `Eğim = y'deki değişim / x'teki değişim (dikey/yatay).` },
@@ -374,9 +538,28 @@ Bir doğrunun eğimi, y'deki (dikey) değişimin x'teki (yatay) değişime oran�
       mindMap: {
         center: `Eşitsizlikler`,
         branches: [
-          { label: `Eşitsizlik Sembolleri`, detail: `< (küçüktür), > (büyüktür), ≤ (küçük eşit), ≥ (büyük eşit). "x > 3" → x, 3'ten büyüktür.` },
-          { label: `Eşitsizlik Çözme`, detail: `Denklem gibi çözülür; ANCAK negatif sayıyla çarpılıp bölününce eşitsizliğin yönü değişir.` },
-          { label: `Sayı Doğrusunda Gösterim`, detail: `≤ ve ≥ için içi DOLU nokta (sınır dahil), < ve > için içi BOŞ nokta (sınır hariç) kullanılır.` },
+          {
+            label: `Eşitsizlik Sembolleri`,
+            sections: [
+              { kind: "tanim", content: `< küçüktür, > büyüktür, ≤ küçük eşit, ≥ büyük eşittir.` },
+              { kind: "ornek", content: `"x > 3" → x, 3'ten büyüktür.` },
+            ],
+          },
+          {
+            label: `Eşitsizlik Çözme`,
+            sections: [
+              { kind: "kural", content: `Denklem gibi çözülür; negatif sayıyla çarpılıp bölününce YÖN DEĞİŞİR.` },
+              { kind: "ornek", content: `−2x ≤ 6 → x ≥ −3 (yön döndü).` },
+              { kind: "tuzak", content: `−2x < 6 → x < −3 YANLIŞ; yön değişir, doğrusu x > −3.` },
+            ],
+          },
+          {
+            label: `Sayı Doğrusunda Gösterim`,
+            sections: [
+              { kind: "kural", content: `≤ ve ≥ → içi DOLU nokta (sınır dahil); < ve > → içi BOŞ nokta (sınır hariç).` },
+              { kind: "tuzak", content: `x ≤ 5'te 5 dahildir; içi DOLU nokta gösterilir.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -386,14 +569,20 @@ Bir doğrunun eğimi, y'deki (dikey) değişimin x'teki (yatay) değişime oran�
         { front: `x > 0 olan sayılar nelerdir?`, back: `Pozitif sayılar.` },
         { front: `2x > 10 çözümü?`, back: `x > 5.` },
       ],
-      article: `## Eşitsizlik Sembolleri
-Eşitsizlikler <, >, ≤, ≥ sembolleriyle gösterilir. "x > 3" ifadesi, x'in 3'ten büyük olduğunu belirtir.
+      article: `# Eşitsizlik Sembolleri
+[kural] **<** küçüktür, **>** büyüktür, **≤** küçük veya eşit, **≥** büyük veya eşittir.
+[örnek] "x > 3" → x, 3'ten büyüktür.
 
-## Eşitsizlik Çözme
-Eşitsizlikler tıpkı denklemler gibi çözülür. Ancak çok önemli bir kural vardır: eşitsizliğin her iki tarafı negatif bir sayıyla çarpılır veya bölünürse eşitsizliğin yönü değişir.
+# Eşitsizlik Çözme
+Eşitsizlikler tıpkı denklemler gibi çözülür.
+[kural] **ÇOK ÖNEMLİ:** Eşitsizlik negatif bir sayıyla çarpılır veya bölünürse **yön değişir**.
+[örnek] −2x ≤ 6 → x **≥** −3 (yön döndü).
+[tuzak] −2x < 6 → x < −3 **YANLIŞTIR**. Doğrusu x **> −3**.
 
-## Sayı Doğrusunda Gösterim
-Çözüm kümesi sayı doğrusunda gösterilir. Sınır değer dahilse (≤, ≥) içi dolu nokta, dahil değilse (<, >) içi boş nokta kullanılır.`,
+# Sayı Doğrusunda Gösterim
+[kural] Sınır dahilse (**≤, ≥**) içi **dolu** nokta; dahil değilse (**<, >**) içi **boş** nokta kullanılır.
+[tuzak] x ≤ 5'te 5 dahildir; içi **dolu** nokta ile gösterilir.
+[soru] "3x − 1 ≤ 8 ise en büyük tam sayı?" → 3x ≤ 9 → x ≤ 3 → cevap **3**.`,
       tips: [
         { trap: `Negatifle bölünce yön değişmez sanılır.`, wrong: `−2x < 6 → x < −3.`, correct: `Negatif sayıyla bölününce yön DEĞİŞİR: −2x < 6 → x > −3.` },
         { trap: `Dolu/boş nokta karıştırılır.`, wrong: `x ≤ 5 için sayı doğrusunda 5 içi boş gösterilir.`, correct: `≤ olduğundan 5 dahildir; içi DOLU nokta ile gösterilir.` },
@@ -417,10 +606,35 @@ Eşitsizlikler tıpkı denklemler gibi çözülür. Ancak çok önemli bir kural
       mindMap: {
         center: `Üçgenler`,
         branches: [
-          { label: `Açı Özellikleri`, detail: `Bir üçgenin iç açıları toplamı 180°'dir. Bir dış açı, kendisine komşu olmayan iki iç açının toplamına eşittir.` },
-          { label: `Kenar-Açı İlişkisi`, detail: `En büyük açının karşısında en uzun kenar, en küçük açının karşısında en kısa kenar bulunur.` },
-          { label: `Üçgen Eşitsizliği`, detail: `Bir kenar, diğer iki kenarın farkından büyük, toplamından küçüktür.` },
-          { label: `Dik Üçgen ve Pisagor`, detail: `Dik üçgende a² + b² = c²; c, dik açının karşısındaki en uzun kenar olan hipotenüstür.` },
+          {
+            label: `Açı Özellikleri`,
+            sections: [
+              { kind: "kural", content: `İç açılar toplamı 180°. Dış açı = komşu olmayan iki iç açının toplamı.` },
+              { kind: "ornek", content: `İki açı 50° ve 60° ise üçüncüsü 180−110 = 70°.` },
+              { kind: "tuzak", content: `İç açılar toplamı 360° DEĞİL, 180°'dir.` },
+            ],
+          },
+          {
+            label: `Kenar-Açı İlişkisi`,
+            sections: [
+              { kind: "kural", content: `En büyük açının karşısında en uzun kenar, en küçük açının karşısında en kısa kenar bulunur.` },
+            ],
+          },
+          {
+            label: `Üçgen Eşitsizliği`,
+            sections: [
+              { kind: "formul", content: `|a − b| < üçüncü kenar < a + b` },
+              { kind: "ornek", content: `Kenarlar 5 ve 9 → 4 < x < 14.` },
+            ],
+          },
+          {
+            label: `Dik Üçgen ve Pisagor`,
+            sections: [
+              { kind: "formul", content: `a² + b² = c² (c = hipotenüs, en uzun kenar).` },
+              { kind: "ornek", content: `3-4-5 ve 6-8-10 dik üçgenleri.` },
+              { kind: "tuzak", content: `Hipotenüs en uzun kenardır ve dik açının karşısındadır.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -430,14 +644,20 @@ Eşitsizlikler tıpkı denklemler gibi çözülür. Ancak çok önemli bir kural
         { front: `Üçgen eşitsizliği nedir?`, back: `Bir kenar, diğer ikisinin farkından büyük, toplamından küçüktür.` },
         { front: `Eşkenar üçgenin her açısı kaç derecedir?`, back: `60°.` },
       ],
-      article: `## Açı Özellikleri
-Bir üçgenin iç açıları toplamı her zaman 180°'dir. Bir dış açı ise kendisine komşu olmayan iki iç açının toplamına eşittir.
+      article: `# Açı Özellikleri
+[kural] Bir üçgenin iç açıları toplamı **180°**'dir. Bir dış açı, komşu olmayan iki iç açının **toplamına** eşittir.
+[örnek] İki açısı 50° ve 60° olan üçgenin üçüncü açısı: 180 − 110 = **70°**.
+[tuzak] İç açılar toplamı 360° **değildir** (360° dörtgenlerde geçerlidir).
 
-## Kenar-Açı İlişkisi ve Üçgen Eşitsizliği
-Bir üçgende en büyük açının karşısında en uzun kenar bulunur. Üçgen eşitsizliğine göre bir kenarın uzunluğu, diğer iki kenarın farkından büyük ve toplamından küçük olmalıdır.
+# Kenar-Açı İlişkisi ve Üçgen Eşitsizliği
+[kural] En **büyük açının** karşısında en **uzun kenar** bulunur.
+[formül] Üçgen eşitsizliği: **|a − b| < üçüncü kenar < a + b**
+[örnek] Kenarları 5 ve 9 olan üçgende üçüncü kenar **4 ile 14 arasında** olabilir.
 
-## Dik Üçgen ve Pisagor Bağıntısı
-Dik üçgende dik kenarların kareleri toplamı, hipotenüsün karesine eşittir: a² + b² = c². Hipotenüs, dik açının karşısındaki en uzun kenardır. Örnek: dik kenarları 3 ve 4 olan üçgende hipotenüs √(9+16) = √25 = 5'tir.`,
+# Dik Üçgen ve Pisagor Bağıntısı
+[formül] Dik üçgende **a² + b² = c²** (c = hipotenüs, en uzun kenar).
+[örnek] Dik kenarları 3 ve 4 → hipotenüs √(9+16) = √25 = **5**. Ayrıca 6-8-**10**.
+[tuzak] Hipotenüs **en uzun** kenardır ve **dik açının karşısındadır**; dik kenarlardan biri değildir.`,
       tips: [
         { trap: `İç açılar toplamı 360° sanılır.`, wrong: `Üçgenin iç açıları toplamı 360°'dir.`, correct: `Üçgenin iç açıları toplamı 180°'dir (360° dörtgenlerde geçerlidir).` },
         { trap: `Pisagor'da hipotenüs karıştırılır.`, wrong: `Pisagor'da dik kenarlardan biri en uzun kenardır.`, correct: `Hipotenüs en uzun kenardır ve dik açının karşısındadır: a²+b²=c².` },
@@ -461,10 +681,31 @@ Dik üçgende dik kenarların kareleri toplamı, hipotenüsün karesine eşittir
       mindMap: {
         center: `Dönüşüm Geometrisi`,
         branches: [
-          { label: `Öteleme`, detail: `Şeklin biçimini ve boyutunu değiştirmeden belirli bir yönde kaydırılmasıdır.` },
-          { label: `Yansıma (Simetri)`, detail: `Bir doğruya (eksene) göre ters görüntü oluşturmadır; aynadaki görüntü gibidir.` },
-          { label: `Döndürme`, detail: `Bir nokta etrafında belirli bir açıyla çevirmedir.` },
-          { label: `Önemli Not`, detail: `Öteleme, yansıma ve döndürmede şeklin boyutu ve biçimi değişmez; şekiller eş kalır.` },
+          {
+            label: `Öteleme`,
+            sections: [
+              { kind: "tanim", content: `Şekli biçim/boyut değiştirmeden belirli bir yönde kaydırmaktır.` },
+            ],
+          },
+          {
+            label: `Yansıma (Simetri)`,
+            sections: [
+              { kind: "tanim", content: `Bir doğruya (eksene) göre ters görüntü oluşturmaktır; aynadaki görüntü gibidir.` },
+              { kind: "tuzak", content: `Aynadaki görüntü öteleme DEĞİL, yansımadır.` },
+            ],
+          },
+          {
+            label: `Döndürme`,
+            sections: [
+              { kind: "tanim", content: `Bir nokta etrafında belirli bir açıyla çevirmektir.` },
+            ],
+          },
+          {
+            label: `Önemli Not`,
+            sections: [
+              { kind: "kural", content: `Üç dönüşümde de şekil EŞ kalır; boyut ve biçim değişmez.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -474,11 +715,15 @@ Dik üçgende dik kenarların kareleri toplamı, hipotenüsün karesine eşittir
         { front: `Dönüşümlerde boyut değişir mi?`, back: `Hayır; şekil eş kalır (boyut ve biçim aynı).` },
         { front: `Aynadaki görüntü hangi dönüşümdür?`, back: `Yansıma.` },
       ],
-      article: `## Öteleme, Yansıma ve Döndürme
-Öteleme, bir şekli biçimini ve boyutunu değiştirmeden belirli bir yönde kaydırmaktır. Yansıma, bir doğruya (eksene) göre şeklin ters görüntüsünü oluşturmaktır; aynadaki görüntü buna örnektir. Döndürme ise bir nokta etrafında belirli bir açıyla çevirmektir.
+      article: `# Öteleme, Yansıma ve Döndürme
+- **Öteleme:** Şekli biçimini/boyutunu değiştirmeden belirli bir yönde **kaydırma**.
+- **Yansıma (Simetri):** Bir **doğruya (eksene)** göre ters görüntü; **aynadaki görüntü** gibi.
+- **Döndürme:** Bir **nokta** etrafında belirli bir **açıyla** çevirme.
+[tuzak] Aynadaki görüntü öteleme değil, **yansımadır**.
 
-## Önemli Özellik
-Öteleme, yansıma ve döndürme dönüşümlerinde şeklin boyutu ve biçimi değişmez; yalnızca konumu veya yönü değişir. Bu yüzden oluşan yeni şekil ilk şekille eştir.`,
+# Önemli Özellik
+[kural] Öteleme, yansıma ve döndürmede şeklin **boyutu ve biçimi değişmez**; yalnız konumu veya yönü değişir. Oluşan yeni şekil ilk şekille **eştir**.
+[soru] "Dönüşüm sonucu şekil büyür mü?" → Hayır, eş kalır.`,
       tips: [
         { trap: `Dönüşümlerde boyut değişir sanılır.`, wrong: `Öteleme yapılınca şekil büyür.`, correct: `Öteleme, yansıma ve döndürmede şeklin boyutu değişmez; şekil eş kalır.` },
         { trap: `Yansıma ile öteleme karıştırılır.`, wrong: `Aynadaki görüntü ötelemedir.`, correct: `Aynadaki görüntü yansımadır (bir eksene göre simetri).` },
@@ -502,9 +747,28 @@ Dik üçgende dik kenarların kareleri toplamı, hipotenüsün karesine eşittir
       mindMap: {
         center: `Geometrik Cisimler`,
         branches: [
-          { label: `Dik Prizmalar`, detail: `Hacim = taban alanı × yükseklik. Dikdörtgenler prizmasının hacmi a·b·c, küpün hacmi a³'tür.` },
-          { label: `Dik Silindir`, detail: `Hacim = π·r²·h. Yüzey alanı = 2πr² + 2πrh.` },
-          { label: `Piramit ve Koni`, detail: `Piramit ve koni de geometrik cisimlerdendir; bir tepe noktaları vardır.` },
+          {
+            label: `Dik Prizmalar`,
+            sections: [
+              { kind: "formul", content: `Hacim = taban alanı × yükseklik. Küpün hacmi = a³.` },
+              { kind: "ornek", content: `Ayrıtları 2, 3, 4 cm: 2·3·4 = 24 cm³.` },
+              { kind: "tuzak", content: `Taban ÇEVRESİ değil, taban ALANI kullanılır.` },
+            ],
+          },
+          {
+            label: `Dik Silindir`,
+            sections: [
+              { kind: "formul", content: `Hacim = π·r²·h. Yüzey alanı = 2πr² + 2πrh.` },
+              { kind: "ornek", content: `r=5, h=10, π=3 → 3·25·10 = 750 cm³.` },
+              { kind: "tuzak", content: `Hacim 2πrh DEĞİLDİR; 2πrh yan yüzey alanıdır.` },
+            ],
+          },
+          {
+            label: `Piramit ve Koni`,
+            sections: [
+              { kind: "tanim", content: `Bir tepe noktasına sahip geometrik cisimlerdir.` },
+            ],
+          },
         ],
       },
       cards: [
@@ -514,14 +778,18 @@ Dik üçgende dik kenarların kareleri toplamı, hipotenüsün karesine eşittir
         { front: `Küpün hacmi nedir?`, back: `a³ (a: ayrıt uzunluğu).` },
         { front: `Küpün kaç yüzü vardır?`, back: `6.` },
       ],
-      article: `## Dik Prizmalar
-Bir dik prizmanın hacmi, taban alanı ile yüksekliğin çarpımına eşittir. Dikdörtgenler prizmasının hacmi a·b·c, küpün hacmi ise a³'tür (a: ayrıt uzunluğu).
+      article: `# Dik Prizmalar
+[formül] **Hacim = Taban alanı × Yükseklik**. Küpün hacmi = **a³** (a: ayrıt uzunluğu).
+[örnek] Ayrıtları 2, 3, 4 cm olan dikdörtgenler prizması: 2·3·4 = **24 cm³**.
+[tuzak] Prizma hacminde **taban çevresi değil, taban ALANI** kullanılır.
 
-## Dik Silindir
-Taban yarıçapı r, yüksekliği h olan dik silindirin hacmi π·r²·h, yüzey alanı ise 2πr² + 2πrh'dir.
+# Dik Silindir
+[formül] **Hacim = π·r²·h**  •  **Yüzey alanı = 2πr² + 2πrh**
+[örnek] r = 5 cm, h = 10 cm, π = 3 → 3·5²·10 = 3·25·10 = **750 cm³**.
+[tuzak] Silindirin hacmi 2πrh **değildir**; 2πrh yan yüzey alanıdır.
 
-## Piramit ve Koni
-Piramit ve koni de bir tepe noktasına sahip geometrik cisimlerdir.`,
+# Piramit ve Koni
+Piramit ve koni de bir **tepe noktasına** sahip geometrik cisimlerdir.`,
       tips: [
         { trap: `Silindirin hacmi ile yan yüzey alanı karıştırılır.`, wrong: `Silindirin hacmi 2πrh'dir.`, correct: `Silindirin hacmi π·r²·h'dir; 2πrh ise yan yüzey alanıdır.` },
         { trap: `Prizmanın hacmi taban çevresiyle hesaplanır sanılır.`, wrong: `Prizmanın hacmi = taban çevresi × yükseklik.`, correct: `Prizmanın hacmi = TABAN ALANI × yükseklik.` },
