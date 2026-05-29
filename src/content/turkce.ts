@@ -19,19 +19,31 @@ export const TURKCE: SubjectContent = {
         branches: [
           {
             label: `Gerçek, Mecaz ve Terim Anlam`,
-            detail: `Gerçek anlam sözcüğün ilk akla gelen anlamıdır. Mecaz anlam başka bir kavramı anlatmak için kullanılır. Terim anlam bir bilim, sanat veya meslek dalına özgüdür (örn. müzikte "nota").`,
+            sections: [
+              { kind: "tanim", content: `Gerçek: ilk akla gelen anlam. Mecaz: başka kavramı anlatma. Terim: bilim/sanat/meslek dalına özgü.` },
+              { kind: "ornek", content: `"Bana soğuk davrandı" → mecaz. Müzikte "nota" → terim.` },
+              { kind: "tuzak", content: `Mecaz ile terim karıştırılır; terim yalnız bir bilim/sanat dalına özgüdür.` },
+            ],
           },
           {
             label: `Deyim ve Atasözü`,
-            detail: `Deyimler kalıplaşmış, çoğu mecaz anlamlı söz öbekleridir (etekleri zil çalmak). Atasözleri ise öğüt veya genel yargı bildiren kalıp sözlerdir (Damlaya damlaya göl olur).`,
+            sections: [
+              { kind: "kural", content: `Deyim kalıplaşmış söz öbeği (çoğu mecaz). Atasözü öğüt/genel yargı bildirir.` },
+              { kind: "tuzak", content: `"İğneyle kuyu kazmak" deyimdir; atasözü değildir.` },
+            ],
           },
           {
-            label: `Eş, Zıt ve Eş Sesli Anlam`,
-            detail: `Eş anlam: aynı anlam (konuk-misafir). Zıt anlam: karşıt (iyi-kötü). Eş sesli (sesteş): yazılışı aynı, anlamı farklı (yüz: surat / 100 / yüzmek).`,
+            label: `Eş, Zıt ve Eş Sesli`,
+            sections: [
+              { kind: "kural", content: `Eş anlam: aynı anlam (konuk-misafir). Zıt anlam: karşıt (iyi-kötü). Eş sesli: yazılışı aynı, anlamı farklı.` },
+              { kind: "ornek", content: `"yüz": surat / 100 / yüzme eylemi (eş sesli).` },
+            ],
           },
           {
-            label: `Somut ve Soyut Anlam`,
-            detail: `Somut: beş duyuyla algılanabilen (taş, su). Soyut: algılanamayan, akılla kavranan kavram (sevgi, özgürlük).`,
+            label: `Somut ve Soyut`,
+            sections: [
+              { kind: "tanim", content: `Somut: beş duyuyla algılanan (taş, su). Soyut: akılla kavranan kavram (sevgi, özgürlük).` },
+            ],
           },
         ],
       },
@@ -53,17 +65,23 @@ export const TURKCE: SubjectContent = {
           back: `Somut: kalem, taş (algılanır). Soyut: sevgi, korku (kavram).`,
         },
       ],
-      article: `## Gerçek, Mecaz ve Terim Anlam
-Bir sözcüğün ilk akla gelen, sözlükteki temel anlamına gerçek anlam denir. Sözcük, gerçek anlamından uzaklaşıp başka bir kavramı anlatmak için kullanılırsa mecaz anlam kazanır (örnek: "Bana çok soğuk davrandı"). Bir bilim, sanat veya meslek dalına özgü anlama ise terim anlam denir (örnek: müzikte "nota", matematikte "kök").
+      article: `# Gerçek, Mecaz ve Terim Anlam
+Bir sözcüğün sözlükteki ilk akla gelen anlamı **gerçek anlam**dır. Sözcük başka bir kavramı anlatmak için kullanılırsa **mecaz anlam** kazanır. Bir bilim/sanat/meslek dalına özgü anlam ise **terim anlam**dır.
+[örnek] "Bana çok **soğuk** davrandı" → mecaz. Müzikte "**nota**", matematikte "**kök**" → terim.
+[tuzak] Mecaz ile terim karıştırılır; terim anlam yalnız bir bilim/sanat dalına özgüdür.
 
-## Deyimler ve Atasözleri
-Deyimler en az iki sözcükten oluşan, kalıplaşmış ve çoğu mecaz anlam taşıyan söz öbekleridir (etekleri zil çalmak, göz atmak). Atasözleri ise toplumun ortak deneyiminden doğan, öğüt veya genel bir yargı bildiren kalıp sözlerdir (Damlaya damlaya göl olur).
+# Deyimler ve Atasözleri
+[kural] **Deyim:** en az iki sözcükten oluşan, kalıplaşmış, çoğu **mecaz** söz öbeğidir. **Atasözü:** öğüt veya genel yargı bildirir.
+[örnek] Deyim: "göz atmak", "etekleri zil çalmak". Atasözü: "Damlaya damlaya göl olur".
+[tuzak] "İğneyle kuyu kazmak" bir **deyimdir**, atasözü değildir.
 
-## Eş, Zıt ve Eş Sesli Anlam
-Eş anlamlı sözcükler aynı anlamı taşır (konuk-misafir). Zıt anlamlı sözcükler birbirinin karşıtıdır (iyi-kötü). Eş sesli (sesteş) sözcükler yazılışı aynı, anlamı farklı olan sözcüklerdir (yüz: surat / 100 / yüzme eylemi).
+# Eş, Zıt ve Eş Sesli Anlam
+[kural] **Eş anlam:** aynı anlam (konuk-misafir). **Zıt anlam:** karşıt (iyi-kötü). **Eş sesli (sesteş):** yazılışı aynı, anlamı farklı.
+[örnek] "yüz" → surat / 100 / yüzme eylemi (eş sesli).
 
-## Somut ve Soyut Anlam
-Beş duyu organımızdan biriyle algılayabildiğimiz varlıkları karşılayan sözcükler somuttur (taş, su, ağaç). Algılanamayan, yalnızca akılla kavranan kavramları karşılayanlar ise soyuttur (sevgi, özgürlük, korku).`,
+# Somut ve Soyut Anlam
+[kural] **Somut:** beş duyuyla algılanan varlık (taş, su, ağaç). **Soyut:** akılla kavranan kavram (sevgi, özgürlük, korku).
+[soru] "Aşağıdakilerden hangisi soyut anlamlıdır?" sorularında algılanamayan kavramı ara.`,
       tips: [
         {
           trap: `Mecaz anlam ile terim anlam karıştırılır.`,
@@ -165,15 +183,25 @@ Beş duyu organımızdan biriyle algılayabildiğimiz varlıkları karşılayan 
         branches: [
           {
             label: `Neden-Sonuç, Amaç-Sonuç, Koşul`,
-            detail: `Neden-sonuç: gerçekleşmiş sebep ("-dığı için"). Amaç-sonuç: bir amaçla yapma ("için, diye"). Koşul-şart: bir şarta bağlama ("-sa/-se, ise, -ınca").`,
+            sections: [
+              { kind: "kural", content: `Neden-sonuç: gerçekleşmiş sebep ("-dığı için"). Amaç-sonuç: bir amaçla yapma ("için, diye"). Koşul: "-sa/-se, ise".` },
+              { kind: "ornek", content: `"Yağmur yağdığı için maç ertelendi" → neden-sonuç. "Görüşmek için aradı" → amaç-sonuç.` },
+              { kind: "tuzak", content: `Neden-sonuç ile amaç-sonuç karıştırılır; amaçta iş henüz gerçekleşmemiştir.` },
+            ],
           },
           {
             label: `Öznel ve Nesnel Anlam`,
-            detail: `Öznel: kişiden kişiye değişen, kanıtlanamayan yorum. Nesnel: kanıtlanabilen, herkes için aynı olan bilgi.`,
+            sections: [
+              { kind: "kural", content: `Öznel: kişiden kişiye değişen, kanıtlanamayan yorum. Nesnel: kanıtlanabilen, herkes için aynı bilgi.` },
+              { kind: "tuzak", content: `"Film 2 saat sürer" nesneldir (kanıtlanır); "film sıkıcı" özneldir.` },
+            ],
           },
           {
             label: `Karşılaştırma, Abartma, Olasılık`,
-            detail: `Karşılaştırma: "daha, en, göre". Abartma: olduğundan büyük/küçük gösterme. Olasılık: "belki, galiba, sanırım".`,
+            sections: [
+              { kind: "kural", content: `Karşılaştırma: "daha, en, göre". Abartma: olduğundan farklı gösterme. Olasılık: "belki, galiba, sanırım".` },
+              { kind: "ornek", content: `"Ali, Veli'den daha uzun" → karşılaştırma. "Belki yağar" → olasılık.` },
+            ],
           },
         ],
       },
@@ -195,14 +223,20 @@ Beş duyu organımızdan biriyle algılayabildiğimiz varlıkları karşılayan 
           back: `Belki, galiba, sanırım, muhtemelen.`,
         },
       ],
-      article: `## Anlam İlişkileri
-Neden-sonuç ilişkisinde bir işin gerçekleşmiş bir sebebi vardır: "Yağmur yağdığı için maç ertelendi." Amaç-sonuç ilişkisinde iş, bir amaca ulaşmak için yapılır: "Görüşmek için aradı." Koşul (şart) ilişkisinde bir durum başka bir şarta bağlanır: "Erken kalkarsan otobüsü yakalarsın."
+      article: `# Anlam İlişkileri
+[kural] **Neden-sonuç:** işin gerçekleşmiş bir sebebi vardır. **Amaç-sonuç:** iş bir amaç için yapılır. **Koşul (şart):** bir durum başka şarta bağlanır.
+[örnek] "Yağmur **yağdığı için** maç ertelendi" → neden-sonuç. "**Görüşmek için** aradı" → amaç-sonuç. "Erken **kalkarsan** yetişirsin" → koşul.
+[tuzak] Neden-sonuç ile amaç-sonuç karıştırılır; amaçta iş henüz gerçekleşmemiştir.
 
-## Öznel ve Nesnel Anlam
-Öznel cümleler kişiden kişiye değişen, kanıtlanamayan kişisel yorumlardır: "Bu film çok sıkıcıydı." Nesnel cümleler ise kanıtlanabilen, herkes için aynı olan bilgilerdir: "Film iki saat sürdü."
+# Öznel ve Nesnel Anlam
+[kural] **Öznel:** kişiden kişiye değişen, kanıtlanamayan yorum. **Nesnel:** kanıtlanabilen, herkes için aynı bilgi.
+[örnek] "Bu film çok sıkıcıydı" → öznel. "Film iki saat sürdü" → nesnel.
+[tuzak] "Film 2 saat sürer" cümlesi nesneldir (kanıtlanabilir); öznel sanılmamalı.
 
-## Karşılaştırma, Abartma ve Olasılık
-Karşılaştırma cümlelerinde iki varlık/durum kıyaslanır ("daha, en, göre"): "Ali, Veli'den daha uzun." Abartmada bir durum olduğundan çok farklı gösterilir: "Seni görmeyeli bir asır oldu." Olasılık cümlelerinde kesinlik yoktur ("belki, galiba"): "Belki bu akşam yağmur yağar."`,
+# Karşılaştırma, Abartma ve Olasılık
+[kural] **Karşılaştırma:** "daha, en, göre". **Abartma:** olduğundan çok farklı gösterme. **Olasılık:** "belki, galiba".
+[örnek] "Ali, Veli'den **daha** uzun" → karşılaştırma. "Seni görmeyeli **bir asır** oldu" → abartma. "**Belki** yağmur yağar" → olasılık.
+[soru] Cümlede "daha/en/göre" varsa karşılaştırma; "belki/galiba" varsa olasılık aranır.`,
       tips: [
         {
           trap: `Öznel ve nesnel ayrımı yanlış yapılır.`,
@@ -298,19 +332,30 @@ Karşılaştırma cümlelerinde iki varlık/durum kıyaslanır ("daha, en, göre
         branches: [
           {
             label: `Konu ve Ana Düşünce`,
-            detail: `Konu: paragrafta hakkında konuşulan şey (genel). Ana düşünce: yazarın okura vermek istediği asıl mesaj.`,
+            sections: [
+              { kind: "kural", content: `Konu: "ne hakkında" olduğu (genel). Ana düşünce: yazarın vermek istediği asıl mesaj.` },
+              { kind: "tuzak", content: `Konu ile ana düşünce karıştırılır; ana düşünce mesajdır, konu genel başlıktır.` },
+            ],
           },
           {
             label: `Yardımcı Düşünce`,
-            detail: `Ana düşünceyi destekleyen, açıklayan yan fikirlerdir.`,
+            sections: [
+              { kind: "tanim", content: `Ana düşünceyi destekleyen, açıklayan yan fikirlerdir.` },
+            ],
           },
           {
             label: `Anlatım Biçimleri`,
-            detail: `Açıklama, tartışma, betimleme ve öyküleme dört temel anlatım biçimidir.`,
+            sections: [
+              { kind: "kural", content: `Dört temel biçim: açıklama, tartışma, betimleme, öyküleme.` },
+              { kind: "ornek", content: `Öyküleme olayı yer-zaman-kişiyle anlatır; betimleme gözde canlandırır.` },
+            ],
           },
           {
             label: `Paragrafın Yapısı`,
-            detail: `Giriş, gelişme ve sonuç bölümlerinden oluşur. Giriş cümlesi kendinden önceki bir cümleye bağlanmaz; bağlaç veya işaret zamiriyle başlamaz.`,
+            sections: [
+              { kind: "kural", content: `Giriş, gelişme, sonuç bölümlerinden oluşur.` },
+              { kind: "tuzak", content: `Giriş cümlesi bağımsızdır; "bu, o, bundan dolayı" gibi ifadelerle başlamaz.` },
+            ],
           },
         ],
       },
@@ -332,17 +377,21 @@ Karşılaştırma cümlelerinde iki varlık/durum kıyaslanır ("daha, en, göre
           back: `Bağımsızdır; kendinden önceki cümleye bağlanmaz, bağlaç/işaret zamiriyle başlamaz.`,
         },
       ],
-      article: `## Konu ve Ana Düşünce
-Paragrafta üzerinde durulan, hakkında konuşulan şeye konu denir; konu geneldir ve "Ne anlatılıyor?" sorusuna yanıt verir. Ana düşünce ise yazarın okuyucuya iletmek istediği asıl mesajdır.
+      article: `# Konu ve Ana Düşünce
+[kural] **Konu:** paragrafta hakkında konuşulan şey (genel), "Ne anlatılıyor?" sorusuna yanıttır. **Ana düşünce:** yazarın iletmek istediği asıl mesaj.
+[tuzak] Konu ile ana düşünce karıştırılır; konu geneldir, ana düşünce verilmek istenen mesajdır.
 
-## Yardımcı Düşünceler
-Ana düşünceyi destekleyen, onu açıklayan ve güçlendiren yan fikirlere yardımcı düşünce denir.
+# Yardımcı Düşünceler
+Ana düşünceyi destekleyen, açıklayan ve güçlendiren yan fikirlerdir.
 
-## Anlatım Biçimleri
-Dört temel anlatım biçimi vardır: Açıklama (bilgi verme), tartışma (bir görüşü çürütüp başka görüşü savunma), betimleme (gözde canlandırma) ve öyküleme (olayı yer, zaman, kişi belirterek anlatma).
+# Anlatım Biçimleri
+[kural] Dört temel biçim: **açıklama** (bilgi verme), **tartışma** (görüş çürütüp savunma), **betimleme** (gözde canlandırma), **öyküleme** (olayı yer-zaman-kişiyle anlatma).
+[örnek] "Anlatıcı olayı yer, zaman ve kişi belirterek anlatıyorsa" → öyküleme.
 
-## Paragrafın Yapısı
-Paragraf giriş, gelişme ve sonuç bölümlerinden oluşur. Giriş cümlesi bağımsızdır; kendinden önceki bir cümleye bağlanmaz, bu yüzden "bu, o, bundan dolayı, ayrıca" gibi ifadelerle başlamaz. Anlam akışını bozan, konu dışı cümle paragraftan çıkarılması gereken cümledir.`,
+# Paragrafın Yapısı
+Paragraf **giriş, gelişme, sonuç** bölümlerinden oluşur.
+[tuzak] **Giriş cümlesi bağımsızdır:** "bu, o, bundan dolayı, ayrıca" gibi ifadelerle başlamaz.
+[soru] "Paragraftan çıkarılması gereken cümle hangisidir?" → anlam akışını bozan, konu dışı cümle.`,
       tips: [
         {
           trap: `Konu ile ana düşünce karıştırılır.`,
@@ -417,20 +466,32 @@ Paragraf giriş, gelişme ve sonuç bölümlerinden oluşur. Giriş cümlesi ba�
         center: `Fiilimsiler`,
         branches: [
           {
-            label: `İsim-Fiil (-ma, -ış, -mak)`,
-            detail: `Fiile -ma/-me, -ış/-iş, -mak/-mek ekleri gelerek fiili isimleştirir. Örnek: koşmak, gülüş, bakma.`,
+            label: `İsim-Fiil`,
+            sections: [
+              { kind: "kural", content: `Ekleri: -ma/-me, -ış/-iş, -mak/-mek. Fiili isimleştirir.` },
+              { kind: "ornek", content: `koşmak, gülüş, bakma; "Yüzmeyi severim."` },
+              { kind: "tuzak", content: `-ma eki hem isim-fiil hem olumsuzluk eki olabilir; anlamına bak.` },
+            ],
           },
           {
-            label: `Sıfat-Fiil (-an, -dik, -ecek, -miş, -r, -ası, -maz)`,
-            detail: `Fiili sıfatlaştırır; kendinden sonraki ismi niteler. Örnek: akan su, okunacak kitap, pişmiş aş.`,
+            label: `Sıfat-Fiil`,
+            sections: [
+              { kind: "kural", content: `Ekleri: -an, -dik, -ecek, -miş, -r, -ası, -maz. İsmi niteler.` },
+              { kind: "ornek", content: `akan su, okunacak kitap, pişmiş aş.` },
+            ],
           },
           {
-            label: `Zarf-Fiil (-ip, -arak, -ınca, -ken, -dıkça, -madan)`,
-            detail: `Fiili zarflaştırır; eylemin durumunu/zamanını bildirir. Örnek: gülerek, eve gidince, koşa koşa.`,
+            label: `Zarf-Fiil`,
+            sections: [
+              { kind: "kural", content: `Ekleri: -ip, -arak, -ınca, -ken, -dıkça, -madan. Eylemin durumunu/zamanını bildirir.` },
+              { kind: "ornek", content: `gülerek, eve gidince, koşa koşa.` },
+            ],
           },
           {
             label: `Önemli Not`,
-            detail: `Fiilimsiler fiilden türer ama çekimli fiil değildir; cümlede yüklem olamaz, yan cümlecik kurar.`,
+            sections: [
+              { kind: "tuzak", content: `Fiilimsi çekimli fiil değildir; yüklem olamaz. "Koştu" fiilimsi değil, çekimli fiildir.` },
+            ],
           },
         ],
       },
@@ -452,17 +513,23 @@ Paragraf giriş, gelişme ve sonuç bölümlerinden oluşur. Giriş cümlesi ba�
           back: `Olamaz. Fiilimsi çekimli fiil değildir; cümlede isim, sıfat veya zarf görevi yapar.`,
         },
       ],
-      article: `## Fiilimsi Nedir?
-Fiilden türeyen ama çekimli fiil olmayan; cümlede isim, sıfat veya zarf görevinde kullanılan sözcüklere fiilimsi denir. Fiilimsiler yüklem olamaz, yan cümlecik kurar.
+      article: `# Fiilimsi Nedir?
+Fiilden türeyen ama **çekimli fiil olmayan**; cümlede isim, sıfat veya zarf görevinde kullanılan sözcüklerdir.
+[kural] Üç türü vardır: **isim-fiil**, **sıfat-fiil**, **zarf-fiil**. Fiilimsi yüklem olamaz, yan cümlecik kurar.
 
-## İsim-Fiil
-Fiile -ma/-me, -ış/-iş, -mak/-mek ekleri getirilerek oluşur ve fiili isimleştirir: "Yüzmeyi severim.", "Gülüşü çok güzel." Dikkat: -ma eki hem isim-fiil hem de olumsuzluk eki olabilir; anlamına bakılır.
+# İsim-Fiil
+Ekler: **-ma/-me, -ış/-iş, -mak/-mek**. Fiili isimleştirir.
+[örnek] "**Yüzmeyi** severim.", "**Gülüşü** çok güzel."
+[tuzak] -ma eki hem isim-fiil hem **olumsuzluk** eki olabilir; "Okuma kitabı" (isim-fiil) ≠ "gelme" (olumsuzluk). Anlama bak.
 
-## Sıfat-Fiil
-Fiile -an/-en, -dik, -ecek, -miş, -r, -ası, -maz ekleri getirilerek oluşur ve kendinden sonra gelen ismi niteler: "akan su", "okunacak kitap", "pişmiş aş".
+# Sıfat-Fiil
+Ekler: **-an, -dik, -ecek, -miş, -r, -ası, -maz**. Kendinden sonraki ismi niteler.
+[örnek] "**akan** su", "**okunacak** kitap", "**pişmiş** aş".
 
-## Zarf-Fiil
-Fiile -ip, -arak, -ınca, -ken, -dıkça, -madan gibi ekler getirilerek oluşur ve eylemin durumunu, zamanını bildirir: "Konuşarak yürüdü.", "Eve gidince aradı."`,
+# Zarf-Fiil
+Ekler: **-ip, -arak, -ınca, -ken, -dıkça, -madan**. Eylemin durumunu/zamanını bildirir.
+[örnek] "**Konuşarak** yürüdü.", "Eve **gidince** aradı."
+[soru] "Cümledeki fiilimsinin türü nedir?" → eke bak: -arak/-ince → zarf-fiil, -an/-ecek → sıfat-fiil, -mak/-ma → isim-fiil.`,
       tips: [
         {
           trap: `İsim-fiil eki -ma ile olumsuzluk eki -ma karıştırılır.`,
@@ -548,19 +615,29 @@ Fiile -ip, -arak, -ınca, -ken, -dıkça, -madan gibi ekler getirilerek oluşur 
         branches: [
           {
             label: `Temel Ögeler: Yüklem ve Özne`,
-            detail: `Yüklem: işi/oluşu bildiren ögedir (genelde sonda). Özne: işi yapan/olan ögedir ("Kim?", "Ne?").`,
+            sections: [
+              { kind: "kural", content: `Yüklem: işi/oluşu bildirir (genelde sonda). Özne: işi yapan ("Kim?", "Ne?").` },
+            ],
           },
           {
-            label: `Nesne (Belirtili / Belirtisiz)`,
-            detail: `Yüklemdeki işten etkilenen ögedir. "Neyi/kimi?" sorusu belirtili nesneyi, "ne?" sorusu belirtisiz nesneyi buldurur.`,
+            label: `Nesne`,
+            sections: [
+              { kind: "kural", content: `"Neyi/kimi?" → belirtili nesne; "ne?" → belirtisiz nesne.` },
+              { kind: "ornek", content: `"Kitabı okudu" → kitabı: belirtili nesne.` },
+            ],
           },
           {
             label: `Dolaylı Tümleç ve Zarf Tümleci`,
-            detail: `Dolaylı tümleç: "-e, -de, -den" yer-yön ("Nereye/nerede/nereden?"). Zarf tümleci: "Nasıl/ne zaman/niçin?" sorularına yanıt verir.`,
+            sections: [
+              { kind: "kural", content: `Dolaylı tümleç: "-e/-de/-den" (Nereye/nerede/nereden?). Zarf tümleci: Nasıl/ne zaman/niçin?` },
+              { kind: "tuzak", content: `"Okula gitti" → okula DOLAYLI tümleçtir; zarf tümleci değildir.` },
+            ],
           },
           {
             label: `Bulma Yöntemi`,
-            detail: `Önce yüklem bulunur; sonra yükleme sorular sorularak diğer ögeler bulunur.`,
+            sections: [
+              { kind: "ipucu", content: `Önce yüklem bulunur, sonra yükleme sorular sorulur.` },
+            ],
           },
         ],
       },
@@ -582,17 +659,20 @@ Fiile -ip, -arak, -ınca, -ken, -dıkça, -madan gibi ekler getirilerek oluşur 
           back: `Önce yüklem bulunur, sonra yükleme sorular sorulur.`,
         },
       ],
-      article: `## Temel Ögeler
-Yüklem, cümlede işi, oluşu veya durumu bildiren ögedir ve genellikle cümlenin sonunda bulunur. Özne ise işi yapan veya olan ögedir; yükleme "Kim?" ya da "Ne?" sorusu sorularak bulunur.
+      article: `# Temel Ögeler: Yüklem ve Özne
+[kural] **Yüklem:** işi/oluşu/durumu bildiren ögedir (genelde sonda). **Özne:** işi yapan/olan ögedir; yükleme "Kim?" ya da "Ne?" sorulur.
+[örnek] "Ahmet topu tekmeledi." → yüklem: tekmeledi, özne: Ahmet.
 
-## Nesne
-Öznenin yaptığı işten etkilenen ögedir. Belirtili nesne "neyi/kimi?" (Kitabı okudu), belirtisiz nesne "ne?" (Kitap okudu) sorusuyla bulunur.
+# Nesne
+Öznenin yaptığı işten etkilenen ögedir.
+[kural] "**neyi/kimi?**" → belirtili nesne (Kitabı okudu). "**ne?**" → belirtisiz nesne (Kitap okudu).
 
-## Dolaylı Tümleç ve Zarf Tümleci
-Dolaylı tümleç yükleme "-e, -de, -den" ekleriyle bağlanır; "Nereye, nerede, nereden?" sorularına yanıt verir (Okula gitti). Zarf tümleci ise eylemin nasıl, ne zaman, niçin yapıldığını bildirir (Dün geldi, hızlıca koştu).
+# Dolaylı Tümleç ve Zarf Tümleci
+[kural] **Dolaylı tümleç:** "-e, -de, -den" ekleriyle "Nereye/nerede/nereden?" sorularına yanıt verir. **Zarf tümleci:** "Nasıl/ne zaman/niçin?" sorularına yanıt verir.
+[tuzak] "Okula gitti" → "okula" **dolaylı tümleçtir** (yer-yön), zarf tümleci sanılmamalı.
 
-## Ögeleri Bulma
-Cümlenin ögelerini bulurken önce yüklem belirlenir. Daha sonra yükleme "Kim?", "Neyi?", "Nereye?", "Nasıl?" gibi sorular sorularak diğer ögeler bulunur.`,
+# Ögeleri Bulma
+[ipucu] Önce **yüklem** bulunur; sonra yükleme "Kim?", "Neyi?", "Nereye?", "Nasıl?" soruları sorularak diğer ögeler bulunur.`,
       tips: [
         {
           trap: `Özne ile nesne karıştırılır.`,
@@ -662,16 +742,24 @@ Cümlenin ögelerini bulurken önce yüklem belirlenir. Daha sonra yükleme "Kim
         center: `Fiilde Çatı`,
         branches: [
           {
-            label: `Özne-Yüklem İlişkisi (Etken-Edilgen)`,
-            detail: `Etken: öznesi belli (gerçek özne). Edilgen: işi yapan belli değil, fiil "-l/-n" eki alır; sözde özne bulunur (Cam kırıldı).`,
+            label: `Etken - Edilgen (Özne)`,
+            sections: [
+              { kind: "kural", content: `Etken: öznesi belli (gerçek özne). Edilgen: işi yapan belli değil, fiil "-l/-n" eki alır.` },
+              { kind: "ornek", content: `"Ali bahçeyi suladı" → etken. "Bahçe sulandı" → edilgen (sözde özne).` },
+            ],
           },
           {
-            label: `Nesne-Yüklem İlişkisi (Geçişli-Geçişsiz)`,
-            detail: `Geçişli: nesne alabilir ("neyi?" sorusuna yanıt verir). Geçişsiz: nesne almaz.`,
+            label: `Geçişli - Geçişsiz (Nesne)`,
+            sections: [
+              { kind: "kural", content: `Geçişli: nesne alabilir ("neyi?"). Geçişsiz: nesne almaz.` },
+              { kind: "ornek", content: `"Kitabı okudu" → geçişli. "Çocuk uyudu" → geçişsiz.` },
+            ],
           },
           {
             label: `Önemli Not`,
-            detail: `Çatı yalnızca fiil cümlelerinde aranır; yüklemi isim olan (isim) cümlelerinde çatı aranmaz.`,
+            sections: [
+              { kind: "tuzak", content: `Çatı yalnız fiil cümlelerinde aranır; "O çalışkandır" isim cümlesidir, çatı aranmaz.` },
+            ],
           },
         ],
       },
@@ -693,14 +781,19 @@ Cümlenin ögelerini bulurken önce yüklem belirlenir. Daha sonra yükleme "Kim
           back: `Edilgen cümlede, işi yapan belli olmadığından özne gibi görünen ögedir (Camlar silindi).`,
         },
       ],
-      article: `## Fiilde Çatı Nedir?
-Yüklemin özne ve nesneyle kurduğu ilişkiye çatı denir. Çatı yalnızca yüklemi çekimli fiil olan cümlelerde aranır; isim cümlelerinde çatı aranmaz.
+      article: `# Fiilde Çatı Nedir?
+Yüklemin özne ve nesneyle kurduğu ilişkidir.
+[tuzak] Çatı **yalnız fiil cümlelerinde** aranır; "O çok çalışkandır" isim cümlesidir, çatı aranmaz.
 
-## Özne-Yüklem İlişkisi (Etken-Edilgen)
-Etken çatılı cümlede işi yapan (gerçek özne) bellidir: "Ali bahçeyi suladı." Edilgen çatılı cümlede ise işi yapan belli değildir; fiil "-l" veya "-n" eki alır ve cümlede sözde özne bulunur: "Bahçe sulandı."
+# Özne-Yüklem İlişkisi (Etken - Edilgen)
+[kural] **Etken:** işi yapan (gerçek özne) bellidir. **Edilgen:** işi yapan belli değildir; fiil **-l / -n** eki alır, cümlede **sözde özne** bulunur.
+[örnek] "Ali bahçeyi suladı" → etken. "Bahçe sulandı" → edilgen.
+[tuzak] "Cam kırıldı" cümlesinde "cam" **sözde öznedir** (gerçek özne değil).
 
-## Nesne-Yüklem İlişkisi (Geçişli-Geçişsiz)
-Geçişli fiiller nesne alabilir; yükleme "neyi?" sorusu sorulabilir: "Kitabı okudu." Geçişsiz fiiller nesne almaz: "Çocuk uyudu."`,
+# Nesne-Yüklem İlişkisi (Geçişli - Geçişsiz)
+[kural] **Geçişli:** nesne alabilir, yükleme "neyi?" sorulabilir. **Geçişsiz:** nesne almaz.
+[örnek] "Kitabı okudu" → geçişli. "Çocuk uyudu" → geçişsiz.
+[soru] "Aşağıdaki cümlenin çatısı nedir?" → önce fiil cümlesi mi bak, sonra özne (etken/edilgen) ve nesne (geçişli/geçişsiz) ilişkisine bak.`,
       tips: [
         {
           trap: `İsim cümlesinde çatı aranır sanılır.`,
@@ -777,20 +870,36 @@ Geçişli fiiller nesne alabilir; yükleme "neyi?" sorusu sorulabilir: "Kitabı 
         center: `Yazım Kuralları`,
         branches: [
           {
-            label: `Büyük Harflerin Kullanımı`,
-            detail: `Cümle başı, özel adlar ve başlıklardaki kelimeler büyük harfle başlar.`,
+            label: `Büyük Harf`,
+            sections: [
+              { kind: "kural", content: `Cümle başı, özel adlar ve başlıklardaki kelimeler büyük harfle başlar.` },
+            ],
           },
           {
-            label: `"de/da" Bağlacı ve Eki`,
-            detail: `"Ve, da" anlamı veren bağlaç "de/da" AYRI yazılır. Bulunma durum eki "-de/-da" ise bitişik yazılır (evde).`,
+            label: `"de/da"`,
+            sections: [
+              { kind: "kural", content: `"ve, dahi" anlamı veren bağlaç "de/da" AYRI; bulunma eki "-de/-da" BİTİŞİK yazılır.` },
+              { kind: "tuzak", content: `"Ben de geldim" (ayrı, bağlaç). "Çantamda" (bitişik, ek). Bağlaç çıkınca cümle bozulmaz.` },
+            ],
           },
           {
-            label: `"ki" Bağlacı ve Eki`,
-            detail: `Bağlaç "ki" ayrı yazılır (Duydum ki...). İlgi/aitlik eki "-ki" bitişik yazılır (benimki, akşamki).`,
+            label: `"ki"`,
+            sections: [
+              { kind: "kural", content: `Bağlaç "ki" AYRI (Duydum ki...); aitlik/ilgi eki "-ki" BİTİŞİK (benimki, akşamki).` },
+            ],
           },
           {
             label: `"mi" Soru Eki`,
-            detail: `Soru eki "mi" her zaman AYRI yazılır; kendinden önceki eke ses uyumu sağlar (Geldin mi?).`,
+            sections: [
+              { kind: "kural", content: `Soru eki "mi" her zaman AYRI yazılır: "Geldin mi?"` },
+              { kind: "tuzak", content: `"Geldinmi" yanlış; doğrusu "Geldin mi?"` },
+            ],
+          },
+          {
+            label: `Özel Ada Gelen Ekler`,
+            sections: [
+              { kind: "tuzak", content: `Çekim eki kesme ile ayrılır (Ankara'da); YAPIM eki ayrılmaz (Türkçe, Avrupalı).` },
+            ],
           },
         ],
       },
@@ -812,17 +921,21 @@ Geçişli fiiller nesne alabilir; yükleme "neyi?" sorusu sorulabilir: "Kitabı 
           back: `Hayır. Özel adlara gelen yapım ekleri ayrılmaz: "Türkçe", "Avrupalı".`,
         },
       ],
-      article: `## "de/da" Bağlacı ve Eki
-"Ve, dahi, da" anlamı veren bağlaç "de/da" ayrı yazılır: "Ben de geldim." Bulunma durumu eki "-de/-da" ise bitişik yazılır: "Kalemim çantamda." Bağlaç olan "de/da" cümleden çıkarıldığında cümle anlamlı kalır.
+      article: `# "de / da" Bağlacı ve Eki
+[kural] "ve, dahi" anlamı veren bağlaç **"de/da" AYRI**; bulunma durumu eki **"-de/-da" BİTİŞİK** yazılır.
+[örnek] "Ben **de** geldim" (bağlaç, ayrı). "Kalemim çantam**da**" (ek, bitişik).
+[ipucu] Bağlaç olan "de/da" cümleden çıkarıldığında cümle anlamlı kalır; ek çıkarılamaz.
 
-## "ki" Bağlacı ve Eki
-Bağlaç olan "ki" ayrı yazılır: "Duydum ki taşınmışsınız." İlgi/aitlik eki olan "-ki" ise bitişik yazılır: "benimki", "akşamki".
+# "ki" Bağlacı ve Eki
+[kural] Bağlaç **"ki" AYRI** (Duydum **ki** taşınmışsınız); aitlik/ilgi eki **"-ki" BİTİŞİK** (benim**ki**, akşam**ki**).
 
-## "mi" Soru Eki
-Soru eki "mi" her zaman ayrı yazılır ve kendinden önceki sözcüğe ses uyumu sağlar: "Geldin mi?", "Okudun mu?"
+# "mi" Soru Eki
+[kural] Soru eki **"mi" her zaman AYRI** yazılır ve ünlü uyumuna girer: "Geldin **mi**?", "Okudun **mu**?"
+[tuzak] "Geldinmi" yanlıştır; doğrusu "Geldin mi?"
 
-## Özel Adlara Gelen Ekler
-Özel adlara gelen çekim ekleri kesme işaretiyle ayrılır: "Ankara'da", "Ali'nin". Ancak yapım ekleri kesme işaretiyle ayrılmaz: "Türkçe", "Avrupalı", "İstanbullu".`,
+# Özel Adlara Gelen Ekler
+[kural] Özel adlara gelen **çekim ekleri** kesme işaretiyle ayrılır: "Ankara'**da**", "Ali'**nin**".
+[tuzak] **Yapım ekleri** kesme ile **ayrılmaz**: "Türk'çe" değil **"Türkçe"**; "Avrupa'lı" değil **"Avrupalı"**.`,
       tips: [
         {
           trap: `Bağlaç "de/da" ile bulunma eki "-de" karıştırılır.`,
@@ -917,19 +1030,29 @@ Soru eki "mi" her zaman ayrı yazılır ve kendinden önceki sözcüğe ses uyum
         branches: [
           {
             label: `Nokta, Virgül, Noktalı Virgül`,
-            detail: `Nokta cümle sonunda kullanılır. Virgül eş görevli ögeleri/sıralı cümleleri ayırır. Noktalı virgül (;) virgülle ayrılmış grupları birbirinden ayırır.`,
+            sections: [
+              { kind: "kural", content: `Nokta cümle sonunda. Virgül eş görevli ögeleri ayırır. Noktalı virgül (;) virgülle ayrılmış grupları ayırır.` },
+              { kind: "ornek", content: `"Ali, Veli ve Ayşe geldi."` },
+            ],
           },
           {
             label: `İki Nokta ve Üç Nokta`,
-            detail: `İki nokta (:) açıklama, örnek veya alıntı öncesi kullanılır. Üç nokta (...) tamamlanmamış/sürdürülen ifadelerde kullanılır.`,
+            sections: [
+              { kind: "kural", content: `İki nokta (:) açıklama/örnek/alıntı öncesi. Üç nokta (...) tamamlanmamış/sürdürülen ifadelerde.` },
+            ],
           },
           {
             label: `Soru, Ünlem, Tırnak`,
-            detail: `Soru işareti (?) soru cümlesinde; ünlem (!) seslenme/heyecanda; tırnak ("") alıntı ve özel vurguda kullanılır.`,
+            sections: [
+              { kind: "kural", content: `Soru (?) soru cümlesinde; ünlem (!) seslenme/heyecanda; tırnak ("") alıntı ve vurguda.` },
+            ],
           },
           {
             label: `Kesme İşareti (')`,
-            detail: `Özel adlara gelen ÇEKİM eklerini ayırır (Ali'ye, İstanbul'da). Yapım eklerini ayırmaz (Türkçe, Antalyalı).`,
+            sections: [
+              { kind: "kural", content: `Özel adlara gelen ÇEKİM eklerini ayırır (Ali'ye, İstanbul'da).` },
+              { kind: "tuzak", content: `Yapım eklerini ayırmaz: "Türk'çe" değil "Türkçe"; "Antalya'lı" değil "Antalyalı".` },
+            ],
           },
         ],
       },
@@ -951,17 +1074,19 @@ Soru eki "mi" her zaman ayrı yazılır ve kendinden önceki sözcüğe ses uyum
           back: `Tamamlanmamış veya sürdürülen ifadeleri göstermek için.`,
         },
       ],
-      article: `## Nokta, Virgül ve Noktalı Virgül
-Nokta tamamlanmış cümlelerin sonunda kullanılır. Virgül, eş görevli sözcükleri ve sıralı cümleleri ayırır: "Ali, Veli ve Ayşe geldi." Noktalı virgül (;) ise virgülle ayrılmış öbekleri birbirinden ayırır.
+      article: `# Nokta, Virgül ve Noktalı Virgül
+[kural] **Nokta** tamamlanmış cümle sonunda. **Virgül** eş görevli sözcükleri/sıralı cümleleri ayırır. **Noktalı virgül (;)** virgülle ayrılmış öbekleri birbirinden ayırır.
+[örnek] "Ali, Veli ve Ayşe geldi."
 
-## İki Nokta ve Üç Nokta
-İki nokta (:) bir açıklama yapılacağı, örnek verileceği ya da alıntı aktarılacağı zaman kullanılır. Üç nokta (...) tamamlanmamış veya sürdürülen ifadeleri belirtir.
+# İki Nokta ve Üç Nokta
+[kural] **İki nokta (:)** açıklama, örnek veya alıntı öncesi kullanılır. **Üç nokta (...)** tamamlanmamış veya sürdürülen ifadeleri gösterir.
 
-## Soru, Ünlem ve Tırnak
-Soru işareti (?) soru bildiren cümlelerin sonuna konur. Ünlem (!) seslenme, heyecan ve şaşırma bildirir. Tırnak işareti ("") alıntıları ve özel olarak vurgulanan sözleri gösterir.
+# Soru, Ünlem ve Tırnak
+[kural] **Soru (?)** soru cümlesinin sonunda; **ünlem (!)** seslenme/heyecan/şaşırmada; **tırnak ("")** alıntı ve vurguda kullanılır.
 
-## Kesme İşareti
-Kesme işareti, özel adlara gelen çekim eklerini ayırmak için kullanılır: "Atatürk'ün", "İstanbul'a". Ancak özel adlara gelen yapım ekleri kesme işaretiyle ayrılmaz: "Türkçe", "Antalyalı".`,
+# Kesme İşareti
+[kural] Özel adlara gelen **çekim eklerini** ayırır: "Atatürk'**ün**", "İstanbul'**a**".
+[tuzak] **Yapım eklerini ayırmaz:** "Türk'çe" değil **"Türkçe"**; "Antalya'lı" değil **"Antalyalı"**. (LGS'nin en sık tuzağı!)`,
       tips: [
         {
           trap: `Kesme işaretinin yapım ekinden sonra konacağı sanılır.`,
@@ -1057,20 +1182,31 @@ Kesme işareti, özel adlara gelen çekim eklerini ayırmak için kullanılır: 
         center: `Anlatım Bozuklukları`,
         branches: [
           {
-            label: `Gereksiz Sözcük Kullanımı`,
-            detail: `Anlamı zaten bir başka sözcükte bulunan kelimenin gereksiz tekrarı. Örnek: "yaklaşık 10 civarında" (yaklaşık ve civarında aynı anlamda).`,
+            label: `Gereksiz Sözcük`,
+            sections: [
+              { kind: "tanim", content: `Anlamı zaten başka sözcükte olan kelimenin gereksiz tekrarı.` },
+              { kind: "ornek", content: `"yaklaşık 10 civarında" → "yaklaşık" ve "civarında" aynı anlamda; biri fazla.` },
+            ],
           },
           {
-            label: `Sözcüğün Yanlış Anlamda Kullanımı`,
-            detail: `Yakın anlamlı sözcüklerin yanlış yerde kullanımı. Örnek: "azımsamak" ile "küçümsemek" karışması.`,
+            label: `Yanlış Sözcük`,
+            sections: [
+              { kind: "tanim", content: `Yakın anlamlı sözcüklerin yanlış yerde kullanımı.` },
+              { kind: "ornek", content: `"azımsamak" ile "küçümsemek" karıştırılır.` },
+            ],
           },
           {
             label: `Özne-Yüklem Uyumsuzluğu`,
-            detail: `Tekil-çoğul veya olumlu-olumsuz uyum hataları. Örnek: "Öğrenciler ödevini yaptı" yerine "ödevlerini".`,
+            sections: [
+              { kind: "kural", content: `Tekil-çoğul ve olumlu-olumsuz uyumu sağlanmalı.` },
+              { kind: "ornek", content: `"Öğrenciler ödevini yaptı" → "ödevlerini".` },
+            ],
           },
           {
-            label: `Mantık ve Sıralama Hataları`,
-            detail: `Birbiriyle çelişen ya da yanlış sıralanmış ifadeler. Örnek: "Kesinlikle belki gelirim."`,
+            label: `Mantık / Çelişki`,
+            sections: [
+              { kind: "tuzak", content: `Çelişen ifadeler: "Kesinlikle belki gelirim" (kesinlik + olasılık bir arada).` },
+            ],
           },
         ],
       },
@@ -1092,17 +1228,23 @@ Kesme işareti, özel adlara gelen çekim eklerini ayırmak için kullanılır: 
           back: `Gereksiz/yanlış sözcük çıkarılır, uyum ve mantık sağlanır.`,
         },
       ],
-      article: `## Gereksiz Sözcük Kullanımı
-Bir cümlede anlamı zaten başka bir sözcükte bulunan kelimenin tekrar edilmesi anlatım bozukluğuna yol açar: "Sınıfa yaklaşık 30 civarında öğrenci geldi." Burada "yaklaşık" ve "civarında" aynı anlamı taşıdığı için biri gereksizdir.
+      article: `# Gereksiz Sözcük Kullanımı
+Anlamı zaten başka bir sözcükte bulunan kelimenin tekrar edilmesidir.
+[örnek] "Sınıfa **yaklaşık** 30 **civarında** öğrenci geldi." → "yaklaşık" ve "civarında" aynı anlamda; biri gereksizdir.
+[tuzak] "**En sonunda nihayet** bitti", "güzel bir armağan **hediye** etti" gibi eş anlamlı tekrarlar bozukluktur.
 
-## Sözcüğün Yanlış Anlamda Kullanımı
-Yakın anlamlı sözcüklerin birbirinin yerine yanlış kullanılması bozukluğa neden olur (örnek: "azımsamak" ve "küçümsemek").
+# Sözcüğün Yanlış Anlamda Kullanımı
+Yakın anlamlı sözcüklerin birbirinin yerine yanlış kullanılmasıdır.
+[örnek] "azımsamak" (az bulmak) ile "küçümsemek" (değersiz görmek) karıştırılır.
 
-## Özne-Yüklem Uyumsuzluğu
-Öznenin tekil-çoğul olması ya da olumlu-olumsuz anlam, yüklemle uyumlu olmalıdır. "Ne yazık ki sınavı kazandı." cümlesinde olumsuz duygu bildiren ifadeyle olumlu sonuç çelişir.
+# Özne-Yüklem Uyumsuzluğu
+[kural] Öznenin tekil-çoğul ve olumlu-olumsuz durumu yüklemle uyumlu olmalıdır.
+[örnek] "Öğrenciler ödev**ini** yaptı" → doğrusu "ödev**lerini** yaptı".
+[tuzak] "**Ne yazık ki** sınavı kazandı" → olumsuz duygu (ne yazık ki) ile olumlu sonuç (kazandı) çelişir.
 
-## Mantık ve Sıralama Hataları
-Birbiriyle çelişen ifadeler kullanmak mantık hatasına yol açar: "Kesinlikle belki gelirim." Burada kesinlik ve olasılık bir arada kullanıldığı için cümle çelişkilidir.`,
+# Mantık ve Sıralama Hataları
+[tuzak] Çelişen ifadeler bozukluk oluşturur: "**Kesinlikle belki** gelirim" (kesinlik + olasılık bir arada).
+[soru] "Aşağıdaki cümlelerin hangisinde anlatım bozukluğu vardır?" → gereksiz tekrar, yanlış sözcük, uyumsuzluk veya çelişki ara.`,
       tips: [
         {
           trap: `Gereksiz sözcük fark edilmez.`,
