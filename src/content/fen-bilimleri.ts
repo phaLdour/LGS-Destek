@@ -654,23 +654,35 @@ Madde ısı aldığında hâl değiştirebilir (erime, buharlaşma); ısı verdi
         branches: [
           {
             label: "Kaldıraç",
-            detail:
-              "Bir destek (dayanak) noktası etrafında dönen çubuktur. Yük, destek ve kuvvetin konumuna göre kuvvetten kazanç sağlayabilir. Örnek: tahterevalli, el arabası, maşa.",
+            sections: [
+              { kind: "tanim", content: "Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Tahterevalli, el arabası ve maşa örnektir." },
+              { kind: "formul", content: "Denge kuralı: Yük × Yük kolu = Kuvvet × Kuvvet kolu" },
+              { kind: "ornek", content: "40 N yük, yük koluna 1 m; kuvvet kolu 4 m ise: 40 × 1 = F × 4 → F = 10 N." },
+            ],
           },
           {
             label: "Makara",
-            detail:
-              "Sabit makara yalnız yön değiştirir, kuvvetten kazandırmaz. Hareketli makara uygulanan kuvveti yarıya indirerek kuvvetten kazanç sağlar.",
+            sections: [
+              { kind: "tanim", content: "Sabit makara yalnız kuvvetin yönünü değiştirir. Hareketli makara kuvvetten kazanç sağlar." },
+              { kind: "formul", content: "Hareketli makara: Kuvvet = Yük ÷ 2 (çekilen ip uzunluğu 2 katına çıkar)." },
+              { kind: "tuzak", content: "'Sabit makara kuvvetten kazanç sağlar' çeldiricisi yanlıştır; sabit makara yalnız yön değiştirir." },
+            ],
           },
           {
             label: "Eğik Düzlem",
-            detail:
-              "Yükü yukarı çıkarmak için gereken kuvveti azaltır ama alınan yol uzar. Örnek: rampa, vida, kama (pahalı).",
+            sections: [
+              { kind: "tanim", content: "Yükü bir yüksekliğe çıkarmak için kullanılan eğimli yüzeydir. Rampa, vida ve kama örnektir." },
+              { kind: "formul", content: "Kuvvet × eğik düzlem uzunluğu = Yük × yükseklik  →  F = (G × h) ÷ ℓ" },
+              { kind: "ornek", content: "200 N yükü 1 m yüksekliğe 4 m'lik rampayla çıkaralım: F = (200 × 1) ÷ 4 = 50 N." },
+              { kind: "ipucu", content: "Rampa uzadıkça (eğim azaldıkça) gereken kuvvet azalır, ama yol uzar." },
+            ],
           },
           {
-            label: "Çıkrık ve Dişliler",
-            detail:
-              "Çıkrık kuyudan su çekmede kullanılır. Dişliler ve kasnaklar dönme hareketini iletir; diş sayısına göre hız ve kuvvet değişir.",
+            label: "Genel Kural",
+            sections: [
+              { kind: "kural", content: "Hiçbir basit makine işten kazanç sağlamaz." },
+              { kind: "tuzak", content: "Kuvvetten kazanç sağlanırsa aynı oranda yoldan kaybedilir; 'işten kazanç' tuzaktır." },
+            ],
           },
         ],
       },
@@ -696,20 +708,31 @@ Madde ısı aldığında hâl değiştirebilir (erime, buharlaşma); ısı verdi
           back: "Tahterevalli, el arabası, maşa, kürek.",
         },
       ],
-      article: `## Basit Makineler Nedir?
-Basit makineler, iş yaparken bize kolaylık sağlayan araçlardır. Kuvvetten, yoldan veya yönden kazanç sağlayabilirler. Ancak hiçbir basit makine işten kazanç sağlamaz: kuvvetten kazanç sağlanırsa alınan yol uzar.
+      article: `# Basit Makineler Nedir?
+Basit makineler işimizi kolaylaştıran araçlardır. **Kuvvetten**, **yoldan** veya **yönden** kazanç sağlayabilirler.
+[kural] Hiçbir basit makine işten kazanç sağlamaz. Kuvvetten kazanç sağlanırsa aynı oranda yoldan kaybedilir.
+[tuzak] "İşten kazanç sağlayan basit makine" ifadesi her zaman yanlıştır; bu klasik bir LGS çeldiricisidir.
 
-## Kaldıraç
-Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Yük, destek ve kuvvetin konumuna göre kuvvetten kazanç sağlayabilir. Tahterevalli, el arabası, maşa ve kürek kaldıraca örnektir.
+# Kaldıraç
+Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Tahterevalli, el arabası ve maşa örnektir.
+[formül] Denge kuralı: **Yük × Yük kolu = Kuvvet × Kuvvet kolu**
+[örnek] 40 N'luk yük, yük koluna 1 m uzaklıkta; kuvvet kolu 4 m ise: 40 × 1 = F × 4 → **F = 10 N**. Yani 40 N'luk yükü yalnız 10 N ile kaldırırız.
+[soru] Genelde "sistem dengede ise uygulanan kuvvet kaç N'dur?" diye sorulur. Kol uzunlukları ile kuvvetleri çapraz çarpıp eşitlersin.
 
-## Makara
-Sabit makara yere ya da duvara sabitlenmiştir; yalnızca kuvvetin yönünü değiştirir, kuvvetten kazanç sağlamaz. Hareketli makara yükle birlikte hareket eder ve uygulanan kuvveti yarıya indirerek kuvvetten kazanç sağlar.
+# Makara
+- **Sabit makara:** Yalnız kuvvetin yönünü değiştirir; kuvvetten kazanç sağlamaz, uygulanan kuvvet yüke eşittir.
+- **Hareketli makara:** Kuvvetten kazanç sağlar.
+[formül] Hareketli makara: **Kuvvet = Yük ÷ 2** (ancak çekilen ip uzunluğu 2 katına çıkar)
+[tuzak] "Sabit makara kuvvetten kazanç sağlar" çeldiricisi yanlıştır.
 
-## Eğik Düzlem
-Bir yükü belli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeydir. Gereken kuvveti azaltır ama alınan yol uzar. Rampalar, vida ve kama (pahalı) eğik düzlem uygulamalarıdır.
+# Eğik Düzlem
+Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeydir. Gereken kuvveti azaltır ama alınan yol uzar. Rampa, vida ve kama örnektir.
+[formül] **Kuvvet × eğik düzlem uzunluğu = Yük × yükseklik**  →  **F = (G × h) ÷ ℓ**
+[örnek] 200 N'luk yükü 1 m yüksekliğe, 4 m uzunluğundaki rampayla çıkaralım: F = (200 × 1) ÷ 4 = **50 N**.
+[ipucu] Rampa ne kadar uzunsa (eğim azaldıkça) gereken kuvvet o kadar azalır.
 
-## Çıkrık ve Dişliler
-Çıkrık, kuyudan su çekmede kullanılan bir araçtır. Dişliler ve kasnaklar ise dönme hareketini bir yerden başka yere iletir; diş sayısına göre hız ve kuvvet değişir.`,
+# Çıkrık ve Dişliler
+Çıkrık, kuyudan su çekmekte kullanılan bir araçtır. Dişliler ve kasnaklar dönme hareketini iletir; birbirine geçen dişlilerde diş sayısı çok olan dişli daha yavaş ama daha güçlü döner.`,
       tips: [
         {
           trap: "Basit makinelerin işten kazanç sağladığı sanılır.",

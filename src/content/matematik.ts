@@ -73,10 +73,37 @@ EBOB (en büyük ortak bölen), sayıların ortak bölenlerinin en büyüğüdü
       mindMap: {
         center: `Üslü İfadeler`,
         branches: [
-          { label: `Taban ve Üs`, detail: `aⁿ ifadesinde a tabandır, n üstür. 2³ = 2·2·2 = 8.` },
-          { label: `Çarpma ve Bölme Kuralları`, detail: `Aynı tabanda çarpmada üsler toplanır (aᵐ·aⁿ = aᵐ⁺ⁿ); bölmede üsler çıkarılır (aᵐ/aⁿ = aᵐ⁻ⁿ).` },
-          { label: `Sıfır ve Negatif Üs`, detail: `Sıfırdan farklı her sayının 0. kuvveti 1'dir (a⁰=1). Negatif üs: a⁻ⁿ = 1/aⁿ.` },
-          { label: `Üssün Üssü`, detail: `(aᵐ)ⁿ = aᵐ·ⁿ. Örnek: (2³)² = 2⁶ = 64.` },
+          {
+            label: `Taban ve Üs`,
+            sections: [
+              { kind: "tanim", content: "aⁿ ifadesinde a taban, n üstür; a'nın n kez çarpımıdır." },
+              { kind: "ornek", content: "2³ = 2 × 2 × 2 = 8." },
+            ],
+          },
+          {
+            label: `Çarpma ve Bölme`,
+            sections: [
+              { kind: "formul", content: "aᵐ · aⁿ = aᵐ⁺ⁿ   ve   aᵐ ÷ aⁿ = aᵐ⁻ⁿ" },
+              { kind: "ornek", content: "2³ · 2² = 2⁵ = 32   •   2⁶ ÷ 2² = 2⁴ = 16" },
+              { kind: "tuzak", content: "Çarpmada üsler çarpılmaz, TOPLANIR: 2³·2² = 2⁵ (2⁶ değil)." },
+            ],
+          },
+          {
+            label: `Sıfır ve Negatif Üs`,
+            sections: [
+              { kind: "formul", content: "a⁰ = 1 (a ≠ 0)   ve   a⁻ⁿ = 1 ÷ aⁿ" },
+              { kind: "ornek", content: "5⁰ = 1   •   3⁻² = 1/9" },
+              { kind: "tuzak", content: "a⁰ ifadesi 0 değil, 1'dir." },
+            ],
+          },
+          {
+            label: `Üssün Üssü ve Negatif Taban`,
+            sections: [
+              { kind: "formul", content: "(aᵐ)ⁿ = aᵐ·ⁿ" },
+              { kind: "ornek", content: "(2³)² = 2⁶ = 64" },
+              { kind: "istisna", content: "Negatif tabanın çift kuvveti pozitif, tek kuvveti negatiftir: (−2)⁴ = 16, (−2)³ = −8." },
+            ],
+          },
         ],
       },
       cards: [
@@ -86,14 +113,25 @@ EBOB (en büyük ortak bölen), sayıların ortak bölenlerinin en büyüğüdü
         { front: `(aᵐ)ⁿ kaçtır?`, back: `aᵐ·ⁿ (üsler çarpılır).` },
         { front: `Negatif tabanın çift kuvveti?`, back: `Pozitiftir: (-2)⁴ = 16.` },
       ],
-      article: `## Üslü İfade Nedir?
-aⁿ ifadesinde a tabandır, n ise üstür ve a'nın kendisiyle n kez çarpıldığını gösterir: 2³ = 2·2·2 = 8.
+      article: `# Üslü İfade Nedir?
+**aⁿ** ifadesinde **a taban**, **n üs**tür ve a'nın kendisiyle n kez çarpıldığını gösterir.
+[örnek] 2³ = 2 × 2 × 2 = 8.
 
-## Üs Kuralları
-Aynı tabanlı sayılarda çarpmada üsler toplanır: aᵐ·aⁿ = aᵐ⁺ⁿ. Bölmede üsler çıkarılır: aᵐ/aⁿ = aᵐ⁻ⁿ. Üssün üssü alınırken üsler çarpılır: (aᵐ)ⁿ = aᵐ·ⁿ.
+# Üs Kuralları (Çarpma ve Bölme)
+[formül] Aynı tabanda çarpma: **aᵐ · aⁿ = aᵐ⁺ⁿ**  •  Bölme: **aᵐ ÷ aⁿ = aᵐ⁻ⁿ**
+[örnek] 2³ · 2² = 2⁵ = 32  •  2⁶ ÷ 2² = 2⁴ = 16
+[tuzak] Çarpmada üsler çarpılmaz, **toplanır**: 2³·2² = 2⁵ (2⁶ değil!).
 
-## Sıfır ve Negatif Üs
-Sıfırdan farklı her sayının sıfırıncı kuvveti 1'dir: a⁰ = 1. Negatif üslü ifade ise paydaya yazılır: a⁻ⁿ = 1/aⁿ. Negatif bir tabanın çift kuvveti pozitif, tek kuvveti negatiftir.`,
+# Sıfır ve Negatif Üs
+[formül] **a⁰ = 1** (a ≠ 0)  •  **a⁻ⁿ = 1 ÷ aⁿ**
+[örnek] 5⁰ = 1  •  3⁻² = 1/3² = 1/9
+[tuzak] a⁰ ifadesi 0 değil, **1**'dir.
+
+# Üssün Üssü ve Negatif Taban
+[formül] **(aᵐ)ⁿ = aᵐ·ⁿ**
+[örnek] (2³)² = 2⁶ = 64
+[istisna] Negatif tabanın **çift** kuvveti pozitif, **tek** kuvveti negatiftir: (−2)⁴ = 16 ama (−2)³ = −8.
+[soru] LGS'de "2³·2² kaça eşittir?" gibi sorularda kuralı (üsleri topla) doğru uygulaman yeterli.`,
       tips: [
         { trap: `a⁰ ifadesinin 0 olduğu sanılır.`, wrong: `5⁰ = 0.`, correct: `Sıfırdan farklı her sayının sıfırıncı kuvveti 1'dir: 5⁰ = 1.` },
         { trap: `Çarpmada üsler çarpılır sanılır.`, wrong: `2³ · 2² = 2⁶.`, correct: `Aynı tabanda çarpmada üsler TOPLANIR: 2³·2² = 2⁵ = 32.` },

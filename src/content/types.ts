@@ -5,8 +5,27 @@ export type Flashcard = {
 
 export type MindMapBranch = {
   label: string;
-  /** Dala tıklayınca açılan kısa özet. Boşsa dal açılmaz. */
+  /** Eski basit özet (geriye dönük). sections verilmezse bu gösterilir. */
   detail?: string;
+  /** Yeni: dala basınca çıkan kategorili alt kartlar (Formül, Örnek, Tuzak...). */
+  sections?: MindMapSection[];
+};
+
+/** Konu haritası alt kartı türleri (her birinin rengi/ikonu farklıdır). */
+export type MindMapSectionKind =
+  | "tanim"
+  | "kural"
+  | "formul"
+  | "ornek"
+  | "tuzak"
+  | "istisna"
+  | "ipucu";
+
+export type MindMapSection = {
+  kind: MindMapSectionKind;
+  /** İsteğe bağlı kısa başlık (yoksa türün varsayılan adı kullanılır). */
+  title?: string;
+  content: string;
 };
 
 export type MindMap = {
