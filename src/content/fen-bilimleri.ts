@@ -502,7 +502,7 @@ Günlük hayat örnekleri: pipetle içecek içilmesi, vantuzlu askıların duvar
       id: "madde-ve-endustri",
       name: "Madde ve Endüstri",
       summary: "Periyodik sistem, kimyasal tepkimeler, asit-baz.",
-      youtubeId: "",
+      youtubeId: "g85NYUICYt8",
       mindMap: {
         center: "Madde ve Endüstri",
         branches: [
@@ -648,7 +648,7 @@ Madde ısı aldığında hâl değiştirebilir (erime, buharlaşma); ısı verdi
       id: "basit-makineler",
       name: "Basit Makineler",
       summary: "Kaldıraç, makara, eğik düzlem ve çıkrık.",
-      youtubeId: "",
+      youtubeId: "Cb5DCS42glU",
       mindMap: {
         center: "Basit Makineler",
         branches: [
