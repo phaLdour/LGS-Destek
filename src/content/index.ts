@@ -4,6 +4,7 @@ import { TURKCE } from "./turkce";
 import { INKILAP } from "./inkilap";
 import { MATEMATIK } from "./matematik";
 import { DIN } from "./din";
+import { INGILIZCE } from "./ingilizce";
 
 const CONTENT: Record<string, SubjectContent> = {
   [FEN_BILIMLERI.slug]: FEN_BILIMLERI,
@@ -11,6 +12,7 @@ const CONTENT: Record<string, SubjectContent> = {
   [INKILAP.slug]: INKILAP,
   [MATEMATIK.slug]: MATEMATIK,
   [DIN.slug]: DIN,
+  [INGILIZCE.slug]: INGILIZCE,
 };
 
 /** İçeriği olan ders varsa döner, yoksa null (ders sayfası "yakında" gösterir). */
