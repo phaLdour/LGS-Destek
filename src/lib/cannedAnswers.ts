@@ -30,9 +30,14 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** Tek kelime ise tam token eşleşmesi, çok kelimeyse alt dize eşleşmesi ister. */
+/**
+ * Eşleşme: çok kelimeli ifade veya uzun (>=5 harf) kelime alt dize aranır
+ * (ekli hâlleri de yakalar: "üçgenin", "karekökü"). Kısa kelimeler (ph, gen,
+ * dna gibi) yanlış eşleşmeyi önlemek için tam token olarak aranır.
+ */
 function itemMatches(input: string, tokens: string[], item: string): boolean {
   if (item.includes(" ")) return input.includes(item);
+  if (item.length >= 5) return input.includes(item);
   return tokens.includes(item);
 }
 
@@ -487,6 +492,79 @@ const CONCEPTS: Concept[] = [
     answer:
       "Atatürk 10 Kasım 1938'de Dolmabahçe Sarayı'nda vefat etti. Yerine İsmet İnönü cumhurbaşkanı oldu.",
     topicRoute: "/ders/inkilap/ataturkun-olumu-ve-sonrasi",
+  },
+  // ---------- Matematik ----------
+  {
+    all: ["ebob"],
+    answer:
+      "EBOB (en büyük ortak bölen), iki ya da daha fazla sayının ortak bölenlerinin en büyüğüdür; ortak asal çarpanların en küçük üslüleri çarpılarak bulunur.",
+    topicRoute: "/ders/matematik/carpanlar-ve-katlar",
+  },
+  {
+    all: ["ekok"],
+    answer:
+      "EKOK (en küçük ortak kat), sayıların ortak katlarının en küçüğüdür; tüm asal çarpanların en büyük üslüleri çarpılarak bulunur.",
+    topicRoute: "/ders/matematik/carpanlar-ve-katlar",
+  },
+  {
+    all: ["asal"],
+    answer:
+      "Asal sayı, yalnızca 1'e ve kendisine bölünebilen 1'den büyük sayıdır (2, 3, 5, 7, 11...). En küçük asal sayı 2'dir.",
+    topicRoute: "/ders/matematik/carpanlar-ve-katlar",
+  },
+  {
+    all: ["uslu"],
+    answer:
+      "Üslü ifadede aⁿ biçiminde a taban, n üstür. Aynı tabanda çarpmada üsler toplanır, bölmede çıkarılır; sıfırdan farklı sayının 0. kuvveti 1'dir.",
+    topicRoute: "/ders/matematik/uslu-ifadeler",
+  },
+  {
+    all: ["karekok"],
+    answer:
+      "Karekök, karesi verilen sayıya eşit olan pozitif sayıdır: √16 = 4. Tam kareler: 1, 4, 9, 16, 25...",
+    topicRoute: "/ders/matematik/karekoklu-ifadeler",
+  },
+  {
+    all: ["pisagor"],
+    answer:
+      "Pisagor bağıntısı: dik üçgende dik kenarların kareleri toplamı hipotenüsün karesine eşittir (a² + b² = c²).",
+    topicRoute: "/ders/matematik/ucgenler",
+  },
+  {
+    all: ["ucgen"],
+    answer:
+      "Bir üçgenin iç açıları toplamı 180°'dir. Dik üçgende Pisagor bağıntısı geçerlidir: a² + b² = c².",
+    topicRoute: "/ders/matematik/ucgenler",
+  },
+  {
+    all: ["ozdeslik"],
+    answer:
+      "Sık kullanılan özdeşlikler: (a+b)² = a²+2ab+b², (a−b)² = a²−2ab+b², a²−b² = (a−b)(a+b).",
+    topicRoute: "/ders/matematik/cebirsel-ifadeler",
+  },
+  {
+    all: ["olasilik"],
+    answer:
+      "Bir olayın olasılığı = istenen çıktı sayısı / tüm olası çıktı sayısıdır ve daima 0 ile 1 arasındadır.",
+    topicRoute: "/ders/matematik/olasilik",
+  },
+  {
+    all: ["ortalama"],
+    answer:
+      "Aritmetik ortalama, verilerin toplamının veri sayısına bölünmesiyle bulunur.",
+    topicRoute: "/ders/matematik/veri-analizi",
+  },
+  {
+    all: ["esitsizlik"],
+    answer:
+      "Eşitsizlikler <, >, ≤, ≥ sembolleriyle gösterilir. Negatif bir sayıyla çarpılıp bölününce eşitsizliğin yönü değişir.",
+    topicRoute: "/ders/matematik/esitsizlikler",
+  },
+  {
+    all: ["silindir"],
+    answer:
+      "Dik silindirin hacmi π·r²·h, yüzey alanı ise 2πr² + 2πrh'dir.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
   },
 ];
 
