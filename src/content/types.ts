@@ -14,6 +14,25 @@ export type MindMap = {
   branches: MindMapBranch[];
 };
 
+export type LgsTip = {
+  /** Tuzak / kural açıklaması */
+  trap: string;
+  /** LGS'de yanıltmak için kullanılan yanlış/yanıltıcı ifade */
+  wrong: string;
+  /** Doğrusu */
+  correct: string;
+};
+
+export type QuizQuestion = {
+  question: string;
+  /** 4 şık (A, B, C, D sırasıyla) */
+  options: string[];
+  /** Doğru şıkkın indeksi (0-3) */
+  correctIndex: number;
+  /** İncelemede gösterilen kısa açıklama */
+  explanation?: string;
+};
+
 export type Topic = {
   id: string;
   name: string;
@@ -27,6 +46,10 @@ export type Topic = {
   cards?: Flashcard[];
   /** Uzun makale içeriği (paragraflar \n\n ile ayrılır; satır "## " ile başlarsa başlık). */
   article?: string;
+  /** LGS tuzak ipuçları (yanlış vs doğru). Boşsa o bölüm gizlenir. */
+  tips?: LgsTip[];
+  /** 8 soruluk LGS testi. Boşsa o bölüm gizlenir. */
+  quiz?: QuizQuestion[];
 };
 
 export type SubjectContent = {

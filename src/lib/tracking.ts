@@ -11,6 +11,15 @@ export type SessionInput = {
   startedAt: string; // ISO
 };
 
+export type QuizResultInput = {
+  subjectSlug: string;
+  topicId: string;
+  correct: number;
+  wrong: number;
+  total: number;
+  durationSeconds: number;
+};
+
 export type Stats = {
   configured: boolean;
   signedIn: boolean;
@@ -20,6 +29,9 @@ export type Stats = {
   streakDays: number;
   /** Son 7 gün (eskiden yeniye), her biri {label, minutes} */
   weekly: { label: string; minutes: number; isToday: boolean }[];
+  quizzesSolved: number;
+  questionsAnswered: number;
+  accuracyPct: number;
 };
 
 const DEFAULT_GOAL = 30;
@@ -91,6 +103,21 @@ export async function saveSession(input: SessionInput): Promise<boolean> {
   return !error;
 }
 
+export async function saveQuizResult(input: QuizResultInput): Promise<boolean> {
+  const ctx = await getClientAndUser();
+  if (!ctx) return false;
+  const { error } = await ctx.supabase.from("quiz_results").insert({
+    user_id: ctx.user.id,
+    subject_slug: input.subjectSlug,
+    topic_id: input.topicId,
+    correct_count: input.correct,
+    wrong_count: input.wrong,
+    total_questions: input.total,
+    duration_seconds: Math.round(input.durationSeconds),
+  });
+  return !error;
+}
+
 export async function getDailyGoal(): Promise<number> {
   const ctx = await getClientAndUser();
   if (!ctx) return DEFAULT_GOAL;
@@ -117,6 +144,9 @@ export async function getStats(): Promise<Stats> {
     completedTopics: 0,
     streakDays: 0,
     weekly: buildEmptyWeek(),
+    quizzesSolved: 0,
+    questionsAnswered: 0,
+    accuracyPct: 0,
   };
 
   const ctx = await getClientAndUser();
@@ -127,16 +157,30 @@ export async function getStats(): Promise<Stats> {
   const since = new Date();
   since.setDate(since.getDate() - 60);
 
-  const [{ data: sessions }, { count: doneCount }] = await Promise.all([
-    ctx.supabase
-      .from("study_sessions")
-      .select("duration_seconds, started_at")
-      .gte("started_at", since.toISOString()),
-    ctx.supabase
-      .from("topic_progress")
-      .select("topic_id", { count: "exact", head: true })
-      .eq("status", "done"),
-  ]);
+  const [{ data: sessions }, { count: doneCount }, { data: quizzes }] =
+    await Promise.all([
+      ctx.supabase
+        .from("study_sessions")
+        .select("duration_seconds, started_at")
+        .gte("started_at", since.toISOString()),
+      ctx.supabase
+        .from("topic_progress")
+        .select("topic_id", { count: "exact", head: true })
+        .eq("status", "done"),
+      ctx.supabase.from("quiz_results").select("correct_count, wrong_count"),
+    ]);
+
+  const quizRows = (quizzes ?? []) as {
+    correct_count: number;
+    wrong_count: number;
+  }[];
+  base.quizzesSolved = quizRows.length;
+  const totalCorrect = quizRows.reduce((s, r) => s + r.correct_count, 0);
+  const totalWrong = quizRows.reduce((s, r) => s + r.wrong_count, 0);
+  base.questionsAnswered = totalCorrect + totalWrong;
+  base.accuracyPct = base.questionsAnswered
+    ? Math.round((totalCorrect / base.questionsAnswered) * 100)
+    : 0;
 
   const rows = (sessions ?? []) as {
     duration_seconds: number;

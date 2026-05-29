@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Clock, Flame, Loader2, Timer } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  Flame,
+  ListChecks,
+  Loader2,
+  Target,
+  Timer,
+} from "lucide-react";
 import { getDailyGoal, getStats, type Stats } from "@/lib/tracking";
 import { WeeklyChart } from "./WeeklyChart";
 import { DailyGoalCard } from "./DailyGoalCard";
@@ -73,6 +81,25 @@ export function StatsPanel() {
           icon={<Timer className="h-5 w-5" />}
           label="Toplam"
           value={fmtMin(stats.totalMinutes)}
+        />
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
+        <Card
+          icon={<ListChecks className="h-5 w-5" />}
+          label="Çözülen test"
+          value={`${stats.quizzesSolved}`}
+        />
+        <Card
+          icon={<Target className="h-5 w-5" />}
+          label="Doğru oranı"
+          value={`%${stats.accuracyPct}`}
+          accent
+        />
+        <Card
+          icon={<CheckCircle2 className="h-5 w-5" />}
+          label="Çözülen soru"
+          value={`${stats.questionsAnswered}`}
         />
       </div>
 

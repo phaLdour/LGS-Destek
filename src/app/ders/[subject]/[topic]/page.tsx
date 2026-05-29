@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileText, Layers, Network, Video } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Layers,
+  Lightbulb,
+  Network,
+  Video,
+} from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Article } from "@/components/study/Article";
 import { Flashcards } from "@/components/study/Flashcards";
+import { LgsTips } from "@/components/study/LgsTips";
 import { MindMap } from "@/components/study/MindMap";
+import { Quiz } from "@/components/study/Quiz";
 import { TopicStudyController } from "@/components/study/TopicStudyController";
 import { YouTubeEmbed } from "@/components/study/YouTubeEmbed";
 import { getSubjectContent, getTopic } from "@/content";
@@ -25,6 +34,8 @@ export default async function TopicPage({
   const hasMindMap = Boolean(topicData.mindMap?.branches.length);
   const hasCards = (topicData.cards?.length ?? 0) > 0;
   const hasArticle = Boolean(topicData.article && topicData.article.trim());
+  const hasTips = (topicData.tips?.length ?? 0) > 0;
+  const hasQuiz = (topicData.quiz?.length ?? 0) > 0;
 
   return (
     <AppShell user={user}>
@@ -59,7 +70,11 @@ export default async function TopicPage({
       )}
 
       {/* Video */}
-      <Section icon={<Video className="h-5 w-5" />} title="Videolu özet">
+      <Section
+        id="konu-videosu"
+        icon={<Video className="h-5 w-5" />}
+        title="Videolu özet"
+      >
         {hasVideo ? (
           <YouTubeEmbed id={topicData.youtubeId!} title={topicData.name} />
         ) : (
@@ -77,11 +92,34 @@ export default async function TopicPage({
       </Section>
 
       {/* Makale */}
-      <Section icon={<FileText className="h-5 w-5" />} title="Konu anlatımı">
+      <Section
+        id="konu-makale"
+        icon={<FileText className="h-5 w-5" />}
+        title="Konu anlatımı"
+      >
         {hasArticle ? (
           <Article text={topicData.article!} />
         ) : (
           <Placeholder text="Konu anlatımı makalesi yakında eklenecek." />
+        )}
+      </Section>
+
+      {/* LGS İpucu + Test */}
+      <Section icon={<Lightbulb className="h-5 w-5" />} title="LGS İpucu">
+        {hasTips || hasQuiz ? (
+          <div className="space-y-4">
+            {hasTips && <LgsTips tips={topicData.tips!} />}
+            {hasQuiz && (
+              <Quiz
+                subjectSlug={subject}
+                topicId={topic}
+                questions={topicData.quiz!}
+                hasVideo={hasVideo}
+              />
+            )}
+          </div>
+        ) : (
+          <Placeholder text="LGS ipuçları ve test yakında eklenecek." />
         )}
       </Section>
     </AppShell>
@@ -92,13 +130,15 @@ function Section({
   icon,
   title,
   children,
+  id,
 }: {
   icon: React.ReactNode;
   title: string;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
-    <section className="mt-6">
+    <section id={id} className="mt-6 scroll-mt-20">
       <h2 className="mb-3 flex items-center gap-2 text-lg font-extrabold text-rehberim-navy">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rehberim-navy text-white">
           {icon}

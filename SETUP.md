@@ -106,7 +106,19 @@ yaptığında oturum kaydedilir; dashboard'daki **Çalışma takibin** bölümü
 haftalık grafik, seri ve günlük hedef dolar.
 
 ### Fen içeriklerini ekleme
-`src/content/fen-bilimleri.ts` içinde her ünitenin `youtubeId`, `cards` ve
-`article` alanları var. YouTube linkini, kart metinlerini ve makaleyi bana
-verirsen bu dosyaya işlerim (ya da kendin doldurabilirsin). Alan boşsa o
-bölüm konu sayfasında "yakında" olarak görünür.
+`src/content/fen-bilimleri.ts` içinde her ünitenin `youtubeId`, `cards`,
+`article`, `tips` ve `quiz` alanları var. YouTube linkini, kart metinlerini ve
+makaleyi bana verirsen bu dosyaya işlerim (ya da kendin doldurabilirsin). Alan
+boşsa o bölüm konu sayfasında "yakında" olarak görünür.
+
+## 8. LGS İpucu + test (Aşama 3) — veritabanı güncellemesi
+
+Konu sayfalarındaki **LGS İpucu** bölümünde 8 soruluk testler var; test
+sonuçlarının kalıcı saklanması için bir tablo daha eklendi.
+
+1. Supabase paneli → **SQL Editor** → **New query**.
+2. Yine **`supabase/schema.sql`** dosyasının tamamını yapıştır → **Run**.
+   (Dosya `create ... if not exists` kullanır; mevcut tablolar korunur, yalnızca
+   yeni `quiz_results` tablosu eklenir. Tekrar çalıştırmak güvenlidir.)
+3. Artık her test sonucu kaydedilir ve dashboard'daki **Çözülen test / Doğru
+   oranı / Çözülen soru** kartları dolar.
