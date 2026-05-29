@@ -16,9 +16,21 @@ export const FEN_BILIMLERI: SubjectContent = {
       mindMap: {
         center: "Mevsimler ve İklim",
         branches: [
-          "Mevsimlerin Oluşumu",
-          "İklim ve Hava Hareketleri",
-          "Küresel İklim Değişikliği",
+          {
+            label: "Mevsimlerin Oluşumu",
+            detail:
+              "Dünya'nın ekseni 23,5° eğiktir ve Güneş etrafında dolanır. Bu yüzden ışınların düşme açısı ve birim yüzeye düşen enerji değişir; mevsimler oluşur. 21 Haziran'da Kuzey Yarım Küre'de yaz, 21 Aralık'ta kış başlar. 21 Mart ve 23 Eylül ekinokslarında gece-gündüz eşittir (12-12).",
+          },
+          {
+            label: "İklim ve Hava Hareketleri",
+            detail:
+              "Isınan hava yükselip alçak basınç, soğuyan hava alçalıp yüksek basınç oluşturur. Rüzgar yüksek basınçtan alçak basınca doğru eser; alçak basınçta yağış ihtimali yüksektir. Yağışlar gökyüzüne yakın (yağmur, kar, dolu) ve yeryüzüne yakın (çiğ, kırağı, sis) olarak ayrılır.",
+          },
+          {
+            label: "Küresel İklim Değişikliği",
+            detail:
+              "İklim, geniş bölgelerde 30-40 yıllık hava olaylarının ortalamasıdır. Fosil yakıtların sera gazlarını artırması küresel ısınmaya yol açar; buzullar erir, deniz seviyesi yükselir, sel ve kuraklık gibi aşırı olaylar artar.",
+          },
         ],
       },
       cards: [
@@ -78,13 +90,41 @@ Havadaki nemin sıcaklık düşüşüyle yoğuşması ya da donmasıyla yağış
       mindMap: {
         center: "DNA ve Genetik Kod",
         branches: [
-          "Kalıtsal Yapıların Hiyerarşisi",
-          "Nükleotit Bileşenleri",
-          "DNA Eşleşme Kuralları",
-          "DNA'nın Kendini Eşlemesi",
-          "Hatalar ve Onarım",
-          "Kalıtım Kavramları",
-          "Cinsiyet Belirlenmesi",
+          {
+            label: "Kalıtsal Yapıların Hiyerarşisi",
+            detail:
+              "Büyükten küçüğe: Kromozom > DNA > Gen > Nükleotit. Kromozom en karmaşık, nükleotit en küçük yapı birimidir.",
+          },
+          {
+            label: "Nükleotit Bileşenleri",
+            detail:
+              "Bir nükleotit fosfat, şeker ve organik bazdan oluşur. Organik bazlar: Adenin, Timin, Guanin, Sitozin. Nükleotit içerdiği baza göre adlandırılır.",
+          },
+          {
+            label: "DNA Eşleşme Kuralları",
+            detail:
+              "DNA'da bazlar karşılıklı eşleşir: Adenin daima Timin ile, Guanin daima Sitozin ile eşleşir (A-T, G-C).",
+          },
+          {
+            label: "DNA'nın Kendini Eşlemesi",
+            detail:
+              "Hücre bölünmesinden önce çift zincir açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Sonuçta birbirinin aynısı iki DNA molekülü meydana gelir.",
+          },
+          {
+            label: "Hatalar ve Onarım",
+            detail:
+              "Eşlenme sırasında baz dizilişinde oluşan kalıcı değişikliklere mutasyon denir. Hücre çoğu hatayı onarabilir; onarılamayan değişiklikler kalıtsal olabilir.",
+          },
+          {
+            label: "Kalıtım Kavramları",
+            detail:
+              "Gen, alel, baskın (dominant) ve çekinik (resesif) gibi kavramlarla kalıtsal özellikler ana-babadan yavruya aktarılır.",
+          },
+          {
+            label: "Cinsiyet Belirlenmesi",
+            detail:
+              "İnsanda cinsiyet, cinsiyet kromozomlarıyla belirlenir: XX dişi, XY erkektir. Cinsiyeti belirleyen kromozom babadan gelir.",
+          },
         ],
       },
       cards: [
@@ -137,7 +177,23 @@ Hücre bölünmesinden önce DNA'nın çift zinciri açılır ve her zincir kend
       youtubeId: "ND2vISQNLUM",
       mindMap: {
         center: "Basınç",
-        branches: ["Katı Basıncı", "Sıvı Basıncı", "Gaz Basıncı"],
+        branches: [
+          {
+            label: "Katı Basıncı",
+            detail:
+              "P = G / S (Ağırlık / Yüzey Alanı). Ağırlık artınca basınç artar, yüzey alanı artınca azalır. Bıçak ve çivinin sivri ucu basıncı artırır; kar ayakkabısı ve paletler azaltır.",
+          },
+          {
+            label: "Sıvı Basıncı",
+            detail:
+              "Sıvının derinliği (h) ve yoğunluğuna (d) bağlıdır; kabın şekline ve sıvı miktarına bağlı değildir. Pascal Prensibi: kapalı kaptaki sıvıya uygulanan basınç her noktaya aynen iletilir (hidrolik frenler).",
+          },
+          {
+            label: "Gaz Basıncı",
+            detail:
+              "Atmosfer havasının ağırlığından kaynaklanır; deniz seviyesinden yükseğe çıkıldıkça azalır. İlk kez Torricelli deneyiyle ölçülmüştür. Pipet ve vantuz örnekleri bununla açıklanır.",
+          },
+        ],
       },
       cards: [
         {

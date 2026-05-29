@@ -3,9 +3,15 @@ export type Flashcard = {
   back: string;
 };
 
+export type MindMapBranch = {
+  label: string;
+  /** Dala tıklayınca açılan kısa özet. Boşsa dal açılmaz. */
+  detail?: string;
+};
+
 export type MindMap = {
   center: string;
-  branches: string[];
+  branches: MindMapBranch[];
 };
 
 export type Topic = {
