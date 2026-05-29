@@ -19,7 +19,8 @@ export type MindMapSectionKind =
   | "ornek"
   | "tuzak"
   | "istisna"
-  | "ipucu";
+  | "ipucu"
+  | "soru";
 
 export type MindMapSection = {
   kind: MindMapSectionKind;

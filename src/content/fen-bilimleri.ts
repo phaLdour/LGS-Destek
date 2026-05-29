@@ -18,18 +18,27 @@ export const FEN_BILIMLERI: SubjectContent = {
         branches: [
           {
             label: "Mevsimlerin Oluşumu",
-            detail:
-              "Dünya'nın ekseni 23,5° eğiktir ve Güneş etrafında dolanır. Bu yüzden ışınların düşme açısı ve birim yüzeye düşen enerji değişir; mevsimler oluşur. 21 Haziran'da Kuzey Yarım Küre'de yaz, 21 Aralık'ta kış başlar. 21 Mart ve 23 Eylül ekinokslarında gece-gündüz eşittir (12-12).",
+            sections: [
+              { kind: "tanim", content: "Dünya'nın ekseni 23,5° eğiktir ve Güneş etrafında dolanır; bu, ışınların düşme açısını değiştirir." },
+              { kind: "kural", content: "21 Haziran KYK'da yaz, 21 Aralık kış başlar. 21 Mart ve 23 Eylül ekinokslarında gece = gündüz (12-12)." },
+              { kind: "tuzak", content: "Mevsimlerin sebebi Dünya'nın Güneş'e uzaklığı DEĞİL, eksen eğikliğidir." },
+            ],
           },
           {
             label: "İklim ve Hava Hareketleri",
-            detail:
-              "Isınan hava yükselip alçak basınç, soğuyan hava alçalıp yüksek basınç oluşturur. Rüzgar yüksek basınçtan alçak basınca doğru eser; alçak basınçta yağış ihtimali yüksektir. Yağışlar gökyüzüne yakın (yağmur, kar, dolu) ve yeryüzüne yakın (çiğ, kırağı, sis) olarak ayrılır.",
+            sections: [
+              { kind: "tanim", content: "Isınan hava yükselip alçak basınç, soğuyan hava alçalıp yüksek basınç oluşturur. Rüzgar yüksekten alçağa eser." },
+              { kind: "ornek", content: "Gökyüzüne yakın yağışlar: yağmur, kar, dolu. Yeryüzüne yakın: çiğ, kırağı, sis." },
+              { kind: "ipucu", content: "Alçak basınç alanlarında bulut ve yağış ihtimali yüksektir." },
+            ],
           },
           {
             label: "Küresel İklim Değişikliği",
-            detail:
-              "İklim, geniş bölgelerde 30-40 yıllık hava olaylarının ortalamasıdır. Fosil yakıtların sera gazlarını artırması küresel ısınmaya yol açar; buzullar erir, deniz seviyesi yükselir, sel ve kuraklık gibi aşırı olaylar artar.",
+            sections: [
+              { kind: "tanim", content: "İklim, geniş bölgelerde 30-40 yıllık hava olaylarının ortalamasıdır (klimatoloji inceler)." },
+              { kind: "tuzak", content: "Hava olayı ile iklim aynı değildir; tek bir günün havası iklimi göstermez." },
+              { kind: "ornek", content: "Fosil yakıtlar → sera gazı artışı → küresel ısınma → buzul erimesi, deniz seviyesinin yükselmesi." },
+            ],
           },
         ],
       },
@@ -63,24 +72,26 @@ export const FEN_BILIMLERI: SubjectContent = {
           back: "Gökyüzüne yakın: yağmur, kar, dolu. Yeryüzüne yakın: çiğ, kırağı, sis.",
         },
       ],
-      article: `## Mevsimlerin Oluşumu
-Mevsimler, Dünya'nın Güneş etrafında dolanması ve dönme ekseninin 23,5° eğik olması nedeniyle oluşur. Eksen eğikliği, birim yüzeye düşen enerji miktarını ve Güneş ışınlarının düşme açısını değiştirir. Işınların dik geldiği bölgelerde sıcaklık artar ve gölge boyu kısalır. Bu yüzden aynı anda iki yarım kürede farklı mevsimler yaşanır.
+      article: `# Mevsimlerin Oluşumu
+Mevsimler, Dünya'nın ekseninin **23,5° eğik** olması ve Güneş etrafında **dolanması** nedeniyle oluşur. Eksen eğikliği, Güneş ışınlarının düşme açısını ve birim yüzeye düşen enerjiyi değiştirir. Işınların dik geldiği yerde sıcaklık artar, gölge boyu kısalır.
+[tuzak] Mevsimlerin sebebi Dünya'nın Güneş'e uzaklığı DEĞİLDİR; eksen eğikliğidir.
 
-## Önemli Tarihler
-21 Haziran (Yaz Gündönümü): Güneş ışınları Yengeç Dönencesi'ne 90° dik düşer. Kuzey Yarım Küre'de en uzun gündüz yaşanır ve yaz başlar; Yengeç Dönencesi'nde öğle vakti gölge boyu sıfır olur. Güney Yarım Küre'de kış başlar.
+# Önemli Tarihler
+- **21 Haziran:** Işınlar Yengeç Dönencesi'ne dik gelir. Kuzey Yarım Küre'de en uzun gündüz, yaz başlar.
+- **21 Aralık:** Işınlar Oğlak Dönencesi'ne dik gelir. Kuzey Yarım Küre'de en uzun gece, kış başlar.
+- **21 Mart ve 23 Eylül (Ekinoks):** Işınlar Ekvator'a dik gelir; her yerde gece = gündüz (12-12 saat).
+[tuzak] "21 Aralık'ta Kuzey Yarım Küre'de en uzun gündüz" ifadesi yanlıştır; en uzun GECE yaşanır.
+[soru] "Hangi tarihte Kuzey Yarım Küre'de gündüz en uzundur?" → 21 Haziran.
 
-21 Aralık (Kış Gündönümü): Güneş ışınları Oğlak Dönencesi'ne dik düşer. Kuzey Yarım Küre'de en uzun gece yaşanır ve kış başlar. Güney Yarım Küre'de yaz başlar.
+# Hava Olayları ve Basınç
+Isınan hava yükselir ve **alçak basınç**, soğuyan hava alçalır ve **yüksek basınç** oluşturur. Rüzgar, yüksek basınçtan alçak basınca doğru esen yatay hava hareketidir.
+[ipucu] Alçak basınç alanlarında bulut ve yağış ihtimali yüksektir.
+[örnek] Gökyüzüne yakın yağışlar: yağmur, kar, dolu. Yeryüzüne yakın: çiğ, kırağı, sis.
 
-Ekinokslar (21 Mart ve 23 Eylül): Eksen eğikliğinin etkisi ortadan kalkar; ışınlar Ekvator'a dik düşer. Dünya'nın her yerinde gece ve gündüz süreleri eşittir (12-12 saat). Bahar mevsimlerinin başlangıcıdır.
-
-## Hava Olayları ve Basınç
-Sıcaklık farkları yoğunluk değişimine yol açar: ısınan hava yükselerek alçak basınç, soğuyan hava alçalarak yüksek basınç oluşturur. Rüzgar, yüksek basınçtan alçak basınca doğru yatay hava hareketidir. Alçak basınç alanlarında bulut ve yağış ihtimali yüksektir. Hava olaylarını meteoroloji bilim dalı (meteorolog) inceler.
-
-## Yağış Türleri
-Havadaki nemin sıcaklık düşüşüyle yoğuşması ya da donmasıyla yağışlar oluşur. Gökyüzüne yakın oluşanlar: yağmur, kar, dolu. Yeryüzüne yakın oluşanlar: çiğ, kırağı, sis.
-
-## İklim ve İklim Değişikliği
-İklim, geniş bölgelerde uzun yıllar (30-40 yıl) süren hava olaylarının ortalamasıdır ve klimatoloji (klimatolog) tarafından incelenir. Fosil yakıt kullanımının artması sera gazlarını çoğaltır ve küresel ısınmaya yol açar. Sonuçta buzullar erir, deniz seviyesi yükselir ve sel, kuraklık gibi aşırı hava olayları artar.`,
+# İklim ve İklim Değişikliği
+İklim, geniş bir bölgede **30-40 yıl** süren hava olaylarının ortalamasıdır ve **klimatoloji** inceler. Kısa süreli hava olaylarını ise **meteoroloji** inceler.
+[tuzak] Hava olayı ile iklim karıştırılmamalı; "bugün yağmurlu, demek iklim yağışlı" yanlıştır.
+[örnek] Fosil yakıt kullanımı → sera gazlarının artışı → küresel ısınma → buzulların erimesi ve deniz seviyesinin yükselmesi.`,
       tips: [
         {
           trap: "Mevsimlerin sebebi Dünya'nın Güneş'e uzaklığı sanılır; bu yanlıştır.",
@@ -183,38 +194,53 @@ Havadaki nemin sıcaklık düşüşüyle yoğuşması ya da donmasıyla yağış
         branches: [
           {
             label: "Kalıtsal Yapıların Hiyerarşisi",
-            detail:
-              "Büyükten küçüğe: Kromozom > DNA > Gen > Nükleotit. Kromozom en karmaşık, nükleotit en küçük yapı birimidir.",
+            sections: [
+              { kind: "kural", content: "Büyükten küçüğe: Kromozom > DNA > Gen > Nükleotit." },
+              { kind: "tanim", content: "Kromozom en karmaşık, nükleotit en küçük yapı birimidir." },
+              { kind: "tuzak", content: "Soruda 'DNA' yerine 'DNA'nın tek zinciri' yazılarak şaşırtılır; DNA çift zincirlidir." },
+            ],
           },
           {
             label: "Nükleotit Bileşenleri",
-            detail:
-              "Bir nükleotit fosfat, şeker ve organik bazdan oluşur. Organik bazlar: Adenin, Timin, Guanin, Sitozin. Nükleotit içerdiği baza göre adlandırılır.",
+            sections: [
+              { kind: "tanim", content: "Bir nükleotit fosfat, şeker ve organik bazdan oluşur." },
+              { kind: "kural", content: "Organik bazlar Adenin, Timin, Guanin, Sitozin'dir; baza göre 4 çeşit nükleotit vardır." },
+            ],
           },
           {
             label: "DNA Eşleşme Kuralları",
-            detail:
-              "DNA'da bazlar karşılıklı eşleşir: Adenin daima Timin ile, Guanin daima Sitozin ile eşleşir (A-T, G-C).",
+            sections: [
+              { kind: "formul", content: "Bazlar karşılıklı eşleşir: Adenin – Timin (A–T) ve Guanin – Sitozin (G–C)." },
+              { kind: "ornek", content: "Bir zincir A-G-C-T ise karşı zincir T-C-G-A olur." },
+              { kind: "soru", content: "'Bir zincirde 30 Adenin varsa karşısında kaç Timin vardır?' → 30." },
+            ],
           },
           {
             label: "DNA'nın Kendini Eşlemesi",
-            detail:
-              "Hücre bölünmesinden önce çift zincir açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Sonuçta birbirinin aynısı iki DNA molekülü meydana gelir.",
+            sections: [
+              { kind: "tanim", content: "Bölünmeden önce çift zincir açılır, her zincir kendine eş yeni bir zincir oluşturur → iki özdeş DNA." },
+            ],
           },
           {
             label: "Hatalar ve Onarım",
-            detail:
-              "Eşlenme sırasında baz dizilişinde oluşan kalıcı değişikliklere mutasyon denir. Hücre çoğu hatayı onarabilir; onarılamayan değişiklikler kalıtsal olabilir.",
+            sections: [
+              { kind: "tanim", content: "Baz dizilişinde oluşan kalıcı değişikliklere mutasyon denir." },
+              { kind: "istisna", content: "Hücre çoğu hatayı onarır; onarılamayan değişiklikler kalıtsal olabilir." },
+            ],
           },
           {
             label: "Kalıtım Kavramları",
-            detail:
-              "Gen, alel, baskın (dominant) ve çekinik (resesif) gibi kavramlarla kalıtsal özellikler ana-babadan yavruya aktarılır.",
+            sections: [
+              { kind: "tanim", content: "Gen, alel, baskın (dominant) ve çekinik (resesif) kavramlarıyla özellikler aktarılır." },
+              { kind: "ipucu", content: "Baskın özellik, çekinik özelliği bastırır." },
+            ],
           },
           {
             label: "Cinsiyet Belirlenmesi",
-            detail:
-              "İnsanda cinsiyet, cinsiyet kromozomlarıyla belirlenir: XX dişi, XY erkektir. Cinsiyeti belirleyen kromozom babadan gelir.",
+            sections: [
+              { kind: "kural", content: "İnsanda cinsiyet: XX dişi, XY erkektir." },
+              { kind: "tuzak", content: "Cinsiyeti belirleyen kromozom babadan gelir." },
+            ],
           },
         ],
       },
@@ -244,22 +270,31 @@ Havadaki nemin sıcaklık düşüşüyle yoğuşması ya da donmasıyla yağış
           back: "Hücre bölünmesinden önce çift zincir açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Böylece kalıtsal bilgi kopyalanır.",
         },
       ],
-      article: `## Kalıtsal Yapıların Hiyerarşisi
-Kalıtsal yapılar büyükten küçüğe doğru şöyle sıralanır: Kromozom > DNA > Gen > Nükleotit.
+      article: `# Kalıtsal Yapıların Hiyerarşisi
+[kural] Büyükten küçüğe: **Kromozom > DNA > Gen > Nükleotit**.
+- **Kromozom:** DNA'nın protein kılıfla sarılmasıyla oluşan, en karmaşık yapı.
+- **DNA:** Hücrenin yönetici molekülü; **çift zincirli sarmal** yapıdadır.
+- **Gen:** DNA'nın anlamlı parçası (göz rengi, kan grubu gibi özellikleri belirler).
+- **Nükleotit:** En küçük yapı birimi.
+[tuzak] Soruda "DNA" yerine "DNA'nın tek zinciri" yazılarak şaşırtılır; DNA çift zincirlidir.
 
-Kromozom: Hücrenin çekirdeğinde bulunan, canlılık özelliklerini taşıyan ve DNA'nın protein kılıfla kaplanmasıyla oluşan en karmaşık yapıdır. Hücre bölünmesi öncesinde DNA'nın kısalıp kalınlaşmasıyla belirginleşir ve kalıtsal bilginin nesillere aktarılmasını sağlar.
+# Nükleotit Bileşenleri
+Bir nükleotit **fosfat + şeker + organik baz**tan oluşur. Organik bazlar: **Adenin, Timin, Guanin, Sitozin**.
+[kural] Organik baza göre 4 çeşit nükleotit vardır; sayı ve diziliş farkı biyolojik çeşitliliği sağlar.
 
-DNA (Deoksiribonükleik Asit): Hücrenin yönetici molekülüdür; solunum, beslenme, üreme gibi yaşamsal faaliyetleri kontrol eder. Çift zincirli sarmal yapıdadır ve bölünmeden önce kendini eşler.
+# DNA Eşleşme Kuralları
+[formül] Bazlar karşılıklı eşleşir: **Adenin – Timin (A–T)** ve **Guanin – Sitozin (G–C)**.
+[örnek] Bir zincir A-G-C-T ise karşı zincir T-C-G-A olur.
+[soru] "Bir zincirde 30 Adenin varsa karşısında kaç Timin bulunur?" → **30** (A=T eşleşmesi).
 
-Gen: DNA'nın anlamlı parçalarıdır; göz rengi, kan grubu gibi belirli kalıtsal özelliklerin ortaya çıkmasını sağlayan görev birimleridir.
+# DNA'nın Kendini Eşlemesi
+Hücre bölünmesinden önce çift zincir açılır ve her zincir kendine uygun yeni bir zincir oluşturur; sonuçta birbirinin aynısı **iki DNA** meydana gelir.
 
-Nükleotit: Kalıtsal yapıların en küçük parçası ve DNA'nın yapı birimidir.
-
-## Nükleotit Bileşenleri
-Bir nükleotit üç kısımdan oluşur: fosfat, şeker ve organik baz. Organik bazlar Adenin, Timin, Guanin ve Sitozin'dir. Nükleotit, içerdiği organik baza göre adlandırılır. Nükleotitlerin sayı ve diziliş farkları biyolojik çeşitliliği oluşturur.
-
-## DNA'nın Kendini Eşlemesi
-Hücre bölünmesinden önce DNA'nın çift zinciri açılır ve her zincir kendine uygun yeni bir zincir oluşturur. Böylece birbirinin aynısı iki DNA molekülü meydana gelir ve kalıtsal bilgi yeni hücrelere eksiksiz aktarılır.`,
+# Kalıtım ve Cinsiyet
+- **Mutasyon:** Baz dizilişindeki kalıcı değişiklik.
+- **Kalıtım:** Gen, alel, baskın (dominant) ve çekinik (resesif) kavramlarıyla aktarılır.
+- **Cinsiyet:** İnsanda **XX dişi, XY erkek**tir.
+[tuzak] Cinsiyeti belirleyen kromozom **babadan** gelir.`,
       tips: [
         {
           trap: "Sorularda 'DNA' yerine 'DNA'nın tek zinciri' yazılarak dikkatsiz öğrenci şaşırtılır.",
@@ -355,18 +390,28 @@ Hücre bölünmesinden önce DNA'nın çift zinciri açılır ve her zincir kend
         branches: [
           {
             label: "Katı Basıncı",
-            detail:
-              "P = G / S (Ağırlık / Yüzey Alanı). Ağırlık artınca basınç artar, yüzey alanı artınca azalır. Bıçak ve çivinin sivri ucu basıncı artırır; kar ayakkabısı ve paletler azaltır.",
+            sections: [
+              { kind: "formul", content: "P = G / S (Basınç = Ağırlık / Yüzey Alanı)." },
+              { kind: "kural", content: "Ağırlık artınca basınç artar; yüzey alanı artınca basınç azalır (ters orantı)." },
+              { kind: "ornek", content: "Bıçağın sivri ucu yüzeyi küçültür → basınç artar. Kar ayakkabısı yüzeyi büyütür → basınç azalır." },
+              { kind: "tuzak", content: "'Yüzey alanı artınca basınç artar' yanlıştır; basınç azalır." },
+            ],
           },
           {
             label: "Sıvı Basıncı",
-            detail:
-              "Sıvının derinliği (h) ve yoğunluğuna (d) bağlıdır; kabın şekline ve sıvı miktarına bağlı değildir. Pascal Prensibi: kapalı kaptaki sıvıya uygulanan basınç her noktaya aynen iletilir (hidrolik frenler).",
+            sections: [
+              { kind: "kural", content: "Yalnız derinliğe (h) ve yoğunluğa (d) bağlıdır; kabın şekline ve sıvı miktarına bağlı DEĞİLDİR." },
+              { kind: "formul", content: "Pascal Prensibi: kapalı kaptaki sıvıya uygulanan basınç her noktaya aynen iletilir." },
+              { kind: "ornek", content: "Baraj duvarının altı daha kalın yapılır; hidrolik frenler Pascal Prensibi'yle çalışır." },
+            ],
           },
           {
-            label: "Gaz Basıncı",
-            detail:
-              "Atmosfer havasının ağırlığından kaynaklanır; deniz seviyesinden yükseğe çıkıldıkça azalır. İlk kez Torricelli deneyiyle ölçülmüştür. Pipet ve vantuz örnekleri bununla açıklanır.",
+            label: "Gaz (Açık Hava) Basıncı",
+            sections: [
+              { kind: "tanim", content: "Atmosferdeki havanın ağırlığından kaynaklanır." },
+              { kind: "kural", content: "Deniz seviyesinden yükseğe çıkıldıkça açık hava basıncı azalır." },
+              { kind: "ornek", content: "Pipet, vantuz örnekleri; ilk kez Torricelli deneyiyle ölçülmüştür." },
+            ],
           },
         ],
       },
@@ -396,20 +441,24 @@ Hücre bölünmesinden önce DNA'nın çift zinciri açılır ve her zincir kend
           back: "Torricelli deneyi.",
         },
       ],
-      article: `## Katı Basıncı
-Katı basıncı, birim yüzeye etki eden dik kuvvettir ve P = G / S (Ağırlık / Yüzey Alanı) ile hesaplanır. Ağırlık arttıkça basınç artar (doğru orantı); temas yüzeyi arttıkça basınç azalır (ters orantı).
+      article: `# Katı Basıncı
+Katı basıncı, birim yüzeye etki eden dik kuvvettir.
+[formül] **P = G / S** (Basınç = Ağırlık / Yüzey Alanı)
+[kural] Ağırlık artarsa basınç **artar**; temas yüzeyi artarsa basınç **azalır** (ters orantı).
+[örnek] Bıçağın keskin ucu ve çivinin sivri ucu yüzeyi küçülterek basıncı artırır. Kar ayakkabısı ve iş makinesi paletleri yüzeyi büyüterek basıncı azaltır.
+[soru] "Aynı ağırlıktaki cisim hangi yüzeyiyle yere daha çok basınç yapar?" → en **dar** yüzeyiyle.
 
-Günlük hayat örnekleri: bıçağın keskin ucu, çivinin sivri ucu ve krampon çivileri yüzeyi küçülterek basıncı artırır. Kar ayakkabıları, tırların çok sayıda tekerleği ve iş makinelerinin paletleri ise yüzeyi genişleterek basıncı azaltır.
+# Sıvı Basıncı
+[kural] Sıvı basıncı yalnız **derinliğe (h)** ve **yoğunluğa (d)** bağlıdır; kabın şekline ve sıvı miktarına bağlı **değildir**.
+[formül] **Pascal Prensibi:** Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının her noktasına ve kabın iç yüzeyine aynen iletilir.
+[örnek] Baraj duvarlarının alt kısmı daha kalın yapılır; hidrolik frenler ve itfaiye merdivenleri bu ilkeyle çalışır.
+[tuzak] "Daha geniş kapta sıvı basıncı daha fazladır" yanlıştır; kabın şekli basıncı etkilemez.
 
-## Sıvı Basıncı
-Sıvı basıncı, sıvının derinliği (h) ve yoğunluğu (d) ile doğru orantılıdır; kabın şekline ve sıvı miktarına bağlı değildir. Bu yüzden su depoları yüksek yerlere kurulur ve baraj duvarlarının alt kısımları daha kalın yapılır.
-
-Pascal Prensibi: Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının her noktasına ve kabın iç yüzeyine aynen iletilir. Hidrolik fren sistemleri ve itfaiye merdivenleri bu ilkeyle çalışır.
-
-## Gaz (Açık Hava) Basıncı
-Atmosferdeki havanın ağırlığı, temas ettiği yüzeylere basınç uygular. Deniz seviyesinden yukarı çıkıldıkça açık hava basıncı azalır (ters orantı). Açık hava basıncı ilk kez Torricelli deneyi ile ölçülmüştür.
-
-Günlük hayat örnekleri: pipetle içecek içilmesi, vantuzlu askıların duvara yapışması, meyve suyu kutusunun büzülmesi ve vakumlu poşetler açık hava basıncıyla açıklanır.`,
+# Gaz (Açık Hava) Basıncı
+Atmosferdeki havanın ağırlığı, temas ettiği yüzeylere basınç uygular.
+[kural] Deniz seviyesinden yükseğe çıkıldıkça açık hava basıncı **azalır**.
+[örnek] Pipetle içecek içme, vantuzun duvara yapışması açık hava basıncıyla açıklanır. İlk kez **Torricelli deneyi** ile ölçülmüştür.
+[tuzak] "Yükseğe çıkınca açık hava basıncı artar" yanlıştır; azalır.`,
       tips: [
         {
           trap: "Katı basıncında yüzey alanı ile basınç ilişkisi ters kurulur.",
@@ -508,28 +557,40 @@ Günlük hayat örnekleri: pipetle içecek içilmesi, vantuzlu askıların duvar
         branches: [
           {
             label: "Periyodik Sistem",
-            detail:
-              "Elementler artan atom numarasına göre dizilir. Yatay sıralara periyot, dikey sütunlara grup denir. Metaller solda ve ortada, ametaller sağ üstte, soy gazlar en sağda yer alır.",
+            sections: [
+              { kind: "tanim", content: "Elementler artan atom numarasına göre dizilir." },
+              { kind: "kural", content: "Yatay sıralar periyot, dikey sütunlar gruptur; aynı grup benzer özellik gösterir." },
+              { kind: "ornek", content: "Metaller solda/ortada, ametaller sağ üstte, soy gazlar en sağda." },
+            ],
           },
           {
             label: "Fiziksel ve Kimyasal Değişim",
-            detail:
-              "Fiziksel değişimde yalnız dış görünüş değişir, yeni madde oluşmaz (buzun erimesi). Kimyasal değişimde yeni madde oluşur (kâğıdın yanması, paslanma).",
+            sections: [
+              { kind: "kural", content: "Fiziksel: yeni madde yok (buz erimesi). Kimyasal: yeni madde var (yanma, paslanma)." },
+              { kind: "tuzak", content: "Buzun erimesi kimyasal sanılır; fizikseldir (yeni madde oluşmaz)." },
+            ],
           },
           {
             label: "Kimyasal Tepkimeler",
-            detail:
-              "Tepkimede atomlar yok olmaz, sadece yer değiştirir. Girenlerdeki atom sayısı ürünlerde de aynıdır (kütlenin korunumu).",
+            sections: [
+              { kind: "kural", content: "Atomlar yok olmaz/oluşmaz; girenlerdeki atom sayısı ürünlerdekiyle aynıdır (kütlenin korunumu)." },
+              { kind: "soru", content: "'Atom sayıları korunmuş mu?' → her elementin atom sayısı iki tarafta eşit olmalı." },
+            ],
           },
           {
             label: "Asitler ve Bazlar",
-            detail:
-              "Asitlerin pH'ı 7'den küçük, bazların 7'den büyüktür; saf su nötrdür (pH=7). Asitler mavi turnusolü kırmızıya, bazlar kırmızı turnusolü maviye çevirir.",
+            sections: [
+              { kind: "kural", content: "Asit pH < 7, nötr pH = 7 (saf su), baz pH > 7." },
+              { kind: "ornek", content: "Limon/sirke asit; sabun/deterjan baz. Asit mavi turnusolü kırmızıya çevirir." },
+              { kind: "tuzak", content: "pH büyüdükçe asitlik artmaz; bazlık artar." },
+            ],
           },
           {
             label: "Maddenin Isı ile Etkileşimi",
-            detail:
-              "Hâl değişimi sırasında sıcaklık sabit kalır. Erime-donma ve buharlaşma-yoğuşma birbirinin tersidir.",
+            sections: [
+              { kind: "kural", content: "Hâl değişimi sırasında sıcaklık sabit kalır." },
+              { kind: "tanim", content: "Erime-donma ve buharlaşma-yoğuşma birbirinin tersidir." },
+            ],
           },
         ],
       },
@@ -555,20 +616,29 @@ Günlük hayat örnekleri: pipetle içecek içilmesi, vantuzlu askıların duvar
           back: "Hâl değişimi süresince sıcaklık sabit kalır.",
         },
       ],
-      article: `## Periyodik Sistem
-Elementler artan atom numarasına göre dizilir. Yatay sıralara periyot, dikey sütunlara grup denir. Metaller tablonun solunda ve ortasında; ametaller sağ üstte; soy gazlar en sağ sütunda bulunur. Aynı gruptaki elementlerin kimyasal özellikleri benzerdir.
+      article: `# Periyodik Sistem
+Elementler **artan atom numarasına** göre dizilir.
+[kural] Yatay sıralara **periyot**, dikey sütunlara **grup** denir; aynı gruptaki elementlerin kimyasal özellikleri benzerdir.
+[örnek] Metaller solda ve ortada, ametaller sağ üstte, soy gazlar en sağ sütundadır.
 
-## Fiziksel ve Kimyasal Değişim
-Fiziksel değişimde maddenin sadece dış görünüşü (hâli, şekli) değişir, yeni madde oluşmaz; örnek: buzun erimesi, şekerin suda çözünmesi. Kimyasal değişimde maddenin iç yapısı değişir ve yeni madde oluşur; örnek: kâğıdın yanması, demirin paslanması, sütün ekşimesi.
+# Fiziksel ve Kimyasal Değişim
+[kural] **Fiziksel değişim:** yeni madde oluşmaz, yalnız dış görünüş değişir. **Kimyasal değişim:** yeni madde oluşur.
+[örnek] Fiziksel: buzun erimesi, şekerin çözünmesi. Kimyasal: kâğıdın yanması, demirin paslanması, sütün ekşimesi.
+[tuzak] Buzun erimesi kimyasal sanılır; **fizikseldir** (yeni madde yok).
 
-## Kimyasal Tepkimeler ve Kütlenin Korunumu
-Kimyasal tepkimelerde atomlar yok olmaz ya da yeniden oluşmaz; sadece yer değiştirir. Bu yüzden girenlerdeki toplam atom sayısı ürünlerdeki ile aynıdır ve kütle korunur (Kütlenin Korunumu Kanunu).
+# Kimyasal Tepkimeler ve Kütlenin Korunumu
+[kural] Tepkimede atomlar yok olmaz ya da yeniden oluşmaz; girenlerdeki toplam atom sayısı ürünlerdekiyle **aynıdır** (Kütlenin Korunumu Kanunu).
+[soru] "Tepkime denkleminde atom sayıları korunmuş mu?" → her elementin atom sayısı iki tarafta eşit olmalı.
 
-## Asitler ve Bazlar
-Asitlerin pH değeri 7'den küçük, bazların 7'den büyüktür; saf su nötrdür (pH = 7). Asitler mavi turnusolü kırmızıya, bazlar kırmızı turnusolü maviye çevirir. Limon ve sirke asit; sabun ve deterjan baz örneğidir.
+# Asitler ve Bazlar
+[kural] Asit **pH < 7**, nötr **pH = 7** (saf su), baz **pH > 7**.
+[örnek] Limon ve sirke asit; sabun ve deterjan bazdır. Asitler mavi turnusolü kırmızıya, bazlar kırmızı turnusolü maviye çevirir.
+[tuzak] "pH büyüdükçe asitlik artar" yanlıştır; pH büyüdükçe **bazlık** artar.
 
-## Maddenin Isı ile Etkileşimi
-Madde ısı aldığında hâl değiştirebilir (erime, buharlaşma); ısı verdiğinde ters yönde değişir (donma, yoğuşma). Hâl değişimi sırasında alınan/verilen ısı hâl değiştirmeye harcandığı için sıcaklık sabit kalır.`,
+# Maddenin Isı ile Etkileşimi
+Madde ısı alınca erir veya buharlaşır; ısı verince donar veya yoğuşur.
+[kural] **Hâl değişimi sırasında sıcaklık sabit kalır** (alınan ısı hâl değiştirmeye harcanır).
+[tuzak] "Saf su kaynarken sıcaklığı sürekli artar" yanlıştır; hâl değişiminde sıcaklık sabittir.`,
       tips: [
         {
           trap: "Fiziksel ve kimyasal değişim karıştırılır.",
@@ -814,28 +884,39 @@ Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeyd
         branches: [
           {
             label: "Besin Zinciri ve Besin Ağı",
-            detail:
-              "Üreticiden tüketiciye enerji akışıdır. Ok, enerjinin aktarıldığı yönü (yenenden yiyene) gösterir. Üretici → otçul → etçil.",
+            sections: [
+              { kind: "tanim", content: "Üreticiden tüketiciye enerji akışıdır: Üretici → otçul → etçil." },
+              { kind: "kural", content: "Ok, enerjinin aktarıldığı yönü (yenenden yiyene doğru) gösterir." },
+              { kind: "tuzak", content: "Okun yiyenden yenene doğru olduğu sanılır; tam tersidir." },
+            ],
           },
           {
             label: "Fotosentez ve Solunum",
-            detail:
-              "Fotosentezde bitkiler ışıkla besin ve oksijen üretir. Solunumda besinden enerji açığa çıkar, karbondioksit verilir.",
+            sections: [
+              { kind: "kural", content: "Fotosentezde oksijen üretilir; solunumda karbondioksit verilir." },
+              { kind: "tuzak", content: "Solunumda oksijen üretildiği sanılır; oksijen fotosentezde üretilir." },
+            ],
           },
           {
             label: "Madde Döngüleri",
-            detail:
-              "Su, karbon, oksijen ve azot döngüleriyle maddeler doğada sürekli kullanılır.",
+            sections: [
+              { kind: "tanim", content: "Su, karbon, oksijen ve azot döngüleriyle maddeler doğada sürekli kullanılır." },
+              { kind: "tuzak", content: "Enerji döngü oluşturmaz; tek yönlü akar. 'Enerji döngüsü' bir madde döngüsü değildir." },
+            ],
           },
           {
             label: "Enerji Piramidi",
-            detail:
-              "Üst basamaklara çıkıldıkça enerji azalır; en çok enerji üreticilerde bulunur.",
+            sections: [
+              { kind: "kural", content: "Üst basamaklara çıkıldıkça enerji azalır; en çok enerji üreticilerdedir." },
+              { kind: "tuzak", content: "Enerjinin yukarı çıktıkça arttığı sanılır; azalır." },
+            ],
           },
           {
             label: "Sürdürülebilirlik",
-            detail:
-              "Kaynakların gelecek nesillere kalacak şekilde, tükenmeden kullanılmasıdır; geri dönüşüm ve tasarrufla desteklenir.",
+            sections: [
+              { kind: "tanim", content: "Kaynakların tükenmeden, gelecek nesillere kalacak şekilde kullanılmasıdır." },
+              { kind: "ornek", content: "Geri dönüşüm, enerji tasarrufu, doğanın korunması." },
+            ],
           },
         ],
       },
@@ -861,20 +942,27 @@ Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeyd
           back: "Kaynakları tükenmeden, gelecek nesillere bırakacak şekilde kullanmaktır.",
         },
       ],
-      article: `## Besin Zinciri ve Besin Ağı
-Canlılar arasındaki beslenme ilişkisine besin zinciri denir. Zincir üreticilerle (yeşil bitkiler) başlar; otçul ve etçil tüketicilerle devam eder. Besin zincirindeki ok, enerjinin aktarıldığı yönü (yenen canlıdan yiyen canlıya doğru) gösterir. Birden çok besin zincirinin birleşmesiyle besin ağı oluşur.
+      article: `# Besin Zinciri ve Besin Ağı
+Canlılar arasındaki beslenme ilişkisidir; **üreticilerle** (yeşil bitkiler) başlar, otçul ve etçil tüketicilerle devam eder.
+[kural] Besin zincirindeki **ok**, enerjinin aktarıldığı yönü gösterir: **yenen canlıdan yiyen canlıya** doğru.
+[tuzak] Okun "yiyenden yenene" doğru olduğu sanılır; tam tersidir.
 
-## Fotosentez ve Solunum
-Fotosentezde bitkiler güneş ışığı, su ve karbondioksit kullanarak besin ve oksijen üretir. Solunumda ise besinler parçalanarak enerji açığa çıkar ve karbondioksit verilir. Bu iki olay birbirini dengeler.
+# Fotosentez ve Solunum
+[kural] **Fotosentez:** bitkiler ışık, su ve karbondioksitle besin ve **oksijen üretir**. **Solunum:** besin parçalanır, enerji açığa çıkar, **karbondioksit verilir**.
+[tuzak] "Solunumda oksijen üretilir" yanlıştır; oksijen fotosentezde üretilir.
 
-## Madde Döngüleri
-Su, karbon, oksijen ve azot gibi maddeler doğada sürekli dönüşerek tekrar kullanılır. Örneğin su döngüsünde su buharlaşır, yoğuşur ve yağışla yeryüzüne döner.
+# Madde Döngüleri
+Su, karbon, oksijen ve azot gibi maddeler doğada sürekli dönüşerek tekrar kullanılır.
+[örnek] Su döngüsünde su buharlaşır, yoğuşur ve yağışla yeryüzüne döner.
+[tuzak] Enerji döngü oluşturmaz, tek yönlü akar; "enerji döngüsü" bir madde döngüsü değildir.
 
-## Enerji Piramidi
-Besin zincirinde üst basamaklara çıkıldıkça aktarılan enerji azalır; çünkü her canlı aldığı enerjinin bir kısmını yaşamsal faaliyetlerinde harcar. En fazla enerji üreticilerde bulunur.
+# Enerji Piramidi
+[kural] Üst basamaklara çıkıldıkça aktarılan enerji **azalır**; çünkü her canlı enerjinin bir kısmını harcar. En fazla enerji **üreticilerdedir**.
+[soru] "En çok enerji hangi canlılarda bulunur?" → üreticilerde.
 
-## Sürdürülebilirlik ve Çevre
-Doğal kaynakların gelecek nesillere de yetecek şekilde, tükenmeden kullanılmasına sürdürülebilirlik denir. Geri dönüşüm, enerji tasarrufu ve doğanın korunması sürdürülebilirliği destekler.`,
+# Sürdürülebilirlik ve Çevre
+Doğal kaynakların tükenmeden, gelecek nesillere de yetecek şekilde kullanılmasıdır.
+[örnek] Geri dönüşüm, enerji tasarrufu ve doğanın korunması sürdürülebilirliği destekler.`,
       tips: [
         {
           trap: "Besin zincirindeki okun yönü ters yorumlanır.",
@@ -960,28 +1048,39 @@ Doğal kaynakların gelecek nesillere de yetecek şekilde, tükenmeden kullanıl
         branches: [
           {
             label: "Elektriklenme Çeşitleri",
-            detail:
-              "Sürtünme, dokunma ve etki ile elektriklenme. Sürtünme ile elektriklenmede cisimler zıt cins yükle yüklenir.",
+            sections: [
+              { kind: "tanim", content: "Sürtünme, dokunma ve etki ile elektriklenme olur." },
+              { kind: "kural", content: "Sürtünme ile elektriklenmede iki cisim zıt cins yükle yüklenir." },
+              { kind: "tuzak", content: "Sürtünen cisimlerin aynı yükle yüklendiği sanılır; zıt cins yüklenirler." },
+            ],
           },
           {
             label: "Elektrik Yükleri",
-            detail:
-              "İki tür yük vardır: pozitif (+) ve negatif (-). Aynı yükler birbirini iter, zıt yükler birbirini çeker.",
+            sections: [
+              { kind: "kural", content: "İki tür yük vardır: pozitif (+) ve negatif (−). Aynı yükler iter, zıt yükler çeker." },
+              { kind: "tuzak", content: "'Aynı yükler birbirini çeker' yanlıştır; aynı yükler iter." },
+            ],
           },
           {
             label: "İletken ve Yalıtkan",
-            detail:
-              "İletkenler elektriği iletir (metaller); yalıtkanlar iletmez (plastik, cam, tahta).",
+            sections: [
+              { kind: "kural", content: "İletkenler elektriği iletir (metaller); yalıtkanlar iletmez (plastik, cam, tahta)." },
+              { kind: "tuzak", content: "Plastiğin iletken olduğu sanılır; plastik yalıtkandır." },
+            ],
           },
           {
             label: "Elektroskop",
-            detail:
-              "Bir cismin yüklü olup olmadığını ve yük cinsini anlamaya yarayan araçtır. Yüklü cisim yaklaşınca yaprakları açılır.",
+            sections: [
+              { kind: "tanim", content: "Bir cismin yüklü olup olmadığını ve yük cinsini anlamaya yarayan araçtır." },
+              { kind: "ornek", content: "Yüklü cisim yaklaşınca elektroskobun yaprakları açılır." },
+            ],
           },
           {
             label: "Elektrik Enerjisinin Dönüşümü",
-            detail:
-              "Elektrik enerjisi ısı (ütü), ışık (ampul) ve hareket (motor) enerjisine dönüşebilir.",
+            sections: [
+              { kind: "kural", content: "Elektrik enerjisi ısı, ışık ve hareket enerjisine dönüşebilir." },
+              { kind: "ornek", content: "Ütü/soba → ısı, ampul → ışık, vantilatör/çamaşır makinesi → hareket." },
+            ],
           },
         ],
       },
@@ -1007,20 +1106,28 @@ Doğal kaynakların gelecek nesillere de yetecek şekilde, tükenmeden kullanıl
           back: "Isı, ışık ve hareket enerjisine.",
         },
       ],
-      article: `## Elektriklenme Çeşitleri
-Cisimlerin elektrik yükü kazanmasına elektriklenme denir. Üç yolla olur: sürtünme (örneğin yün kumaşa sürtülen balon), dokunma (yüklü bir cisme değme) ve etki (yüklü cismi yaklaştırma). Sürtünme ile elektriklenmede cisimler zıt cins yüklerle yüklenir.
+      article: `# Elektriklenme Çeşitleri
+Cisimlerin elektrik yükü kazanmasına elektriklenme denir. Üç yolla olur: **sürtünme** (yün kumaşa sürtülen balon), **dokunma** (yüklü cisme değme) ve **etki** (yüklü cismi yaklaştırma).
+[kural] Sürtünme ile elektriklenmede iki cisim **zıt cins** yüklerle yüklenir.
+[tuzak] "Sürtünen iki cisim aynı cins yükle yüklenir" yanlıştır; zıt cins yüklenirler.
 
-## Elektrik Yükleri
-İki tür elektrik yükü vardır: pozitif (+) ve negatif (-). Aynı cins yükler birbirini iter, zıt cins yükler birbirini çeker. Yüksüz (nötr) bir cisimde pozitif ve negatif yük sayısı eşittir.
+# Elektrik Yükleri
+İki tür yük vardır: **pozitif (+)** ve **negatif (−)**.
+[kural] Aynı cins yükler birbirini **iter**, zıt cins yükler birbirini **çeker**. Nötr cisimde + ve − yük sayısı eşittir.
+[tuzak] "Aynı yükler birbirini çeker" yanlıştır; iter.
 
-## İletkenler ve Yalıtkanlar
-Elektriği ileten maddelere iletken (bakır, demir gibi metaller), iletmeyen maddelere yalıtkan (plastik, cam, tahta, kuru hava) denir. Kablolarda iç kısım iletken, dış kısım yalıtkandır.
+# İletkenler ve Yalıtkanlar
+[kural] **İletken:** elektriği iletir (bakır, demir gibi metaller). **Yalıtkan:** iletmez (plastik, cam, tahta).
+[örnek] Kablolarda iç kısım iletken (bakır), dış kısım yalıtkandır (plastik).
+[tuzak] "Plastik iyi bir iletkendir" yanlıştır; plastik yalıtkandır.
 
-## Elektroskop
-Elektroskop, bir cismin yüklü olup olmadığını ve yükünün cinsini anlamaya yarar. Yüklü bir cisim yaklaştırıldığında elektroskobun yaprakları açılır.
+# Elektroskop
+Elektroskop, bir cismin yüklü olup olmadığını ve yükünün cinsini anlamaya yarar.
+[örnek] Yüklü bir cisim yaklaştırıldığında elektroskobun yaprakları açılır.
 
-## Elektrik Enerjisinin Dönüşümü
-Elektrik enerjisi başka enerji türlerine dönüşebilir: ütü ve sobada ısıya, ampulde ışığa, çamaşır makinesi ve vantilatörde hareket enerjisine dönüşür.`,
+# Elektrik Enerjisinin Dönüşümü
+[kural] Elektrik enerjisi başka enerji türlerine dönüşür.
+[örnek] Ütü ve sobada **ısıya**, ampulde **ışığa**, çamaşır makinesi ve vantilatörde **hareket** enerjisine dönüşür.`,
       tips: [
         {
           trap: "Aynı/zıt yük etkileşimi ters kurulur.",

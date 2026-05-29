@@ -6,6 +6,7 @@ import {
   AlertTriangle,
   BookOpen,
   ChevronRight,
+  HelpCircle,
   Lightbulb,
   ListChecks,
   Sigma,
@@ -61,6 +62,12 @@ const KIND_STYLE: Record<
     chip: "border-rehberim-accent/30 bg-rehberim-accent/10 text-rehberim-accent-dark",
     panel: "border-rehberim-accent/30 bg-rehberim-accent/5 text-rehberim-navy/80",
     icon: Lightbulb,
+  },
+  soru: {
+    label: "Soru Tarzı",
+    chip: "border-purple-200 bg-purple-50 text-purple-700",
+    panel: "border-purple-200 bg-purple-50/60 text-purple-900",
+    icon: HelpCircle,
   },
 };
 
