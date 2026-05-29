@@ -6,6 +6,7 @@ import {
   Layers,
   Lightbulb,
   Network,
+  Shapes,
   Video,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
@@ -13,6 +14,10 @@ import { Article } from "@/components/study/Article";
 import { Flashcards } from "@/components/study/Flashcards";
 import { LgsTips } from "@/components/study/LgsTips";
 import { MindMap } from "@/components/study/MindMap";
+import {
+  DIAGRAM_TOPICS,
+  TopicDiagrams,
+} from "@/components/study/MathDiagrams";
 import { Quiz } from "@/components/study/Quiz";
 import { TopicStudyController } from "@/components/study/TopicStudyController";
 import { YouTubeEmbed } from "@/components/study/YouTubeEmbed";
@@ -36,6 +41,7 @@ export default async function TopicPage({
   const hasArticle = Boolean(topicData.article && topicData.article.trim());
   const hasTips = (topicData.tips?.length ?? 0) > 0;
   const hasQuiz = (topicData.quiz?.length ?? 0) > 0;
+  const hasDiagrams = subject === "matematik" && DIAGRAM_TOPICS.includes(topic);
 
   return (
     <AppShell user={user}>
@@ -66,6 +72,13 @@ export default async function TopicPage({
       {hasMindMap && (
         <Section icon={<Network className="h-5 w-5" />} title="Konu haritası">
           <MindMap data={topicData.mindMap!} />
+        </Section>
+      )}
+
+      {/* Görsel anlatım */}
+      {hasDiagrams && (
+        <Section icon={<Shapes className="h-5 w-5" />} title="Görsel Anlatım">
+          <TopicDiagrams topic={topic} />
         </Section>
       )}
 
