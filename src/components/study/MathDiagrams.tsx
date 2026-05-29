@@ -445,51 +445,326 @@ function PieChart() {
   );
 }
 
-// ───────────── Dağıtıcı ─────────────
-export const DIAGRAM_TOPICS = [
-  "cebirsel-ifadeler",
-  "dogrusal-denklemler",
-  "donusum-geometrisi",
-  "ucgenler",
-  "geometrik-cisimler",
-  "veri-analizi",
-];
+// ───────────── Fen: Basit Makineler ─────────────
+function Lever() {
+  return (
+    <Figure
+      title="Kaldıraç"
+      caption="Denge kuralı: Yük × yük kolu = Kuvvet × kuvvet kolu. Destek noktasına olan uzaklıklar (kollar) avantajı belirler."
+    >
+      <svg viewBox="0 0 230 150" className="h-auto w-full max-w-[300px]">
+        <line x1="20" y1="85" x2="210" y2="85" stroke={NAVY} strokeWidth="5" strokeLinecap="round" />
+        <polygon points="115,85 103,118 127,118" fill={SLATE} />
+        <text x="115" y="132" textAnchor="middle" fontSize="10" fill={NAVY}>destek</text>
+        <rect x="28" y="58" width="28" height="24" fill={BLUE} rx="2" />
+        <text x="42" y="50" textAnchor="middle" fontSize="10" fontWeight="bold" fill={BLUE}>Yük</text>
+        <line x1="185" y1="48" x2="185" y2="80" stroke={ORANGE} strokeWidth="2.5" />
+        <polygon points="185,84 181,76 189,76" fill={ORANGE} />
+        <text x="185" y="42" textAnchor="middle" fontSize="10" fontWeight="bold" fill={ORANGE}>Kuvvet</text>
+      </svg>
+    </Figure>
+  );
+}
 
-export function TopicDiagrams({ topic }: { topic: string }) {
-  let figures: ReactNode = null;
-  if (topic === "cebirsel-ifadeler") figures = <IdentitySquare />;
-  else if (topic === "dogrusal-denklemler")
-    figures = (
+function InclinedPlane() {
+  return (
+    <Figure
+      title="Eğik düzlem"
+      caption="Gereken kuvvet azalır ama yol uzar. F = (G × h) ÷ ℓ. Rampa uzadıkça (eğim azaldıkça) kuvvet azalır."
+    >
+      <svg viewBox="0 0 230 150" className="h-auto w-full max-w-[300px]">
+        <polygon points="25,120 195,120 25,40" fill="#dbeafe" stroke={NAVY} strokeWidth="2" />
+        <rect x="60" y="78" width="22" height="22" fill={BLUE} rx="2" transform="rotate(-25 71 89)" />
+        <line x1="120" y1="40" x2="120" y2="120" stroke={GREEN} strokeWidth="1.5" strokeDasharray="3 3" />
+        <text x="128" y="85" fontSize="11" fontWeight="bold" fill={GREEN}>h</text>
+        <text x="95" y="92" fontSize="11" fontWeight="bold" fill={ORANGE}>ℓ</text>
+        <line x1="92" y1="70" x2="70" y2="80" stroke={ORANGE} strokeWidth="2.5" />
+        <polygon points="66,82 75,80 73,73" fill={ORANGE} />
+        <text x="100" y="135" textAnchor="middle" fontSize="9" fill={SLATE}>taban (yol)</text>
+      </svg>
+    </Figure>
+  );
+}
+
+function Pulleys() {
+  return (
+    <Figure
+      title="Makaralar"
+      caption="Sabit makara yalnız kuvvetin yönünü değiştirir (Kuvvet = Yük). Hareketli makara kuvvetten kazanç sağlar (Kuvvet = Yük ÷ 2)."
+    >
+      <div className="grid w-full grid-cols-2 gap-3">
+        <div className="flex flex-col items-center">
+          <svg viewBox="0 0 110 130" className="h-auto w-full max-w-[140px]">
+            <line x1="20" y1="18" x2="90" y2="18" stroke={NAVY} strokeWidth="3" />
+            <circle cx="55" cy="40" r="18" fill="#fed7aa" stroke={NAVY} strokeWidth="2" />
+            <circle cx="55" cy="40" r="3" fill={NAVY} />
+            <line x1="37" y1="40" x2="37" y2="95" stroke={SLATE} strokeWidth="2" />
+            <rect x="27" y="95" width="20" height="18" fill={BLUE} rx="2" />
+            <line x1="73" y1="40" x2="73" y2="80" stroke={ORANGE} strokeWidth="2" />
+            <polygon points="73,84 69,76 77,76" fill={ORANGE} />
+          </svg>
+          <span className="mt-1 text-xs font-bold text-rehberim-navy">Sabit makara</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <svg viewBox="0 0 110 130" className="h-auto w-full max-w-[140px]">
+            <line x1="20" y1="18" x2="90" y2="18" stroke={NAVY} strokeWidth="3" />
+            <line x1="38" y1="18" x2="45" y2="70" stroke={SLATE} strokeWidth="2" />
+            <line x1="72" y1="18" x2="65" y2="70" stroke={ORANGE} strokeWidth="2" />
+            <polygon points="72,16 68,24 76,24" fill={ORANGE} />
+            <circle cx="55" cy="80" r="18" fill="#fed7aa" stroke={NAVY} strokeWidth="2" />
+            <circle cx="55" cy="80" r="3" fill={NAVY} />
+            <rect x="45" y="98" width="20" height="18" fill={BLUE} rx="2" />
+          </svg>
+          <span className="mt-1 text-xs font-bold text-rehberim-navy">Hareketli makara</span>
+        </div>
+      </div>
+    </Figure>
+  );
+}
+
+// ───────────── Fen: Mevsimler ve İklim ─────────────
+function SeasonsOrbit() {
+  return (
+    <Figure
+      title="Eksen eğikliği ve Güneş"
+      caption="Dünya'nın ekseni 23,5° eğiktir ve Güneş etrafında dolanır. Eğiklik, ışınların düşme açısını değiştirerek mevsimleri oluşturur (uzaklık değil!)."
+    >
+      <svg viewBox="0 0 240 150" className="h-auto w-full max-w-[320px]">
+        <circle cx="45" cy="75" r="28" fill="#fde68a" stroke={AMBER} strokeWidth="2" />
+        <text x="45" y="79" textAnchor="middle" fontSize="11" fontWeight="bold" fill="#b45309">Güneş</text>
+        {[60, 75, 90].map((y, i) => (
+          <g key={i}>
+            <line x1="75" y1={y} x2="160" y2={y} stroke={AMBER} strokeWidth="1.5" />
+            <polygon points={`164,${y} 156,${y - 4} 156,${y + 4}`} fill={AMBER} />
+          </g>
+        ))}
+        <circle cx="190" cy="75" r="30" fill="#bfdbfe" stroke={NAVY} strokeWidth="2" />
+        {/* eğik eksen */}
+        <line x1="178" y1="40" x2="202" y2="110" stroke={RED} strokeWidth="2.5" />
+        <text x="205" y="42" fontSize="10" fontWeight="bold" fill={RED}>23,5°</text>
+        <line x1="160" y1="75" x2="220" y2="75" stroke={SLATE} strokeWidth="1" strokeDasharray="2 2" />
+        <text x="190" y="120" textAnchor="middle" fontSize="9" fill={SLATE}>Dünya</text>
+      </svg>
+    </Figure>
+  );
+}
+
+function SunRays() {
+  const ray = (x: number, y2: number, slant: number) => (
+    <g>
+      <line x1={x + slant} y1="20" x2={x} y2={y2} stroke={AMBER} strokeWidth="2" />
+      <polygon points={`${x},${y2} ${x - 4},${y2 - 7} ${x + 4},${y2 - 7}`} fill={AMBER} />
+    </g>
+  );
+  return (
+    <Figure
+      title="Işınların düşme açısı"
+      caption="Dik gelen ışınlar dar alana düşer, enerji yoğundur (yaz). Eğik gelen ışınlar geniş alana yayılır, enerji azalır (kış)."
+    >
+      <svg viewBox="0 0 240 140" className="h-auto w-full max-w-[320px]">
+        <line x1="10" y1="110" x2="230" y2="110" stroke={NAVY} strokeWidth="2" />
+        {/* dik */}
+        {[40, 55, 70].map((x) => ray(x, 108, 0))}
+        <rect x="36" y="108" width="38" height="5" fill={ORANGE} />
+        <text x="55" y="128" textAnchor="middle" fontSize="9" fill={NAVY}>Dik (Yaz)</text>
+        {/* eğik */}
+        {[150, 170, 190].map((x) => ray(x, 108, 30))}
+        <rect x="140" y="108" width="70" height="5" fill="#fdba74" />
+        <text x="175" y="128" textAnchor="middle" fontSize="9" fill={NAVY}>Eğik (Kış)</text>
+      </svg>
+    </Figure>
+  );
+}
+
+// ───────────── Fen: DNA ─────────────
+function DnaHierarchy() {
+  const items = [
+    { l: "Kromozom", c: "#1e293b" },
+    { l: "DNA", c: "#334155" },
+    { l: "Gen", c: "#475569" },
+    { l: "Nükleotit", c: "#64748b" },
+  ];
+  return (
+    <Figure
+      title="Kalıtsal yapıların hiyerarşisi"
+      caption="Büyükten küçüğe: Kromozom > DNA > Gen > Nükleotit. Kromozom en karmaşık, nükleotit en küçük yapı birimidir."
+    >
+      <svg viewBox="0 0 240 90" className="h-auto w-full max-w-[320px]">
+        {items.map((it, i) => {
+          const x = 6 + i * 58;
+          return (
+            <g key={it.l}>
+              <rect x={x} y="28" width="48" height="34" rx="6" fill={it.c} />
+              <text x={x + 24} y="49" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#fff">{it.l}</text>
+              {i < items.length - 1 && (
+                <text x={x + 52} y="49" textAnchor="middle" fontSize="14" fill={SLATE}>›</text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </Figure>
+  );
+}
+
+function DnaPairing() {
+  const rungs = [
+    { y: 30, left: "A", right: "T", c: BLUE },
+    { y: 55, left: "T", right: "A", c: BLUE },
+    { y: 80, left: "G", right: "C", c: GREEN },
+    { y: 105, left: "C", right: "G", c: GREEN },
+  ];
+  return (
+    <Figure
+      title="DNA eşleşme kuralı (A–T, G–C)"
+      caption="DNA çift zincirlidir. Bazlar karşılıklı eşleşir: Adenin–Timin (A–T) ve Guanin–Sitozin (G–C)."
+    >
+      <svg viewBox="0 0 200 140" className="h-auto w-full max-w-[240px]">
+        <line x1="55" y1="18" x2="55" y2="120" stroke={SLATE} strokeWidth="3" />
+        <line x1="145" y1="18" x2="145" y2="120" stroke={SLATE} strokeWidth="3" />
+        {rungs.map((r) => (
+          <g key={r.y}>
+            <line x1="58" y1={r.y} x2="142" y2={r.y} stroke={r.c} strokeWidth="2" />
+            <circle cx="74" cy={r.y} r="11" fill={r.c} />
+            <text x="74" y={r.y + 4} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#fff">{r.left}</text>
+            <circle cx="126" cy={r.y} r="11" fill={r.c} opacity="0.7" />
+            <text x="126" y={r.y + 4} textAnchor="middle" fontSize="11" fontWeight="bold" fill="#fff">{r.right}</text>
+          </g>
+        ))}
+      </svg>
+    </Figure>
+  );
+}
+
+// ───────────── Fen: Elektrik ─────────────
+function Charges() {
+  return (
+    <Figure
+      title="Elektrik yükleri"
+      caption="Aynı cins yükler birbirini iter, zıt cins yükler birbirini çeker."
+    >
+      <svg viewBox="0 0 240 120" className="h-auto w-full max-w-[320px]">
+        {/* iter */}
+        <circle cx="40" cy="45" r="16" fill={RED} />
+        <text x="40" y="50" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#fff">+</text>
+        <circle cx="100" cy="45" r="16" fill={RED} />
+        <text x="100" y="50" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#fff">+</text>
+        <line x1="58" y1="45" x2="44" y2="45" stroke={NAVY} strokeWidth="2" />
+        <polygon points="40,45 48,41 48,49" fill={NAVY} />
+        <line x1="82" y1="45" x2="96" y2="45" stroke={NAVY} strokeWidth="2" />
+        <polygon points="100,45 92,41 92,49" fill={NAVY} />
+        <text x="70" y="85" textAnchor="middle" fontSize="10" fontWeight="bold" fill={NAVY}>İter</text>
+        {/* çeker */}
+        <circle cx="160" cy="45" r="16" fill={RED} />
+        <text x="160" y="50" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#fff">+</text>
+        <circle cx="220" cy="45" r="16" fill={BLUE} />
+        <text x="220" y="51" textAnchor="middle" fontSize="18" fontWeight="bold" fill="#fff">−</text>
+        <line x1="178" y1="45" x2="192" y2="45" stroke={NAVY} strokeWidth="2" />
+        <polygon points="196,45 188,41 188,49" fill={NAVY} />
+        <line x1="202" y1="45" x2="188" y2="45" stroke={NAVY} strokeWidth="2" />
+        <text x="190" y="85" textAnchor="middle" fontSize="10" fontWeight="bold" fill={NAVY}>Çeker</text>
+      </svg>
+    </Figure>
+  );
+}
+
+function Circuit() {
+  return (
+    <Figure
+      title="Basit elektrik devresi"
+      caption="Pilden gelen elektrik enerjisi kapalı devrede ampulde ışık (ve ısı) enerjisine dönüşür."
+    >
+      <svg viewBox="0 0 200 130" className="h-auto w-full max-w-[260px]">
+        <rect x="30" y="25" width="140" height="80" rx="6" fill="none" stroke={NAVY} strokeWidth="2.5" />
+        {/* pil */}
+        <line x1="85" y1="105" x2="85" y2="118" stroke={NAVY} strokeWidth="2" />
+        <rect x="78" y="100" width="2" height="14" fill={NAVY} />
+        <line x1="115" y1="105" x2="115" y2="113" stroke={NAVY} strokeWidth="4" />
+        <text x="100" y="100" textAnchor="middle" fontSize="9" fill={SLATE}>pil</text>
+        {/* ampul */}
+        <circle cx="100" cy="25" r="14" fill="#fef9c3" stroke={AMBER} strokeWidth="2" />
+        <line x1="93" y1="19" x2="107" y2="31" stroke={AMBER} strokeWidth="1.5" />
+        <line x1="107" y1="19" x2="93" y2="31" stroke={AMBER} strokeWidth="1.5" />
+        <text x="100" y="10" textAnchor="middle" fontSize="9" fill={SLATE}>ampul</text>
+      </svg>
+    </Figure>
+  );
+}
+
+// ───────────── Dağıtıcı ─────────────
+const DIAGRAMS: Record<string, Record<string, ReactNode>> = {
+  matematik: {
+    "cebirsel-ifadeler": <IdentitySquare />,
+    "dogrusal-denklemler": (
       <>
         <CoordinateLine />
         <LineChart />
       </>
-    );
-  else if (topic === "donusum-geometrisi") figures = <Transformations />;
-  else if (topic === "ucgenler")
-    figures = (
+    ),
+    "donusum-geometrisi": <Transformations />,
+    ucgenler: (
       <>
         <TriangleAngles />
         <RightTriangle />
       </>
-    );
-  else if (topic === "geometrik-cisimler")
-    figures = (
+    ),
+    "geometrik-cisimler": (
       <>
         <Prism />
         <Cube />
         <Cylinder />
       </>
-    );
-  else if (topic === "veri-analizi")
-    figures = (
+    ),
+    "veri-analizi": (
       <>
         <BarChart />
         <LineChart />
         <PieChart />
       </>
-    );
+    ),
+  },
+  "fen-bilimleri": {
+    "basit-makineler": (
+      <>
+        <Lever />
+        <InclinedPlane />
+        <Pulleys />
+      </>
+    ),
+    "mevsimler-ve-iklim": (
+      <>
+        <SeasonsOrbit />
+        <SunRays />
+      </>
+    ),
+    "dna-ve-genetik-kod": (
+      <>
+        <DnaHierarchy />
+        <DnaPairing />
+      </>
+    ),
+    "elektrik-yukleri-ve-enerjisi": (
+      <>
+        <Charges />
+        <Circuit />
+      </>
+    ),
+  },
+};
 
+export function hasTopicDiagrams(subject: string, topic: string): boolean {
+  return Boolean(DIAGRAMS[subject]?.[topic]);
+}
+
+export function TopicDiagrams({
+  subject,
+  topic,
+}: {
+  subject: string;
+  topic: string;
+}) {
+  const figures = DIAGRAMS[subject]?.[topic];
   if (!figures) return null;
   return <div className="grid gap-4 sm:grid-cols-2">{figures}</div>;
 }
+

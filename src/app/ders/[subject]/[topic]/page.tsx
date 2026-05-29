@@ -15,7 +15,7 @@ import { Flashcards } from "@/components/study/Flashcards";
 import { LgsTips } from "@/components/study/LgsTips";
 import { MindMap } from "@/components/study/MindMap";
 import {
-  DIAGRAM_TOPICS,
+  hasTopicDiagrams,
   TopicDiagrams,
 } from "@/components/study/MathDiagrams";
 import { Quiz } from "@/components/study/Quiz";
@@ -41,7 +41,7 @@ export default async function TopicPage({
   const hasArticle = Boolean(topicData.article && topicData.article.trim());
   const hasTips = (topicData.tips?.length ?? 0) > 0;
   const hasQuiz = (topicData.quiz?.length ?? 0) > 0;
-  const hasDiagrams = subject === "matematik" && DIAGRAM_TOPICS.includes(topic);
+  const hasDiagrams = hasTopicDiagrams(subject, topic);
 
   return (
     <AppShell user={user}>
@@ -78,7 +78,7 @@ export default async function TopicPage({
       {/* Görsel anlatım */}
       {hasDiagrams && (
         <Section icon={<Shapes className="h-5 w-5" />} title="Görsel Anlatım">
-          <TopicDiagrams topic={topic} />
+          <TopicDiagrams subject={subject} topic={topic} />
         </Section>
       )}
 
