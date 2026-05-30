@@ -491,7 +491,7 @@ Din, bireye **ahlaki değerler** kazandırır; toplumda **huzur, dayanışma ve 
             label: `Özellikleri`,
             sections: [
               { kind: "kural", content: `Son ilahi kitaptır, Arapça indirilmiştir, değiştirilmeden korunmuştur, evrenseldir, her çağa hitap eder.` },
-              { kind: "ornek", content: `Diğer ilahi kitaplar (sırasıyla): Hz. Davud → Zebur, Hz. Musa → Tevrat, Hz. İsa → İncil, Hz. Muhammed → Kur'an.` },
+              { kind: "ornek", content: `Diğer ilahi kitaplar (tarihsel iniş sırasıyla): Hz. Musa → Tevrat, Hz. Davud → Zebur, Hz. İsa → İncil, Hz. Muhammed → Kur'an.` },
             ],
           },
           {
