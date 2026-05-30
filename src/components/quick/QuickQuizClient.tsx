@@ -10,14 +10,12 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import type { PoolQuestion, QuickScope } from "@/lib/quickQuiz-types";
 import {
-  type QuickScope,
-  type PoolQuestion,
-  collectAllQuestions,
-  getQuickPool,
+  filterAndShuffle,
   markSolved,
-  resetScope,
-} from "@/lib/quickQuiz";
+  resetSolvedFor,
+} from "@/lib/quickQuiz-client";
 import { saveQuizResult } from "@/lib/tracking";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -39,11 +37,14 @@ type Record = {
 
 export function QuickQuizClient({
   scope,
+  initialPool,
   title,
   subtitle,
   backHref,
 }: {
   scope: QuickScope;
+  /** Server'dan gelen kapsamdaki tüm sorular (çözülmüş olsun olmasın). */
+  initialPool: PoolQuestion[];
   title: string;
   subtitle: string;
   backHref: string;
@@ -57,14 +58,13 @@ export function QuickQuizClient({
   const [reviewIndex, setReviewIndex] = useState<number | null>(null);
   const saved = useRef(false);
 
-  // Mount: havuzu kur
+  // Mount: havuzu kur (çözülmüşleri çıkar + karıştır)
   useEffect(() => {
-    const p = getQuickPool(scope);
+    const p = filterAndShuffle(initialPool);
     setPool(p);
     setStartMs(Date.now());
     if (p.length === 0) {
-      const total = collectAllQuestions(scope).length;
-      setPhase(total === 0 ? "done" : "exhausted");
+      setPhase(initialPool.length === 0 ? "done" : "exhausted");
     } else {
       setPhase("active");
     }
@@ -122,13 +122,13 @@ export function QuickQuizClient({
   }
 
   function handleReset() {
-    resetScope(scope);
+    resetSolvedFor(initialPool.map((p) => p.id));
     setHistory([]);
     setIndex(0);
     setSelected(null);
     saved.current = false;
     setStartMs(Date.now());
-    const p = getQuickPool(scope);
+    const p = filterAndShuffle(initialPool);
     setPool(p);
     setPhase(p.length === 0 ? "done" : "active");
   }

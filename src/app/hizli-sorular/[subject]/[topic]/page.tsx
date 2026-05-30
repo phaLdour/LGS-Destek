@@ -4,6 +4,7 @@ import { ArrowLeft, Shuffle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { QuickQuizClient } from "@/components/quick/QuickQuizClient";
 import { getSubjectContent, getTopic } from "@/content";
+import { collectAllQuestions } from "@/lib/quickQuiz";
 import { getShellUser } from "@/lib/user";
 
 export default async function HizliSorularQuizPage({
@@ -42,6 +43,7 @@ export default async function HizliSorularQuizPage({
         </header>
         <QuickQuizClient
           scope={{ kind: "karma-subject", subject }}
+          initialPool={collectAllQuestions({ kind: "karma-subject", subject })}
           title={`Karma — ${subjectContent.name}`}
           subtitle="Tüm konulardan karışık"
           backHref={`/hizli-sorular/${subject}`}
@@ -73,6 +75,7 @@ export default async function HizliSorularQuizPage({
       </header>
       <QuickQuizClient
         scope={{ kind: "topic", subject, topic }}
+        initialPool={collectAllQuestions({ kind: "topic", subject, topic })}
         title={topicData.name}
         subtitle={subjectContent.name}
         backHref={`/hizli-sorular/${subject}`}

@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { QuickQuizClient } from "@/components/quick/QuickQuizClient";
 import { QuickTopicList } from "@/components/quick/QuickTopicList";
 import { getSubjectContent } from "@/content";
+import { collectAllQuestions } from "@/lib/quickQuiz";
 import { getShellUser } from "@/lib/user";
 
 export default async function HizliSorularSubjectPage({
@@ -37,6 +38,7 @@ export default async function HizliSorularSubjectPage({
         </header>
         <QuickQuizClient
           scope={{ kind: "karma-all" }}
+          initialPool={collectAllQuestions({ kind: "karma-all" })}
           title="Karma"
           subtitle="Tüm derslerden rastgele"
           backHref="/hizli-sorular"
