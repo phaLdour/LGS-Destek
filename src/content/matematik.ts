@@ -187,29 +187,33 @@ Asal sayı, yalnızca **1'e ve kendisine** bölünebilen 1'den büyük doğal sa
           {
             label: `Karekök ve Tam Kareler`,
             sections: [
-              { kind: "tanim", content: `√a (a ≥ 0): karesi a olan pozitif sayı. √16 = 4.` },
-              { kind: "ornek", content: `Tam kareler: 1, 4, 9, 16, 25, 36, 49, 64...` },
+              { kind: "tanim", content: `√a (a ≥ 0): karesi a olan pozitif sayı. Kök içi negatif olamaz.` },
+              { kind: "ornek", content: `Tam kareler tablosu: 1²=1, 2²=4, 3²=9, 4²=16, 5²=25, 6²=36, 7²=49, 8²=64, 9²=81, 10²=100, 11²=121, 12²=144, 13²=169, 14²=196, 15²=225.` },
+              { kind: "ipucu", content: `Bir sayının tam kare olup olmadığını anlamak için: 50, 64, 80 arasından 64=8² tam karedir.` },
             ],
           },
           {
             label: `Çarpma ve Bölme`,
             sections: [
               { kind: "formul", content: `√a · √b = √(a·b)   ve   √a ÷ √b = √(a÷b)` },
-              { kind: "ornek", content: `√2 · √8 = √16 = 4.` },
+              { kind: "ornek", content: `√2 · √8 = √16 = 4 • √3 · √12 = √36 = 6 • √18 ÷ √2 = √9 = 3 • √50 ÷ √2 = √25 = 5.` },
             ],
           },
           {
-            label: `Kök Dışına Alma`,
+            label: `Kök Dışına / İçine Alma`,
             sections: [
-              { kind: "formul", content: `Kök içindeki tam kare çarpan dışarı çıkar: √12 = √(4·3) = 2√3.` },
-              { kind: "ornek", content: `2√3 = √(4·3) = √12 (tersi).` },
+              { kind: "formul", content: `Kök içindeki tam kare çarpan dışarı çıkar (kökü alınıp katsayı olur).` },
+              { kind: "ornek", content: `Dışarı: √12 = √(4·3) = 2√3 • √18 = √(9·2) = 3√2 • √50 = √(25·2) = 5√2 • √72 = √(36·2) = 6√2. İçeri: 3√5 = √(9·5) = √45.` },
             ],
           },
           {
             label: `Toplama ve Çıkarma`,
             sections: [
-              { kind: "kural", content: `Yalnız kök içleri AYNI olanlar toplanır: 2√3 + 5√3 = 7√3.` },
-              { kind: "tuzak", content: `√(9+16) ≠ √9 + √16. Doğrusu √25 = 5; karekök toplamaya dağılmaz.` },
+              { kind: "kural", content: `Yalnız KÖK İÇLERİ AYNI olanlar toplanıp çıkarılır; katsayılar toplanır, kök içi değişmez.` },
+              { kind: "ornek", content: `2√3 + 5√3 = 7√3 • 8√5 − 3√5 = 5√5 • √2 + 3√2 = 4√2.` },
+              { kind: "ornek", content: `Önce sadeleştir: √8 + √18 = 2√2 + 3√2 = 5√2 (kök içleri farklı görünüyordu, sadeleştince aynı oldu).` },
+              { kind: "tuzak", content: `√(9+16) ≠ √9 + √16 (7 değil!). Doğrusu √(9+16) = √25 = 5. Karekök toplamaya dağılmaz.` },
+              { kind: "tuzak", content: `2√2 + 3√3 toplanamaz; kök içleri farklı, olduğu gibi kalır.` },
             ],
           },
         ],
@@ -260,29 +264,37 @@ Bir sayının karekökü, karesi o sayıya eşit olan **pozitif** sayıdır: √
             label: `Aritmetik Ortalama`,
             sections: [
               { kind: "formul", content: `Ortalama = verilerin toplamı ÷ veri sayısı.` },
-              { kind: "ornek", content: `4, 6, 8, 10 → 28 ÷ 4 = 7.` },
+              { kind: "ornek", content: `4, 6, 8, 10 → toplam 28 ÷ 4 = 7. Notlar 70, 80, 90, 100 → toplam 340 ÷ 4 = 85. Tek sayı: 6, 8, 10 → 24 ÷ 3 = 8.` },
+              { kind: "ipucu", content: `Bir veriyi ortalamaya katmak için: (eski toplam + yeni veri) ÷ (eski sayı + 1).` },
             ],
           },
           {
             label: `Ortanca (Medyan)`,
             sections: [
-              { kind: "kural", content: `Veriler SIRALANIR, ortadaki değerdir. Veri sayısı çiftse ortadaki ikisinin ortalaması alınır.` },
-              { kind: "ornek", content: `10, 20, 30, 40 → (20+30) ÷ 2 = 25.` },
-              { kind: "tuzak", content: `Sıralamadan medyan alınmaz: 5,1,3 → sıralı (1,3,5) → ortanca 3.` },
+              { kind: "kural", content: `Veriler küçükten büyüğe SIRALANIR, ortadaki değerdir. Veri sayısı çiftse ortadaki ikisinin ortalaması alınır.` },
+              { kind: "ornek", content: `Tek sayıda (5 veri): 3, 7, 8, 12, 15 → ortanca 8. Çift sayıda (4 veri): 10, 20, 30, 40 → (20+30) ÷ 2 = 25. Karışık: 5, 1, 9, 3, 7 → sıralı 1,3,5,7,9 → ortanca 5.` },
+              { kind: "tuzak", content: `Sıralamadan medyan alınmaz! Önce mutlaka küçükten büyüğe sırala.` },
             ],
           },
           {
             label: `Tepe Değer (Mod)`,
             sections: [
-              { kind: "tanim", content: `En çok tekrar eden değerdir.` },
-              { kind: "ornek", content: `3, 7, 7, 2, 9 → mod 7.` },
+              { kind: "tanim", content: `En çok tekrar eden değerdir. Hiçbiri tekrar etmiyorsa mod yoktur; birden çok değer aynı sayıda tekrar ederse birden çok mod olabilir.` },
+              { kind: "ornek", content: `Tek mod: 3, 7, 7, 2, 9 → mod 7. Çift mod: 1, 2, 2, 3, 3, 4 → mod 2 ve 3. Mod yok: 1, 2, 3, 4, 5 → her veri eşit, mod yok.` },
             ],
           },
           {
-            label: `Açıklık ve Grafikler`,
+            label: `Açıklık`,
             sections: [
               { kind: "formul", content: `Açıklık = en büyük veri − en küçük veri.` },
-              { kind: "ipucu", content: `Bütünün parçalara (yüzde) dağılımı için daire grafiği uygundur.` },
+              { kind: "ornek", content: `2, 5, 9, 15, 22 → 22 − 2 = 20. Notlar 60, 75, 80, 95 → 95 − 60 = 35.` },
+            ],
+          },
+          {
+            label: `Grafikler`,
+            sections: [
+              { kind: "ornek", content: `Daire grafiği: bütünün parçalara (yüzde) dağılımı (ders saatlerinin oranı). Sütun grafiği: kategorileri karşılaştırma (sınıfların kişi sayısı). Çizgi grafiği: zaman içinde değişim (aylara göre sıcaklık).` },
+              { kind: "ipucu", content: `Sorularda "yüzde" / "oran" → daire; "karşılaştırma" → sütun; "zaman içinde değişim" → çizgi grafiği uygun.` },
             ],
           },
         ],
@@ -334,22 +346,34 @@ Bir sayının karekökü, karesi o sayıya eşit olan **pozitif** sayıdır: √
             label: `Olasılık Tanımı`,
             sections: [
               { kind: "formul", content: `Olasılık = istenen çıktı sayısı ÷ tüm olası çıktı sayısı.` },
-              { kind: "kural", content: `Sonuç daima 0 ile 1 arasındadır.` },
-              { kind: "ornek", content: `Hilesiz zarda 3 gelme: 1 ÷ 6 = 1/6.` },
+              { kind: "kural", content: `Sonuç daima 0 ile 1 arasındadır (0 ≤ olasılık ≤ 1).` },
+              { kind: "ornek", content: `Hilesiz zarda 3 gelme = 1/6 (istenen 1, toplam 6). Hilesiz parada yazı gelme = 1/2.` },
             ],
           },
           {
             label: `Kesin ve İmkânsız Olay`,
             sections: [
               { kind: "kural", content: `Kesin olayın olasılığı 1, imkânsız olayın olasılığı 0'dır.` },
-              { kind: "tuzak", content: `Olasılık 1'den büyük olamaz; '1,5 olasılık' yoktur.` },
+              { kind: "ornek", content: `Kesin: bir zar atıldığında 7'den küçük sayı gelmesi = 6/6 = 1. İmkânsız: bir zarda 7 gelmesi = 0/6 = 0.` },
+              { kind: "tuzak", content: `Olasılık 1'den büyük olamaz; '1,5 olasılık' diye bir şey YOKTUR.` },
             ],
           },
           {
-            label: `Örnekler`,
+            label: `Zar Örnekleri`,
             sections: [
-              { kind: "ornek", content: `Zarda çift (2,4,6): 3 ÷ 6 = 1/2. Torbada 3 kırmızı/5 top → 3/5.` },
-              { kind: "soru", content: `'1–10 arasından seçilen sayı asal mı?' → 4/10 = 2/5.` },
+              { kind: "ornek", content: `Çift sayı (2,4,6): 3/6 = 1/2. Asal sayı (2,3,5): 3/6 = 1/2. 4'ten büyük (5,6): 2/6 = 1/3. 1 veya 6: 2/6 = 1/3.` },
+            ],
+          },
+          {
+            label: `Para ve Torba Örnekleri`,
+            sections: [
+              { kind: "ornek", content: `Para (yazı/tura): 1/2 her birinin. Torba (3 kırmızı + 2 mavi top, 5 toplam): kırmızı çekme = 3/5; mavi = 2/5. Torba (4 kırmızı + 6 mavi = 10): kırmızı = 4/10 = 2/5.` },
+            ],
+          },
+          {
+            label: `Sayı Seçme Örnekleri`,
+            sections: [
+              { kind: "ornek", content: `1–10 arası tam sayı seçme: asal (2,3,5,7) → 4/10 = 2/5; çift → 5/10 = 1/2; 3'ün katı (3,6,9) → 3/10. Bir harf seçme: TÜRKÇE'den bir harf rastgele → ünlü olasılığı (Ü,E) → 2/6 = 1/3.` },
             ],
           },
         ],
@@ -468,29 +492,33 @@ Bir ifadeyi çarpımlar biçiminde yazmaktır.
           {
             label: `Birinci Dereceden Denklemler`,
             sections: [
-              { kind: "kural", content: `Bilinmeyen yalnız bırakılır; taraf değiştiren terimin işareti değişir.` },
-              { kind: "ornek", content: `2x+3=11 → 2x=8 → x=4.` },
-              { kind: "tuzak", content: `x+5=2 → x=7 YANLIŞ; doğrusu x = 2−5 = −3.` },
+              { kind: "kural", content: `Bilinmeyen (x) yalnız bırakılır; taraf değiştiren terimin işareti değişir.` },
+              { kind: "ornek", content: `Basit: 2x+3=11 → 2x=8 → x=4. Çıkarma: x−5=2 → x=7. Çarpan: 3x=18 → x=6. Bölen: x÷2=6 → x=12. Bileşik: 5x−4=16 → 5x=20 → x=4.` },
+              { kind: "ornek", content: `Dağıtmalı: 2(x+4)=20 → 2x+8=20 → 2x=12 → x=6. Kesirli: x/3+2=5 → x/3=3 → x=9.` },
+              { kind: "tuzak", content: `x+5=2 → x=7 YANLIŞ; taraf değiştirirken işaret değişir, doğrusu x = 2−5 = −3.` },
             ],
           },
           {
             label: `Koordinat Sistemi`,
             sections: [
-              { kind: "tanim", content: `Nokta (x, y) ile gösterilir; x apsis, y ordinattır.` },
-              { kind: "ornek", content: `(0, 5) noktası y ekseni üzerindedir.` },
+              { kind: "tanim", content: `Düzlemdeki nokta (x, y) ile gösterilir; x apsis (yatay), y ordinat (dikey).` },
+              { kind: "ornek", content: `(3, 2): 1. bölge. (−3, 2): 2. bölge. (−3, −2): 3. bölge. (3, −2): 4. bölge. (0, 5): y ekseni üzerinde. (4, 0): x ekseni üzerinde. (0, 0): orijin.` },
             ],
           },
           {
             label: `Doğrunun Eğimi`,
             sections: [
-              { kind: "formul", content: `Eğim = y'deki değişim ÷ x'teki değişim (dikey ÷ yatay).` },
-              { kind: "tuzak", content: `Eğim = x ÷ y değildir; doğrusu y ÷ x'tir.` },
+              { kind: "formul", content: `Eğim = (y2 − y1) ÷ (x2 − x1) = dikey değişim ÷ yatay değişim.` },
+              { kind: "ornek", content: `İki nokta: (1,2) ve (3,8) → eğim = (8−2)÷(3−1) = 6/2 = 3. y = 2x+1 doğrusunun eğimi 2'dir.` },
+              { kind: "ipucu", content: `Eğim pozitifse doğru sağa yukarı; negatifse sağa aşağı eğimlidir. Eğim 0 ise yatay; tanımsızsa dikey doğrudur.` },
+              { kind: "tuzak", content: `Eğim = x ÷ y DEĞİL; doğrusu y ÷ x'tir.` },
             ],
           },
           {
             label: `Doğru Grafiği`,
             sections: [
-              { kind: "tanim", content: `Doğrusal bir denklemin grafiği koordinat düzleminde bir doğrudur.` },
+              { kind: "tanim", content: `Doğrusal (y = ax+b) bir denklemin grafiği bir doğrudur.` },
+              { kind: "ipucu", content: `Çizmek için iki nokta yeterli: x=0 → y=b (y kesimi); y=0 → x=−b/a (x kesimi). Bu iki noktayı birleştir.` },
             ],
           },
         ],
@@ -542,23 +570,32 @@ Bilinmeyeni (x) **yalnız bırakarak** çözülür.
           {
             label: `Eşitsizlik Sembolleri`,
             sections: [
-              { kind: "tanim", content: `< küçüktür, > büyüktür, ≤ küçük eşit, ≥ büyük eşittir.` },
-              { kind: "ornek", content: `"x > 3" → x, 3'ten büyüktür.` },
+              { kind: "tanim", content: `< küçüktür, > büyüktür, ≤ küçük veya eşittir, ≥ büyük veya eşittir.` },
+              { kind: "ornek", content: `"x > 3" → x, 3'ten büyük. "x ≤ 5" → x, 5 veya daha küçük. "−2 ≤ x < 6" → x, −2'den büyük veya eşit ve 6'dan küçük (çift eşitsizlik).` },
             ],
           },
           {
             label: `Eşitsizlik Çözme`,
             sections: [
-              { kind: "kural", content: `Denklem gibi çözülür; negatif sayıyla çarpılıp bölününce YÖN DEĞİŞİR.` },
-              { kind: "ornek", content: `−2x ≤ 6 → x ≥ −3 (yön döndü).` },
+              { kind: "kural", content: `Denklem gibi çözülür; ANCAK negatif bir sayıyla çarpılıp bölününce YÖN DEĞİŞİR (< ↔ >, ≤ ↔ ≥).` },
+              { kind: "ornek", content: `Basit: x+2 < 5 → x < 3. Çarpan: 2x > 10 → x > 5. Bileşik: 3x−1 ≤ 8 → 3x ≤ 9 → x ≤ 3 (en büyük tam sayı 3).` },
+              { kind: "ornek", content: `Yön değişimi: −x > 2 → x < −2. −2x ≤ 6 → x ≥ −3 (her iki tarafı −2'ye böldük, yön döndü).` },
               { kind: "tuzak", content: `−2x < 6 → x < −3 YANLIŞ; yön değişir, doğrusu x > −3.` },
             ],
           },
           {
             label: `Sayı Doğrusunda Gösterim`,
             sections: [
-              { kind: "kural", content: `≤ ve ≥ → içi DOLU nokta (sınır dahil); < ve > → içi BOŞ nokta (sınır hariç).` },
-              { kind: "tuzak", content: `x ≤ 5'te 5 dahildir; içi DOLU nokta gösterilir.` },
+              { kind: "kural", content: `Sınır değer DAHİL (≤, ≥) → içi DOLU nokta. Sınır değer DEĞİL (<, >) → içi BOŞ nokta.` },
+              { kind: "ornek", content: `x ≥ 4 → 4'te içi DOLU nokta, sağ yön. x < 7 → 7'de içi BOŞ nokta, sol yön. 2 < x ≤ 5 → 2'de boş, 5'te dolu; ikisi arası taranır.` },
+              { kind: "tuzak", content: `x ≤ 5'te 5 DAHİLDİR; içi DOLU nokta ile gösterilir (boş değil).` },
+            ],
+          },
+          {
+            label: `Çözüm Kümesi Yorumlama`,
+            sections: [
+              { kind: "ipucu", content: `Çözüm kümesinde en büyük/küçük tam sayı sorulursa: x < 7 → en büyük tam 6; x ≤ 7 → en büyük tam 7; x > −3 → en küçük tam −2.` },
+              { kind: "ornek", content: `x > 0 → pozitif sayılar (0 dahil değil). x ≥ 0 → 0 dahil tüm pozitifler.` },
             ],
           },
         ],
@@ -687,25 +724,32 @@ Eşitsizlikler tıpkı denklemler gibi çözülür.
             label: `Öteleme`,
             sections: [
               { kind: "tanim", content: `Şekli biçim/boyut değiştirmeden belirli bir yönde kaydırmaktır.` },
+              { kind: "kural", content: `Koordinat kuralı: (x, y) noktası "sağa a, yukarı b" ötelenirse → (x+a, y+b) olur.` },
+              { kind: "ornek", content: `(3, 2) noktası "4 birim sağa, 1 birim aşağı" ötelenirse → (3+4, 2−1) = (7, 1). Üçgenin tüm köşeleri aynı şekilde kaydırılır.` },
             ],
           },
           {
             label: `Yansıma (Simetri)`,
             sections: [
-              { kind: "tanim", content: `Bir doğruya (eksene) göre ters görüntü oluşturmaktır; aynadaki görüntü gibidir.` },
+              { kind: "tanim", content: `Bir doğruya (eksene) göre ters görüntü oluşturmaktır; aynadaki görüntü gibi.` },
+              { kind: "kural", content: `x eksenine göre: (x, y) → (x, −y). y eksenine göre: (x, y) → (−x, y). Orijine göre: (x, y) → (−x, −y).` },
+              { kind: "ornek", content: `(3, 4) noktası: x eksenine yansıma → (3, −4); y eksenine yansıma → (−3, 4); orijine → (−3, −4).` },
               { kind: "tuzak", content: `Aynadaki görüntü öteleme DEĞİL, yansımadır.` },
             ],
           },
           {
             label: `Döndürme`,
             sections: [
-              { kind: "tanim", content: `Bir nokta etrafında belirli bir açıyla çevirmektir.` },
+              { kind: "tanim", content: `Bir nokta etrafında (genelde orijinde) belirli bir açıyla çevirmektir.` },
+              { kind: "kural", content: `Orijin etrafında: 90° saat yönünün tersi (x, y) → (−y, x). 180° dönme → (−x, −y). 270° (veya −90°) → (y, −x).` },
+              { kind: "ornek", content: `(3, 2) noktası orijin etrafında: 90° dönme → (−2, 3); 180° → (−3, −2); 270° → (2, −3).` },
             ],
           },
           {
-            label: `Önemli Not`,
+            label: `Önemli Not (Eşlik)`,
             sections: [
-              { kind: "kural", content: `Üç dönüşümde de şekil EŞ kalır; boyut ve biçim değişmez.` },
+              { kind: "kural", content: `Üç dönüşümde de şekil EŞ kalır; boyut, biçim, açılar ve kenar uzunlukları değişmez. Sadece konum/yön değişir.` },
+              { kind: "tuzak", content: `Büyütme/küçültme bir dönüşüm türü DEĞİLDİR (bunlar benzerlik konusudur).` },
             ],
           },
         ],
@@ -752,23 +796,27 @@ Eşitsizlikler tıpkı denklemler gibi çözülür.
           {
             label: `Dik Prizmalar`,
             sections: [
-              { kind: "formul", content: `Hacim = taban alanı × yükseklik. Küpün hacmi = a³.` },
-              { kind: "ornek", content: `Ayrıtları 2, 3, 4 cm: 2·3·4 = 24 cm³.` },
-              { kind: "tuzak", content: `Taban ÇEVRESİ değil, taban ALANI kullanılır.` },
+              { kind: "formul", content: `Hacim = taban alanı × yükseklik. Yüzey alanı = 2·(taban alanı) + (taban çevresi · yükseklik).` },
+              { kind: "ornek", content: `Dikdörtgenler prizması (a·b·c): 2·3·4 = 24 cm³. Üçgen prizma: taban = üçgen alanı, sonra × yükseklik. Kare prizma: taban = a², hacim = a²·h.` },
+              { kind: "ornek", content: `Küp (özel kare prizma): hacim = a³. a=3 cm → 27 cm³. a=5 cm → 125 cm³. Yüzey alanı = 6a²; a=4 → 96 cm². Küpün 6 yüzü, 12 ayrıtı, 8 köşesi vardır.` },
+              { kind: "tuzak", content: `Hacimde taban ÇEVRESİ değil, taban ALANI kullanılır. Yüzey alanı hesabında çevre kullanılır.` },
             ],
           },
           {
             label: `Dik Silindir`,
             sections: [
-              { kind: "formul", content: `Hacim = π·r²·h. Yüzey alanı = 2πr² + 2πrh.` },
-              { kind: "ornek", content: `r=5, h=10, π=3 → 3·25·10 = 750 cm³.` },
-              { kind: "tuzak", content: `Hacim 2πrh DEĞİLDİR; 2πrh yan yüzey alanıdır.` },
+              { kind: "formul", content: `Hacim = π·r²·h. Yan yüzey alanı = 2πr·h. Yüzey alanı (kapalı) = 2πr² + 2πrh.` },
+              { kind: "ornek", content: `r=5, h=10, π=3 → hacim = 3·25·10 = 750 cm³; yüzey = 2·3·25 + 2·3·5·10 = 150 + 300 = 450 cm². r=2, h=7, π=3 → hacim = 3·4·7 = 84 cm³.` },
+              { kind: "ipucu", content: `Silindirin açınımı: dikdörtgen (yan yüzey, kenarları 2πr ve h) + 2 daire (taban ve üst).` },
+              { kind: "tuzak", content: `Hacim 2πrh DEĞİLDİR; 2πrh sadece yan yüzey alanıdır. Hacim = πr²·h.` },
             ],
           },
           {
             label: `Piramit ve Koni`,
             sections: [
-              { kind: "tanim", content: `Bir tepe noktasına sahip geometrik cisimlerdir.` },
+              { kind: "tanim", content: `Bir tabanı ve bir TEPE noktası olan geometrik cisimlerdir. Piramidin tabanı çokgendir, koninin tabanı dairedir.` },
+              { kind: "ornek", content: `Kare piramit (4 üçgen yüzey + 1 kare taban = 5 yüz), üçgen piramit/tetrahedron (4 üçgen yüzey = 4 yüz). Koni: 1 daire taban + 1 yan yüzey.` },
+              { kind: "ipucu", content: `LGS'de piramit/koni hacim formülü genelde sorulmaz; yapısal özellikleri (taban, tepe, ayrıt sayısı) sorulur.` },
             ],
           },
         ],
