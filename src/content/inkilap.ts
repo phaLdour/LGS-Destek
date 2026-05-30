@@ -618,6 +618,16 @@ Kuvâ-yı Millîye düşmanı durdurmakta yetersiz kalınca **düzenli ordu** ku
           wrong: `Kadınlara milletvekili seçme-seçilme hakkı 1926 Medeni Kanun ile verildi.`,
           correct: `Medeni Kanun 1926'da kabul edildi; kadınlara milletvekili seçme-seçilme hakkı 1934'te verildi.`,
         },
+        {
+          trap: `Kabotaj Kanunu (1926) çoğu zaman "devletçilik" ya da "bağımsızlık" ile eşleştirilir.`,
+          wrong: `Kabotaj Kanunu devletçilik ilkesinin kanıtıdır; devlet denizcilik şirketi kurmuştur.`,
+          correct: `Kabotaj Kanunu **milliyetçilik** ilkesiyle ilgilidir: Türk karasularında yük ve yolcu taşıma hakkı yalnızca Türk gemilerine verilmiştir; ekonomik bağımsızlık değil, milli egemenliğin denizlerdeki yansımasıdır.`,
+        },
+        {
+          trap: `Aşar (öşür) vergisinin kaldırılması (1925) sıkça "devletçilik" ile eşleştirilir.`,
+          wrong: `Aşar vergisinin kaldırılması devletçilik ilkesinin sonucudur.`,
+          correct: `Aşar vergisinin kaldırılması **halkçılık** ilkesiyle ilgilidir: ürünün onda birini alan bu ağır vergi köylüyü ezerken kaldırılmasıyla halk arasında eşit ve adil bir vergi düzenine geçilmiştir.`,
+        },
       ],
       quiz: [
         {
