@@ -37,7 +37,10 @@ function normalize(text: string): string {
  */
 function itemMatches(input: string, tokens: string[], item: string): boolean {
   if (item.includes(" ")) return input.includes(item);
-  if (item.length >= 5) return input.includes(item);
+  // 4 ve üstü harfli kelimeler için ekli/çekimli hâlleri yakalamak üzere alt
+  // dize araması kullanılır (carpim, alan, egim → carpimi, alanin, egimi).
+  // 3 harfli kısa kelimeler için yanlış eşleşmeyi önlemek üzere tam token arar.
+  if (item.length >= 4) return input.includes(item);
   return tokens.includes(item);
 }
 
@@ -212,7 +215,7 @@ const CONCEPTS: Concept[] = [
   {
     all: ["mevsim"],
     answer:
-      "Mevsimler, Dünya'nın ekseninin 23,5° eğik olması ve Güneş etrafında dolanması nedeniyle oluşur. Bu, Güneş ışınlarının düşme açısını ve birim yüzeye düşen enerjiyi değiştirir.",
+      "Mevsimler, Dünya'nın ekseninin 23° 27' (yaklaşık 23,5°) eğik olması ve Güneş etrafında dolanması nedeniyle oluşur. Bu, Güneş ışınlarının düşme açısını ve birim yüzeye düşen enerjiyi değiştirir.",
     topicRoute: "/ders/fen-bilimleri/mevsimler-ve-iklim",
   },
   {
@@ -650,13 +653,13 @@ const CONCEPTS: Concept[] = [
   {
     all: ["guanin"],
     answer:
-      "Guanin (G), DNA'daki 4 organik bazdan biridir. Daima Sitozin (S) ile eşleşir.",
+      "Guanin (G), DNA'daki 4 organik bazdan biridir. Daima Sitozin (C) ile eşleşir.",
     topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
   },
   {
     all: ["sitozin"],
     answer:
-      "Sitozin (S), DNA'daki 4 organik bazdan biridir. Daima Guanin (G) ile eşleşir.",
+      "Sitozin (C), DNA'daki 4 organik bazdan biridir. Daima Guanin (G) ile eşleşir.",
     topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
   },
   // ---------- Diğer ek tetikler ----------
@@ -770,6 +773,390 @@ function tryConcepts(input: string, tokens: string[]): CannedResult | null {
   return null;
 }
 
+// ───────────────────────── Formüller (matematik + fen) ─────────────────────────
+/**
+ * Spesifik sayıları ezberletmek yerine GENEL FORMÜLÜ + ÖRNEĞİ + UYGULAMASINI öğretir.
+ * Böylece öğrenci "2+3 kaç?" yerine "x+y nedir?" sorduğunda da yararlı cevap alır
+ * ve formülü farklı problemlere uygulayabilir.
+ *
+ * Tüm formüller 8. sınıf MEB 2018 müfredatından alınmıştır; lise düzeyi formül yoktur.
+ */
+type Formula = {
+  all: string[];
+  name: string;
+  formula: string;
+  vars?: string;
+  example: string;
+  apply?: string;
+  topicRoute?: string;
+};
+
+const FORMULAS: Formula[] = [
+  // ───── Matematik: Üslü ifadeler ─────
+  {
+    all: ["uslu", "carp"],
+    name: "Aynı tabanlı üslü ifadelerin çarpımı",
+    formula: "aⁿ · aᵐ = aⁿ⁺ᵐ",
+    vars: "a: taban; n, m: üsler",
+    example: "2³ · 2⁴ = 2³⁺⁴ = 2⁷ = 128",
+    apply: "Aynı taban ise üsleri toplarsın.",
+    topicRoute: "/ders/matematik/uslu-ifadeler",
+  },
+  {
+    all: ["uslu", "bol"],
+    name: "Aynı tabanlı üslü ifadelerin bölümü",
+    formula: "aⁿ ÷ aᵐ = aⁿ⁻ᵐ",
+    vars: "a: taban; n, m: üsler",
+    example: "5⁷ ÷ 5⁴ = 5⁷⁻⁴ = 5³ = 125",
+    apply: "Aynı taban ise üsleri çıkarırsın (büyüğünden küçüğünü).",
+    topicRoute: "/ders/matematik/uslu-ifadeler",
+  },
+  {
+    all: ["us", "us"],
+    name: "Üssün üssü",
+    formula: "(aⁿ)ᵐ = aⁿ·ᵐ",
+    vars: "a: taban; n, m: üsler",
+    example: "(2³)² = 2³·² = 2⁶ = 64",
+    apply: "Üslü bir ifadenin tekrar üssü alınırsa üsleri çarparsın.",
+    topicRoute: "/ders/matematik/uslu-ifadeler",
+  },
+  {
+    all: ["negatif", "us"],
+    name: "Negatif üs",
+    formula: "a⁻ⁿ = 1 ÷ aⁿ  (a ≠ 0)",
+    vars: "a: taban; n: pozitif tam sayı",
+    example: "2⁻³ = 1 ÷ 2³ = 1 ÷ 8",
+    apply: "Negatif üs, sayının tersinin pozitif üsse alınmış hâlidir.",
+    topicRoute: "/ders/matematik/uslu-ifadeler",
+  },
+
+  // ───── Matematik: Karekök ─────
+  {
+    all: ["karekok", "carp"],
+    name: "Karekök çarpımı",
+    formula: "√a · √b = √(a · b)",
+    vars: "a, b ≥ 0",
+    example: "√2 · √8 = √16 = 4",
+    apply: "İki karekökü çarparken içlerini birleştirirsin.",
+    topicRoute: "/ders/matematik/karekoklu-ifadeler",
+  },
+  {
+    all: ["karekok", "bol"],
+    name: "Karekök bölümü",
+    formula: "√a ÷ √b = √(a ÷ b)",
+    vars: "a ≥ 0, b > 0",
+    example: "√50 ÷ √2 = √25 = 5",
+    apply: "İki karekökü bölerken içlerini birleştirirsin.",
+    topicRoute: "/ders/matematik/karekoklu-ifadeler",
+  },
+  {
+    all: ["karekok", "kare"],
+    name: "Karekökün karesi",
+    formula: "(√a)² = a  (a ≥ 0)",
+    vars: "a: kök içindeki sayı",
+    example: "(√7)² = 7",
+    apply: "Karekökün karesini alırsan kök kalkar, içerideki sayı kalır.",
+    topicRoute: "/ders/matematik/karekoklu-ifadeler",
+  },
+
+  // ───── Matematik: Cebirsel özdeşlikler ─────
+  {
+    all: ["tam kare", "topla"],
+    name: "Tam kare özdeşliği (toplam)",
+    formula: "(a + b)² = a² + 2ab + b²",
+    vars: "a, b: terimler",
+    example: "(x + 3)² = x² + 6x + 9",
+    apply: "İki terimin toplamının karesi: birincinin karesi + 2 · birinci · ikinci + ikincinin karesi.",
+    topicRoute: "/ders/matematik/cebirsel-ifadeler",
+  },
+  {
+    all: ["tam kare", "fark"],
+    name: "Tam kare özdeşliği (fark)",
+    formula: "(a − b)² = a² − 2ab + b²",
+    vars: "a, b: terimler",
+    example: "(x − 5)² = x² − 10x + 25",
+    apply: "İki terimin farkının karesi: birincinin karesi − 2 · birinci · ikinci + ikincinin karesi.",
+    topicRoute: "/ders/matematik/cebirsel-ifadeler",
+  },
+  {
+    all: ["iki kare fark"],
+    name: "İki kare farkı",
+    formula: "a² − b² = (a − b)(a + b)",
+    vars: "a, b: terimler",
+    example: "x² − 25 = (x − 5)(x + 5)",
+    apply: "İki karenin farkını çarpanlarına ayırmak için (fark)·(toplam) yazarsın.",
+    topicRoute: "/ders/matematik/cebirsel-ifadeler",
+  },
+
+  // ───── Matematik: Doğru denklemi & eğim ─────
+  {
+    all: ["egim"],
+    name: "Doğrunun eğimi",
+    formula: "m = (y₂ − y₁) ÷ (x₂ − x₁)",
+    vars: "(x₁, y₁) ve (x₂, y₂): doğru üzerindeki iki nokta",
+    example: "(1, 2) ve (3, 6) noktaları için m = (6 − 2) ÷ (3 − 1) = 4 ÷ 2 = 2",
+    apply: "Doğru üzerindeki iki noktayı bilirsen y'lerin farkını x'lerin farkına bölersin.",
+    topicRoute: "/ders/matematik/dogrusal-denklemler",
+  },
+  {
+    all: ["dogru denklem"],
+    name: "Doğrunun denklemi",
+    formula: "y = m · x + n",
+    vars: "m: eğim; n: y eksenini kestiği nokta",
+    example: "Eğim 2, y eksenini 1'de kesen doğru: y = 2x + 1",
+    apply: "Eğim ve y-eksenini kestiği noktayı bilirsen denklemi doğrudan yazarsın.",
+    topicRoute: "/ders/matematik/dogrusal-denklemler",
+  },
+
+  // ───── Matematik: Üçgen alan & Pisagor ─────
+  {
+    all: ["ucgen", "alan"],
+    name: "Üçgenin alanı",
+    formula: "A = (taban · yükseklik) ÷ 2",
+    vars: "taban: bir kenar; yükseklik: o kenara inen dik yükseklik",
+    example: "Taban 6 cm, yükseklik 4 cm → A = (6 · 4) ÷ 2 = 12 cm²",
+    apply: "Bir tabanı ve o tabana ait yüksekliği biliyorsan formülü uygularsın.",
+    topicRoute: "/ders/matematik/ucgenler",
+  },
+  {
+    all: ["pisagor"],
+    name: "Pisagor Bağıntısı (dik üçgen)",
+    formula: "a² + b² = c²",
+    vars: "a, b: dik kenarlar; c: hipotenüs",
+    example: "Dik kenarlar 3 ve 4 → c² = 9 + 16 = 25 → c = 5",
+    apply: "Dik üçgende iki kenarı bilirsen üçüncüyü bu bağıntıyla bulursun.",
+    topicRoute: "/ders/matematik/ucgenler",
+  },
+
+  // ───── Matematik: Dörtgen / kare / dikdörtgen ─────
+  {
+    all: ["dikdortgen", "alan"],
+    name: "Dikdörtgenin alanı",
+    formula: "A = uzun kenar · kısa kenar",
+    vars: "a, b: kenarlar",
+    example: "5 cm · 3 cm = 15 cm²",
+    apply: "İki kenarı çarparsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+  {
+    all: ["kare", "alan"],
+    name: "Karenin alanı",
+    formula: "A = a · a = a²",
+    vars: "a: bir kenar",
+    example: "5 · 5 = 25 cm²",
+    apply: "Bir kenarın karesini alırsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+
+  // ───── Matematik: Hacim ─────
+  {
+    all: ["kupun", "hacm"],
+    name: "Küpün hacmi",
+    formula: "V = a³ = a · a · a",
+    vars: "a: ayrıt uzunluğu",
+    example: "Ayrıt 3 cm → V = 27 cm³",
+    apply: "Bir ayrıtın küpünü alırsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+  // Ünsüz yumuşaması varyantı: "küp" → "kübün, kübü"
+  {
+    all: ["kubun", "hacm"],
+    name: "Küpün hacmi",
+    formula: "V = a³ = a · a · a",
+    vars: "a: ayrıt uzunluğu",
+    example: "Ayrıt 3 cm → V = 27 cm³",
+    apply: "Bir ayrıtın küpünü alırsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+  {
+    all: ["prizma", "hacm"],
+    name: "Dikdörtgenler prizmasının hacmi",
+    formula: "V = a · b · c",
+    vars: "a, b, c: üç farklı ayrıt",
+    example: "2 · 3 · 4 = 24 cm³",
+    apply: "Üç farklı ayrıtı çarparsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+  {
+    all: ["silindir", "hacm"],
+    name: "Silindirin hacmi",
+    formula: "V = π · r² · h",
+    vars: "r: taban yarıçapı; h: yükseklik; π ≈ 3 ya da 22/7",
+    example: "r=5, h=10, π=3 → V = 3 · 25 · 10 = 750 cm³",
+    apply: "Taban dairesinin alanı π·r² ile yüksekliği çarparsın.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+
+  // ───── Matematik: Veri analizi ─────
+  {
+    all: ["aritmetik ortalama"],
+    name: "Aritmetik Ortalama",
+    formula: "Ort = (x₁ + x₂ + ... + xₙ) ÷ n",
+    vars: "xᵢ: veriler; n: veri sayısı",
+    example: "4, 6, 8 için Ort = (4+6+8) ÷ 3 = 6",
+    apply: "Verileri toplayıp veri sayısına bölersin.",
+    topicRoute: "/ders/matematik/veri-analizi",
+  },
+  {
+    all: ["aciklik"],
+    name: "Açıklık",
+    formula: "Açıklık = en büyük veri − en küçük veri",
+    vars: "—",
+    example: "2, 5, 9 için: 9 − 2 = 7",
+    apply: "Verinin en büyük ve en küçük değerinin farkını alırsın.",
+    topicRoute: "/ders/matematik/veri-analizi",
+  },
+
+  // ───── Matematik: Olasılık ─────
+  {
+    all: ["olasilik", "formul"],
+    name: "Basit Olasılık",
+    formula: "P(A) = istenen sonuç sayısı ÷ tüm olası sonuç sayısı",
+    vars: "0 ≤ P(A) ≤ 1",
+    example: "Hilesiz zarda çift gelmesi: 3/6 = 1/2",
+    apply: "İstenen durum sayısını tüm olası durum sayısına bölersin.",
+    topicRoute: "/ders/matematik/olasilik",
+  },
+
+  // ───── Fen: Basınç ─────
+  {
+    all: ["basinc", "formul"],
+    name: "Katı basıncı",
+    formula: "P = F ÷ A",
+    vars: "F: ağırlık (N); A: yüzey alanı (m²); P: basınç (Pa)",
+    example: "60 N ağırlık, 0,3 m² yüzeyde → P = 60 ÷ 0,3 = 200 Pa",
+    apply: "Yüzeye dik kuvveti, dokunma alanına bölersin.",
+    topicRoute: "/ders/fen-bilimleri/basinc",
+  },
+  {
+    all: ["sivi basinci"],
+    name: "Sıvı basıncı",
+    formula: "P = h · d · g",
+    vars: "h: derinlik; d: yoğunluk; g: yer çekimi ivmesi",
+    example: "Derinlik artarsa basınç artar; aynı derinlikte tüm noktalar eşit basınca uğrar.",
+    apply: "Sıvı derinliği ve yoğunluğunu kullanırsın; kabın şekli basıncı etkilemez.",
+    topicRoute: "/ders/fen-bilimleri/basinc",
+  },
+
+  // ───── Fen: Basit Makineler ─────
+  {
+    all: ["egik duzlem", "formul"],
+    name: "Eğik düzlem (iş eşitliği)",
+    formula: "F · L = G · h",
+    vars: "F: uygulanan kuvvet; L: eğik düzlemin uzunluğu; G: yük ağırlığı; h: yükseklik",
+    example: "G=100 N, h=2 m, L=10 m → F = (100·2) ÷ 10 = 20 N",
+    apply: "Uzun bir eğik düzlem daha az kuvvet ister; ama yol uzar (işten kazanç yok).",
+    topicRoute: "/ders/fen-bilimleri/basit-makineler",
+  },
+  {
+    all: ["kaldirac", "denge"],
+    name: "Kaldıraçta denge",
+    formula: "F · kuvvet kolu = G · yük kolu",
+    vars: "F: uygulanan kuvvet; G: yük ağırlığı",
+    example: "Tahterevallide ağır çocuk destek noktasına daha yakın oturursa denge kurulur.",
+    apply: "Kuvvet kolu uzun olursa daha küçük kuvvet yeter.",
+    topicRoute: "/ders/fen-bilimleri/basit-makineler",
+  },
+  {
+    all: ["hareketli makara"],
+    name: "Hareketli makara",
+    formula: "F = G ÷ 2",
+    vars: "F: uygulanan kuvvet; G: yük",
+    example: "200 N yükü hareketli makara ile 100 N kuvvet uygulayarak kaldırırsın.",
+    apply: "Hareketli makara kuvvetten yarı yarıya kazanç sağlar; ama ipin çekilen yolu iki katıdır.",
+    topicRoute: "/ders/fen-bilimleri/basit-makineler",
+  },
+
+  // ───── Fen: Elektrik ─────
+  {
+    all: ["ohm"],
+    name: "Ohm Yasası",
+    formula: "V = I · R",
+    vars: "V: gerilim (Volt); I: akım (Amper); R: direnç (Ohm)",
+    example: "I=2 A, R=5 Ω → V = 2 · 5 = 10 V",
+    apply: "Gerilim, akım ve direncin çarpımına eşittir; iki büyüklüğü bilirsen üçüncüyü bulursun.",
+    topicRoute: "/ders/fen-bilimleri/elektrik-yukleri-ve-enerjisi",
+  },
+  {
+    all: ["seri direnc"],
+    name: "Seri bağlı dirençler",
+    formula: "R_eş = R₁ + R₂ + R₃ + ...",
+    vars: "R_eş: toplam eş değer direnç",
+    example: "R₁=2, R₂=3, R₃=5 → R_eş = 10 Ω",
+    apply: "Seri bağlamada dirençler toplanır; akım her direnç üzerinden aynı geçer.",
+    topicRoute: "/ders/fen-bilimleri/elektrik-yukleri-ve-enerjisi",
+  },
+
+  // ───── Temel aritmetik (en sona — spesifik formüller önce gelsin) ─────
+  {
+    all: ["toplama"],
+    name: "Toplama",
+    formula: "a + b = c",
+    vars: "a, b: toplananlar; c: toplam",
+    example: "2 + 3 = 5; 12 + 8 = 20",
+    apply: "Sayıları + işaretle birleştirirsin; sonuç toplamlarına eşittir.",
+  },
+  {
+    all: ["cikarma"],
+    name: "Çıkarma",
+    formula: "a − b = c",
+    vars: "a: eksilen; b: çıkan; c: fark",
+    example: "7 − 3 = 4; 20 − 12 = 8",
+    apply: "Büyük sayıdan küçüğü çıkarırsın; sonuç farktır.",
+  },
+  {
+    all: ["carpma"],
+    name: "Çarpma",
+    formula: "a · b = c (a × b biçiminde de yazılır)",
+    vars: "a, b: çarpanlar; c: çarpım",
+    example: "2 · 3 = 6; 7 · 8 = 56",
+    apply: "İki sayıyı çarpar, çarpım elde edersin.",
+  },
+  {
+    all: ["bolme"],
+    name: "Bölme",
+    formula: "a ÷ b = c  (b ≠ 0)",
+    vars: "a: bölünen; b: bölen; c: bölüm",
+    example: "12 ÷ 4 = 3; 30 ÷ 6 = 5",
+    apply: "Bir sayıyı eşit parçalara bölersin; her parçanın değeri bölümdür.",
+  },
+  // Sözlü/çekimli varyantlar — daha spesifik formüller eşleşmediyse devreye girer
+  {
+    all: ["topla"],
+    name: "Toplama",
+    formula: "a + b = c",
+    vars: "a, b: toplananlar; c: toplam",
+    example: "2 + 3 = 5",
+    apply: "Sayıları + işaretiyle birleştirirsin; sonuç toplamdır.",
+  },
+  {
+    all: ["carpi"],
+    name: "Çarpma",
+    formula: "a · b = c (a × b biçiminde de yazılır)",
+    vars: "a, b: çarpanlar; c: çarpım",
+    example: "2 · 3 = 6",
+    apply: "İki sayıyı çarpar, çarpım elde edersin.",
+  },
+];
+
+function tryFormulas(input: string, tokens: string[]): CannedResult | null {
+  for (const f of FORMULAS) {
+    if (f.all.every((item) => itemMatches(input, tokens, item))) {
+      const lines = [
+        `**${f.name}**`,
+        `Formül: ${f.formula}`,
+      ];
+      if (f.vars) lines.push(`Değişkenler: ${f.vars}`);
+      lines.push(`Örnek: ${f.example}`);
+      if (f.apply) lines.push(`Nasıl uygularsın: ${f.apply}`);
+      const body = lines.join("\n");
+      const reply = f.topicRoute ? `${body}\n\n${OFFER}` : body;
+      return { reply, topicRoute: f.topicRoute ?? null };
+    }
+  }
+  return null;
+}
+
 // ───────────────────────── Ana eşleştirici ─────────────────────────
 
 export function matchCanned(text: string): CannedResult | null {
@@ -780,6 +1167,7 @@ export function matchCanned(text: string): CannedResult | null {
   return (
     tryIntents(input, tokens) ??
     tryNavigation(input, tokens) ??
+    tryFormulas(input, tokens) ??
     tryArithmetic(text) ??
     tryConcepts(input, tokens)
   );
