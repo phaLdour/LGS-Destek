@@ -258,7 +258,8 @@ Isınan hava yükselir ve **alçak basınç**, soğuyan hava alçalır ve **yük
             sections: [
               { kind: "tanim", content: "Bir nükleotit fosfat, şeker ve organik bazdan oluşur." },
               { kind: "kural", content: "Organik bazlar Adenin, Timin, Guanin, Sitozin'dir; baza göre 4 çeşit nükleotit vardır." },
-              { kind: "ornek", content: "4 çeşit nükleotit: Adenin (A), Timin (T), Guanin (G), Sitozin (S). DNA'da A daima T ile, G daima S ile eşleşir; A=T ve G=S sayıları eşittir." },
+              { kind: "ornek", content: "4 çeşit nükleotit: Adenin (A), Timin (T), Guanin (G), Sitozin (C ya da S). DNA'da A daima T ile, G daima C ile eşleşir; A=T ve G=C sayıları eşittir." },
+              { kind: "tuzak", content: "Sitozin için Türkçe kaynaklar 'S' (Sitozin), uluslararası kaynaklar 'C' (Cytosine) kısaltmasını kullanır. Soru hangisini yazarsa yazsın ikisi de aynı bazı belirtir." },
             ],
           },
           {
