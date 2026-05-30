@@ -1067,23 +1067,17 @@ const FORMULAS: Formula[] = [
     topicRoute: "/ders/fen-bilimleri/basit-makineler",
   },
 
-  // ───── Fen: Elektrik ─────
+  // ───── Fen: Elektrik (8.sınıf NİTEL düzey) ─────
+  // 8. sınıf MEB 2018 kazanımında akım/gerilim/direnç arasındaki ilişki
+  // formülle değil, "artar/azalır" şeklinde keşfedilir. V=I·R, seri/paralel
+  // direnç formülleri lise konusudur, eklenmemiştir.
   {
-    all: ["ohm"],
-    name: "Ohm Yasası",
-    formula: "V = I · R",
-    vars: "V: gerilim (Volt); I: akım (Amper); R: direnç (Ohm)",
-    example: "I=2 A, R=5 Ω → V = 2 · 5 = 10 V",
-    apply: "Gerilim, akım ve direncin çarpımına eşittir; iki büyüklüğü bilirsen üçüncüyü bulursun.",
-    topicRoute: "/ders/fen-bilimleri/elektrik-yukleri-ve-enerjisi",
-  },
-  {
-    all: ["seri direnc"],
-    name: "Seri bağlı dirençler",
-    formula: "R_eş = R₁ + R₂ + R₃ + ...",
-    vars: "R_eş: toplam eş değer direnç",
-    example: "R₁=2, R₂=3, R₃=5 → R_eş = 10 Ω",
-    apply: "Seri bağlamada dirençler toplanır; akım her direnç üzerinden aynı geçer.",
+    all: ["akim", "gerilim"],
+    name: "Akım, gerilim, direnç ilişkisi",
+    formula: "Nitel ilişki (8. sınıfta formül verilmez)",
+    vars: "Akım: I (Amper); Gerilim: V (Volt); Direnç: R (Ohm)",
+    example: "Bir devrede gerilim arttıkça akım da artar. Direnç arttıkça akım azalır.",
+    apply: "Gerilim ile akım doğru orantılı, direnç ile akım ters orantılıdır. Ölçüm: akım ampermetreyle (seri), gerilim voltmetreyle (paralel).",
     topicRoute: "/ders/fen-bilimleri/elektrik-yukleri-ve-enerjisi",
   },
 
