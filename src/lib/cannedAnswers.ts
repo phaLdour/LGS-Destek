@@ -326,9 +326,27 @@ const CONCEPTS: Concept[] = [
   },
   // ---------- Fen: Enerji ve Çevre ----------
   {
+    all: ["enerji donusum"],
+    answer:
+      "Enerji yoktan var, vardan yok edilemez; bir türden başka bir türe DÖNÜŞÜR. Örnekler: hidroelektrik (potansiyel→kinetik→elektrik), rüzgâr türbini (kinetik→elektrik), bisiklet dinamosu/jeneratör (hareket→elektrik), güneş paneli (ışık→elektrik), pil (kimyasal→elektrik), ampul (elektrik→ışık+ısı), vantilatör (elektrik→hareket), ütü (elektrik→ısı), hoparlör (elektrik→ses), fotosentez (ışık→kimyasal).",
+    topicRoute: "/ders/fen-bilimleri/enerji-donusumleri-ve-cevre",
+  },
+  {
+    all: ["jenerator"],
+    answer:
+      "Jeneratör (generator), hareket enerjisini elektrik enerjisine dönüştüren araçtır. Hidroelektrik santralde, rüzgâr türbininde, termik santralde dönen türbinler jeneratörü çevirir ve elektrik üretilir. Bisiklet dinamosu da küçük bir jeneratördür.",
+    topicRoute: "/ders/fen-bilimleri/enerji-donusumleri-ve-cevre",
+  },
+  {
+    all: ["dinamo"],
+    answer:
+      "Dinamo, hareket enerjisini elektrik enerjisine çeviren küçük jeneratördür. Bisiklette tekerlek dönerken dinamo da döner ve farı yakacak elektriği üretir (kinetik → elektrik).",
+    topicRoute: "/ders/fen-bilimleri/enerji-donusumleri-ve-cevre",
+  },
+  {
     all: ["fotosentez"],
     answer:
-      "Fotosentez, bitkilerin güneş ışığı, su ve karbondioksit kullanarak besin ve oksijen ürettiği olaydır.",
+      "Fotosentez, bitkilerin güneş ışığı, su ve karbondioksit kullanarak besin ve oksijen ürettiği olaydır. Enerji dönüşümü açısından: ışık → kimyasal enerji.",
     topicRoute: "/ders/fen-bilimleri/enerji-donusumleri-ve-cevre",
   },
   {
@@ -1065,6 +1083,17 @@ const FORMULAS: Formula[] = [
     example: "200 N yükü hareketli makara ile 100 N kuvvet uygulayarak kaldırırsın.",
     apply: "Hareketli makara kuvvetten yarı yarıya kazanç sağlar; ama ipin çekilen yolu iki katıdır.",
     topicRoute: "/ders/fen-bilimleri/basit-makineler",
+  },
+
+  // ───── Fen: Enerji Dönüşümü (kavramsal) ─────
+  {
+    all: ["enerji", "donusum"],
+    name: "Enerji Dönüşümü",
+    formula: "Enerji türü A → Enerji türü B  (toplam enerji korunur)",
+    vars: "Enerji türleri: kinetik (hareket), potansiyel, ısı, ışık, ses, elektrik, kimyasal, nükleer.",
+    example: "Hidroelektrik: potansiyel → kinetik → elektrik. Bisiklet dinamosu: hareket → elektrik. Ampul: elektrik → ışık + ısı.",
+    apply: "Enerji yoktan var, vardan yok edilemez; sadece tür değiştirir. Bir cihazın hangi enerjiyi hangi enerjiye çevirdiğine bakarsın.",
+    topicRoute: "/ders/fen-bilimleri/enerji-donusumleri-ve-cevre",
   },
 
   // ───── Fen: Elektrik (8.sınıf NİTEL düzey) ─────
