@@ -1,4 +1,5 @@
-import { Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { StatsPanel } from "@/components/stats/StatsPanel";
@@ -39,6 +40,25 @@ export default async function DashboardPage() {
           ya da &quot;Türkçe&apos;ye gir&quot; yazarak hızlıca gezinebilirsin.
         </span>
       </div>
+
+      {/* Hızlı Sorular girişi */}
+      <Link
+        href="/hizli-sorular"
+        className="group mt-4 flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
+      >
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+          <Zap className="h-8 w-8" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-lg font-extrabold">Hızlı Sorular</p>
+          <p className="text-sm text-white/85">
+            10 saniyede bir soru — konularını hızlıca pekiştir
+          </p>
+        </div>
+        <span className="hidden rounded-full bg-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wider sm:block">
+          Karma + ders ders
+        </span>
+      </Link>
 
       {/* İstatistikler */}
       <section className="mt-8">

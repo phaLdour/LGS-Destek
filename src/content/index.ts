@@ -20,6 +20,11 @@ export function getSubjectContent(slug: string): SubjectContent | null {
   return CONTENT[slug] ?? null;
 }
 
+/** İçerikli tüm derslerin listesi (Hızlı Sorular karma havuzu için). */
+export function getAllSubjects(): SubjectContent[] {
+  return Object.values(CONTENT);
+}
+
 export function getTopic(slug: string, topicId: string): Topic | null {
   const subject = getSubjectContent(slug);
   return subject?.topics.find((t) => t.id === topicId) ?? null;

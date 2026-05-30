@@ -92,6 +92,13 @@ Asal sayı, yalnızca **1'e ve kendisine** bölünebilen 1'den büyük doğal sa
         { question: `24 sayısının kaç tane pozitif tam böleni vardır?`, options: [`6`, `8`, `4`, `12`], correctIndex: 1, explanation: `Bölenleri: 1,2,3,4,6,8,12,24 → 8 tane.` },
         { question: `EBOB'u 1 olan iki sayıya ne denir?`, options: [`Aralarında asal`, `Asal`, `Tam kare`, `Çift sayı`], correctIndex: 0 },
       ],
+      quickQuestions: [
+        { question: `Aşağıdakilerden hangisi asal sayıdır?`, options: [`9`, `15`, `17`, `21`], correctIndex: 2 },
+        { question: `8 ile 12 sayılarının EBOB'u kaçtır?`, options: [`2`, `4`, `8`, `24`], correctIndex: 1, explanation: `8=2³, 12=2²·3. EBOB = 2² = 4.` },
+        { question: `6 ile 9 sayılarının EKOK'u kaçtır?`, options: [`18`, `36`, `54`, `9`], correctIndex: 0, explanation: `6=2·3, 9=3². EKOK = 2·3² = 18.` },
+        { question: `Aşağıdaki sayılardan hangisi 5 ile bölünebilir?`, options: [`124`, `233`, `345`, `412`], correctIndex: 2 },
+        { question: `En küçük çift asal sayı kaçtır?`, options: [`1`, `2`, `3`, `4`], correctIndex: 1 },
+      ],
     },
     {
       id: "uslu-ifadeler",
@@ -174,6 +181,14 @@ Asal sayı, yalnızca **1'e ve kendisine** bölünebilen 1'den büyük doğal sa
         { question: `10⁴ kaçtır?`, options: [`1000`, `10000`, `100000`, `400`], correctIndex: 1 },
         { question: `2⁶ / 2² kaçtır?`, options: [`8`, `16`, `4`, `64`], correctIndex: 1, explanation: `Üsler çıkarılır: 2⁴=16.` },
         { question: `(-2)⁴ kaçtır?`, options: [`-16`, `16`, `-8`, `8`], correctIndex: 1 },
+      ],
+      quickQuestions: [
+        { question: `2⁷ kaçtır?`, options: [`64`, `128`, `256`, `14`], correctIndex: 1, explanation: `2·2·2·2·2·2·2 = 128.` },
+        { question: `3² · 3⁴ kaça eşittir?`, options: [`3⁶`, `3⁸`, `9⁶`, `6⁶`], correctIndex: 0, explanation: `Aynı tabanda çarpmada üsler toplanır: 2+4=6.` },
+        { question: `7⁰ kaçtır?`, options: [`0`, `1`, `7`, `Tanımsız`], correctIndex: 1 },
+        { question: `2⁻³ ifadesinin değeri?`, options: [`8`, `-8`, `1/8`, `-1/8`], correctIndex: 2 },
+        { question: `(−3)² kaçtır?`, options: [`-9`, `9`, `-6`, `6`], correctIndex: 1, explanation: `Çift kuvvet pozitif: (−3)·(−3)=9.` },
+        { question: `5³ kaçtır?`, options: [`15`, `25`, `125`, `8`], correctIndex: 2 },
       ],
     },
     {

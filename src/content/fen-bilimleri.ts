@@ -184,6 +184,33 @@ Isınan hava yükselir ve **alçak basınç**, soğuyan hava alçalır ve **yük
           correctIndex: 3,
         },
       ],
+      quickQuestions: [
+        {
+          question: "Mevsimlerin oluşmasının temel nedeni nedir?",
+          options: [
+            "Dünya'nın Güneş'e uzaklığı",
+            "Eksen eğikliği ve dolanma",
+            "Ay'ın evreleri",
+            "Rüzgarlar",
+          ],
+          correctIndex: 1,
+        },
+        {
+          question: "Aşağıdaki yağışlardan hangisi yeryüzüne yakın oluşur?",
+          options: ["Yağmur", "Kar", "Dolu", "Çiğ"],
+          correctIndex: 3,
+        },
+        {
+          question: "Rüzgar nasıl oluşur?",
+          options: [
+            "Yüksek basınçtan alçak basınca",
+            "Alçak basınçtan yüksek basınca",
+            "Sadece denizde",
+            "Sadece dağda",
+          ],
+          correctIndex: 0,
+        },
+      ],
     },
     {
       id: "dna-ve-genetik-kod",

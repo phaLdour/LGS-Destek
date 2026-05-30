@@ -180,6 +180,49 @@ Bir sözcüğün sözlükteki ilk akla gelen anlamı **gerçek anlam**dır. Söz
           correctIndex: 1,
         },
       ],
+      quickQuestions: [
+        {
+          question: `"Yüz" sözcüğü hangisinde sayı anlamındadır?`,
+          options: [
+            `Yüzü çok güzeldi.`,
+            `Sınıfta yüz kişi var.`,
+            `Havuzda yüz!`,
+            `Yüzünü yıka.`,
+          ],
+          correctIndex: 1,
+        },
+        {
+          question: `Aşağıdakilerden hangisi atasözüdür?`,
+          options: [
+            `Göz atmak`,
+            `Damlaya damlaya göl olur`,
+            `Burnu havada olmak`,
+            `Etekleri zil çalmak`,
+          ],
+          correctIndex: 1,
+          explanation: `Diğerleri deyimdir; atasözü öğüt/yargı bildirir.`,
+        },
+        {
+          question: `"Acı" sözcüğü hangisinde mecaz anlamdadır?`,
+          options: [`Acı biber yedik.`, `Acı bir haber aldık.`, `Acı kahve içer.`, `Acı çikolata.`],
+          correctIndex: 1,
+        },
+        {
+          question: `Aşağıdakilerden hangisi soyut anlamlıdır?`,
+          options: [`Kalem`, `Sevgi`, `Masa`, `Taş`],
+          correctIndex: 1,
+        },
+        {
+          question: `Eş anlamlı sözcük çifti hangisidir?`,
+          options: [
+            `Siyah - beyaz`,
+            `Misafir - konuk`,
+            `Sıcak - soğuk`,
+            `Açık - kapalı`,
+          ],
+          correctIndex: 1,
+        },
+      ],
     },
     {
       id: "cumlede-anlam",

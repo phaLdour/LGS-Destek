@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/ders"];
+const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/ders", "/hizli-sorular"];
 const AUTH_PAGES = ["/login", "/register"];
 
 function isConfigured(): boolean {

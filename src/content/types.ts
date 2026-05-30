@@ -70,6 +70,8 @@ export type Topic = {
   tips?: LgsTip[];
   /** 8 soruluk LGS testi. Boşsa o bölüm gizlenir. */
   quiz?: QuizQuestion[];
+  /** Hızlı Sorular havuzu (uzun, pekiştirme amaçlı; LGS testinden ayrı). */
+  quickQuestions?: QuizQuestion[];
 };
 
 export type SubjectContent = {
