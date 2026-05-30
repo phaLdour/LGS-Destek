@@ -186,8 +186,8 @@ export const DIN: SubjectContent = {
           {
             label: `Korunması Amaçlanan Değerler`,
             sections: [
-              { kind: "kural", content: `Temel amaçlar: canın, neslin, aklın, malın ve dinin korunması.` },
-              { kind: "ornek", content: `İçki ve uyuşturucunun yasaklanması → aklın korunması.` },
+              { kind: "kural", content: `Beş temel amaç: canın, neslin, aklın, malın ve dinin korunması.` },
+              { kind: "ornek", content: `Can → cinayetin yasaklanması, sağlığa zarar verenden kaçınma. Nesil → zinanın yasaklanması, ailenin korunması. Akıl → içki ve uyuşturucunun yasaklanması. Mal → hırsızlık ve haksız kazancın yasaklanması. Din → inanç özgürlüğü ve dinin korunması.` },
             ],
           },
           {

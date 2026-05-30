@@ -260,12 +260,13 @@ function TriangleAngles() {
       title="Üçgende iç açılar"
       caption="Bir üçgenin iç açıları toplamı her zaman 180°'dir: 50° + 60° + 70° = 180°."
     >
-      <svg viewBox="0 0 200 150" className="h-auto w-full max-w-[280px]">
-        <polygon points="30,120 175,120 70,30" fill="#dbeafe" stroke={NAVY} strokeWidth="2" />
-        <text x="48" y="113" fontSize="12" fontWeight="bold" fill={RED}>50°</text>
-        <text x="150" y="113" fontSize="12" fontWeight="bold" fill={RED}>60°</text>
-        <text x="68" y="50" fontSize="12" fontWeight="bold" fill={RED}>70°</text>
-        <text x="92" y="138" fontSize="10" fill={SLATE}>taban</text>
+      <svg viewBox="0 0 220 145" className="h-auto w-full max-w-[280px]">
+        {/* Açıları gerçekten 50°, 60° ve 70° olan üçgen */}
+        <polygon points="40,120 170,120 117,28" fill="#dbeafe" stroke={NAVY} strokeWidth="2" />
+        <text x="54" y="113" fontSize="12" fontWeight="bold" fill={RED}>50°</text>
+        <text x="148" y="113" fontSize="12" fontWeight="bold" fill={RED}>60°</text>
+        <text x="105" y="48" fontSize="12" fontWeight="bold" fill={RED}>70°</text>
+        <text x="105" y="138" textAnchor="middle" fontSize="10" fill={SLATE}>taban</text>
       </svg>
     </Figure>
   );
@@ -303,7 +304,7 @@ function Prism() {
         <polygon points="130,50 160,25 160,95 130,120" fill="#93c5fd" stroke={NAVY} strokeWidth="1.8" />
         <text x="78" y="138" fontSize="12" fontWeight="bold" fill={NAVY}>a</text>
         <text x="150" y="78" fontSize="12" fontWeight="bold" fill={NAVY}>c</text>
-        <text x="100" y="42" fontSize="12" fontWeight="bold" fill={NAVY}>b</text>
+        <text x="18" y="89" fontSize="12" fontWeight="bold" fill={NAVY}>b</text>
       </svg>
     </Figure>
   );
@@ -472,15 +473,21 @@ function InclinedPlane() {
       title="Eğik düzlem"
       caption="Gereken kuvvet azalır ama yol uzar. F = (G × h) ÷ ℓ. Rampa uzadıkça (eğim azaldıkça) kuvvet azalır."
     >
-      <svg viewBox="0 0 230 150" className="h-auto w-full max-w-[300px]">
-        <polygon points="25,120 195,120 25,40" fill="#dbeafe" stroke={NAVY} strokeWidth="2" />
-        <rect x="60" y="78" width="22" height="22" fill={BLUE} rx="2" transform="rotate(-25 71 89)" />
-        <line x1="120" y1="40" x2="120" y2="120" stroke={GREEN} strokeWidth="1.5" strokeDasharray="3 3" />
-        <text x="128" y="85" fontSize="11" fontWeight="bold" fill={GREEN}>h</text>
-        <text x="95" y="92" fontSize="11" fontWeight="bold" fill={ORANGE}>ℓ</text>
-        <line x1="92" y1="70" x2="70" y2="80" stroke={ORANGE} strokeWidth="2.5" />
-        <polygon points="66,82 75,80 73,73" fill={ORANGE} />
-        <text x="100" y="135" textAnchor="middle" fontSize="9" fill={SLATE}>taban (yol)</text>
+      <svg viewBox="0 0 240 170" className="h-auto w-full max-w-[300px]">
+        {/* Üçgen rampa: taban yatay, yükseklik SAĞ dik kenarda, eğim soldan sağa yükseliyor */}
+        <polygon points="30,135 210,135 210,55" fill="#dbeafe" stroke={NAVY} strokeWidth="2" />
+        {/* yükseklik h - sağ dik kenar */}
+        <text x="217" y="98" fontSize="12" fontWeight="bold" fill={GREEN}>h</text>
+        {/* eğik düzlem uzunluğu ℓ - hipotenüs etiketi (eğimin üzerinde) */}
+        <text x="98" y="78" fontSize="12" fontWeight="bold" fill={ORANGE}>ℓ</text>
+        {/* Yük (kutu) eğim üzerinde - üçgenin dışında, hipotenüse oturuyor */}
+        <rect x="105" y="73" width="22" height="16" fill={BLUE} rx="2" transform="rotate(-24 116 81)" />
+        {/* Kuvvet oku eğim yönünde (yukarı-sağa) */}
+        <line x1="128" y1="76" x2="153" y2="64" stroke={ORANGE} strokeWidth="2.5" />
+        <polygon points="158,61 149,60 151,68" fill={ORANGE} />
+        <text x="161" y="56" fontSize="11" fontWeight="bold" fill={ORANGE}>F</text>
+        {/* taban etiketi */}
+        <text x="120" y="152" textAnchor="middle" fontSize="9" fill={SLATE}>taban</text>
       </svg>
     </Figure>
   );

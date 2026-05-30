@@ -35,8 +35,10 @@ export const TURKCE: SubjectContent = {
           {
             label: `Eş, Zıt ve Eş Sesli`,
             sections: [
-              { kind: "kural", content: `Eş anlam: aynı anlam (konuk-misafir). Zıt anlam: karşıt (iyi-kötü). Eş sesli: yazılışı aynı, anlamı farklı.` },
-              { kind: "ornek", content: `"yüz": surat / 100 / yüzme eylemi (eş sesli).` },
+              { kind: "kural", content: `Eş anlam: aynı anlam. Zıt anlam: karşıt. Eş sesli: yazılışı aynı, anlamı farklı.` },
+              { kind: "ornek", content: `Eş anlam: konuk-misafir, kıymet-değer, sınav-imtihan, kelime-sözcük, neden-sebep.` },
+              { kind: "ornek", content: `Zıt anlam: yaz-kış, gece-gündüz, aç-tok, açık-kapalı, iyi-kötü, sıcak-soğuk.` },
+              { kind: "ornek", content: `Eş sesli: "yüz" (surat / 100 / yüzme), "kaz" (kuş / kazı), "yaz" (mevsim / yazmak), "el" (organ / yabancı).` },
             ],
           },
           {
@@ -879,7 +881,8 @@ Yüklemin özne ve nesneyle kurduğu ilişkidir.
             label: `"de/da"`,
             sections: [
               { kind: "kural", content: `"ve, dahi" anlamı veren bağlaç "de/da" AYRI; bulunma eki "-de/-da" BİTİŞİK yazılır.` },
-              { kind: "tuzak", content: `"Ben de geldim" (ayrı, bağlaç). "Çantamda" (bitişik, ek). Bağlaç çıkınca cümle bozulmaz.` },
+              { kind: "ornek", content: `Ayrı (bağlaç): "Ali de geldi.", "Sen de gel.", "Onlar da bilmiyor." Bitişik (bulunma eki): "evde", "çantada", "okulda".` },
+              { kind: "ipucu", content: `Bağlaç olan "de/da"yı cümleden çıkar; cümle hâlâ anlamlıysa AYRI yazılır.` },
             ],
           },
           {
@@ -1050,8 +1053,9 @@ Yüklemin özne ve nesneyle kurduğu ilişkidir.
           {
             label: `Kesme İşareti (')`,
             sections: [
-              { kind: "kural", content: `Özel adlara gelen ÇEKİM eklerini ayırır (Ali'ye, İstanbul'da).` },
-              { kind: "tuzak", content: `Yapım eklerini ayırmaz: "Türk'çe" değil "Türkçe"; "Antalya'lı" değil "Antalyalı".` },
+              { kind: "kural", content: `Özel adlara gelen ÇEKİM eklerini ayırır.` },
+              { kind: "ornek", content: `Doğru: Ali'ye, İstanbul'da, Atatürk'ün, Türkiye'nin, 1923'te.` },
+              { kind: "tuzak", content: `Yapım eklerini ayırmaz: "Türk'çe" değil Türkçe; "Antalya'lı" değil Antalyalı; "İstanbul'lu" değil İstanbullu.` },
             ],
           },
         ],

@@ -396,7 +396,9 @@ Kuvâ-yı Millîye düşmanı durdurmakta yetersiz kalınca **düzenli ordu** ku
           {
             label: `Atatürk İlkeleri`,
             sections: [
-              { kind: "kural", content: `Cumhuriyetçilik, Milliyetçilik, Halkçılık, Devletçilik, Laiklik, İnkılapçılık (6 ilke).` },
+              { kind: "kural", content: `Altı ilke: Cumhuriyetçilik, Milliyetçilik, Halkçılık, Devletçilik, Laiklik, İnkılapçılık.` },
+              { kind: "ornek", content: `Cumhuriyetçilik → Cumhuriyet'in ilanı, TBMM. Milliyetçilik → Türk Tarih Kurumu, Türk Dil Kurumu. Halkçılık → hukuk önünde eşitlik, kadına seçme-seçilme hakkı. Devletçilik → Sümerbank, Etibank, demiryolları, fabrikalar. Laiklik → halifeliğin kaldırılması, Tevhid-i Tedrisat, Medeni Kanun. İnkılapçılık → Harf İnkılabı, takvim/ölçü değişiklikleri.` },
+              { kind: "tuzak", content: `İlkeler arasında "demokrasi", "krallık", "sosyalizm" gibi seçenekler çeldiricidir; ilkeler bu altısıdır.` },
             ],
           },
         ],

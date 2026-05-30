@@ -21,6 +21,7 @@ export const FEN_BILIMLERI: SubjectContent = {
             sections: [
               { kind: "tanim", content: "Dünya'nın ekseni 23,5° eğiktir ve Güneş etrafında dolanır; bu, ışınların düşme açısını değiştirir." },
               { kind: "kural", content: "21 Haziran KYK'da yaz, 21 Aralık kış başlar. 21 Mart ve 23 Eylül ekinokslarında gece = gündüz (12-12)." },
+              { kind: "ornek", content: "21 Haziran → Yengeç Dönencesi'ne dik, KYK'da en uzun gündüz, yaz. 21 Aralık → Oğlak Dönencesi'ne dik, KYK'da en uzun gece, kış. 21 Mart ve 23 Eylül → Ekvator'a dik, her yerde 12-12 saat (ekinoks)." },
               { kind: "tuzak", content: "Mevsimlerin sebebi Dünya'nın Güneş'e uzaklığı DEĞİL, eksen eğikliğidir." },
             ],
           },
@@ -205,6 +206,7 @@ Isınan hava yükselir ve **alçak basınç**, soğuyan hava alçalır ve **yük
             sections: [
               { kind: "tanim", content: "Bir nükleotit fosfat, şeker ve organik bazdan oluşur." },
               { kind: "kural", content: "Organik bazlar Adenin, Timin, Guanin, Sitozin'dir; baza göre 4 çeşit nükleotit vardır." },
+              { kind: "ornek", content: "4 çeşit nükleotit: Adenin (A), Timin (T), Guanin (G), Sitozin (S). DNA'da A daima T ile, G daima S ile eşleşir; A=T ve G=S sayıları eşittir." },
             ],
           },
           {
@@ -581,8 +583,9 @@ Atmosferdeki havanın ağırlığı, temas ettiği yüzeylere basınç uygular.
             label: "Asitler ve Bazlar",
             sections: [
               { kind: "kural", content: "Asit pH < 7, nötr pH = 7 (saf su), baz pH > 7." },
-              { kind: "ornek", content: "Limon/sirke asit; sabun/deterjan baz. Asit mavi turnusolü kırmızıya çevirir." },
-              { kind: "tuzak", content: "pH büyüdükçe asitlik artmaz; bazlık artar." },
+              { kind: "ornek", content: "Asit örnekleri: limon (sitrik asit), sirke (asetik asit), kola, mide asidi (HCl). Baz örnekleri: sabun, deterjan, çamaşır suyu, sodyum bikarbonat (karbonat)." },
+              { kind: "kural", content: "Asit mavi turnusolü kırmızıya, baz kırmızı turnusolü maviye çevirir." },
+              { kind: "tuzak", content: "pH büyüdükçe asitlik ARTMAZ; bazlık artar." },
             ],
           },
           {
@@ -725,9 +728,10 @@ Madde ısı alınca erir veya buharlaşır; ısı verince donar veya yoğuşur.
           {
             label: "Kaldıraç",
             sections: [
-              { kind: "tanim", content: "Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Tahterevalli, el arabası ve maşa örnektir." },
+              { kind: "tanim", content: "Bir destek (dayanak) noktası etrafında dönebilen çubuktur." },
               { kind: "formul", content: "Denge kuralı: Yük × Yük kolu = Kuvvet × Kuvvet kolu" },
-              { kind: "ornek", content: "40 N yük, yük koluna 1 m; kuvvet kolu 4 m ise: 40 × 1 = F × 4 → F = 10 N." },
+              { kind: "ornek", content: "Hesap örneği: 40 N yük, yük kolu 1 m; kuvvet kolu 4 m ise 40·1 = F·4 → F = 10 N." },
+              { kind: "ornek", content: "Günlük örnekler: tahterevalli, el arabası, maşa, kerpeten, kürek, makas, cımbız." },
             ],
           },
           {
@@ -735,15 +739,17 @@ Madde ısı alınca erir veya buharlaşır; ısı verince donar veya yoğuşur.
             sections: [
               { kind: "tanim", content: "Sabit makara yalnız kuvvetin yönünü değiştirir. Hareketli makara kuvvetten kazanç sağlar." },
               { kind: "formul", content: "Hareketli makara: Kuvvet = Yük ÷ 2 (çekilen ip uzunluğu 2 katına çıkar)." },
+              { kind: "ornek", content: "Örnekler: bayrak direği makarası (sabit), inşaat vinçlerinde hareketli makara, spor salonu ağırlık makineleri (palanga)." },
               { kind: "tuzak", content: "'Sabit makara kuvvetten kazanç sağlar' çeldiricisi yanlıştır; sabit makara yalnız yön değiştirir." },
             ],
           },
           {
             label: "Eğik Düzlem",
             sections: [
-              { kind: "tanim", content: "Yükü bir yüksekliğe çıkarmak için kullanılan eğimli yüzeydir. Rampa, vida ve kama örnektir." },
+              { kind: "tanim", content: "Yükü bir yüksekliğe çıkarmak için kullanılan eğimli yüzeydir." },
               { kind: "formul", content: "Kuvvet × eğik düzlem uzunluğu = Yük × yükseklik  →  F = (G × h) ÷ ℓ" },
-              { kind: "ornek", content: "200 N yükü 1 m yüksekliğe 4 m'lik rampayla çıkaralım: F = (200 × 1) ÷ 4 = 50 N." },
+              { kind: "ornek", content: "Hesap örneği: 200 N yükü 1 m yüksekliğe 4 m'lik rampayla çıkaralım: F = (200·1) ÷ 4 = 50 N." },
+              { kind: "ornek", content: "Günlük örnekler: rampa, kaydırak, vida, balta ve bıçak (kama), merdiven, dağ yolları." },
               { kind: "ipucu", content: "Rampa uzadıkça (eğim azaldıkça) gereken kuvvet azalır, ama yol uzar." },
             ],
           },

@@ -29,7 +29,8 @@ export const MATEMATIK: SubjectContent = {
             label: `Bölünebilme Kuralları`,
             sections: [
               { kind: "kural", content: `2: son rakam çift • 3: rakam toplamı 3'ün katı • 5: son rakam 0/5 • 9: rakam toplamı 9'un katı • 10: son rakam 0.` },
-              { kind: "ornek", content: `432 → 4+3+2 = 9 olduğu için hem 3'e hem 9'a bölünür.` },
+              { kind: "ornek", content: `2 ile: 248 (son rakam 8, çift). 3 ile: 432 (4+3+2=9). 5 ile: 1235 (5 ile biter). 9 ile: 207 (2+0+7=9). 10 ile: 540 (0 ile biter).` },
+              { kind: "tuzak", content: `9'a bölünen sayı her zaman 3'e bölünür; ama 3'e bölünen sayı her zaman 9'a bölünmez (ör. 12).` },
             ],
           },
           {
@@ -407,7 +408,7 @@ Bir sayının karekökü, karesi o sayıya eşit olan **pozitif** sayıdır: √
             label: `Özdeşlikler`,
             sections: [
               { kind: "formul", content: `(a+b)² = a²+2ab+b² • (a−b)² = a²−2ab+b² • a²−b² = (a−b)(a+b)` },
-              { kind: "ornek", content: `(x+3)² = x² + 6x + 9.` },
+              { kind: "ornek", content: `(x+3)² = x² + 6x + 9 • (x+5)² = x² + 10x + 25 • (a−4)² = a² − 8a + 16 • x² − 36 = (x−6)(x+6).` },
               { kind: "tuzak", content: `(a+b)² ≠ a²+b²; ortadaki 2ab terimi unutulmaz.` },
             ],
           },
@@ -631,8 +632,9 @@ Eşitsizlikler tıpkı denklemler gibi çözülür.
             label: `Dik Üçgen ve Pisagor`,
             sections: [
               { kind: "formul", content: `a² + b² = c² (c = hipotenüs, en uzun kenar).` },
-              { kind: "ornek", content: `3-4-5 ve 6-8-10 dik üçgenleri.` },
-              { kind: "tuzak", content: `Hipotenüs en uzun kenardır ve dik açının karşısındadır.` },
+              { kind: "ornek", content: `Sık karşılaşılan Pisagor üçlüleri: 3-4-5, 5-12-13, 6-8-10, 8-15-17, 9-12-15.` },
+              { kind: "ornek", content: `Dik kenarlar 6 ve 8 → hipotenüs √(36+64) = √100 = 10.` },
+              { kind: "tuzak", content: `Hipotenüs EN UZUN kenardır ve dik açının KARŞISINDADIR; dik kenarlardan biri değildir.` },
             ],
           },
         ],

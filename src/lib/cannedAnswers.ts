@@ -597,6 +597,81 @@ const CONCEPTS: Concept[] = [
       "Kur'an-ı Kerim, Hz. Muhammed'e Cebrail aracılığıyla yaklaşık 23 yılda indirilen son ilahi kitaptır. 114 sureden oluşur; ilk suresi Fatiha'dır.",
     topicRoute: "/ders/din/kuran-i-kerim-ve-ozellikleri",
   },
+  // ---------- Atatürk ilkeleri ----------
+  {
+    all: ["cumhuriyetcilik"],
+    answer:
+      "Cumhuriyetçilik, devlet yönetiminin halkın egemenliğine dayandığı yönetim biçimini benimsemektir. En somut örneği 29 Ekim 1923'te Cumhuriyet'in ilanıdır.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["milliyetcilik"],
+    answer:
+      "Milliyetçilik, millî bilinci ve millî birliği önemseyen ilkedir. Türk Tarih Kurumu, Türk Dil Kurumu kuruluşları bu ilkenin uygulamalarıdır.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["halkcilik"],
+    answer:
+      "Halkçılık, halkın eşit haklara sahip olduğunu ve devletin halk için var olduğunu savunan ilkedir. Hukuk önünde eşitlik ve kadına seçme-seçilme hakkı örnektir.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["devletcilik"],
+    answer:
+      "Devletçilik, ekonominin gelişmesinde devletin etkin rol almasını öngören ilkedir. Sümerbank, Etibank ve demiryolu yatırımları bu ilkenin uygulamalarıdır.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["laiklik"],
+    answer:
+      "Laiklik, din ile devlet işlerinin ayrı tutulması ilkesidir. Halifeliğin kaldırılması (1924), Tevhid-i Tedrisat ve Medeni Kanun bu ilkenin uygulamalarıdır.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["inkilapcilik"],
+    answer:
+      "İnkılapçılık, sürekli yenileşmeyi ve çağın gereklerine ayak uydurmayı esas alan ilkedir. Harf İnkılabı (1928), takvim ve ölçü değişiklikleri bu ilkenin uygulamalarıdır.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  // ---------- DNA bazları ----------
+  {
+    all: ["adenin"],
+    answer:
+      "Adenin (A), DNA'daki 4 organik bazdan biridir. Karşılıklı eşleşmede daima Timin (T) ile eşleşir (A–T).",
+    topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
+  },
+  {
+    all: ["timin"],
+    answer:
+      "Timin (T), DNA'daki 4 organik bazdan biridir. Daima Adenin (A) ile eşleşir.",
+    topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
+  },
+  {
+    all: ["guanin"],
+    answer:
+      "Guanin (G), DNA'daki 4 organik bazdan biridir. Daima Sitozin (S) ile eşleşir.",
+    topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
+  },
+  {
+    all: ["sitozin"],
+    answer:
+      "Sitozin (S), DNA'daki 4 organik bazdan biridir. Daima Guanin (G) ile eşleşir.",
+    topicRoute: "/ders/fen-bilimleri/dna-ve-genetik-kod",
+  },
+  // ---------- Diğer ek tetikler ----------
+  {
+    all: ["ekinoks"],
+    answer:
+      "Ekinoks (21 Mart ve 23 Eylül), Güneş ışınlarının Ekvator'a dik düştüğü ve tüm dünyada gece ile gündüzün eşit (12-12 saat) olduğu tarihlerdir.",
+    topicRoute: "/ders/fen-bilimleri/mevsimler-ve-iklim",
+  },
+  {
+    all: ["pisagor uclu"],
+    answer:
+      "Pisagor üçlüleri, a² + b² = c² bağıntısını sağlayan tam sayı üçlüleridir. En çok karşılaşılanlar: 3-4-5, 5-12-13, 6-8-10, 8-15-17 ve 9-12-15.",
+    topicRoute: "/ders/matematik/ucgenler",
+  },
 ];
 
 function tryConcepts(input: string, tokens: string[]): CannedResult | null {
