@@ -20,20 +20,22 @@ export const INKILAP: SubjectContent = {
           {
             label: `Hayatı ve Eğitimi`,
             sections: [
-              { kind: "kural", content: `1881'de Selanik'te doğdu. Matematik öğretmeni "Kemal" adını verdi. Harp Akademisi'ni İstanbul'da bitirdi.` },
+              { kind: "kural", content: `1881'de Selanik'te doğdu. Babası Ali Rıza Efendi, annesi Zübeyde Hanım.` },
+              { kind: "ornek", content: `Eğitim sırası: Mahalle Mektebi → Şemsi Efendi Mektebi → Selanik Askerî Rüştiyesi (matematik öğretmeni "Kemal" adını burada verdi) → Manastır Askerî İdadisi → İstanbul Harbiye → Harp Akademisi (1905).` },
             ],
           },
           {
             label: `Askerî Başarıları`,
             sections: [
-              { kind: "kural", content: `Trablusgarp (Derne-Tobruk) → İtalyanlara karşı. Çanakkale (1915) → "Anafartalar Kahramanı".` },
-              { kind: "tuzak", content: `Çanakkale'de Mareşal değildi; "Mareşal" ve "Gazi" unvanı Sakarya (1921) sonrası verildi.` },
+              { kind: "ornek", content: `1911-12 Trablusgarp (Derne, Tobruk) → İtalyanlara karşı. 1915 Çanakkale (Anafartalar) → "Anafartalar Kahramanı". 1916 Doğu Cephesi'nde Bitlis-Muş'u geri alma.` },
+              { kind: "ornek", content: `Ünlü Çanakkale emri: "Ben size taarruzu emretmiyorum, ölmeyi emrediyorum."` },
+              { kind: "tuzak", content: `Çanakkale'de Mareşal DEĞİLDİ; "Mareşal" rütbesi ve "Gazi" unvanı Sakarya (1921) sonrası verildi.` },
             ],
           },
           {
             label: `Fikir Hayatını Etkileyen Şehirler`,
             sections: [
-              { kind: "ornek", content: `Selanik (çok kültürlü, fikir akımları), Manastır (askerî, milliyetçilik), İstanbul (siyasi).` },
+              { kind: "ornek", content: `Selanik → çok kültürlü yapı, batılı fikir akımları (Tanzimat, Meşrutiyet). Manastır → askerî disiplin, milliyetçilik (öğretmeni Ömer Naci'nin etkisi). İstanbul → siyasi gelişmeler, Jön Türkler, Meşrutiyet hareketi.` },
             ],
           },
         ],
@@ -133,26 +135,32 @@ Mustafa Kemal **1881'de Selanik'te** doğdu. Matematikteki yeteneği nedeniyle �
           {
             label: `Mondros ve İşgaller`,
             sections: [
-              { kind: "kural", content: `30 Ekim 1918 Mondros Ateşkesi → işgaller. 15 Mayıs 1919 İzmir'in işgali tepkileri büyüttü.` },
+              { kind: "kural", content: `30 Ekim 1918 Mondros Ateşkesi imzalandı. 15 Mayıs 1919 İzmir'in işgali tepkileri büyüttü.` },
+              { kind: "ornek", content: `İşgal edilen yerler: İngilizler Musul, Antep, Maraş, Urfa, İstanbul; Fransızlar Adana, Hatay; İtalyanlar Antalya, Konya; Yunanlar İzmir, Batı Anadolu.` },
+              { kind: "tuzak", content: `Mondros bir BARIŞ antlaşması değil, ATEŞKEStir; ana sorunu 7. madde (gerekirse stratejik yerlerin işgali).` },
             ],
           },
           {
             label: `Cemiyetler ve Kuvâ-yı Millîye`,
             sections: [
-              { kind: "tanim", content: `Yararlı (Müdafaa-i Hukuk) ve zararlı cemiyetler kuruldu. Bölgesel direniş Kuvâ-yı Millîye ile başladı.` },
+              { kind: "tanim", content: `Yararlı (Müdafaa-i Hukuk) ve zararlı cemiyetler kuruldu. Bölgesel silahlı direniş Kuvâ-yı Millîye ile başladı.` },
+              { kind: "ornek", content: `Yararlı cemiyetler: Doğu Anadolu Müdafaa-i Hukuk, Trakya-Paşaeli Müdafaa-i Hukuk, İzmir Müdafaa-i Hukuk, Kilikyalılar Cemiyeti.` },
+              { kind: "ornek", content: `Zararlı cemiyetler: Sevr Rumları, Pontus, Taşnak, Mavri Mira (azınlık); Sulh ve Selâmet, Hürriyet ve İtilaf, Teali İslam (millî mücadeleye karşı).` },
             ],
           },
           {
             label: `Genelgeler ve Kongreler`,
             sections: [
-              { kind: "kural", content: `Samsun (19 Mayıs 1919) → Amasya Genelgesi (22 Haziran 1919) → Erzurum (23 Temmuz) → Sivas (4 Eylül 1919).` },
-              { kind: "tuzak", content: `Amaç ilk kez Amasya'da belirtildi; manda-himaye kesin olarak SİVAS'ta reddedildi.` },
+              { kind: "kural", content: `Sıralama: Samsun'a çıkış (19 Mayıs 1919) → Amasya Genelgesi (22 Haziran 1919) → Erzurum Kongresi (23 Temmuz) → Sivas Kongresi (4 Eylül 1919).` },
+              { kind: "ornek", content: `Amasya Genelgesi → "Milletin istiklalini yine milletin azim ve kararı kurtaracaktır" (amaç ilk kez). Erzurum Kongresi → bölgesel; "Manda ve himaye kabul olunamaz" (ilk kez söylendi). Sivas Kongresi → millî nitelik; manda KESİN reddedildi, cemiyetler birleştirildi.` },
+              { kind: "tuzak", content: `Manda-himayenin KESİN reddi Sivas'tadır; ilk söylenmesi Erzurum'da olmuştur (karıştırılır).` },
             ],
           },
           {
             label: `Misak-ı Millî ve TBMM`,
             sections: [
-              { kind: "kural", content: `28 Ocak 1920 Misak-ı Millî; 23 Nisan 1920 TBMM açıldı.` },
+              { kind: "kural", content: `28 Ocak 1920 Misak-ı Millî kabul edildi (son Osmanlı Mebusan Meclisi). 16 Mart 1920 İstanbul işgal edildi → meclis dağıldı. 23 Nisan 1920 Ankara'da TBMM açıldı.` },
+              { kind: "ornek", content: `Misak-ı Millî kararları: 30 Ekim 1918 sınırları, manda-himaye reddi, azınlık haklarında eşitlik, kapitülasyonların kaldırılması, Boğazlar güvenliği.` },
             ],
           },
         ],
@@ -256,25 +264,30 @@ Mustafa Kemal **1881'de Selanik'te** doğdu. Matematikteki yeteneği nedeniyle �
             label: `Düzenli Orduya Geçiş`,
             sections: [
               { kind: "tanim", content: `Kuvâ-yı Millîye düşmanı durdurmakta yetersiz kalınca düzenli ordu kuruldu.` },
+              { kind: "tuzak", content: `Kuvâ-yı Millîye'nin tek dağılma sebebi yetersizlik değil; merkezî otorite kuramaması ve düzensiz davranışları da etkilidir.` },
             ],
           },
           {
             label: `Cepheler`,
             sections: [
-              { kind: "kural", content: `Doğu → Ermenistan, Güney → Fransa (Maraş, Antep, Urfa), Batı → Yunanistan.` },
+              { kind: "kural", content: `Doğu → Ermenistan, Güney → Fransa, Batı → Yunanistan.` },
+              { kind: "ornek", content: `Doğu Cephesi → Kâzım Karabekir komutasında; Gümrü Antlaşması (3 Aralık 1920) ile ilk siyasi başarı. Güney Cephesi → Antep "Gazi", Maraş "Kahraman", Urfa "Şanlı" unvanları aldı. Batı Cephesi → İsmet (İnönü) Paşa komutasında.` },
             ],
           },
           {
             label: `Batı Cephesi Zaferleri`,
             sections: [
-              { kind: "kural", content: `I. ve II. İnönü (1921), Sakarya (1921), Büyük Taarruz / Başkomutanlık (26-30 Ağustos 1922).` },
-              { kind: "tuzak", content: `"Gazi/Mareşal" unvanı Sakarya sonrası verildi; 30 Ağustos = Büyük Taarruz (I. İnönü değil).` },
+              { kind: "kural", content: `Sıralama: I. İnönü (Ocak 1921) → II. İnönü (Mart-Nisan 1921) → Eskişehir-Kütahya (Temmuz 1921, GERİLEME) → Sakarya (Ağustos-Eylül 1921) → Büyük Taarruz/Başkomutanlık (26-30 Ağustos 1922).` },
+              { kind: "ornek", content: `Anayasanın kabulü → I. İnönü sonrası (20 Ocak 1921). Londra Konferansı, İstiklal Marşı (12 Mart 1921), Moskova Antlaşması → I. İnönü siyasi sonuçları. Sakarya sözü: "Hattı müdafaa yoktur, sathı müdafaa vardır."` },
+              { kind: "tuzak", content: `"Gazi/Mareşal" unvanı Sakarya (1921) sonrası verildi (Büyük Taarruz değil). 30 Ağustos = Başkomutanlık Meydan Muharebesi (I. İnönü değil).` },
             ],
           },
           {
             label: `Antlaşmalar`,
             sections: [
-              { kind: "kural", content: `Mudanya Ateşkesi (11 Ekim 1922); Lozan Barış Antlaşması (24 Temmuz 1923).` },
+              { kind: "kural", content: `Mudanya Ateşkesi (11 Ekim 1922) silahları susturdu. Lozan Barış Antlaşması (24 Temmuz 1923) bağımsızlığı dünyaya kabul ettirdi.` },
+              { kind: "ornek", content: `Lozan'da çözülenler: sınırlar (büyük ölçüde Misak-ı Millî), azınlık hakları, savaş tazminatı (yok), kapitülasyonların kaldırılması, dış borçlar (Düyun-u Umumiye). Çözülemeyenler: Musul, Boğazlar, Hatay (sonra çözüldü).` },
+              { kind: "tuzak", content: `Mudanya'da Boğazlar ve Trakya askersiz tahliye edildi; barış antlaşması DEĞİL ateşkestir.` },
             ],
           },
         ],
@@ -376,21 +389,24 @@ Kuvâ-yı Millîye düşmanı durdurmakta yetersiz kalınca **düzenli ordu** ku
           {
             label: `Siyasi İnkılaplar`,
             sections: [
-              { kind: "kural", content: `Saltanatın kaldırılması (1 Kasım 1922), Cumhuriyet'in ilanı (29 Ekim 1923), Halifeliğin kaldırılması (3 Mart 1924).` },
+              { kind: "kural", content: `Saltanatın kaldırılması (1 Kasım 1922) → Cumhuriyet'in ilanı (29 Ekim 1923) → Halifeliğin kaldırılması (3 Mart 1924).` },
+              { kind: "ornek", content: `1 Kasım 1922 → saltanat ve hilafet ayrıldı, saltanat kaldırıldı (son padişah Vahdettin yurt dışına gitti). 29 Ekim 1923 → "Yaşasın Cumhuriyet"; Mustafa Kemal ilk cumhurbaşkanı. 3 Mart 1924 → halifelik kaldırıldı, Şer'iye ve Evkaf Vekâleti, Tevhid-i Tedrisat aynı gün.` },
               { kind: "tuzak", content: `Cumhuriyet 29 Ekim 1923; halifelik AYNI gün değil, 3 Mart 1924'te kaldırıldı.` },
             ],
           },
           {
             label: `Hukuk ve Eğitim`,
             sections: [
-              { kind: "kural", content: `Tevhid-i Tedrisat (1924), Türk Medeni Kanunu (1926), Harf İnkılabı (1928).` },
+              { kind: "kural", content: `Tevhid-i Tedrisat (3 Mart 1924), Türk Medeni Kanunu (1926), Harf İnkılabı (1 Kasım 1928), Üniversite reformu (1933).` },
+              { kind: "ornek", content: `Tevhid-i Tedrisat → bütün okullar Millî Eğitim Bakanlığı'na bağlandı, medreseler kapatıldı. Medeni Kanun → İsviçre'den alındı; kadına miras/şahitlik/boşanma eşitliği, tek eşlilik, resmî nikâh. Harf İnkılabı → Arap alfabesi yerine Latin tabanlı Türk alfabesi (29 harf).` },
             ],
           },
           {
             label: `Toplumsal İnkılaplar`,
             sections: [
-              { kind: "kural", content: `Şapka Kanunu (1925), Soyadı Kanunu (1934), kadınlara milletvekili seçme-seçilme (1934).` },
-              { kind: "tuzak", content: `Kadınlara milletvekili hakkı 1926 Medeni Kanun'la değil, 1934'te verildi.` },
+              { kind: "kural", content: `Şapka Kanunu (1925), Tekke-Zaviye kapatılması (1925), takvim-saat-ölçü (1925-1931), Soyadı Kanunu (1934), kadınlara siyasi haklar (1930 belediye, 1934 milletvekili).` },
+              { kind: "ornek", content: `Şapka (25 Kasım 1925) → fes yerine. Takvim → Hicri yerine Miladi (1925). Saat → alaturka yerine uluslararası 24 saat. Ölçü/ağırlık → metre/kilo (1931). Soyadı (1934) → "Atatürk" soyadı TBMM kararıyla M. Kemal'e verildi.` },
+              { kind: "tuzak", content: `Kadınlara milletvekili seçme-seçilme hakkı 1926 Medeni Kanun'la DEĞİL, 1934'te verildi.` },
             ],
           },
           {
@@ -501,20 +517,23 @@ Kuvâ-yı Millîye düşmanı durdurmakta yetersiz kalınca **düzenli ordu** ku
           {
             label: `Çok Partili Hayat Denemeleri`,
             sections: [
-              { kind: "kural", content: `Terakkiperver Cumhuriyet Fırkası (1924, ilk muhalefet partisi); Serbest Cumhuriyet Fırkası (1930, Fethi Okyar).` },
-              { kind: "tuzak", content: `İlk muhalefet partisi Serbest C.F. değil, Terakkiperver C.F.'dir (1924).` },
+              { kind: "kural", content: `Terakkiperver Cumhuriyet Fırkası (1924, ilk muhalefet partisi) ve Serbest Cumhuriyet Fırkası (1930, Fethi Okyar).` },
+              { kind: "ornek", content: `Terakkiperver C.F. (17 Kasım 1924) → kurucular: Kâzım Karabekir, Rauf Orbay, Ali Fuat Cebesoy. Şeyh Sait İsyanı (1925) sonrası Takrir-i Sükûn Kanunu ile kapatıldı. Serbest C.F. (12 Ağustos 1930) → Atatürk'ün isteğiyle Fethi Okyar kurdu; gerici kalkışmalara zemin oluşturduğu görülünce kendisi feshetti.` },
+              { kind: "tuzak", content: `İlk muhalefet partisi Serbest C.F. DEĞİL, Terakkiperver C.F.'dir (1924).` },
             ],
           },
           {
             label: `İsyan ve Olaylar`,
             sections: [
-              { kind: "kural", content: `Şeyh Sait İsyanı (1925) ve Menemen Olayı (1930) çok partili hayata geçişi sekteye uğrattı.` },
+              { kind: "kural", content: `Şeyh Sait İsyanı (1925) ve Menemen Olayı (23 Aralık 1930) çok partili hayata geçişi sekteye uğrattı.` },
+              { kind: "ornek", content: `Şeyh Sait İsyanı (13 Şubat 1925, Diyarbakır-Bingöl) → Takrir-i Sükûn Kanunu çıkarıldı, Terakkiperver C.F. kapatıldı, halifelik yanlıları cezalandırıldı. Menemen Olayı → Asteğmen Kubilay'ın katledilmesi; Serbest C.F.'nin kapatılmasından sonra rejim aleyhine kalkışma.` },
             ],
           },
           {
             label: `Toplumsal Haklar`,
             sections: [
               { kind: "tanim", content: `Hukuk önünde eşitlik ve kadın hakları alanında önemli adımlar atıldı.` },
+              { kind: "ornek", content: `Kadın haklarında: Medeni Kanun (1926) ile aile/miras eşitliği; 1930 belediye, 1933 muhtar, 1934 milletvekili seçme-seçilme hakkı. 1935'te 18 kadın milletvekili meclise girdi (dünyada ilk sıralarda).` },
             ],
           },
         ],
@@ -623,27 +642,32 @@ Bu dönemde hukuk önünde eşitlik ve kadın haklarıyla ilgili önemli adımla
           {
             label: `Lozan'dan Kalan Sorunlar`,
             sections: [
-              { kind: "kural", content: `Musul Sorunu 1926'da İngiltere lehine çözüldü; nüfus mübadelesi ve dış borçlar ele alındı.` },
+              { kind: "kural", content: `Musul, nüfus mübadelesi, dış borçlar (Düyun-u Umumiye), yabancı okullar Lozan sonrasında çözüldü.` },
+              { kind: "ornek", content: `Musul (1926 Ankara Antlaşması) → İngiltere lehine; petrol gelirinin %10'u 25 yıl Türkiye'ye. Nüfus mübadelesi (1923, Yunanistan ile) → İstanbul Rumları ve Batı Trakya Türkleri hariç. Dış borçlar 1928 ve 1933'te taksitlendirildi; 1954'te tamamen ödendi.` },
+              { kind: "tuzak", content: `Musul Türkiye lehine değil, İngiltere lehine çözüldü; Türkiye bu nedenle "kaybedilen toprak" ifadesini kullanır.` },
             ],
           },
           {
             label: `Boğazlar ve Güvenlik`,
             sections: [
               { kind: "kural", content: `1936 Montrö Boğazlar Sözleşmesi ile Boğazlar üzerinde Türk egemenliği güçlendirildi.` },
-              { kind: "tuzak", content: `Boğazlar üzerinde tam egemenlik Lozan'da değil, 1936 Montrö ile sağlandı.` },
+              { kind: "ornek", content: `Lozan'da Boğazlar Komisyonu (uluslararası, başkanı Türk) kurulmuştu, asker geçişi sınırlıydı. Montrö (20 Temmuz 1936) → komisyon kaldırıldı, Boğazlar Türk komutası altına girdi, gerekirse asker konuşlandırılabilir oldu.` },
+              { kind: "tuzak", content: `Boğazlar üzerinde TAM egemenlik Lozan'da DEĞİL, 1936 Montrö ile sağlandı.` },
             ],
           },
           {
             label: `Bölgesel Paktlar`,
             sections: [
-              { kind: "kural", content: `Balkan Antantı (1934) ve doğu sınırı için Sadabat Paktı (1937).` },
+              { kind: "kural", content: `Balkan Antantı (9 Şubat 1934) ve doğu sınırı için Sadabat Paktı (8 Temmuz 1937).` },
+              { kind: "ornek", content: `Balkan Antantı → Türkiye, Yunanistan, Yugoslavya, Romanya (İtalya tehdidine karşı). Sadabat Paktı → Türkiye, İran, Irak, Afganistan (doğu sınırının güvenliği).` },
             ],
           },
           {
             label: `Hatay Meselesi`,
             sections: [
-              { kind: "kural", content: `Hatay 1939'da anavatana katıldı (Atatürk'ün ölümünden sonra).` },
-              { kind: "tuzak", content: `Hatay 1936'da değil, 1939'da katıldı.` },
+              { kind: "kural", content: `Hatay 29 Haziran 1939'da anavatana katıldı (Atatürk'ün ölümünden sonra).` },
+              { kind: "ornek", content: `Süreç: 1936 Fransa'dan Hatay talebi → 1937 özerk Hatay → 1938 bağımsız Hatay Devleti (cumhurbaşkanı Tayfur Sökmen) → 29 Haziran 1939 Türkiye'ye katılım.` },
+              { kind: "tuzak", content: `Hatay 1936'da değil, 1939'da katıldı; Atatürk hastalığına rağmen meseleyle bizzat ilgilendi.` },
             ],
           },
         ],
@@ -756,20 +780,23 @@ Bu dönemde hukuk önünde eşitlik ve kadın haklarıyla ilgili önemli adımla
           {
             label: `Atatürk'ün Ölümü`,
             sections: [
-              { kind: "kural", content: `10 Kasım 1938 Dolmabahçe Sarayı'nda vefat etti. Yerine İsmet İnönü ("Millî Şef") cumhurbaşkanı oldu.` },
-              { kind: "tuzak", content: `Atatürk'ten sonra Celal Bayar değil, İsmet İnönü cumhurbaşkanı oldu.` },
+              { kind: "kural", content: `10 Kasım 1938 saat 09:05'te Dolmabahçe Sarayı'nda vefat etti. Yerine İsmet İnönü ("Millî Şef") cumhurbaşkanı oldu.` },
+              { kind: "ornek", content: `Hastalık: siroz. Cenaze töreni 19 Kasım 1938. Geçici kabir: Etnografya Müzesi. 10 Kasım 1953'te Anıtkabir'e nakledildi.` },
+              { kind: "tuzak", content: `Atatürk'ten sonra cumhurbaşkanı Celal Bayar DEĞİL, İsmet İnönü oldu (Celal Bayar 1950'de).` },
             ],
           },
           {
             label: `II. Dünya Savaşı ve Türkiye`,
             sections: [
-              { kind: "kural", content: `Türkiye savaşın çoğunda tarafsız kaldı; 1945'te müttefikler yanında yer aldı ama fiilen savaşmadı.` },
+              { kind: "kural", content: `1939-1945 savaşı süresince Türkiye tarafsız kaldı; 23 Şubat 1945'te müttefikler yanında yer aldı ama fiilen savaşmadı.` },
+              { kind: "ornek", content: `Türk diplomasisi: 1939 İngiltere-Fransa ile ittifak, 1941 Almanya ile saldırmazlık paktı (dengeli tutum). 1945'te BM'ye kurucu üye olarak katılmak için Almanya-Japonya'ya savaş ilan etti (fiilen savaşmadan).` },
             ],
           },
           {
             label: `Atatürk'ün Mirası`,
             sections: [
-              { kind: "tanim", content: `Laik, çağdaş ve bağımsız Türkiye Cumhuriyeti. Naaşı Anıtkabir'e taşındı.` },
+              { kind: "tanim", content: `Laik, çağdaş ve bağımsız Türkiye Cumhuriyeti. Naaşı 10 Kasım 1953'te Anıtkabir'e taşındı.` },
+              { kind: "ornek", content: `Kalıcı kurumlar: TBMM, Cumhuriyet, Türk Tarih ve Dil Kurumları, Anayasa (1924/1961/1982 ile gelişti), modern hukuk düzeni, kadın hakları. "Egemenlik kayıtsız şartsız milletindir." ilkesi.` },
             ],
           },
         ],

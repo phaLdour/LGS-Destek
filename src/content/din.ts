@@ -20,19 +20,21 @@ export const DIN: SubjectContent = {
             label: `Kader ve Kaza`,
             sections: [
               { kind: "tanim", content: `Kader: Allah'ın olacak her şeyi sonsuz ilmiyle önceden bilmesi ve belirlemesi. Kaza: kaderde belirlenenin zamanı gelince gerçekleşmesi.` },
+              { kind: "ornek", content: `Kader → bir insanın hayatının belirli bir süreye sahip olması (ölçü). Kaza → o sürenin sonunda vefatın gerçekleşmesi. Kader plan, kaza uygulamadır.` },
             ],
           },
           {
             label: `Evrendeki Yasalar`,
             sections: [
               { kind: "kural", content: `Fiziksel, biyolojik ve toplumsal yasalar Allah'ın koyduğu düzendir.` },
-              { kind: "ornek", content: `Suyun 100°C'de kaynaması → fiziksel; canlıların büyüyüp yaşlanması → biyolojik yasa.` },
+              { kind: "ornek", content: `Fiziksel yasalar: suyun 100°C'de kaynaması, yerçekimi, ısının yüksekten alçağa akması. Biyolojik yasalar: canlıların doğup büyümesi ve ölmesi, fotosentez, kalıtım. Toplumsal yasalar: adaletsizliğin toplumu çökertmesi, çalışmanın refah getirmesi.` },
             ],
           },
           {
             label: `İrade ve Sorumluluk`,
             sections: [
               { kind: "kural", content: `İnsanın seçme özgürlüğü (cüz'i irade) vardır; bu yüzden yaptıklarından sorumludur.` },
+              { kind: "ornek", content: `Sınava çalışmak/çalışmamak seçimi insanın iradesindedir; sonuç (başarı/başarısızlık) bu seçimin doğal sonucudur.` },
               { kind: "tuzak", content: `"Her şey kaderdir" deyip sorumluluktan kaçılmaz; insan çabasıyla seçim yapar.` },
             ],
           },
@@ -40,7 +42,8 @@ export const DIN: SubjectContent = {
             label: `Tevekkül ve Emek`,
             sections: [
               { kind: "tanim", content: `Tevekkül: gereken çabayı gösterdikten sonra sonucu Allah'a bırakmaktır.` },
-              { kind: "tuzak", content: `Tevekkül, çalışmayı bırakıp beklemek değildir; önce çalışmak gerekir.` },
+              { kind: "ornek", content: `Hadis: "Önce deveni bağla, sonra tevekkül et." Çiftçi tohumu eker, sular, bakım yapar; ürünü Allah'tan bekler. Öğrenci çalışır, sınav öncesi dua eder.` },
+              { kind: "tuzak", content: `Tevekkül, çalışmayı bırakıp beklemek DEĞİLDİR; önce çalışmak gerekir.` },
             ],
           },
         ],
@@ -100,27 +103,33 @@ export const DIN: SubjectContent = {
           {
             label: `Zekât`,
             sections: [
-              { kind: "kural", content: `Belirli zenginliğe (nisaba) ulaşan Müslümanın malının kırkta birini (1/40) ihtiyaç sahiplerine vermesidir; farzdır.` },
-              { kind: "tuzak", content: `Zekât her Müslümana değil, yalnız nisaba ulaşan zengine farzdır.` },
+              { kind: "kural", content: `Nisaba ulaşan Müslümanın malının kırkta birini (1/40 = %2,5) ihtiyaç sahiplerine vermesidir; farzdır.` },
+              { kind: "ornek", content: `Zekât verilenler (Tevbe 60'a göre 8 grup): fakirler, miskinler, zekât memurları, kalpleri İslam'a ısındırılacaklar, köleler, borçlular, Allah yolundakiler ve yolda kalmışlar.` },
+              { kind: "ornek", content: `Zekât oranları: parada/altında 1/40; topraktan elde edilen ürünlerde 1/10 (öşür); küçükbaş ve büyükbaş hayvanlarda farklı oranlar.` },
+              { kind: "tuzak", content: `Zekât her Müslümana değil, yalnız nisaba (belirli zenginliğe) ulaşan kişiye farzdır. Akrabaya öncelik tanınır.` },
             ],
           },
           {
             label: `Sadaka ve İnfak`,
             sections: [
-              { kind: "tanim", content: `Sadaka, karşılık beklemeden yapılan gönüllü yardımdır. İnfak, Allah rızası için yapılan harcamadır.` },
+              { kind: "tanim", content: `Sadaka, karşılık beklemeden yapılan gönüllü yardımdır. İnfak, Allah rızası için yapılan her türlü harcamadır.` },
+              { kind: "ornek", content: `Sadaka örnekleri: aç doyurmak, ihtiyaç sahibine para vermek, güler yüz göstermek, kötülükten alıkoymak, faydalı bilgi öğretmek, yoldan eziyet kaldırmak. Sadaka-i cariye: insan yaşadıkça (hatta öldükten sonra da) sevap getiren kalıcı sadakalar (cami, çeşme, okul, kitap, ağaç dikme).` },
             ],
           },
           {
             label: `Hac`,
             sections: [
               { kind: "kural", content: `İmkânı olan Müslümanların ömründe bir kez Kâbe'yi (Mekke) ziyaret ederek yaptığı ibadettir; farzdır.` },
-              { kind: "ornek", content: `İhrama girme, tavaf (Kâbe'nin etrafında dönme), sa'y, Arafat'ta vakfe.` },
+              { kind: "ornek", content: `Sıralı uygulamalar: 1) İhrama girme (Mikat). 2) Tavaf (Kâbe çevresinde 7 tur). 3) Sa'y (Safa-Merve arasında 7 gidiş-geliş). 4) Arafat'ta vakfe (Zilhicce 9). 5) Müzdelife'de vakfe. 6) Şeytan taşlama (Mina). 7) Kurban kesme (Kurban Bayramı). 8) Veda tavafı.` },
+              { kind: "ornek", content: `Hac şartları: Müslüman olmak, akıllı-buluğ, sağlık, mali güç, yol güvenliği. Ramazan'da değil, Zilhicce ayının belirli günlerinde yapılır.` },
+              { kind: "tuzak", content: `Hac umre ile karıştırılır. Umre yılın her zamanı yapılabilir, hac belirli günlerdedir; Arafat'a çıkmayan haccı yapmamış sayılır.` },
             ],
           },
           {
             label: `Kurban`,
             sections: [
               { kind: "tanim", content: `İbadet niyetiyle belirli hayvanların kesilmesi; eti paylaşılarak yardımlaşma sağlanır.` },
+              { kind: "ornek", content: `Kesilebilecek hayvanlar: koyun, keçi (1 yaş), sığır, manda (2 yaş), deve (5 yaş). Etin 1/3'ü ev halkına, 1/3'ü akrabaya/komşuya, 1/3'ü fakirlere dağıtılır.` },
             ],
           },
         ],
@@ -193,13 +202,15 @@ export const DIN: SubjectContent = {
           {
             label: `Ahlaki Değerler`,
             sections: [
-              { kind: "ornek", content: `Dürüstlük, adalet, merhamet, yardımlaşma, saygı, hoşgörü.` },
+              { kind: "ornek", content: `Dürüstlük → sözünde durmak, yalan söylememek. Adalet → herkese hakkını vermek. Merhamet → zayıfa, yaşlıya, hayvana şefkat. Yardımlaşma → komşunun, akrabanın, mağdurun yanında olmak. Saygı → büyüklere ve farklı görüşlere. Hoşgörü → kusurları affetmek, kötülüğe iyilikle karşılık vermek. Sabır → zorluklara dayanmak.` },
             ],
           },
           {
             label: `Din ve Temizlik`,
             sections: [
               { kind: "kural", content: `İslam hem maddi (beden, çevre) hem manevi (kalp, niyet) temizliğe önem verir.` },
+              { kind: "ornek", content: `Maddi temizlik: abdest ve gusül; el-yüz yıkama, diş bakımı, kıyafet temizliği, çevre temizliği. Manevi temizlik: kıskançlık-kibir-haset gibi kötü huylardan arınma, tövbe, samimi niyet.` },
+              { kind: "ipucu", content: `Hadis: "Temizlik imanın yarısıdır."` },
             ],
           },
         ],
@@ -259,24 +270,26 @@ Din, bireye **ahlaki değerler** kazandırır; toplumda **huzur, dayanışma ve 
             label: `Güvenilirliği`,
             sections: [
               { kind: "tanim", content: `Dürüstlüğü ve güvenilirliğiyle peygamberlikten önce bile "Muhammedü'l-Emin (güvenilir)" olarak tanındı.` },
+              { kind: "ornek", content: `Mekkeliler değerli eşyalarını ona emanet ederdi. Hicret sırasında bile (kendisini öldürmek istedikleri hâlde) yanındaki emanetleri yerlerine ulaştırmak için Hz. Ali'yi bırakmıştır. Hilfu'l-Fudul (Erdemliler Antlaşması) gibi adalet ittifaklarına gençken katılmıştır.` },
             ],
           },
           {
             label: `Merhamet ve Hoşgörü`,
             sections: [
-              { kind: "ornek", content: `Çocuklara, yaşlılara ve hayvanlara şefkat gösterir; affedici davranırdı.` },
+              { kind: "ornek", content: `Çocuk → "Küçüklerine merhamet etmeyen bizden değildir." Torunları Hasan-Hüseyin'le oynaması. Yaşlı → büyüklere saygı vurgusu. Hayvan → susuz kediye su veren kadın için hayır dileği; aç deveyi taşımayan sahibine ikaz. Düşman → Mekke fethinde "Bugün size hesap sorulmayacaktır." (genel af).` },
             ],
           },
           {
             label: `İstişare (Danışma)`,
             sections: [
               { kind: "kural", content: `Önemli kararlarda çevresindekilere danışır (istişare eder), onların görüşüne değer verirdi.` },
+              { kind: "ornek", content: `Bedir Savaşı'nda mevzi seçiminde Hubâb b. Münzir'in görüşünü kabul etti. Uhud öncesi savunma şekli için sahabelerle istişare etti. Hendek Savaşı'nda Selman-ı Farisi'nin "hendek kazma" fikrini benimsedi.` },
             ],
           },
           {
             label: `Adalet ve Sabır`,
             sections: [
-              { kind: "ornek", content: `Herkese eşit ve adil davranır, zorluklara sabırla karşılık verirdi.` },
+              { kind: "ornek", content: `Adalet → "Sizden öncekiler, zengin hırsızlık yapınca bırakır, zayıf yapınca cezalandırırlardı; bu yüzden helak oldular." Sabır → Tâif'te taşlanmasına rağmen halka beddua etmedi; Mekke'deki ambargo döneminde yıllarca açlığa katlandı; çocuklarının çoğunu kaybetmiş olmasına rağmen sabır gösterdi.` },
             ],
           },
         ],
@@ -334,25 +347,29 @@ Din, bireye **ahlaki değerler** kazandırır; toplumda **huzur, dayanışma ve 
           {
             label: `İndirilişi`,
             sections: [
-              { kind: "kural", content: `Hz. Muhammed'e Cebrail aracılığıyla 23 yılda indirildi. İlk emir "Oku"dur (Alak suresi).` },
+              { kind: "kural", content: `Hz. Muhammed'e Cebrail aracılığıyla yaklaşık 23 yılda indirildi (610-632). İlk emir "Oku"dur (Alak suresi).` },
+              { kind: "ornek", content: `İlk vahiy: 610'da Hira Mağarası'nda Alak suresinin ilk 5 ayeti. Mekke'de 13 yıl, Medine'de 10 yıl indi. Mekkî sureler iman/ahlak; Medenî sureler ibadet/hukuk konularını işler.` },
+              { kind: "ornek", content: `Toplanışı: Hz. Ebubekir döneminde mushaf hâline getirildi (Yemame Savaşı sonrası); Hz. Osman döneminde çoğaltıldı ve İslam beldelerine gönderildi (resmî nüsha).` },
             ],
           },
           {
             label: `Yapısı`,
             sections: [
-              { kind: "tanim", content: `Sure ve ayetlerden oluşur; 114 sure vardır. İlk suresi Fatiha'dır.` },
+              { kind: "tanim", content: `Sure ve ayetlerden oluşur; 114 sure ve yaklaşık 6236 ayet vardır.` },
+              { kind: "ornek", content: `İlk sure Fatiha (7 ayet); en uzun sure Bakara (286 ayet); en kısa sure Kevser (3 ayet). Cüz: Kur'an 30 cüze ayrılır. Hizip: her cüz 4 hizibe.` },
             ],
           },
           {
             label: `Özellikleri`,
             sections: [
-              { kind: "kural", content: `Son ilahi kitaptır, Arapça indirilmiştir ve indirildiği günden beri değiştirilmeden korunmuştur.` },
+              { kind: "kural", content: `Son ilahi kitaptır, Arapça indirilmiştir, değiştirilmeden korunmuştur, evrenseldir, her çağa hitap eder.` },
+              { kind: "ornek", content: `Diğer ilahi kitaplar (sırasıyla): Hz. Davud → Zebur, Hz. Musa → Tevrat, Hz. İsa → İncil, Hz. Muhammed → Kur'an.` },
             ],
           },
           {
             label: `Konuları`,
             sections: [
-              { kind: "ornek", content: `İnanç (iman), ibadet, ahlak ve kıssalar (geçmiş kavimlerin ibretlik olayları).` },
+              { kind: "ornek", content: `İnanç (Allah'a iman, ahiret, meleklere/kitaplara/peygamberlere iman, kader). İbadet (namaz, oruç, zekât, hac). Ahlak (dürüstlük, adalet, merhamet, sabır). Kıssalar (Hz. Yusuf, Hz. Musa, Hz. İbrahim, Hz. İsa kıssaları). Hukuk (aile, miras, ticaret).` },
             ],
           },
         ],

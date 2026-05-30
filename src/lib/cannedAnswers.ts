@@ -672,6 +672,92 @@ const CONCEPTS: Concept[] = [
       "Pisagor üçlüleri, a² + b² = c² bağıntısını sağlayan tam sayı üçlüleridir. En çok karşılaşılanlar: 3-4-5, 5-12-13, 6-8-10, 8-15-17 ve 9-12-15.",
     topicRoute: "/ders/matematik/ucgenler",
   },
+  // ---------- İnkılap ek tetikler ----------
+  {
+    all: ["saltanat"],
+    answer:
+      "Saltanat 1 Kasım 1922'de TBMM tarafından kaldırıldı. Böylece saltanat ve halifelik ayrıldı, son padişah Vahdettin yurt dışına çıktı.",
+    topicRoute: "/ders/inkilap/ataturkculuk-ve-cagdaslasan-turkiye",
+  },
+  {
+    all: ["mudanya"],
+    answer:
+      "Mudanya Ateşkesi 11 Ekim 1922'de imzalandı. Silahlar sustu, Boğazlar ve Doğu Trakya askersiz tahliye edildi. Bir barış antlaşması değil, ateşkestir.",
+    topicRoute: "/ders/inkilap/milli-bir-destan",
+  },
+  {
+    all: ["amasya gorusmeleri"],
+    answer:
+      "Amasya Görüşmeleri (Ekim 1919) ile İstanbul Hükümeti, TBMM'yi resmen tanımış ve Mebusan Meclisi'nin yeniden açılmasını kabul etmiştir.",
+    topicRoute: "/ders/inkilap/milli-uyanis",
+  },
+  {
+    all: ["takriri sukun", "takrir-i sukun"],
+    answer:
+      "Takrir-i Sükûn Kanunu (1925), Şeyh Sait İsyanı sonrasında çıkarıldı. Hükûmete olağanüstü yetkiler verdi ve Terakkiperver Cumhuriyet Fırkası'nın kapatılmasıyla sonuçlandı.",
+    topicRoute: "/ders/inkilap/demokratiklesme-cabalari",
+  },
+  {
+    all: ["musul"],
+    answer:
+      "Musul Sorunu, 1926 Ankara Antlaşması ile İngiltere lehine çözüldü. Türkiye 25 yıl boyunca Musul petrol gelirinin %10'unu almayı kabul etti.",
+    topicRoute: "/ders/inkilap/ataturk-donemi-dis-politika",
+  },
+  {
+    all: ["anitkabir"],
+    answer:
+      "Anıtkabir, Atatürk'ün ebedi istirahatgâhıdır. 10 Kasım 1953'te Atatürk'ün naaşı geçici kabirden (Etnografya Müzesi) buraya nakledildi.",
+    topicRoute: "/ders/inkilap/ataturkun-olumu-ve-sonrasi",
+  },
+  // ---------- Din ek tetikler ----------
+  {
+    all: ["mutevekkil"],
+    answer:
+      "Tevekkül, gereken çabayı ve tedbiri aldıktan sonra sonucu Allah'a bırakmaktır. Çalışmadan beklemek değil; 'önce deveni bağla, sonra tevekkül et' anlayışıdır.",
+    topicRoute: "/ders/din/kader-inanci",
+  },
+  {
+    all: ["nisap"],
+    answer:
+      "Nisap, zekâtın farz olması için gereken asgari zenginlik miktarıdır. Nisaba ulaşmayan kişiye zekât farz değildir; nisaba ulaşan Müslüman malının kırkta birini verir.",
+    topicRoute: "/ders/din/zekat-sadaka-hac",
+  },
+  {
+    all: ["tavaf"],
+    answer:
+      "Tavaf, Kâbe'nin etrafında niyet edip yedi kez dönmektir. Haccın temel uygulamalarındandır; başlangıç ve bitiş noktası Hacerü'l-Esved'in karşısıdır.",
+    topicRoute: "/ders/din/zekat-sadaka-hac",
+  },
+  {
+    all: ["arafat"],
+    answer:
+      "Arafat, Mekke yakınlarındaki bir bölgedir. Haccın en önemli rüknüdür: Zilhicce 9'da Arafat'ta vakfeye çıkmayan haccı yapmamış sayılır.",
+    topicRoute: "/ders/din/zekat-sadaka-hac",
+  },
+  {
+    all: ["fatiha"],
+    answer:
+      "Fatiha, Kur'an-ı Kerim'in ilk suresidir ve 7 ayetten oluşur. Namazın her rekâtında okunur; 'Kitabın anası' (Ümmü'l-Kitab) olarak da adlandırılır.",
+    topicRoute: "/ders/din/kuran-i-kerim-ve-ozellikleri",
+  },
+  {
+    all: ["alak"],
+    answer:
+      "Alak suresi, Kur'an-ı Kerim'den ilk inen ayetleri içeren suredir. İlk 5 ayet 'Oku!' emriyle başlar ve okumanın, ilmin önemini vurgular.",
+    topicRoute: "/ders/din/kuran-i-kerim-ve-ozellikleri",
+  },
+  {
+    all: ["cebrail"],
+    answer:
+      "Cebrail (Aleyhisselam), peygamberlere vahiy getirmekle görevli melektir. Kur'an-ı Kerim, Hz. Muhammed'e yaklaşık 23 yıl boyunca Cebrail aracılığıyla indirilmiştir.",
+    topicRoute: "/ders/din/kuran-i-kerim-ve-ozellikleri",
+  },
+  {
+    all: ["istisare"],
+    answer:
+      "İstişare, karar alırken çevreyle danışmak, görüş almaktır. Hz. Muhammed önemli kararlarda sahabeyle istişare ederdi (Bedir'de mevzi, Hendek'te savunma şekli vb.).",
+    topicRoute: "/ders/din/hz-muhammedin-ornekligi",
+  },
 ];
 
 function tryConcepts(input: string, tokens: string[]): CannedResult | null {
