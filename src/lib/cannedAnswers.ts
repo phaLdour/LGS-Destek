@@ -807,7 +807,53 @@ type Formula = {
   example: string;
   apply?: string;
   topicRoute?: string;
+  /**
+   * Parametrik hesaplama. Soruda yeterli sayı varsa hesaplanmış cevap
+   * üretir; null dönerse formül anlatım moduna düşülür.
+   */
+  compute?: (input: string, numbers: number[]) => string | null;
 };
+
+/** Soru metnindeki tüm sayıları (tam veya ondalık) sırasıyla çıkarır. */
+function extractNumbers(input: string): number[] {
+  const matches = input.match(/-?\d+(?:[.,]\d+)?/g);
+  if (!matches) return [];
+  return matches
+    .map((s) => parseFloat(s.replace(",", ".")))
+    .filter((n) => Number.isFinite(n));
+}
+
+/** Sayıyı sade yaz (tam sayıysa . koymadan, değilse 2-4 ondalık). */
+function fmtNum(n: number): string {
+  if (Number.isInteger(n)) return String(n);
+  const rounded = Math.round(n * 10000) / 10000;
+  return String(rounded);
+}
+
+/** Pisagor için ortak compute — birden çok tetikleyici (pisagor, hipotenüs,
+ * dik kenar, dik üçgen) bu fonksiyonu paylaşır. */
+function pisagorCompute(input: string, nums: number[]): string | null {
+  if (nums.length < 2) return null;
+  // "hipotenüsü 13" veya "hipotenüs = 13" gibi pattern → 13 BİLİNEN hipotenüstür.
+  // (Sadece "hipotenüs" yan yana sayı yoksa cevap olarak hipotenüs İSTENİYORDUR.)
+  const hipNumMatch = input.match(/hipotenus[a-z]*\s*[:=]?\s*(\d+(?:[.,]\d+)?)/);
+  if (hipNumMatch) {
+    const c = parseFloat(hipNumMatch[1].replace(",", "."));
+    const knownLeg = nums.find((n) => n !== c && n > 0);
+    if (c > 0 && knownLeg && c > knownLeg) {
+      const other2 = c * c - knownLeg * knownLeg;
+      if (other2 <= 0) return null;
+      const other = Math.sqrt(other2);
+      return `**Pisagor hesabı**\nHipotenüs = ${fmtNum(c)}, bir dik kenar = ${fmtNum(knownLeg)}\nDiğer dik kenar² = ${fmtNum(c)}² − ${fmtNum(knownLeg)}² = ${fmtNum(c * c)} − ${fmtNum(knownLeg * knownLeg)} = ${fmtNum(other2)}\nDiğer dik kenar = **${fmtNum(other)}**`;
+    }
+  }
+  // Aksi durumda: iki dik kenar verilmiş, hipotenüs hesaplanır.
+  const [x, y] = nums;
+  if (x <= 0 || y <= 0) return null;
+  const c2 = x * x + y * y;
+  const c = Math.sqrt(c2);
+  return `**Pisagor hesabı**\nDik kenarlar a = ${fmtNum(x)}, b = ${fmtNum(y)}\nc² = ${fmtNum(x)}² + ${fmtNum(y)}² = ${fmtNum(x * x)} + ${fmtNum(y * y)} = ${fmtNum(c2)}\nHipotenüs c = **${fmtNum(c)}**`;
+}
 
 const FORMULAS: Formula[] = [
   // ───── Matematik: Üslü ifadeler ─────
@@ -935,6 +981,46 @@ const FORMULAS: Formula[] = [
     example: "Taban 6 cm, yükseklik 4 cm → A = (6 · 4) ÷ 2 = 12 cm²",
     apply: "Bir tabanı ve o tabana ait yüksekliği biliyorsan formülü uygularsın.",
     topicRoute: "/ders/matematik/ucgenler",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      const [a, b] = nums;
+      if (a <= 0 || b <= 0) return null;
+      const alan = (a * b) / 2;
+      return `**Üçgen alan hesabı**\nTaban = ${fmtNum(a)}, yükseklik = ${fmtNum(b)}\nA = (${fmtNum(a)} · ${fmtNum(b)}) ÷ 2 = **${fmtNum(alan)}** birim²`;
+    },
+  },
+  // Pisagor için ek tetikleyiciler — "pisagor" sözcüğü yok ama "hipotenüs" /
+  // "dik kenar" geçen sorularda da formül devreye girer. Hepsi aynı compute'u
+  // paylaşır (tek tanım, çok tetik).
+  {
+    all: ["hipotenus"],
+    name: "Pisagor Bağıntısı (dik üçgen)",
+    formula: "a² + b² = c²",
+    vars: "a, b: dik kenarlar; c: hipotenüs",
+    example: "Dik kenarlar 3 ve 4 → c² = 25 → c = 5",
+    apply: "Dik üçgende iki kenarı bilirsen üçüncüyü bu bağıntıyla bulursun.",
+    topicRoute: "/ders/matematik/ucgenler",
+    compute: pisagorCompute,
+  },
+  {
+    all: ["dik kenar"],
+    name: "Pisagor Bağıntısı (dik üçgen)",
+    formula: "a² + b² = c²",
+    vars: "a, b: dik kenarlar; c: hipotenüs",
+    example: "Dik kenarlar 3 ve 4 → c² = 25 → c = 5",
+    apply: "Dik üçgende iki kenarı bilirsen üçüncüyü bu bağıntıyla bulursun.",
+    topicRoute: "/ders/matematik/ucgenler",
+    compute: pisagorCompute,
+  },
+  {
+    all: ["dik ucgen"],
+    name: "Pisagor Bağıntısı (dik üçgen)",
+    formula: "a² + b² = c²",
+    vars: "a, b: dik kenarlar; c: hipotenüs",
+    example: "Dik kenarlar 3 ve 4 → c² = 25 → c = 5",
+    apply: "Dik üçgende iki kenarı bilirsen üçüncüyü bu bağıntıyla bulursun.",
+    topicRoute: "/ders/matematik/ucgenler",
+    compute: pisagorCompute,
   },
   {
     all: ["pisagor"],
@@ -944,6 +1030,7 @@ const FORMULAS: Formula[] = [
     example: "Dik kenarlar 3 ve 4 → c² = 9 + 16 = 25 → c = 5",
     apply: "Dik üçgende iki kenarı bilirsen üçüncüyü bu bağıntıyla bulursun.",
     topicRoute: "/ders/matematik/ucgenler",
+    compute: pisagorCompute,
   },
 
   // ───── Matematik: Dörtgen / kare / dikdörtgen ─────
@@ -955,6 +1042,12 @@ const FORMULAS: Formula[] = [
     example: "5 cm · 3 cm = 15 cm²",
     apply: "İki kenarı çarparsın.",
     topicRoute: "/ders/matematik/geometrik-cisimler",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      const [a, b] = nums;
+      if (a <= 0 || b <= 0) return null;
+      return `**Dikdörtgen alan hesabı**\nKenarlar ${fmtNum(a)} ve ${fmtNum(b)} → A = ${fmtNum(a)} · ${fmtNum(b)} = **${fmtNum(a * b)}** birim²`;
+    },
   },
   {
     all: ["kare", "alan"],
@@ -975,6 +1068,12 @@ const FORMULAS: Formula[] = [
     example: "Ayrıt 3 cm → V = 27 cm³",
     apply: "Bir ayrıtın küpünü alırsın.",
     topicRoute: "/ders/matematik/geometrik-cisimler",
+    compute: (input, nums) => {
+      if (nums.length < 1) return null;
+      const a = nums[0];
+      if (a <= 0) return null;
+      return `**Küp hacim hesabı**\nAyrıt = ${fmtNum(a)} → V = ${fmtNum(a)}³ = **${fmtNum(a * a * a)}** birim³`;
+    },
   },
   // Ünsüz yumuşaması varyantı: "küp" → "kübün, kübü"
   {
@@ -985,6 +1084,12 @@ const FORMULAS: Formula[] = [
     example: "Ayrıt 3 cm → V = 27 cm³",
     apply: "Bir ayrıtın küpünü alırsın.",
     topicRoute: "/ders/matematik/geometrik-cisimler",
+    compute: (input, nums) => {
+      if (nums.length < 1) return null;
+      const a = nums[0];
+      if (a <= 0) return null;
+      return `**Küp hacim hesabı**\nAyrıt = ${fmtNum(a)} → V = ${fmtNum(a)}³ = **${fmtNum(a * a * a)}** birim³`;
+    },
   },
   {
     all: ["prizma", "hacm"],
@@ -1003,17 +1108,34 @@ const FORMULAS: Formula[] = [
     example: "r=5, h=10, π=3 → V = 3 · 25 · 10 = 750 cm³",
     apply: "Taban dairesinin alanı π·r² ile yüksekliği çarparsın.",
     topicRoute: "/ders/matematik/geometrik-cisimler",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      const [r, h] = nums;
+      if (r <= 0 || h <= 0) return null;
+      // π değeri 3 veya 22/7 olabilir; "22/7" geçerse onu kullan, yoksa 3.
+      const pi = input.includes("22") ? 22 / 7 : 3;
+      const piLabel = input.includes("22") ? "22/7" : "3";
+      const V = pi * r * r * h;
+      return `**Silindir hacim hesabı**\nYarıçap r = ${fmtNum(r)}, yükseklik h = ${fmtNum(h)}, π ≈ ${piLabel}\nV = π · r² · h = ${piLabel} · ${fmtNum(r * r)} · ${fmtNum(h)} = **${fmtNum(V)}** birim³`;
+    },
   },
 
   // ───── Matematik: Veri analizi ─────
   {
-    all: ["aritmetik ortalama"],
+    all: ["ortalama"],
     name: "Aritmetik Ortalama",
     formula: "Ort = (x₁ + x₂ + ... + xₙ) ÷ n",
     vars: "xᵢ: veriler; n: veri sayısı",
     example: "4, 6, 8 için Ort = (4+6+8) ÷ 3 = 6",
     apply: "Verileri toplayıp veri sayısına bölersin.",
     topicRoute: "/ders/matematik/veri-analizi",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      const sum = nums.reduce((s, v) => s + v, 0);
+      const n = nums.length;
+      const ort = sum / n;
+      return `**Aritmetik ortalama hesabı**\nVeriler: ${nums.map(fmtNum).join(", ")}\nOrt = (${nums.map(fmtNum).join(" + ")}) ÷ ${n} = ${fmtNum(sum)} ÷ ${n} = **${fmtNum(ort)}**`;
+    },
   },
   {
     all: ["aciklik"],
@@ -1038,13 +1160,20 @@ const FORMULAS: Formula[] = [
 
   // ───── Fen: Basınç ─────
   {
-    all: ["basinc", "formul"],
+    all: ["basinc"],
     name: "Katı basıncı",
     formula: "P = F ÷ A",
-    vars: "F: ağırlık (N); A: yüzey alanı (m²); P: basınç (Pa)",
+    vars: "F: ağırlık (N); A: yüzey alanı (m²); P: basınç (Pa = N/m²)",
     example: "60 N ağırlık, 0,3 m² yüzeyde → P = 60 ÷ 0,3 = 200 Pa",
-    apply: "Yüzeye dik kuvveti, dokunma alanına bölersin.",
+    apply: "Yüzeye dik kuvveti, dokunma alanına bölersin. Aynı kuvvette yüzey küçülürse basınç artar.",
     topicRoute: "/ders/fen-bilimleri/basinc",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      const [F, A] = nums;
+      if (F <= 0 || A <= 0) return null;
+      const P = F / A;
+      return `**Katı basıncı hesabı**\nKuvvet F = ${fmtNum(F)} N, yüzey A = ${fmtNum(A)} m²\nP = F ÷ A = ${fmtNum(F)} ÷ ${fmtNum(A)} = **${fmtNum(P)} Pa** (N/m²)`;
+    },
   },
   {
     all: ["sivi basinci"],
@@ -1058,31 +1187,72 @@ const FORMULAS: Formula[] = [
 
   // ───── Fen: Basit Makineler ─────
   {
-    all: ["egik duzlem", "formul"],
+    all: ["egik duzlem"],
     name: "Eğik düzlem (iş eşitliği)",
-    formula: "F · L = G · h",
+    formula: "F · L = G · h  ⟹  Kuvvetten kazanç = L ÷ h  (= yoldan kayıp)",
     vars: "F: uygulanan kuvvet; L: eğik düzlemin uzunluğu; G: yük ağırlığı; h: yükseklik",
-    example: "G=100 N, h=2 m, L=10 m → F = (100·2) ÷ 10 = 20 N",
-    apply: "Uzun bir eğik düzlem daha az kuvvet ister; ama yol uzar (işten kazanç yok).",
+    example: "G=100 N, h=2 m, L=10 m → F = (100·2) ÷ 10 = 20 N. Kuvvet kazancı = 10 ÷ 2 = 5",
+    apply: "Uzun bir eğik düzlem daha az kuvvet ister; ama yol uzar (işten kazanç yok). Kuvvetten kazanç ne kadarsa yoldan kayıp da o kadardır.",
     topicRoute: "/ders/fen-bilimleri/basit-makineler",
+    compute: (input, nums) => {
+      if (nums.length < 2) return null;
+      // İlk iki sayıyı uzunluk (L) ve yükseklik (h) olarak al; L > h olmalı.
+      let [a, b] = nums;
+      const L = Math.max(a, b);
+      const h = Math.min(a, b);
+      if (h <= 0) return null;
+      const kazanc = L / h;
+      const lines = [
+        `**Eğik düzlem hesabı**`,
+        `Uzunluk L = ${fmtNum(L)}, yükseklik h = ${fmtNum(h)}.`,
+        `Kuvvetten kazanç = L ÷ h = ${fmtNum(L)} ÷ ${fmtNum(h)} = **${fmtNum(kazanc)}**`,
+        `→ Yükü ${fmtNum(kazanc)} kat daha az kuvvetle çıkarırsın; ama yolu ${fmtNum(kazanc)} kat uzun yürürsün (yoldan kayıp = kuvvetten kazanç).`,
+      ];
+      // 3. sayı varsa, yük (G) kabul edip F hesaplayalım.
+      if (nums.length >= 3) {
+        // Yük genellikle en küçük 2 sayıdan farklı; basitçe L ve h dışındaki ilk
+        // sayıyı al.
+        const usedSet = new Set([L, h]);
+        const extra = nums.find((n) => !usedSet.has(n));
+        if (extra && extra > 0) {
+          const F = (extra * h) / L;
+          lines.push(`Yük G = ${fmtNum(extra)} N için → F = (G · h) ÷ L = (${fmtNum(extra)} · ${fmtNum(h)}) ÷ ${fmtNum(L)} = **${fmtNum(F)} N**.`);
+        }
+      }
+      return lines.join("\n");
+    },
   },
   {
-    all: ["kaldirac", "denge"],
+    all: ["kaldirac"],
     name: "Kaldıraçta denge",
-    formula: "F · kuvvet kolu = G · yük kolu",
-    vars: "F: uygulanan kuvvet; G: yük ağırlığı",
-    example: "Tahterevallide ağır çocuk destek noktasına daha yakın oturursa denge kurulur.",
-    apply: "Kuvvet kolu uzun olursa daha küçük kuvvet yeter.",
+    formula: "F · KK = G · YK  ⟹  F = (G · YK) ÷ KK",
+    vars: "F: uygulanan kuvvet; KK: kuvvet kolu; G: yük; YK: yük kolu",
+    example: "G=100 N, YK=1 m, KK=4 m → F = (100·1) ÷ 4 = 25 N",
+    apply: "Kuvvet kolu uzun olursa daha küçük kuvvet yeter (kuvvetten kazanç = KK ÷ YK).",
     topicRoute: "/ders/fen-bilimleri/basit-makineler",
+    compute: (input, nums) => {
+      // 3 sayı bekleniyor: G, YK, KK (sıra duyarsız değil; basitçe ilk üçünü kullan)
+      if (nums.length < 3) return null;
+      const [G, YK, KK] = nums;
+      if (G <= 0 || YK <= 0 || KK <= 0) return null;
+      const F = (G * YK) / KK;
+      return `**Kaldıraç dengesi hesabı**\nYük G = ${fmtNum(G)} N, yük kolu YK = ${fmtNum(YK)}, kuvvet kolu KK = ${fmtNum(KK)}\nF = (G · YK) ÷ KK = (${fmtNum(G)} · ${fmtNum(YK)}) ÷ ${fmtNum(KK)} = **${fmtNum(F)} N**\nKuvvetten kazanç = KK ÷ YK = ${fmtNum(KK / YK)}`;
+    },
   },
   {
     all: ["hareketli makara"],
     name: "Hareketli makara",
-    formula: "F = G ÷ 2",
-    vars: "F: uygulanan kuvvet; G: yük",
+    formula: "F = G ÷ 2  (kuvvet kazancı = 2)",
+    vars: "F: uygulanan kuvvet; G: yük ağırlığı",
     example: "200 N yükü hareketli makara ile 100 N kuvvet uygulayarak kaldırırsın.",
-    apply: "Hareketli makara kuvvetten yarı yarıya kazanç sağlar; ama ipin çekilen yolu iki katıdır.",
+    apply: "Hareketli makara kuvvetten yarı yarıya kazanç sağlar; ama ipin çekilen yolu iki katıdır (işten kazanç yok).",
     topicRoute: "/ders/fen-bilimleri/basit-makineler",
+    compute: (input, nums) => {
+      if (nums.length < 1) return null;
+      const G = nums[0];
+      if (G <= 0) return null;
+      return `**Hareketli makara hesabı**\nYük G = ${fmtNum(G)} N → F = G ÷ 2 = ${fmtNum(G)} ÷ 2 = **${fmtNum(G / 2)} N**\nİpin çekilen yolu, yükün yolunun 2 katıdır (yoldan kayıp).`;
+    },
   },
 
   // ───── Fen: Enerji Dönüşümü (kavramsal) ─────
@@ -1162,9 +1332,24 @@ const FORMULAS: Formula[] = [
   },
 ];
 
-function tryFormulas(input: string, tokens: string[]): CannedResult | null {
+function tryFormulas(
+  input: string,
+  tokens: string[],
+  rawText: string,
+): CannedResult | null {
   for (const f of FORMULAS) {
     if (f.all.every((item) => itemMatches(input, tokens, item))) {
+      // Önce parametrik hesaplama dene: raw metinden (virgül/nokta korunmuş)
+      // sayıları çıkar, varsa cevabı doğrudan hesapla.
+      if (f.compute) {
+        const nums = extractNumbers(rawText);
+        const computed = f.compute(input, nums);
+        if (computed) {
+          const reply = f.topicRoute ? `${computed}\n\n${OFFER}` : computed;
+          return { reply, topicRoute: f.topicRoute ?? null };
+        }
+      }
+      // Hesaplama olmazsa: formül anlatım moduna düş.
       const lines = [
         `**${f.name}**`,
         `Formül: ${f.formula}`,
@@ -1190,8 +1375,11 @@ export function matchCanned(text: string): CannedResult | null {
   return (
     tryIntents(input, tokens) ??
     tryNavigation(input, tokens) ??
-    tryFormulas(input, tokens) ??
+    // Önce saf aritmetik (9 çarpı 5, 2+3 gibi sayısal işlemler).
+    // Formül kavramı eşleşmeden önce çağrılır ki "9 çarpı 5" → 45 dönsün,
+    // çarpma formülünün anlatımı değil.
     tryArithmetic(text) ??
+    tryFormulas(input, tokens, text) ??
     tryConcepts(input, tokens)
   );
 }
