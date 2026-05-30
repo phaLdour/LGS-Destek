@@ -229,8 +229,8 @@ Bir sözcüğün sözlükteki ilk akla gelen anlamı **gerçek anlam**dır. Söz
         { question: `Aşağıdakilerden hangisi "yakın anlamlı" sözcük çiftidir?`, options: [`Üzüntü - keder`, `Sıcak - soğuk`, `Ev - okul`, `Kalem - silgi`], correctIndex: 0 },
         { question: `"Geniş" sözcüğünün karşıt anlamlısı hangisidir?`, options: [`Dar`, `Uzun`, `Yüksek`, `Derin`], correctIndex: 0 },
         { question: `"Cömert" sözcüğünün karşıt anlamlısı hangisidir?`, options: [`Cimri`, `Zengin`, `Fakir`, `Yaramaz`], correctIndex: 0 },
-        { question: `Aşağıdakilerden hangisi "ad aktarması" (mecaz-ı mürsel) içerir?`, options: [`Bütün sınıf bunu okudu.`, `Sınıfa girdim.`, `Kitap okudum.`, `Bahçeye çıktım.`], correctIndex: 0 },
-        { question: `"Sobayı yaktı." cümlesindeki "soba" sözcüğü hangi anlam ilişkisini kurar?`, options: [`Ad aktarması (içindeki yakacak yandı)`, `Eş anlam`, `Karşıt anlam`, `Sesteşlik`], correctIndex: 0 },
+        { question: `"Tatlı bir çocuk." cümlesindeki "tatlı" sözcüğü hangi anlamda kullanılmıştır?`, options: [`Mecaz (sevimli)`, `Gerçek (tat)`, `Terim`, `Yansıma`], correctIndex: 0 },
+        { question: `"Ayağa kalktı." cümlesindeki "ayak" sözcüğü hangi anlamda kullanılmıştır?`, options: [`Gerçek anlam (vücudun ayağı)`, `Mecaz`, `Terim`, `Yansıma`], correctIndex: 0 },
       ],
     },
     {
