@@ -130,7 +130,7 @@ export async function SubjectHeatmap() {
             {weakest.map((t) => (
               <Link
                 key={`${t.subjectSlug}/${t.id}`}
-                href={`/hizli-sorular/${t.subjectSlug}/${t.id}`}
+                href={`/ders/${t.subjectSlug}/${t.id}`}
                 className="flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-white px-4 py-2.5 transition hover:border-red-400"
               >
                 <span className="min-w-0">
@@ -138,7 +138,7 @@ export async function SubjectHeatmap() {
                     {t.name}
                   </span>
                   <span className="block text-xs text-rehberim-navy/55">
-                    {t.subjectName} · {t.correct}/{t.total} doğru
+                    {t.subjectName} · {t.correct}/{t.total} doğru · Konuya git
                   </span>
                 </span>
                 <span className={`text-lg font-extrabold ${badgeColor(t.pct)}`}>
@@ -159,7 +159,7 @@ export async function SubjectHeatmap() {
             <div className="mb-3 flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <Link
-                  href={`/hizli-sorular/${s.slug}`}
+                  href={`/ders/${s.slug}`}
                   className="flex items-center gap-1 text-sm font-extrabold text-rehberim-navy hover:text-rehberim-accent"
                 >
                   {s.name}
@@ -180,12 +180,12 @@ export async function SubjectHeatmap() {
                 </div>
               )}
             </div>
-            {/* Konu nokta grid'i */}
+            {/* Konu nokta grid'i (tıklayınca konunun ders sayfasına gider) */}
             <div className="flex flex-wrap gap-1.5">
               {s.topics.map((t) => (
                 <Link
                   key={t.id}
-                  href={`/hizli-sorular/${s.slug}/${t.id}`}
+                  href={`/ders/${s.slug}/${t.id}`}
                   title={`${t.name}${t.pct !== null ? ` — %${t.pct} (${t.correct}/${t.total})` : " — henüz çözülmedi"}`}
                   className={`h-3 w-3 rounded-sm transition hover:scale-125 ${colorFor(t.pct)}`}
                 />

@@ -32,15 +32,17 @@ export function LogoSvg({
         stroke="#16244C"
         strokeWidth="11"
         strokeLinejoin="round"
+        data-rb="navy"
       />
       <path
         d="M100 70 L100 152"
         stroke="#16244C"
         strokeWidth="9"
         strokeLinecap="round"
+        data-rb="navy"
       />
       {/* hedef */}
-      <circle cx="112" cy="96" r="40" fill="none" stroke="#16244C" strokeWidth="11" />
+      <circle cx="112" cy="96" r="40" fill="none" stroke="#16244C" strokeWidth="11" data-rb="navy" />
       <circle cx="112" cy="96" r="16" fill="#F59E0B" />
       {/* ok */}
       <path
@@ -48,6 +50,7 @@ export function LogoSvg({
         stroke="#16244C"
         strokeWidth="11"
         strokeLinecap="round"
+        data-rb="navy"
       />
       <path
         d="M150 36 L172 32 L168 54 Z"
@@ -55,6 +58,7 @@ export function LogoSvg({
         stroke="#16244C"
         strokeWidth="4"
         strokeLinejoin="round"
+        data-rb="navy"
       />
     </svg>
   );

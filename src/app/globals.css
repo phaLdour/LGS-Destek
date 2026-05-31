@@ -23,8 +23,8 @@ html.dark {
   --rb-surface: #16244c;
   --rb-surface-2: #1f3060;
   --rb-border: #2a3b66;
-  --rb-text: #e8ecf7;
-  --rb-text-soft: rgba(232, 236, 247, 0.62);
+  --rb-text: #f1f4ff;
+  --rb-text-soft: rgba(241, 244, 255, 0.78);
   --rb-scrollbar: #2a3b66;
   --rb-scrollbar-hover: #3a4d80;
   color-scheme: dark;
@@ -40,7 +40,9 @@ body {
   color: var(--rb-text);
   background: var(--rb-bg);
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 @layer utilities {
@@ -69,8 +71,6 @@ body {
    DARK MODE OVERRIDE
    "rehberim-*" tailwind sınıfları light tema için tasarlandı.
    Dark mode'da semantik anlamlarına göre yeniden boyandılar.
-   bg-rehberim-navy (vurgu/buton) light kalır (kontrast korunur);
-   text-rehberim-navy (yazı) açık tonlara çevrilir.
    ──────────────────────────────────────────────────────────────── */
 html.dark body {
   background-color: var(--rb-bg);
@@ -99,80 +99,107 @@ html.dark .divide-rehberim-border > * + * {
   border-color: var(--rb-border) !important;
 }
 
-/* Yazılar */
+/* Yazılar — okunabilirlik için tonları yükseltildi */
 html.dark .text-rehberim-navy {
   color: var(--rb-text) !important;
 }
-html.dark .text-rehberim-navy\/70,
-html.dark .text-rehberim-navy\/60,
-html.dark .text-rehberim-navy\/55 {
-  color: var(--rb-text-soft) !important;
+html.dark .text-rehberim-navy\/85,
+html.dark .text-rehberim-navy\/80 {
+  color: rgba(241, 244, 255, 0.92) !important;
 }
-html.dark .text-rehberim-navy\/45,
+html.dark .text-rehberim-navy\/75,
+html.dark .text-rehberim-navy\/70 {
+  color: rgba(241, 244, 255, 0.85) !important;
+}
+html.dark .text-rehberim-navy\/65,
+html.dark .text-rehberim-navy\/60 {
+  color: rgba(241, 244, 255, 0.78) !important;
+}
+html.dark .text-rehberim-navy\/55 {
+  color: rgba(241, 244, 255, 0.72) !important;
+}
 html.dark .text-rehberim-navy\/50,
+html.dark .text-rehberim-navy\/45,
 html.dark .text-rehberim-navy\/40 {
-  color: rgba(232, 236, 247, 0.5) !important;
+  color: rgba(241, 244, 255, 0.6) !important;
+}
+html.dark .text-rehberim-navy\/30,
+html.dark .text-rehberim-navy\/25 {
+  color: rgba(241, 244, 255, 0.45) !important;
 }
 
-/* Light pastel uyarı / accent kutuları → koyulaştır */
+/* Light pastel uyarı / accent kutuları → koyulaştırılmış pastel */
 html.dark .bg-red-50 {
-  background-color: rgba(239, 68, 68, 0.12) !important;
+  background-color: rgba(239, 68, 68, 0.16) !important;
 }
 html.dark .bg-amber-50 {
-  background-color: rgba(245, 158, 11, 0.12) !important;
+  background-color: rgba(245, 158, 11, 0.16) !important;
 }
 html.dark .bg-green-50 {
-  background-color: rgba(34, 197, 94, 0.12) !important;
+  background-color: rgba(34, 197, 94, 0.16) !important;
 }
 html.dark .bg-blue-50 {
-  background-color: rgba(59, 130, 246, 0.12) !important;
+  background-color: rgba(59, 130, 246, 0.16) !important;
 }
 html.dark .bg-blue-50\/50 {
-  background-color: rgba(59, 130, 246, 0.06) !important;
+  background-color: rgba(59, 130, 246, 0.08) !important;
 }
 html.dark .bg-emerald-50\/50 {
-  background-color: rgba(16, 185, 129, 0.06) !important;
+  background-color: rgba(16, 185, 129, 0.08) !important;
 }
 html.dark .bg-orange-50 {
-  background-color: rgba(249, 115, 22, 0.12) !important;
+  background-color: rgba(249, 115, 22, 0.16) !important;
 }
 html.dark .bg-rehberim-accent\/10 {
-  background-color: rgba(245, 158, 11, 0.14) !important;
-}
-html.dark .bg-rehberim-accent\/15 {
   background-color: rgba(245, 158, 11, 0.18) !important;
 }
+html.dark .bg-rehberim-accent\/15 {
+  background-color: rgba(245, 158, 11, 0.22) !important;
+}
 html.dark .bg-rehberim-accent\/5 {
-  background-color: rgba(245, 158, 11, 0.08) !important;
+  background-color: rgba(245, 158, 11, 0.12) !important;
 }
 
 /* Light pastel border'lar */
 html.dark .border-red-200 {
-  border-color: rgba(239, 68, 68, 0.35) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
 }
 html.dark .border-red-300 {
-  border-color: rgba(239, 68, 68, 0.5) !important;
+  border-color: rgba(239, 68, 68, 0.55) !important;
 }
 html.dark .border-amber-200 {
-  border-color: rgba(245, 158, 11, 0.35) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+html.dark .border-amber-300 {
+  border-color: rgba(245, 158, 11, 0.55) !important;
 }
 html.dark .border-blue-200 {
-  border-color: rgba(59, 130, 246, 0.35) !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
 }
 html.dark .border-emerald-200 {
-  border-color: rgba(16, 185, 129, 0.35) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+html.dark .border-green-200 {
+  border-color: rgba(34, 197, 94, 0.4) !important;
+}
+html.dark .border-green-300 {
+  border-color: rgba(34, 197, 94, 0.55) !important;
 }
 
-/* Pastel yazılar (uyarı kartlarında) — daha okunaklı tonlar */
+/* Pastel yazılar — koyu zeminde okunaklı tonlar */
+html.dark .text-red-500,
 html.dark .text-red-600,
 html.dark .text-red-700 {
   color: rgb(252, 165, 165) !important;
 }
+html.dark .text-amber-600,
 html.dark .text-amber-700,
 html.dark .text-amber-800 {
   color: rgb(252, 211, 77) !important;
 }
-html.dark .text-green-700 {
+html.dark .text-green-600,
+html.dark .text-green-700,
+html.dark .text-green-800 {
   color: rgb(134, 239, 172) !important;
 }
 html.dark .text-blue-700 {
@@ -182,5 +209,68 @@ html.dark .text-emerald-700 {
   color: rgb(110, 231, 183) !important;
 }
 
-/* Maskotu (Owl) ve baykuş svg metin/bg renkleri zaten tonlarıyla çalışıyor;
-   gradient'li lacivert başlık kutuları olduğu gibi kalır (kontrast doğru). */
+/* ────────────────────────────────────────────────────────────────
+   MARKA SVG'LERİ — dark modda görünür açık navy tonlarına çevril.
+   Logo ve Owl içindeki #16244C, #243A6E, #1C2C5C navy ailesi
+   renkleri koyu zemine kaybolur. Aynı palette içinde daha açık
+   tonlar uygulanır (yeni renk değil; navy ailesinin açık tonu).
+   ──────────────────────────────────────────────────────────────── */
+html.dark [data-rb="navy"] {
+  fill: #5470b8 !important;
+  stroke: #5470b8 !important;
+}
+html.dark [data-rb="navy-mid"] {
+  fill: #6f8aca !important;
+}
+html.dark [data-rb="navy-deep"] {
+  fill: #3a4e88 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   LIGHT SCOPE — Rehber Baykuş chat panel gibi belirli alanlar dark
+   modda da light kalmalı. data-theme="light" wrapper bunu sağlar.
+   ──────────────────────────────────────────────────────────────── */
+html.dark [data-theme="light"] {
+  color: #16244c;
+  background-color: #ffffff;
+}
+html.dark [data-theme="light"] .bg-white {
+  background-color: #ffffff !important;
+}
+html.dark [data-theme="light"] .bg-rehberim-muted {
+  background-color: #f4f6fb !important;
+}
+html.dark [data-theme="light"] .border-rehberim-border {
+  border-color: #e2e6f0 !important;
+}
+html.dark [data-theme="light"] .text-rehberim-navy {
+  color: #16244c !important;
+}
+html.dark [data-theme="light"] .text-rehberim-navy\/85,
+html.dark [data-theme="light"] .text-rehberim-navy\/80 {
+  color: rgba(22, 36, 76, 0.8) !important;
+}
+html.dark [data-theme="light"] .text-rehberim-navy\/75,
+html.dark [data-theme="light"] .text-rehberim-navy\/70 {
+  color: rgba(22, 36, 76, 0.7) !important;
+}
+html.dark [data-theme="light"] .text-rehberim-navy\/55,
+html.dark [data-theme="light"] .text-rehberim-navy\/60 {
+  color: rgba(22, 36, 76, 0.55) !important;
+}
+html.dark [data-theme="light"] .text-rehberim-navy\/45,
+html.dark [data-theme="light"] .text-rehberim-navy\/50,
+html.dark [data-theme="light"] .text-rehberim-navy\/40 {
+  color: rgba(22, 36, 76, 0.45) !important;
+}
+/* Light scope içindeki SVG markalarını yeniden light tonlara çevir */
+html.dark [data-theme="light"] [data-rb="navy"] {
+  fill: #16244c !important;
+  stroke: #16244c !important;
+}
+html.dark [data-theme="light"] [data-rb="navy-mid"] {
+  fill: #243a6e !important;
+}
+html.dark [data-theme="light"] [data-rb="navy-deep"] {
+  fill: #1c2c5c !important;
+}

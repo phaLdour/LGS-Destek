@@ -27,8 +27,8 @@ export function OwlSvg({
     >
       <title>{title}</title>
       {/* kulak püskülleri */}
-      <path d="M55 52 L52 18 L84 44 Z" fill="#16244C" />
-      <path d="M145 52 L148 18 L116 44 Z" fill="#16244C" />
+      <path d="M55 52 L52 18 L84 44 Z" fill="#16244C" data-rb="navy" />
+      <path d="M145 52 L148 18 L116 44 Z" fill="#16244C" data-rb="navy" />
       {/* gövde */}
       <path
         d="M100 34
@@ -37,23 +37,26 @@ export function OwlSvg({
            C134 178 160 150 160 104
            C160 64 142 34 100 34 Z"
         fill="#16244C"
+        data-rb="navy"
       />
       {/* kanatlar (hafif ton farkı) */}
       <path
         d="M44 96 C40 120 46 150 64 166 C58 140 58 116 62 98 Z"
         fill="#243A6E"
+        data-rb="navy-mid"
       />
       <path
         d="M156 96 C160 120 154 150 136 166 C142 140 142 116 138 98 Z"
         fill="#243A6E"
+        data-rb="navy-mid"
       />
       {/* yüz diski */}
-      <ellipse cx="100" cy="86" rx="50" ry="42" fill="#1C2C5C" />
+      <ellipse cx="100" cy="86" rx="50" ry="42" fill="#1C2C5C" data-rb="navy-deep" />
       {/* gözler */}
       <circle cx="78" cy="84" r="22" fill="#FFFFFF" />
       <circle cx="122" cy="84" r="22" fill="#FFFFFF" />
-      <circle cx="78" cy="84" r="11" fill="#16244C" />
-      <circle cx="122" cy="84" r="11" fill="#16244C" />
+      <circle cx="78" cy="84" r="11" fill="#16244C" data-rb="navy" />
+      <circle cx="122" cy="84" r="11" fill="#16244C" data-rb="navy" />
       <circle cx="82" cy="80" r="3.5" fill="#FFFFFF" />
       <circle cx="126" cy="80" r="3.5" fill="#FFFFFF" />
       {/* gaga */}
@@ -89,8 +92,8 @@ export function OwlPointing({
     >
       <title>{title}</title>
       {/* kulak püskülleri (hafif sağa dönük) */}
-      <path d="M58 54 L52 18 L88 46 Z" fill="#16244C" />
-      <path d="M148 54 L154 20 L120 44 Z" fill="#16244C" />
+      <path d="M58 54 L52 18 L88 46 Z" fill="#16244C" data-rb="navy" />
+      <path d="M148 54 L154 20 L120 44 Z" fill="#16244C" data-rb="navy" />
 
       {/* uzanan sağ kanat (bize göre sağ) — forma doğru */}
       <path
@@ -99,6 +102,7 @@ export function OwlPointing({
            C214 134 196 136 170 132
            C158 128 150 114 150 96 Z"
         fill="#243A6E"
+        data-rb="navy-mid"
       />
       {/* kanat ucu turuncu vurgu */}
       <path
@@ -114,21 +118,23 @@ export function OwlPointing({
            C138 180 164 152 164 106
            C164 66 146 36 104 36 Z"
         fill="#16244C"
+        data-rb="navy"
       />
       {/* sol kanat (toplu) */}
       <path
         d="M48 98 C44 122 50 152 68 168 C62 142 62 118 66 100 Z"
         fill="#243A6E"
+        data-rb="navy-mid"
       />
 
       {/* yüz diski */}
-      <ellipse cx="104" cy="88" rx="50" ry="42" fill="#1C2C5C" />
+      <ellipse cx="104" cy="88" rx="50" ry="42" fill="#1C2C5C" data-rb="navy-deep" />
 
       {/* gözler — sağa bakıyor */}
       <circle cx="82" cy="86" r="22" fill="#FFFFFF" />
       <circle cx="126" cy="86" r="22" fill="#FFFFFF" />
-      <circle cx="89" cy="86" r="11" fill="#16244C" />
-      <circle cx="133" cy="86" r="11" fill="#16244C" />
+      <circle cx="89" cy="86" r="11" fill="#16244C" data-rb="navy" />
+      <circle cx="133" cy="86" r="11" fill="#16244C" data-rb="navy" />
       <circle cx="93" cy="82" r="3.5" fill="#FFFFFF" />
       <circle cx="137" cy="82" r="3.5" fill="#FFFFFF" />
 

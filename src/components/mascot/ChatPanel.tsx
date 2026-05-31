@@ -34,7 +34,10 @@ export function ChatPanel({
   }, [messages, loading]);
 
   return (
-    <div className="flex h-[32rem] max-h-[75vh] w-[22rem] max-w-[calc(100vw-2rem)] animate-scale-in flex-col overflow-hidden rounded-2xl border border-rehberim-border bg-white shadow-soft">
+    <div
+      data-theme="light"
+      className="flex h-[32rem] max-h-[75vh] w-[22rem] max-w-[calc(100vw-2rem)] animate-scale-in flex-col overflow-hidden rounded-2xl border border-rehberim-border bg-white shadow-soft"
+    >
       {/* başlık */}
       <div className="flex items-center gap-3 bg-gradient-to-r from-rehberim-navy to-rehberim-navy-light px-4 py-3 text-white">
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">

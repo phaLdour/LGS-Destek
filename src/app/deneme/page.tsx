@@ -1,7 +1,14 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, BookOpenCheck, Calculator, FileText } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpenCheck,
+  Calculator,
+  FileText,
+  Flame,
+  Sparkles,
+} from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { EXAM_CONFIGS } from "@/lib/mockExam";
+import { getExamConfig } from "@/lib/mockExam";
 import { getShellUser } from "@/lib/user";
 
 const META = [
@@ -24,7 +31,7 @@ const META = [
     icon: FileText,
     tint: "from-rehberim-accent to-amber-600",
     description:
-      "Sözel + sayısal arka arkaya, 155 dakika. Sınav günü provası.",
+      "Sözel + sayısal arka arkaya. Sınav günü provası.",
   },
 ];
 
@@ -45,33 +52,77 @@ export default async function DenemePage() {
           Deneme Sınavı
         </h1>
         <p className="mt-1 text-sm text-rehberim-navy/55">
-          Gerçek LGS formatında dene: süreyle, gezilebilir soru paneliyle ve
-          net hesabıyla.
+          Bir tür seç, ardından <strong>Kolay</strong> ya da <strong>Zor</strong>{" "}
+          versiyonunu tıkla.
         </p>
       </header>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {META.map((m) => {
-          const cfg = EXAM_CONFIGS[m.kind];
+          const easy = getExamConfig(m.kind, "kolay");
+          const hard = getExamConfig(m.kind, "zor");
           const Icon = m.icon;
           return (
-            <Link
+            <div
               key={m.kind}
-              href={`/deneme/${m.kind}`}
-              className={`group flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-border bg-gradient-to-br ${m.tint} p-5 text-white shadow-card transition hover:scale-[1.005] hover:shadow-soft`}
+              className={`overflow-hidden rounded-2xl border border-rehberim-border bg-white shadow-card`}
             >
-              <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
-                <Icon className="h-8 w-8" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-lg font-extrabold">{cfg.label}</p>
-                <p className="text-sm text-white/85">{m.description}</p>
-                <p className="mt-1 text-xs font-bold text-white/95">
-                  {cfg.totalQuestions} soru · {cfg.durationMinutes} dakika
-                </p>
+              <div
+                className={`flex items-center gap-4 bg-gradient-to-br ${m.tint} p-5 text-white`}
+              >
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                  <Icon className="h-8 w-8" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-lg font-extrabold">
+                    {easy.kind === "sozel"
+                      ? "Sözel Bölüm"
+                      : easy.kind === "sayisal"
+                        ? "Sayısal Bölüm"
+                        : "Tam Deneme"}
+                  </p>
+                  <p className="text-sm text-white/85">{m.description}</p>
+                  <p className="mt-1 text-xs font-bold text-white/95">
+                    {easy.totalQuestions} soru
+                  </p>
+                </div>
               </div>
-              <ArrowRight className="hidden h-6 w-6 transition group-hover:translate-x-1 sm:block" />
-            </Link>
+
+              <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
+                <Link
+                  href={`/deneme/${m.kind}?zorluk=kolay`}
+                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition hover:border-rehberim-accent/50 hover:bg-rehberim-muted"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                    <Sparkles className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-extrabold text-rehberim-navy">
+                      Kolay
+                    </p>
+                    <p className="text-xs text-rehberim-navy/55">
+                      Hızlı Sorular havuzu · {easy.durationMinutes} dk
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  href={`/deneme/${m.kind}?zorluk=zor`}
+                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition hover:border-red-400/60 hover:bg-rehberim-muted"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
+                    <Flame className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-extrabold text-rehberim-navy">
+                      Zor
+                    </p>
+                    <p className="text-xs text-rehberim-navy/55">
+                      Yeni nesil sorular · {hard.durationMinutes} dk (süre kısa)
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            </div>
           );
         })}
       </div>
@@ -80,8 +131,15 @@ export default async function DenemePage() {
         <p className="font-bold">İpuçları</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-rehberim-navy/70">
           <li>Süre dolunca sınav otomatik biter; cevapsız sorular boş sayılır.</li>
-          <li>Soru numarası panelinden istediğine atlayabilir, geri dönüp değiştirebilirsin.</li>
+          <li>
+            Sağ üstten <strong>ders ders</strong> hızlıca geçebilir, soru
+            numarası panelinden istediğine atlayabilirsin.
+          </li>
           <li>Bitirdiğinde net hesabı, ders dağılımı ve detaylı rapor görünür.</li>
+          <li>
+            Zor modda <em>yeni nesil</em> (paragraf, çoklu işlem, yorum) sorular
+            ağırlıkta; eksik kalan dersler için kolay havuzdan tamamlanır.
+          </li>
           <li>Yanlış cevapların otomatik &quot;Hatalarım&quot; havuzuna düşer.</li>
         </ul>
       </div>

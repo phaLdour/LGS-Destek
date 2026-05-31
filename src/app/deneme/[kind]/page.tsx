@@ -3,22 +3,36 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ExamClient } from "@/components/exam/ExamClient";
-import { buildExamPool, getExamConfig, type ExamKind } from "@/lib/mockExam";
+import {
+  buildExamPool,
+  getExamConfig,
+  type ExamDifficulty,
+  type ExamKind,
+} from "@/lib/mockExam";
 import { getShellUser } from "@/lib/user";
 
-const VALID: ExamKind[] = ["sozel", "sayisal", "tam"];
+const VALID_KIND: ExamKind[] = ["sozel", "sayisal", "tam"];
+const VALID_DIFF: ExamDifficulty[] = ["kolay", "zor"];
 
 export default async function DenemeKindPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ kind: string }>;
+  searchParams: Promise<{ zorluk?: string }>;
 }) {
   const { kind } = await params;
-  if (!VALID.includes(kind as ExamKind)) notFound();
+  const { zorluk } = await searchParams;
+  if (!VALID_KIND.includes(kind as ExamKind)) notFound();
+  const difficulty: ExamDifficulty = VALID_DIFF.includes(
+    zorluk as ExamDifficulty,
+  )
+    ? (zorluk as ExamDifficulty)
+    : "kolay";
 
   const user = await getShellUser();
-  const cfg = getExamConfig(kind as ExamKind);
-  const pool = buildExamPool(kind as ExamKind);
+  const cfg = getExamConfig(kind as ExamKind, difficulty);
+  const pool = buildExamPool(kind as ExamKind, difficulty);
 
   return (
     <AppShell user={user}>

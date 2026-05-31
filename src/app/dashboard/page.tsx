@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Archive, FileText, Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { OwlSvg } from "@/components/brand/Owl";
 import { OnboardingTour } from "@/components/onboarding/Tour";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
@@ -120,32 +119,6 @@ export default async function DashboardPage() {
         <StatsPanel />
       </section>
 
-      {/* Rozetler */}
-      <section className="mt-8">
-        <div className="mb-4">
-          <h2 className="text-lg font-extrabold text-rehberim-navy">
-            Rozetlerin
-          </h2>
-          <p className="text-sm text-rehberim-navy/55">
-            Başarımlarını topla ve LGS yolculuğunu eğlenceli kıl
-          </p>
-        </div>
-        <BadgeShowcase />
-      </section>
-
-      {/* Konu performansı */}
-      <section className="mt-8">
-        <div className="mb-4">
-          <h2 className="text-lg font-extrabold text-rehberim-navy">
-            Konu performansın
-          </h2>
-          <p className="text-sm text-rehberim-navy/55">
-            Hangi konularda güçlüsün, hangilerine odaklanmalısın
-          </p>
-        </div>
-        <SubjectHeatmap />
-      </section>
-
       {/* Dersler */}
       <section id="dersler" className="mt-8 scroll-mt-20">
         <div className="mb-4 flex items-end justify-between">
@@ -159,6 +132,19 @@ export default async function DashboardPage() {
           </div>
         </div>
         <SubjectGrid />
+      </section>
+
+      {/* Konu performansı */}
+      <section className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-extrabold text-rehberim-navy">
+            Konu performansın
+          </h2>
+          <p className="text-sm text-rehberim-navy/55">
+            Hangi konularda güçlüsün, hangilerine odaklanmalısın
+          </p>
+        </div>
+        <SubjectHeatmap />
       </section>
     </AppShell>
   );

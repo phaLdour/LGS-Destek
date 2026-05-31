@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Award,
   BookOpen,
   Calculator,
   Home,
@@ -27,6 +28,7 @@ const NAV = [
   { href: "/dashboard", label: "Anasayfa", icon: Home },
   { href: "/dashboard#dersler", label: "Dersler", icon: BookOpen },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
+  { href: "/rozetlerim", label: "Rozetler", icon: Award },
   { href: "/profile", label: "Profil", icon: UserIcon },
 ];
 

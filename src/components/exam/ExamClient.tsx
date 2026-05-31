@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -45,6 +45,17 @@ export function ExamClient({
 }) {
   const [phase, setPhase] = useState<Phase>("intro");
   const [current, setCurrent] = useState(0);
+
+  // Pool'u dersler halinde grupla; sırası pool sırasıyla aynıdır (sözel önce).
+  const subjectGroups = useMemo(() => {
+    const map = new Map<string, { name: string; indices: number[] }>();
+    pool.forEach((q, i) => {
+      const cur = map.get(q.subjectSlug);
+      if (cur) cur.indices.push(i);
+      else map.set(q.subjectSlug, { name: q.subjectName, indices: [i] });
+    });
+    return Array.from(map.entries()).map(([slug, v]) => ({ slug, ...v }));
+  }, [pool]);
   const [answers, setAnswers] = useState<(number | null)[]>(() =>
     pool.map(() => null),
   );
@@ -198,9 +209,24 @@ export function ExamClient({
     const answeredCount = answers.filter((a) => a !== null).length;
     const lowTime = remaining <= 5 * 60; // son 5 dakika
 
+    const activeGroup = subjectGroups.find((g) => g.slug === q.subjectSlug);
+    const indexInSubject = activeGroup
+      ? activeGroup.indices.indexOf(current) + 1
+      : current + 1;
+    const totalInSubject = activeGroup ? activeGroup.indices.length : pool.length;
+
+    function jumpToSubject(slug: string) {
+      const g = subjectGroups.find((x) => x.slug === slug);
+      if (!g) return;
+      // O dersin ilk cevaplanmamış sorusuna git; hepsi cevaplıysa ilk soruya.
+      const target =
+        g.indices.find((i) => answers[i] === null) ?? g.indices[0];
+      goTo(target);
+    }
+
     return (
       <div className="space-y-4">
-        {/* Üst panel: süre + ilerleme */}
+        {/* Üst panel: süre + ders bağlamlı sayaç */}
         <div
           className={`flex items-center justify-between gap-3 rounded-2xl border bg-white p-4 shadow-card ${
             lowTime ? "border-red-300" : "border-rehberim-border"
@@ -220,19 +246,48 @@ export function ExamClient({
           </div>
           <div className="text-right">
             <p className="text-xs font-semibold uppercase tracking-wider text-rehberim-navy/50">
-              {q.subjectName}
+              Toplam {answeredCount} / {pool.length} cevaplı
             </p>
             <p className="text-sm font-bold text-rehberim-navy">
-              Soru {current + 1} / {pool.length}
-              <span className="ml-2 text-xs font-medium text-rehberim-navy/55">
-                ({answeredCount} cevaplı)
-              </span>
+              {q.subjectName} — Soru {indexInSubject} / {totalInSubject}
             </p>
           </div>
         </div>
 
         {/* Soru kartı */}
         <div className="rounded-2xl border border-rehberim-border bg-white p-5 shadow-card">
+          {/* Ders sekmeleri — sağa yaslı, yatay scroll'lu */}
+          <div className="-mx-2 mb-4 flex items-center justify-end gap-1.5 overflow-x-auto px-2 pb-2">
+            {subjectGroups.map((g) => {
+              const isActive = g.slug === q.subjectSlug;
+              const groupAnswered = g.indices.filter(
+                (i) => answers[i] !== null,
+              ).length;
+              const groupTotal = g.indices.length;
+              return (
+                <button
+                  key={g.slug}
+                  onClick={() => jumpToSubject(g.slug)}
+                  title={`${g.name} bölümüne geç`}
+                  className={`shrink-0 rounded-xl px-3 py-1.5 text-[11px] font-extrabold transition ${
+                    isActive
+                      ? "bg-rehberim-navy text-white shadow-soft"
+                      : "bg-rehberim-muted text-rehberim-navy/70 hover:bg-rehberim-border"
+                  }`}
+                >
+                  {g.name}
+                  <span
+                    className={`ml-1.5 ${
+                      isActive ? "text-white/70" : "text-rehberim-navy/45"
+                    }`}
+                  >
+                    {groupAnswered}/{groupTotal}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-rehberim-accent">
             {q.topicName}
           </p>
@@ -300,20 +355,25 @@ export function ExamClient({
           </div>
         </div>
 
-        {/* Soru numarası grid */}
+        {/* Soru numarası grid — yalnız aktif dersin soruları */}
         <div className="rounded-2xl border border-rehberim-border bg-white p-4 shadow-card">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wider text-rehberim-navy/55">
-            Sorular
-          </p>
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-rehberim-navy/55">
+              {q.subjectName} Soruları
+            </p>
+            <p className="text-[11px] text-rehberim-navy/50">
+              Ders içi sıra (1–{totalInSubject})
+            </p>
+          </div>
           <div className="grid grid-cols-10 gap-1.5">
-            {pool.map((_, i) => {
-              const isActive = i === current;
-              const answered = answers[i] !== null;
-              const isFlagged = flagged.has(i);
+            {(activeGroup?.indices ?? []).map((globalIdx, localIdx) => {
+              const isActive = globalIdx === current;
+              const answered = answers[globalIdx] !== null;
+              const isFlagged = flagged.has(globalIdx);
               return (
                 <button
-                  key={i}
-                  onClick={() => goTo(i)}
+                  key={globalIdx}
+                  onClick={() => goTo(globalIdx)}
                   className={`relative flex h-9 items-center justify-center rounded-md text-xs font-bold transition ${
                     isActive
                       ? "bg-rehberim-navy text-white"
@@ -322,7 +382,7 @@ export function ExamClient({
                         : "bg-rehberim-muted text-rehberim-navy/55 hover:bg-rehberim-border"
                   }`}
                 >
-                  {i + 1}
+                  {localIdx + 1}
                   {isFlagged && (
                     <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-amber-500" />
                   )}

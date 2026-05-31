@@ -942,10 +942,36 @@ Madde ısı alınca erir veya buharlaşır; ısı verince donar veya yoğuşur.
           {
             label: "Kaldıraç",
             sections: [
-              { kind: "tanim", content: "Bir destek (dayanak) noktası etrafında dönebilen çubuktur." },
+              { kind: "tanim", content: "Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Üzerinde üç önemli nokta vardır: destek, yük ve kuvvet. Bu üç noktanın çubuk üzerindeki sırasına göre kaldıraçlar üç çeşittir." },
               { kind: "formul", content: "Denge kuralı: Yük × Yük kolu = Kuvvet × Kuvvet kolu" },
               { kind: "ornek", content: "Hesap örneği: 40 N yük, yük kolu 1 m; kuvvet kolu 4 m ise 40·1 = F·4 → F = 10 N." },
-              { kind: "ornek", content: "Günlük örnekler: tahterevalli, el arabası, maşa, kerpeten, kürek, makas, cımbız." },
+            ],
+          },
+          {
+            label: "Destek Ortada",
+            sections: [
+              { kind: "tanim", content: "Destek (dayanak) noktası, yük ile kuvvetin arasındadır. Yük ve kuvvet çubuğun iki ucundadır. Kuvvetin yönü her zaman değişir (aşağı bastırırsın, yük yukarı kalkar)." },
+              { kind: "kural", content: "Kuvvet kolu yük kolundan UZUNSA kuvvetten kazanç sağlar; KISA ise kuvvetten kayıp ama yoldan kazanç sağlar; EŞİT ise yalnız yönden kazanç sağlar." },
+              { kind: "ornek", content: "Örnekler: tahterevalli, makas, kerpeten, eşit kollu terazi, çekiçle çivi çıkarmak, pense." },
+              { kind: "tuzak", content: "Yalnız bu tür kaldıraçta yön değişir; diğer iki türde yön değişmez." },
+            ],
+          },
+          {
+            label: "Yük Ortada",
+            sections: [
+              { kind: "tanim", content: "Yük, destek ile kuvvetin arasındadır. Destek bir uçta, kuvvet diğer uçta uygulanır. Kuvvetin yönü değişmez (yukarı kaldırırsın, yük yukarı kalkar)." },
+              { kind: "kural", content: "Bu türde kuvvet kolu HER ZAMAN yük kolundan uzundur → HER ZAMAN kuvvetten kazanç sağlar." },
+              { kind: "ornek", content: "Örnekler: el arabası, fındık kıracağı, limonata sıkacağı, kayıkta kürek, ceviz/fıstık kıracağı." },
+              { kind: "ipucu", content: "Az kuvvetle çok yük taşımak/kaldırmak gerektiğinde tercih edilir." },
+            ],
+          },
+          {
+            label: "Kuvvet Ortada",
+            sections: [
+              { kind: "tanim", content: "Kuvvet, destek ile yükün arasında uygulanır. Destek bir uçta, yük diğer uçtadır. Kuvvetin yönü değişmez." },
+              { kind: "kural", content: "Bu türde kuvvet kolu HER ZAMAN yük kolundan kısadır → HER ZAMAN kuvvetten KAYIP, yoldan/hızdan KAZANÇ sağlar." },
+              { kind: "ornek", content: "Örnekler: cımbız, maşa, saç pensesi, balık tutma kamışı (oltası), süpürge." },
+              { kind: "ipucu", content: "Hızdan ya da yoldan kazanç önemli olduğunda tercih edilir (örn. saç pensesinde uzun mesafeli kapanma)." },
             ],
           },
           {
@@ -994,8 +1020,16 @@ Madde ısı alınca erir veya buharlaşır; ısı verince donar veya yoğuşur.
           back: "Yükü kaldırmak için gereken kuvveti azaltır, ama alınan yol uzar.",
         },
         {
-          front: "Kaldıraç örnekleri nelerdir?",
-          back: "Tahterevalli, el arabası, maşa, kürek.",
+          front: "Kaldıraç türleri nelerdir?",
+          back: "Üçe ayrılır: destek ortada (tahterevalli, makas), yük ortada (el arabası, fındık kıracağı), kuvvet ortada (cımbız, saç pensesi).",
+        },
+        {
+          front: "Hangi kaldıraç türü kuvvetten kayıp ama yoldan kazanç sağlar?",
+          back: "Kuvvet ortada olan tür (cımbız, maşa, süpürge). Kuvvet kolu her zaman yük kolundan kısadır.",
+        },
+        {
+          front: "Hangi kaldıraç türünde kuvvetin yönü değişir?",
+          back: "Yalnız destek ortada olan türde. Yük ortada ve kuvvet ortada türlerde yön değişmez.",
         },
       ],
       article: `# Basit Makineler Nedir?
@@ -1004,9 +1038,25 @@ Basit makineler işimizi kolaylaştıran araçlardır. **Kuvvetten**, **yoldan**
 [tuzak] "İşten kazanç sağlayan basit makine" ifadesi her zaman yanlıştır; bu klasik bir LGS çeldiricisidir.
 
 # Kaldıraç
-Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Tahterevalli, el arabası ve maşa örnektir.
+Bir destek (dayanak) noktası etrafında dönebilen çubuktur. Üzerinde üç nokta vardır: **destek**, **yük** ve **kuvvet**. Bu üç noktanın çubuk üzerindeki sırasına göre kaldıraçlar üç çeşittir.
 [formül] Denge kuralı: **Yük × Yük kolu = Kuvvet × Kuvvet kolu**
 [örnek] 40 N'luk yük, yük koluna 1 m uzaklıkta; kuvvet kolu 4 m ise: 40 × 1 = F × 4 → **F = 10 N**. Yani 40 N'luk yükü yalnız 10 N ile kaldırırız.
+
+## Destek Ortada
+Destek, yük ile kuvvetin arasındadır. Yük ve kuvvet çubuğun iki ucundadır. Bu türde kuvvetin yönü **değişir** (aşağı bastırırsın, yük yukarı kalkar).
+[kural] Kuvvet kolu yük kolundan uzunsa kuvvetten kazanç, kısa ise kayıp, eşit ise yalnız yönden kazanç sağlar.
+[örnek] Tahterevalli, makas, kerpeten, eşit kollu terazi, pense, çekiçle çivi çıkarmak.
+
+## Yük Ortada
+Yük, destek ile kuvvetin arasındadır. Bu türde kuvvetin yönü **değişmez** (yukarı kaldırırsın, yük yukarı kalkar).
+[kural] Kuvvet kolu HER ZAMAN yük kolundan uzundur → her zaman kuvvetten kazanç sağlar.
+[örnek] El arabası, fındık kıracağı, limonata sıkacağı, ceviz kıracağı, kayıkta kürek.
+
+## Kuvvet Ortada
+Kuvvet, destek ile yükün arasında uygulanır. Bu türde de kuvvetin yönü **değişmez**.
+[kural] Kuvvet kolu HER ZAMAN yük kolundan kısadır → kuvvetten kayıp, yoldan/hızdan kazanç sağlar.
+[örnek] Cımbız, maşa, saç pensesi, balık tutma kamışı, süpürge.
+
 [soru] Genelde "sistem dengede ise uygulanan kuvvet kaç N'dur?" diye sorulur. Kol uzunlukları ile kuvvetleri çapraz çarpıp eşitlersin.
 
 # Makara
@@ -1039,6 +1089,19 @@ Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeyd
           trap: "Eğik düzlemde yol-kuvvet ilişkisi atlanır.",
           wrong: "Eğik düzlem hem kuvveti hem yolu azaltır.",
           correct: "Eğik düzlem kuvveti azaltır ama alınan YOL uzar.",
+        },
+        {
+          trap: "Kaldıraç türlerini örneklerle karıştırma.",
+          wrong:
+            "El arabası destek ortada bir kaldıraçtır.",
+          correct:
+            "El arabasında yük ortadadır (tekerlek destek, sapı tutan el kuvvet). Destek ortada olan tipik örnek tahterevallidir.",
+        },
+        {
+          trap: "Kuvvet ortada kaldıraçta yön değiştiği sanılır.",
+          wrong: "Cımbızda uygulanan kuvvetin yönü değişir.",
+          correct:
+            "Yalnız destek ortada olan kaldıraçta yön değişir. Yük ortada ve kuvvet ortada türlerinde yön değişmez.",
         },
       ],
       quiz: [
@@ -1098,14 +1161,14 @@ Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeyd
         { question: `Basit makineler aşağıdaki hangisinden kazanç sağlamaz?`, options: [`İşten`, `Kuvvetten`, `Yoldan`, `Yönden`], correctIndex: 0 },
         { question: `Aşağıdakilerden hangisi basit makine değildir?`, options: [`Otomobil`, `Kaldıraç`, `Makara`, `Eğik düzlem`], correctIndex: 0 },
         { question: `Aşağıdakilerden hangisi basit makinedir?`, options: [`Kaldıraç`, `Otomobil`, `Bilgisayar`, `Cep telefonu`], correctIndex: 0 },
-        { question: `Kaldıraç türlerinden hangisinde destek noktası ortadadır?`, options: [`1. tür`, `2. tür`, `3. tür`, `4. tür`], correctIndex: 0 },
-        { question: `Kaldıraç türlerinden hangisinde yük ortadadır?`, options: [`2. tür`, `1. tür`, `3. tür`, `4. tür`], correctIndex: 0 },
-        { question: `Kaldıraç türlerinden hangisinde kuvvet ortadadır?`, options: [`3. tür`, `1. tür`, `2. tür`, `4. tür`], correctIndex: 0 },
-        { question: `Tahterevalli hangi tür kaldıraçtır?`, options: [`1. tür`, `2. tür`, `3. tür`, `Kaldıraç değil`], correctIndex: 0 },
-        { question: `El arabası hangi tür kaldıraçtır?`, options: [`2. tür`, `1. tür`, `3. tür`, `Kaldıraç değil`], correctIndex: 0 },
-        { question: `Saç pensesi hangi tür kaldıraçtır?`, options: [`3. tür`, `1. tür`, `2. tür`, `Kaldıraç değil`], correctIndex: 0 },
-        { question: `Aşağıdaki kaldıraçlardan hangisi kuvvetten kazanç sağlar?`, options: [`2. tür (yük ortada)`, `3. tür (kuvvet ortada)`, `Kuvvetten kaybeden hiçbir tür yoktur`, `Sadece 1. tür`], correctIndex: 0 },
-        { question: `Aşağıdaki kaldıraçlardan hangisi kuvvetten kayıp ama yoldan kazanç sağlar?`, options: [`3. tür (kuvvet ortada)`, `1. tür`, `2. tür`, `Hiçbiri`], correctIndex: 0 },
+        { question: `Aşağıdaki kaldıraç türlerinden hangisinde destek noktası ortadadır?`, options: [`Destek ortada`, `Yük ortada`, `Kuvvet ortada`, `Hiçbirinde`], correctIndex: 0 },
+        { question: `Aşağıdaki kaldıraç türlerinden hangisinde yük noktası ortadadır?`, options: [`Yük ortada`, `Destek ortada`, `Kuvvet ortada`, `Hiçbirinde`], correctIndex: 0 },
+        { question: `Aşağıdaki kaldıraç türlerinden hangisinde kuvvet ortadadır?`, options: [`Kuvvet ortada`, `Destek ortada`, `Yük ortada`, `Hiçbirinde`], correctIndex: 0 },
+        { question: `Tahterevalli hangi tür kaldıraçtır?`, options: [`Destek ortada`, `Yük ortada`, `Kuvvet ortada`, `Kaldıraç değil`], correctIndex: 0 },
+        { question: `El arabası hangi tür kaldıraçtır?`, options: [`Yük ortada`, `Destek ortada`, `Kuvvet ortada`, `Kaldıraç değil`], correctIndex: 0 },
+        { question: `Saç pensesi hangi tür kaldıraçtır?`, options: [`Kuvvet ortada`, `Destek ortada`, `Yük ortada`, `Kaldıraç değil`], correctIndex: 0 },
+        { question: `Aşağıdaki kaldıraçlardan hangisi her zaman kuvvetten kazanç sağlar?`, options: [`Yük ortada olanlar`, `Kuvvet ortada olanlar`, `Hiçbiri kuvvetten kazanç sağlamaz`, `Sadece destek ortada olanlar`], correctIndex: 0 },
+        { question: `Aşağıdaki kaldıraçlardan hangisi kuvvetten kayıp ama yoldan/hızdan kazanç sağlar?`, options: [`Kuvvet ortada olanlar`, `Destek ortada olanlar`, `Yük ortada olanlar`, `Hiçbiri`], correctIndex: 0 },
         { question: `Sabit makara aşağıdakilerden hangisini sağlar?`, options: [`Kuvvetin yönünü değiştirir`, `Kuvvetten kazanç sağlar`, `Yoldan kazanç sağlar`, `İşten kazanç sağlar`], correctIndex: 0 },
         { question: `Hareketli makara aşağıdakilerden hangisini sağlar?`, options: [`Kuvvetten kazanç (yarıya iner)`, `Yoldan kazanç`, `Hızdan kazanç`, `İşten kazanç`], correctIndex: 0 },
         { question: `Bir hareketli makarada uygulanan kuvvet yükün kaçta kaçıdır?`, options: [`1/2`, `2`, `1/4`, `4`], correctIndex: 0 },
@@ -1128,19 +1191,19 @@ Bir yükü belirli bir yüksekliğe çıkarmak için kullanılan eğimli yüzeyd
         { question: `Maket bıçağının ucundaki "açıklığın" küçük olmasının nedeni nedir?`, options: [`Eğim daha az olur → daha az kuvvetle kesim`, `Daha hızlı keser`, `Sürtünme artar`, `Daha ağır olur`], correctIndex: 0 },
         { question: `Aşağıdaki olaylardan hangisi basit makine kullanımı içermez?`, options: [`Yürüme`, `El arabasıyla yük taşıma`, `Bayrak çekme (sabit makara)`, `Tahterevalli`], correctIndex: 0 },
         { question: `Kuyudan kovayla su çekmek için kullanılan basit makine hangisidir?`, options: [`Çıkrık`, `Kaldıraç`, `Eğik düzlem`, `Hareketli makara`], correctIndex: 0 },
-        { question: `Bir cisme uygulanan kuvvetin yarısı kadar uygulayıp aynı işi yapmak için hangi basit makine kullanılır?`, options: [`Hareketli makara`, `Sabit makara`, `1. tür kaldıraç (denge)`, `3. tür kaldıraç`], correctIndex: 0 },
+        { question: `Bir cisme uygulanan kuvvetin yarısı kadar uygulayıp aynı işi yapmak için hangi basit makine kullanılır?`, options: [`Hareketli makara`, `Sabit makara`, `Destek ortada bir kaldıraç (eşit kollu)`, `Kuvvet ortada bir kaldıraç`], correctIndex: 0 },
         { question: `Basit makinelerde işten kazanç olmaması neyle ilgilidir?`, options: [`Enerjinin korunumu`, `Yer çekimi`, `Sürtünme`, `Hız`], correctIndex: 0 },
         { question: `Basit makine kullanırken kuvvetten kazanç olduğunda yol nasıl olur?`, options: [`Artar (yoldan kayıp)`, `Azalır`, `Değişmez`, `Sıfır olur`], correctIndex: 0 },
         { question: `Basit makineler ne kadar verimliyse o kadar az hangi kuvvete maruz kalır?`, options: [`Sürtünme`, `Yer çekimi`, `Rüzgâr`, `Bağlantı kuvvetleri`], correctIndex: 0 },
         { question: `Aşağıdakilerden hangisi makara çeşididir?`, options: [`Sabit ve hareketli makara`, `Sıvı ve katı makara`, `Sıcak ve soğuk makara`, `Açık ve kapalı makara`], correctIndex: 0 },
         { question: `Eğer hareketli makara ile sabit makara birlikte kullanılıyorsa avantajı nedir?`, options: [`Hem yön değişir hem kuvvetten kazanç olur`, `Sadece kuvvetten kazanç`, `Sadece yön değişir`, `Hiçbir avantaj yoktur`], correctIndex: 0 },
         { question: `Eğik düzlemde uygulanan kuvvetin minimum olması için eğim ne olmalı?`, options: [`Mümkün olduğunca küçük olmalı (yol uzun)`, `Mümkün olduğunca büyük olmalı`, `Eğim önemli değil`, `Eğim 90° olmalı`], correctIndex: 0 },
-        { question: `Bir 1. tür kaldıraçta destek tam ortadaysa, eşit yükle denge için kuvvet ne olmalıdır?`, options: [`Yük kadar`, `Yükün yarısı`, `Yükün iki katı`, `Sıfır`], correctIndex: 0 },
+        { question: `Destek ortada bir kaldıraçta destek tam ortadaysa, eşit yükle denge için kuvvet ne olmalıdır?`, options: [`Yük kadar`, `Yükün yarısı`, `Yükün iki katı`, `Sıfır`], correctIndex: 0 },
         { question: `Çekiçle çivi çakarken kullanılan çekiç başı + tutamağı hangi basit makineye benzer?`, options: [`Kaldıraç`, `Eğik düzlem`, `Makara`, `Vida`], correctIndex: 0 },
         { question: `Düz yola dik vurulmuş bir çivinin çıkarılmasında en uygun basit makine hangisidir?`, options: [`Kaldıraç (kerpeten, çekiç tırnağı)`, `Eğik düzlem`, `Makara`, `Vida`], correctIndex: 0 },
-        { question: `Aşağıdakilerden hangisi 3. tür kaldıraca örnektir?`, options: [`Olta, balık tutma kolu, süpürge`, `Tahterevalli`, `El arabası`, `Limonata sıkacağı`], correctIndex: 0 },
-        { question: `Fındık kıracağı hangi tür kaldıraçtır?`, options: [`2. tür (yük ortada)`, `1. tür`, `3. tür`, `Kaldıraç değil`], correctIndex: 0 },
-        { question: `Limonata sıkacağı hangi tür kaldıraçtır?`, options: [`2. tür (yük ortada)`, `1. tür`, `3. tür`, `Kaldıraç değil`], correctIndex: 0 },
+        { question: `Aşağıdakilerden hangisi kuvvet ortada olan kaldıraca örnektir?`, options: [`Olta, balık tutma kolu, süpürge`, `Tahterevalli`, `El arabası`, `Limonata sıkacağı`], correctIndex: 0 },
+        { question: `Fındık kıracağı hangi tür kaldıraçtır?`, options: [`Yük ortada`, `Destek ortada`, `Kuvvet ortada`, `Kaldıraç değil`], correctIndex: 0 },
+        { question: `Limonata sıkacağı hangi tür kaldıraçtır?`, options: [`Yük ortada`, `Destek ortada`, `Kuvvet ortada`, `Kaldıraç değil`], correctIndex: 0 },
         { question: `Bir eğik düzlemin yüksekliği h, uzunluğu L ise, F·L = W·h ifadesi neyi gösterir?`, options: [`İş eşitliği (enerjinin korunumu)`, `Yer değişimi`, `Hız eşitliği`, `Sürtünme eşitliği`], correctIndex: 0 },
         { question: `Bisikletin viteslerinde dişli oranı ne işe yarar?`, options: [`Pedal kuvvetiyle yol arasında dengeyi ayarlar`, `Hızı sıfırlar`, `Sürtünmeyi artırır`, `Yer çekimini değiştirir`], correctIndex: 0 },
         { question: `Bayrak direğinde sabit makara kullanılır. Bunun faydası nedir?`, options: [`Bayrağı yukarı çekmek için aşağı doğru kuvvet uygulanır (yön değişir)`, `Kuvvetten kazanç sağlar`, `Yoldan kazanç sağlar`, `Hiç faydası yoktur`], correctIndex: 0 },
