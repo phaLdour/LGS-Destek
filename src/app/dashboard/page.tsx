@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Archive, FileText, Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { SubjectHeatmap } from "@/components/stats/SubjectHeatmap";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
@@ -33,6 +34,9 @@ export default async function DashboardPage() {
           <OwlSvg className="hidden h-28 w-28 animate-float sm:block" />
         </div>
       </section>
+
+      {/* PWA install daveti (yalnız uygun cihazlarda + kapatılmamışsa görünür) */}
+      <InstallPrompt />
 
       {/* İpucu şeridi */}
       <div className="mt-4 flex items-center gap-3 rounded-2xl border border-rehberim-accent/30 bg-rehberim-accent/10 px-4 py-3 text-sm text-rehberim-navy">
