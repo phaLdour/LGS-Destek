@@ -124,7 +124,7 @@ export function Article({ text }: { text: string }) {
   const blocks = parse(text);
 
   return (
-    <article className="space-y-4">
+    <article className="lgs-article space-y-4">
       {blocks.map((b, i) => {
         if (b.type === "h1") {
           return (

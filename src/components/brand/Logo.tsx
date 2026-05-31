@@ -25,25 +25,44 @@ export function LogoSvg({
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
-      {/* kitap */}
+      {/* kitap — açık sayfalar dolu navy, vurgu kontur ile */}
       <path
-        d="M24 70 C48 58 76 58 100 70 C124 58 152 58 176 70 L176 152 C152 140 124 140 100 152 C76 140 48 140 24 152 Z"
-        fill="none"
-        stroke="#16244C"
-        strokeWidth="11"
-        strokeLinejoin="round"
+        d="M24 70 C48 58 76 58 100 70 L100 152 C76 140 48 140 24 152 Z"
+        fill="#16244C"
         data-rb="navy"
       />
+      <path
+        d="M176 70 C152 58 124 58 100 70 L100 152 C124 140 152 140 176 152 Z"
+        fill="#243A6E"
+        data-rb="navy-mid"
+      />
+      {/* sayfa katları için ince çizgiler */}
+      <path
+        d="M44 80 L88 86 M44 100 L88 100 M44 118 L88 124"
+        stroke="#FBBF24"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M112 86 L156 80 M112 100 L156 100 M112 124 L156 118"
+        stroke="#FBBF24"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      {/* kitabın orta cildi */}
       <path
         d="M100 70 L100 152"
-        stroke="#16244C"
-        strokeWidth="9"
+        stroke="#0E1838"
+        strokeWidth="4"
         strokeLinecap="round"
-        data-rb="navy"
       />
-      {/* hedef */}
-      <circle cx="112" cy="96" r="40" fill="none" stroke="#16244C" strokeWidth="11" data-rb="navy" />
-      <circle cx="112" cy="96" r="16" fill="#F59E0B" />
+      {/* hedef — dolu daire halkalı */}
+      <circle cx="112" cy="96" r="40" fill="#16244C" data-rb="navy" />
+      <circle cx="112" cy="96" r="30" fill="#FFFFFF" />
+      <circle cx="112" cy="96" r="22" fill="#F59E0B" />
+      <circle cx="112" cy="96" r="10" fill="#16244C" data-rb="navy" />
       {/* ok */}
       <path
         d="M112 96 L168 40"
@@ -54,7 +73,7 @@ export function LogoSvg({
       />
       <path
         d="M150 36 L172 32 L168 54 Z"
-        fill="#16244C"
+        fill="#F59E0B"
         stroke="#16244C"
         strokeWidth="4"
         strokeLinejoin="round"

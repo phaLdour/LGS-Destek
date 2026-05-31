@@ -69,9 +69,9 @@ export function getExamConfig(
   kind: ExamKind,
   difficulty: ExamDifficulty = "kolay",
 ): ExamConfig {
-  const baseMin = BASE_DURATIONS[kind];
-  // Zor sınavda %20 az süre (zaman baskısı). Aşağı yuvarla.
-  const minutes = difficulty === "zor" ? Math.floor(baseMin * 0.8) : baseMin;
+  // Süre her zaman gerçek LGS süresine eşittir; zorluk yalnız soru havuzunu
+  // değiştirir (zor → yeni nesil sorular).
+  const minutes = BASE_DURATIONS[kind];
   const label =
     difficulty === "zor"
       ? `${KIND_LABELS[kind]} — Zor`

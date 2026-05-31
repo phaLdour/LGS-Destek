@@ -117,7 +117,7 @@ export default async function DenemePage() {
                       Zor
                     </p>
                     <p className="text-xs text-rehberim-navy/55">
-                      Yeni nesil sorular · {hard.durationMinutes} dk (süre kısa)
+                      Yeni nesil sorular · {hard.durationMinutes} dk
                     </p>
                   </div>
                 </Link>
@@ -137,8 +137,10 @@ export default async function DenemePage() {
           </li>
           <li>Bitirdiğinde net hesabı, ders dağılımı ve detaylı rapor görünür.</li>
           <li>
-            Zor modda <em>yeni nesil</em> (paragraf, çoklu işlem, yorum) sorular
-            ağırlıkta; eksik kalan dersler için kolay havuzdan tamamlanır.
+            Zor modda <em>yeni nesil</em> (paragraf, çoklu işlem, yorum)
+            sorular ağırlıkta; süre aynı (gerçek LGS süresi), zorluk yalnız
+            soru tarafından gelir. Eksik kalan dersler için kolay havuzdan
+            tamamlanır.
           </li>
           <li>Yanlış cevapların otomatik &quot;Hatalarım&quot; havuzuna düşer.</li>
         </ul>

@@ -20,35 +20,30 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
   "turkce/paragrafta-anlam": [
     {
       question:
-        "Bir paragrafın ana fikrini bulmak için en güvenilir strateji aşağıdakilerden hangisidir?",
+        "\"Modern toplumlarda zamanın hızla geçtiği hissi yaygındır. Bu durum, gerçek bir zaman kıtlığından çok, sürekli uyaran içeren dijital ortamların dikkati parçalamasından kaynaklanır. Beyin, her ekran değişiminde küçük bir karar verir; bu kararlar tek tek önemsiz görünse de biriktiğinde zihinsel yorgunluğa yol açar.\"\n\nBu paragraftan aşağıdaki yargılardan hangisine ULAŞILABİLİR?",
       options: [
-        "Yazarın paragraf boyunca okuyucuya iletmek istediği genel yargıyı, yardımcı düşüncelerin tamamının desteklediği cümlede aramak",
-        "Yalnızca paragrafın ilk cümlesine bakarak karar vermek",
-        "Paragrafta en sık geçen sözcüğü ana fikir saymak",
-        "En uzun cümleyi ana fikir olarak seçmek",
+        "Dijital ortamlardaki sık uyaranlar zihinsel yorgunluğa yol açabilir",
+        "Modern toplumlarda zaman gerçekten kısalmıştır",
+        "Beyin her durumda aynı verimlilikte çalışır",
+        "Dijital ortamların hiçbir yararı yoktur",
       ],
       correctIndex: 0,
     },
     {
       question:
-        "\"Okumayı sevdirmek için çocuğun seviyesine, ilgisine ve hayal dünyasına uygun kitaplar seçmeli; ona okumayı bir görev gibi dayatmak yerine onu metnin içinde bir kahraman hâline getirmeliyiz.\" Bu cümleden çıkarılabilecek YARDIMCI düşünce hangisidir?",
+        "\"Okumayı sevdirmek için çocuğun seviyesine, ilgisine ve hayal dünyasına uygun kitaplar seçmeli; ona okumayı bir görev gibi dayatmak yerine onu metnin içinde bir kahraman hâline getirmeliyiz.\"\n\nBu cümleden çıkarılabilecek YARDIMCI düşünce aşağıdakilerden hangisidir?",
       options: [
         "Çocuğa uygun kitap seçimi, okuma alışkanlığını destekler",
-        "Her çocuk klasik eserleri sevmek zorundadır",
-        "Çocuklara okuma görev olarak verilmelidir",
+        "Her çocuk klasik eserleri okumak zorundadır",
+        "Çocuklara okuma katı bir görev olarak verilmelidir",
         "Okuma alışkanlığı yalnız okulda kazanılır",
       ],
       correctIndex: 0,
     },
     {
       question:
-        "Bir paragrafta \"anlam akışını bozan cümle\" hangi yöntemle bulunur?",
-      options: [
-        "Paragrafın ana fikrine ve diğer cümlelerle olan anlam bağına ters düşen cümle aranır",
-        "Paragrafın en kısa cümlesi seçilir",
-        "Soru bildiren cümle seçilir",
-        "Özel ad geçen cümle seçilir",
-      ],
+        "\"(I) Sağlıklı beslenme yalnız ne yediğimizle değil, nasıl yediğimizle de ilgilidir. (II) Yemek yerken acele etmek, sindirimi olumsuz etkiler. (III) Lezzetli yemekler hazırlamak ayrı bir sanattır. (IV) Yemeği iyi çiğnemek hem doyma hissini hem de besinlerin emilimini olumlu etkiler.\"\n\nBu paragrafta numaralanmış cümlelerin hangisi anlatımın akışını bozmaktadır?",
+      options: ["III", "I", "II", "IV"],
       correctIndex: 0,
     },
   ],
