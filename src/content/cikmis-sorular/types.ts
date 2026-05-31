@@ -1,5 +1,3 @@
-import type { QuizQuestion } from "@/content/types";
-
 export type ExamSection = "sozel" | "sayisal";
 
 export type PastExamMeta = {
@@ -15,23 +13,8 @@ export type PastExamMeta = {
   durationMinutes: number;
   /** PDF dosya yolu (public/ altından). Yoksa indirme butonu disabled. */
   pdfPath?: string;
-  /** İnteraktif çözüm için soru listesi. Boşsa "interaktif yakında". */
-  questions?: PastQuestion[];
   /** Kaynak (atıf) — MEB ÖDSGM linki */
   source?: string;
-};
-
-export type PastQuestion = QuizQuestion & {
-  /** Soru hangi dersten (sözel: turkce/inkilap/din/ingilizce, sayısal: matematik/fen-bilimleri) */
-  subject:
-    | "turkce"
-    | "inkilap"
-    | "din"
-    | "ingilizce"
-    | "matematik"
-    | "fen-bilimleri";
-  /** Görsel varsa public/ altından yol (ör. "/cikmis-sorular/2025/sozel/q7.png") */
-  image?: string;
 };
 
 export type PastExamYear = {

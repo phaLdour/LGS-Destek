@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BookOpen,
+  Calculator,
   Home,
   LogOut,
   Menu,
@@ -24,6 +25,7 @@ export type ShellUser = {
 const NAV = [
   { href: "/dashboard", label: "Anasayfa", icon: Home },
   { href: "/dashboard#dersler", label: "Dersler", icon: BookOpen },
+  { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
   { href: "/profile", label: "Profil", icon: UserIcon },
 ];
 

@@ -23,8 +23,8 @@ export default async function CikmisSorularPage() {
         <div>
           <h1 className="text-xl font-extrabold">Çıkmış Sorular</h1>
           <p className="text-sm text-white/85">
-            MEB ÖDSGM resmi LGS sınavları (2018-2025). PDF olarak indir ya da
-            uygulamada interaktif çöz.
+            MEB ÖDSGM resmi LGS sınavları (2018-2025) — PDF olarak indir, kağıt
+            üzerinde çöz.
           </p>
         </div>
       </header>
