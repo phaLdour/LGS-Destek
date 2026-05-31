@@ -19,6 +19,7 @@ import {
 import { LogoLockup } from "@/components/brand/Logo";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { MascotButton } from "@/components/mascot/MascotButton";
+import { LookupContextMenu } from "@/components/sozluk/LookupContextMenu";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export type ShellUser = {
@@ -188,6 +189,9 @@ export function AppShell({
 
       {/* ===== Maskot AI ===== */}
       <MascotButton />
+
+      {/* ===== Sağ tık: seçili kelimeyi sözlükte aç ===== */}
+      <LookupContextMenu />
     </div>
   );
 }

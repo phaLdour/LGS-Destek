@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,7 +9,12 @@ import {
   Search,
   Sparkles,
 } from "lucide-react";
-import type { Anlam, Kelime } from "@/content/sozluk-veri";
+import {
+  findKelimeIndex,
+  pageOfIndex,
+  type Anlam,
+  type Kelime,
+} from "@/content/sozluk-veri";
 
 type Direction = "next" | "prev";
 
@@ -40,10 +46,46 @@ export function SozlukClient({
   kelimeler: Kelime[];
   pageSize: number;
 }) {
+  const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [flipDir, setFlipDir] = useState<Direction | null>(null);
   const [jumpInput, setJumpInput] = useState("");
+  /** Vurgulanan kelime (yalnız bu ziyarette geçerli). */
+  const [highlighted, setHighlighted] = useState<string | null>(null);
+  const highlightedRef = useRef<HTMLElement | null>(null);
+
+  // Query param "ara" varsa: ilgili kelime sayfasına git ve vurgula.
+  useEffect(() => {
+    const ara = searchParams.get("ara");
+    if (!ara) return;
+    const trimmed = ara.trim();
+    if (!trimmed) return;
+    const idx = findKelimeIndex(trimmed);
+    if (idx >= 0) {
+      const targetPage = pageOfIndex(idx);
+      setPage(targetPage);
+      setHighlighted(
+        kelimeler[idx].kelime.toLocaleLowerCase("tr"),
+      );
+    } else {
+      // Tam eşleşme yoksa arama kutusuna yaz → filtreden geçsin.
+      setQuery(trimmed);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Vurgulanan kelime DOM'a düşünce scroll et
+  useEffect(() => {
+    if (!highlighted) return;
+    const t = setTimeout(() => {
+      highlightedRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 400);
+    return () => clearTimeout(t);
+  }, [highlighted, page]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLocaleLowerCase("tr");
@@ -55,9 +97,10 @@ export function SozlukClient({
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
-  // Arama değişince sayfa 1'e dön
+  // Arama değişince sayfa 1'e dön (vurgu da kaldırılır — kullanıcı kendi arıyor)
   useEffect(() => {
     setPage(1);
+    if (query.trim()) setHighlighted(null);
   }, [query]);
 
   const currentItems = useMemo(() => {
@@ -68,11 +111,10 @@ export function SozlukClient({
   function go(direction: Direction) {
     if (direction === "next" && page >= totalPages) return;
     if (direction === "prev" && page <= 1) return;
+    setHighlighted(null); // sayfa değişirse vurgu kaybolur
     setFlipDir(direction);
-    // Animasyon yarısında sayfa içeriği değişsin (300ms civarı)
     setTimeout(() => {
       setPage((p) => p + (direction === "next" ? 1 : -1));
-      // Animasyon kısa bir süre sonra sıfırlanır
       setTimeout(() => setFlipDir(null), 320);
     }, 280);
   }
@@ -80,6 +122,7 @@ export function SozlukClient({
   function jumpToPage(target: number) {
     const clamped = Math.max(1, Math.min(totalPages, Math.floor(target)));
     if (clamped === page) return;
+    setHighlighted(null);
     const direction: Direction = clamped > page ? "next" : "prev";
     setFlipDir(direction);
     setTimeout(() => {
@@ -189,21 +232,38 @@ export function SozlukClient({
                 </p>
               </div>
               <div className="space-y-4">
-                {currentItems.map((k, i) => (
-                  <article
-                    key={`${k.kelime}-${i}`}
-                    className="border-b border-rehberim-border/60 pb-3 last:border-0 last:pb-0"
-                  >
-                    <header className="mb-2 flex flex-wrap items-baseline gap-2">
-                      <h2 className="text-lg font-extrabold text-rehberim-navy">
-                        {k.kelime}
-                      </h2>
-                      {k.tur && (
-                        <span className="text-xs font-semibold italic text-rehberim-navy/55">
-                          {k.tur}
-                        </span>
-                      )}
-                    </header>
+                {currentItems.map((k, i) => {
+                  const isHighlighted =
+                    highlighted !== null &&
+                    k.kelime.toLocaleLowerCase("tr") === highlighted;
+                  return (
+                    <article
+                      key={`${k.kelime}-${i}`}
+                      ref={
+                        isHighlighted
+                          ? (el) => {
+                              highlightedRef.current = el;
+                            }
+                          : undefined
+                      }
+                      className={`border-b border-rehberim-border/60 pb-3 last:border-0 last:pb-0 ${
+                        isHighlighted ? "sozluk-highlight" : ""
+                      }`}
+                    >
+                      <header className="mb-2 flex flex-wrap items-baseline gap-2">
+                        <h2
+                          className={`text-lg font-extrabold text-rehberim-navy ${
+                            isHighlighted ? "sozluk-highlight-title" : ""
+                          }`}
+                        >
+                          {k.kelime}
+                        </h2>
+                        {k.tur && (
+                          <span className="text-xs font-semibold italic text-rehberim-navy/55">
+                            {k.tur}
+                          </span>
+                        )}
+                      </header>
                     <ol className="space-y-2">
                       {k.anlamlar.map((a, j) => {
                         const badge = ANLAM_BADGE[a.tur];
@@ -234,8 +294,9 @@ export function SozlukClient({
                         );
                       })}
                     </ol>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             </>
           )}
