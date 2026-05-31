@@ -107,3 +107,22 @@ create policy "own wrongs" on public.wrong_answers
 
 create index if not exists wrong_answers_user_idx
   on public.wrong_answers (user_id, last_wrong_at desc);
+
+-- Rozet / başarım sahipliği
+create table if not exists public.user_badges (
+  user_id uuid not null references auth.users on delete cascade,
+  badge_key text not null,                       -- ör. "ilk-adim", "seri-7"
+  earned_at timestamptz not null default now(),
+  primary key (user_id, badge_key)
+);
+
+alter table public.user_badges enable row level security;
+
+drop policy if exists "own badges" on public.user_badges;
+create policy "own badges" on public.user_badges
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create index if not exists user_badges_user_idx
+  on public.user_badges (user_id, earned_at desc);

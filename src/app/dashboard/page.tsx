@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Archive, FileText, Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { OwlSvg } from "@/components/brand/Owl";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { StatsPanel } from "@/components/stats/StatsPanel";
@@ -113,6 +114,19 @@ export default async function DashboardPage() {
           </p>
         </div>
         <StatsPanel />
+      </section>
+
+      {/* Rozetler */}
+      <section className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-extrabold text-rehberim-navy">
+            Rozetlerin
+          </h2>
+          <p className="text-sm text-rehberim-navy/55">
+            Başarımlarını topla ve LGS yolculuğunu eğlenceli kıl
+          </p>
+        </div>
+        <BadgeShowcase />
       </section>
 
       {/* Konu performansı */}
