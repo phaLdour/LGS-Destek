@@ -92,6 +92,8 @@ export function QuickQuizClient({
   const current = pool[index];
   const correctCount = useMemo(() => history.filter((h) => h.correct).length, [history]);
   const wrongCount = history.length - correctCount;
+  // LGS net formülü: Net = D − (Y/3). 3 yanlış 1 doğruyu götürür.
+  const net = Math.max(0, correctCount - wrongCount / 3);
   const durationSec = (Date.now() - startMs) / 1000;
 
   function confirm() {
@@ -280,7 +282,7 @@ export function QuickQuizClient({
           <h3 className="text-center text-lg font-extrabold text-rehberim-navy">
             {phase === "exhausted" ? "Havuz bitti 🎉" : "Test bitti"}
           </h3>
-          <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div className="rounded-2xl bg-green-50 p-4 text-center">
               <p className="text-2xl font-extrabold text-green-600">{correctCount}</p>
               <p className="text-xs font-semibold text-green-700">Doğru</p>
@@ -288,6 +290,14 @@ export function QuickQuizClient({
             <div className="rounded-2xl bg-red-50 p-4 text-center">
               <p className="text-2xl font-extrabold text-red-500">{wrongCount}</p>
               <p className="text-xs font-semibold text-red-600">Yanlış</p>
+            </div>
+            <div className="rounded-2xl bg-rehberim-accent/10 p-4 text-center">
+              <p className="text-2xl font-extrabold text-rehberim-accent">
+                {net.toFixed(2)}
+              </p>
+              <p className="text-xs font-semibold text-rehberim-accent">
+                Net (LGS)
+              </p>
             </div>
             <div className="rounded-2xl bg-rehberim-muted p-4 text-center">
               <p className="flex items-center justify-center gap-1 text-2xl font-extrabold text-rehberim-navy">
@@ -297,6 +307,9 @@ export function QuickQuizClient({
               <p className="text-xs font-semibold text-rehberim-navy/55">Süre</p>
             </div>
           </div>
+          <p className="mt-3 text-center text-xs text-rehberim-navy/50">
+            LGS net formülü: <span className="font-semibold">Doğru − (Yanlış ÷ 3)</span>
+          </p>
         </div>
 
         <div className="rounded-2xl border border-rehberim-border bg-white p-5 shadow-card">

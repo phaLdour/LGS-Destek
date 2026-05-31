@@ -124,7 +124,7 @@ export function Quiz({
         <h3 className="text-center text-lg font-extrabold text-rehberim-navy">
           Test bitti! 🎉
         </h3>
-        <div className="mt-4 grid grid-cols-3 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-2xl bg-green-50 p-4 text-center">
             <p className="text-2xl font-extrabold text-green-600">
               {correctCount}
@@ -135,6 +135,14 @@ export function Quiz({
             <p className="text-2xl font-extrabold text-red-500">{wrongCount}</p>
             <p className="text-xs font-semibold text-red-600">Yanlış</p>
           </div>
+          <div className="rounded-2xl bg-rehberim-accent/10 p-4 text-center">
+            <p className="text-2xl font-extrabold text-rehberim-accent">
+              {Math.max(0, correctCount - wrongCount / 3).toFixed(2)}
+            </p>
+            <p className="text-xs font-semibold text-rehberim-accent">
+              Net (LGS)
+            </p>
+          </div>
           <div className="rounded-2xl bg-rehberim-muted p-4 text-center">
             <p className="flex items-center justify-center gap-1 text-2xl font-extrabold text-rehberim-navy">
               <Clock className="h-5 w-5" />
@@ -143,6 +151,9 @@ export function Quiz({
             <p className="text-xs font-semibold text-rehberim-navy/55">Süre</p>
           </div>
         </div>
+        <p className="mt-3 text-center text-xs text-rehberim-navy/50">
+          LGS net formülü: <span className="font-semibold">Doğru − (Yanlış ÷ 3)</span>
+        </p>
         <div className="mt-4 flex flex-col gap-2 sm:flex-row">
           <button
             onClick={() => setPhase("report")}

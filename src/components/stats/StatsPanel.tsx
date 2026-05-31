@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clock,
   Flame,
+  Gauge,
   ListChecks,
   Loader2,
   Target,
@@ -84,7 +85,7 @@ export function StatsPanel() {
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card
           icon={<ListChecks className="h-5 w-5" />}
           label="Çözülen test"
@@ -94,6 +95,12 @@ export function StatsPanel() {
           icon={<Target className="h-5 w-5" />}
           label="Doğru oranı"
           value={`%${stats.accuracyPct}`}
+          accent
+        />
+        <Card
+          icon={<Gauge className="h-5 w-5" />}
+          label="Ortalama net"
+          value={stats.averageNet.toFixed(2)}
           accent
         />
         <Card

@@ -32,6 +32,10 @@ export type Stats = {
   quizzesSolved: number;
   questionsAnswered: number;
   accuracyPct: number;
+  /** LGS net formülü: Σ(Doğru) − Σ(Yanlış)/3, negatif olursa 0 */
+  totalNet: number;
+  /** Test başına ortalama net (quizzesSolved > 0 ise) */
+  averageNet: number;
 };
 
 const DEFAULT_GOAL = 30;
@@ -147,6 +151,8 @@ export async function getStats(): Promise<Stats> {
     quizzesSolved: 0,
     questionsAnswered: 0,
     accuracyPct: 0,
+    totalNet: 0,
+    averageNet: 0,
   };
 
   const ctx = await getClientAndUser();
@@ -181,6 +187,9 @@ export async function getStats(): Promise<Stats> {
   base.accuracyPct = base.questionsAnswered
     ? Math.round((totalCorrect / base.questionsAnswered) * 100)
     : 0;
+  // LGS net: D − (Y/3); negatif olamaz
+  base.totalNet = Math.max(0, totalCorrect - totalWrong / 3);
+  base.averageNet = base.quizzesSolved ? base.totalNet / base.quizzesSolved : 0;
 
   const rows = (sessions ?? []) as {
     duration_seconds: number;
