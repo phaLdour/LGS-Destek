@@ -16,6 +16,11 @@ import {
   markSolved,
   resetSolvedFor,
 } from "@/lib/quickQuiz-client";
+import {
+  getWrongIds,
+  markCorrect as markWrongCorrect,
+  saveWrong,
+} from "@/lib/wrongAnswers";
 import { saveQuizResult } from "@/lib/tracking";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -41,6 +46,7 @@ export function QuickQuizClient({
   title,
   subtitle,
   backHref,
+  wrongMode = false,
 }: {
   scope: QuickScope;
   /** Server'dan gelen kapsamdaki tüm sorular (çözülmüş olsun olmasın). */
@@ -48,6 +54,8 @@ export function QuickQuizClient({
   title: string;
   subtitle: string;
   backHref: string;
+  /** true ise: yalnız yanlış cevap havuzundaki soruları getirir; markSolved çağırmaz. */
+  wrongMode?: boolean;
 }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [pool, setPool] = useState<PoolQuestion[]>([]);
@@ -60,11 +68,21 @@ export function QuickQuizClient({
 
   // Mount: havuzu kur (çözülmüşleri çıkar + karıştır)
   useEffect(() => {
-    const p = filterAndShuffle(initialPool);
+    let p: PoolQuestion[];
+    if (wrongMode) {
+      const ids = getWrongIds();
+      p = initialPool.filter((q) => ids.has(q.id));
+      for (let i = p.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [p[i], p[j]] = [p[j], p[i]];
+      }
+    } else {
+      p = filterAndShuffle(initialPool);
+    }
     setPool(p);
     setStartMs(Date.now());
     if (p.length === 0) {
-      setPhase(initialPool.length === 0 ? "done" : "exhausted");
+      setPhase(initialPool.length === 0 || wrongMode ? "done" : "exhausted");
     } else {
       setPhase("active");
     }
@@ -80,7 +98,12 @@ export function QuickQuizClient({
     if (selected === null || !current) return;
     const ok = selected === current.question.correctIndex;
     setHistory((h) => [...h, { pool: current, selected, correct: ok }]);
-    markSolved(current.id);
+    if (!wrongMode) markSolved(current.id);
+    if (ok) {
+      markWrongCorrect(current.id);
+    } else {
+      saveWrong(current.id);
+    }
     setSelected(null);
 
     if (index + 1 >= pool.length) {
@@ -223,6 +246,26 @@ export function QuickQuizClient({
     }
 
     if (phase === "done" && history.length === 0) {
+      if (wrongMode) {
+        return (
+          <div className="rounded-2xl border border-rehberim-border bg-white p-8 text-center shadow-card">
+            <Sparkles className="mx-auto mb-3 h-10 w-10 text-rehberim-accent" />
+            <h3 className="text-lg font-extrabold text-rehberim-navy">
+              Hata listen boş! 🎉
+            </h3>
+            <p className="mt-1 text-sm text-rehberim-navy/55">
+              Henüz yanlış cevabın yok. Hızlı Sorular&apos;a giderek soru
+              çözmeye başla; yanlış yaptıkların burada birikecek.
+            </p>
+            <a
+              href={backHref}
+              className="mx-auto mt-4 inline-flex items-center gap-2 rounded-xl bg-rehberim-accent px-5 py-3 text-sm font-bold text-white transition hover:bg-rehberim-accent-dark"
+            >
+              Hızlı Sorular&apos;a git
+            </a>
+          </div>
+        );
+      }
       // Hiç soru yok
       return (
         <div className="rounded-2xl border border-dashed border-rehberim-border bg-rehberim-muted p-8 text-center text-sm text-rehberim-navy/55">

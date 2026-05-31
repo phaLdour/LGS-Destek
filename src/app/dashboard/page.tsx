@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
+import { WrongPracticeCard } from "@/components/wrong/WrongPracticeCard";
 import { getShellUser } from "@/lib/user";
 
 export default async function DashboardPage() {
@@ -59,6 +60,9 @@ export default async function DashboardPage() {
           Karma + ders ders
         </span>
       </Link>
+
+      {/* Hatalarımı Çöz — sadece havuzda soru varsa görünür */}
+      <WrongPracticeCard />
 
       {/* İstatistikler */}
       <section className="mt-8">
