@@ -3,6 +3,7 @@ import { Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { StatsPanel } from "@/components/stats/StatsPanel";
+import { SubjectHeatmap } from "@/components/stats/SubjectHeatmap";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { WrongPracticeCard } from "@/components/wrong/WrongPracticeCard";
 import { getShellUser } from "@/lib/user";
@@ -75,6 +76,19 @@ export default async function DashboardPage() {
           </p>
         </div>
         <StatsPanel />
+      </section>
+
+      {/* Konu performansı */}
+      <section className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-extrabold text-rehberim-navy">
+            Konu performansın
+          </h2>
+          <p className="text-sm text-rehberim-navy/55">
+            Hangi konularda güçlüsün, hangilerine odaklanmalısın
+          </p>
+        </div>
+        <SubjectHeatmap />
       </section>
 
       {/* Dersler */}
