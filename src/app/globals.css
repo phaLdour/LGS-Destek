@@ -301,3 +301,23 @@ html.dark [data-theme="light"] [data-rb="navy-mid"] {
 html.dark [data-theme="light"] [data-rb="navy-deep"] {
   fill: #1c2c5c !important;
 }
+/* Light scope: lgs-article'ın turuncu kuralını da geçersiz kıl (kart içi navy)
+   Article kartları içine düşen yazıyı SİTENİN MAVİ TONUYLA yaz — kullanıcı isteği. */
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/85,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/80,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/75,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/70,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/65,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/60 {
+  color: #16244c !important;
+}
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/55,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/50,
+html.dark .lgs-article [data-theme="light"] .text-rehberim-navy\/45 {
+  color: rgba(22, 36, 76, 0.6) !important;
+}
+html.dark .lgs-article [data-theme="light"] strong,
+html.dark .lgs-article [data-theme="light"] strong.text-rehberim-navy {
+  color: #16244c !important;
+}
