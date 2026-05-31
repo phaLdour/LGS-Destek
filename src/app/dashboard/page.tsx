@@ -3,6 +3,7 @@ import { Archive, FileText, Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { OwlSvg } from "@/components/brand/Owl";
+import { OnboardingTour } from "@/components/onboarding/Tour";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { SubjectHeatmap } from "@/components/stats/SubjectHeatmap";
@@ -16,6 +17,9 @@ export default async function DashboardPage() {
 
   return (
     <AppShell user={user}>
+      {/* İlk girişte 4 adımlık karşılama (localStorage ile bir kez gösterilir) */}
+      <OnboardingTour />
+
       {/* Karşılama */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rehberim-navy to-rehberim-navy-dark p-6 text-white shadow-soft sm:p-8">
         <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full bg-rehberim-accent/15 blur-2xl" />
