@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles, Zap } from "lucide-react";
+import { FileText, Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { StatsPanel } from "@/components/stats/StatsPanel";
@@ -64,6 +64,25 @@ export default async function DashboardPage() {
 
       {/* Hatalarımı Çöz — sadece havuzda soru varsa görünür */}
       <WrongPracticeCard />
+
+      {/* Deneme Sınavı */}
+      <Link
+        href="/deneme"
+        className="group mt-4 flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-navy/30 bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
+      >
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+          <FileText className="h-8 w-8" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-lg font-extrabold">Deneme Sınavı</p>
+          <p className="text-sm text-white/85">
+            Gerçek LGS formatında dene — sözel, sayısal veya tam deneme
+          </p>
+        </div>
+        <span className="hidden rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider sm:block">
+          75 + 80 dk
+        </span>
+      </Link>
 
       {/* İstatistikler */}
       <section className="mt-8">
