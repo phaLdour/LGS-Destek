@@ -1,8 +1,8 @@
 type Day = { label: string; minutes: number; isToday: boolean };
 
 export function WeeklyChart({ data }: { data: Day[] }) {
-  // Üst sınır: en uzun günü baz alır; her gün en az 1 dk çalışılsa bile
-  // küçük farkların gözükmesi için minimum max 10 dk kabul edilir.
+  // Üst sınır: en uzun günü baz alır; minimum 10 dk → küçük değerli haftalarda
+  // bile her gün anlamlı yer kaplar.
   const max = Math.max(10, ...data.map((d) => d.minutes));
 
   return (
@@ -12,13 +12,12 @@ export function WeeklyChart({ data }: { data: Day[] }) {
       </h3>
       <div className="flex h-36 items-end justify-between gap-2">
         {data.map((d, i) => {
-          // Yükseklik orantılıdır: 7 dk olan gün, 3 dk olandan görsel
-          // olarak daha yüksek olur. Çalışılan günler en az 4% yüksekliğinde
-          // görünür (küçük turuncu bir çizgi); hiç çalışılmayan günler 2%
-          // ince bir çizgi olarak kalır.
+          // Linear orantı: 20 dk olan gün, 10 dk olandan tam 2 kat uzun
+          // görünür. Çalışılan günler en az %10 yükseklikte (küçük değerler
+          // de görünür kalır); hiç çalışılmayan günler %2 ince çizgi.
           const ratio = max > 0 ? (d.minutes / max) * 100 : 0;
           const h =
-            d.minutes > 0 ? Math.max(4, Math.round(ratio)) : 2;
+            d.minutes > 0 ? Math.max(10, Math.round(ratio)) : 2;
           return (
             <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
               <span className="text-[10px] font-semibold text-rehberim-navy/50">
