@@ -4,10 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Archive,
   Award,
   BookOpen,
   Calculator,
+  FileText,
   Home,
+  Languages,
   LogOut,
   Menu,
   User as UserIcon,
@@ -27,6 +30,9 @@ export type ShellUser = {
 const NAV = [
   { href: "/dashboard", label: "Anasayfa", icon: Home },
   { href: "/dashboard#dersler", label: "Dersler", icon: BookOpen },
+  { href: "/deneme", label: "Deneme Sınavı", icon: FileText },
+  { href: "/cikmis-sorular", label: "Çıkmış Sorular", icon: Archive },
+  { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
   { href: "/rozetlerim", label: "Rozetler", icon: Award },
   { href: "/profile", label: "Profil", icon: UserIcon },
@@ -164,9 +170,9 @@ export function AppShell({
         </main>
       </div>
 
-      {/* ===== Mobil alt navigasyon ===== */}
+      {/* ===== Mobil alt navigasyon (ilk 4 öğe; gerisi drawer'da) ===== */}
       <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-rehberim-border bg-white lg:hidden">
-        {NAV.map(({ href, label, icon: Icon }) => (
+        {NAV.slice(0, 4).map(({ href, label, icon: Icon }) => (
           <Link
             key={label}
             href={href}

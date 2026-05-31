@@ -211,6 +211,276 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
     },
   ],
 
+  // ─── Türkçe: Sözcükte anlam (LGS 2024 tarzı çoklu kullanım) ──────
+  "turkce/sozcukte-anlam": [
+    {
+      question:
+        "\"Bırakmak\" sözcüğü aşağıdaki cümlelerde farklı anlamlarda kullanılmıştır:\n• Tamirci, benim arabamı tamir etmeyi bırakıp yeni gelen müşteriyle ilgilendi.\n• Evindeki tadilat bitene kadar antika eşyalarını komşusuna bıraktı.\n• Kalfasının artık işinin ehli olduğuna karar veren usta, elindeki işi ona bıraktı.\n\nBu cümlelerde \"bırakmak\" sözcüğü aşağıdaki anlamlardan hangisiyle KULLANILMAMIŞTIR?",
+      options: [
+        "Bir işi başka bir zamana ertelemek",
+        "Bakılmak, korunmak için vermek",
+        "Bir iş için birini görevlendirmek",
+        "Yapmakta olduğu işi durdurup başka şeye yönelmek",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde \"ağır\" sözcüğü \"sorumluluğu büyük olan\" anlamında kullanılmıştır?",
+      options: [
+        "Bu görevin altından kalkmak ağır bir iştir.",
+        "Bavulu ağır olduğu için iki kişi taşıdık.",
+        "Yağlı yemekler insana ağır gelir.",
+        "Arabalar trafikte ağır ağır ilerliyordu.",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde altı çizili sözcük mecaz anlamıyla KULLANILMAMIŞTIR?",
+      options: [
+        "Soğuk havada burnumun ucu kızardı.",
+        "Para kazanınca burnu havalarda dolaşıyor.",
+        "Sözleriyle bana sert bir taş attı.",
+        "Yaşananlar yüreğimde derin yara açtı.",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Türkçe: Cümlede anlam (anlam ilişkileri) ────────────────────
+  "turkce/cumlede-anlam": [
+    {
+      question:
+        "\"Dersine düzenli çalışmazsa sınavda başarılı olamaz.\" cümlesinde anlam ilişkisi aşağıdakilerden hangisidir?",
+      options: ["Koşul – sonuç", "Neden – sonuç", "Amaç – sonuç", "Karşılaştırma"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde \"varsayım\" anlamı vardır?",
+      options: [
+        "Tut ki seçimi kaybettin, sonra ne yapacaksın?",
+        "Akşam eve geç gelirsen ailen merak eder.",
+        "Bu sınavı kazanmak için ders çalışıyorum.",
+        "Yağmur yağdığı için piknik iptal edildi.",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki numaralanmış cümleleri anlamca doğru biçimde birleştiren bağlaç hangisidir?\n\nI. Bir milletin geleceği gençlere bağlıdır.\nII. Gençlerin iyi yetiştirilmesi devletin görevidir.",
+      options: ["bu yüzden", "ne var ki", "oysa", "ama"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Türkçe: Fiilimsiler ─────────────────────────────────────────
+  "turkce/fiilimsiler": [
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde sıfat-fiil (ortaç) KULLANILMIŞTIR?",
+      options: [
+        "Yıkanan çamaşırları balkona astım.",
+        "Yağmur yağarken eve döndük.",
+        "Akşam pikniğe gitmek istiyorum.",
+        "Çocuk koşarak parka gitti.",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "\"Eve gelince yorgunluktan uyuyakaldım.\" cümlesindeki zarf-fiil eki aşağıdakilerden hangisidir?",
+      options: ["-ince", "-ip", "-arak", "-madan"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Üslü ifadeler (bilimsel gösterim — LGS tarzı) ────
+  "matematik/uslu-ifadeler": [
+    {
+      question:
+        "Bir yıllık 21·10⁸ ton karbon emisyonu, 60 yıllık süreçte engelleniyor. Buna göre bir yılda engellenen miktar TON cinsinden bilimsel gösterimle hangisidir?",
+      options: ["3,5·10⁷", "3,5·10¹⁰", "21·10⁷", "2,1·10¹⁰"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "(2³ · 2⁵) ÷ 2⁴ işleminin sonucu kaçtır?",
+      options: ["16", "8", "32", "64"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "10⁻² sayısı aşağıdakilerden hangisine eşittir?",
+      options: ["0,01", "0,1", "100", "-100"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Karekök ──────────────────────────────────────────
+  "matematik/karekoklu-ifadeler": [
+    {
+      question:
+        "√363 − √75 − √27 işleminin sonucu aşağıdakilerden hangisidir?",
+      options: ["2√3", "3√3", "4√3", "5√3"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "√50 + √32 işleminin en sade hâli aşağıdakilerden hangisidir?",
+      options: ["9√2", "7√2", "11√2", "5√2 + 4√2"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Üçgenler ─────────────────────────────────────────
+  "matematik/ucgenler": [
+    {
+      question:
+        "Bir dik üçgende dik kenarlar 6 cm ve 8 cm ise hipotenüs kaç cm'dir?",
+      options: ["10", "12", "14", "9"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir üçgenin iki iç açısı 50° ve 60° ise üçüncü iç açısı kaç derecedir?",
+      options: ["70°", "60°", "80°", "90°"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Fen: DNA ve Genetik ─────────────────────────────────────────
+  "fen-bilimleri/dna-ve-genetik-kod": [
+    {
+      question:
+        "Bir DNA molekülünde adenin (A) sayısı 120 ise timin (T) sayısı kaçtır?",
+      options: ["120", "60", "240", "100"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdakilerden hangisi modifikasyona (kalıtsal olmayan değişime) örnektir?",
+      options: [
+        "Aynı tohumdan farklı toprakta yetişen bitkilerin boylarının farklı olması",
+        "Çocuğun göz rengini anne veya babadan alması",
+        "Kan grubunun anne-babadan gelmesi",
+        "Bir kişinin parmak izinin doğuştan gelmesi",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "DNA, RNA ve protein arasındaki ilişkiyi en doğru gösteren ifade hangisidir?",
+      options: [
+        "DNA, RNA aracılığıyla proteinin üretilmesini yönetir",
+        "RNA, DNA'yı yapar",
+        "Protein, DNA'yı yapar",
+        "DNA proteinleri doğrudan yapar, RNA'ya gerek yoktur",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Fen: Madde ve Endüstri ──────────────────────────────────────
+  "fen-bilimleri/madde-ve-endustri": [
+    {
+      question:
+        "Bir tepkimede mevcut tüm tepkenler kullanılarak yalnız ürün/ürünler oluşuyorsa bu tepkime aşağıdakilerden hangisidir?",
+      options: [
+        "Kimyasal değişim (yeni madde oluşumu)",
+        "Fiziksel değişim",
+        "Hâl değişimi",
+        "Yoğunluk değişimi",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdakilerden hangisi fiziksel değişime örnektir?",
+      options: [
+        "Suyun buz hâline geçmesi",
+        "Demirin paslanması",
+        "Odunun yanması",
+        "Mumun yanarak tükenmesi",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── İnkılap: Milli Uyanış ────────────────────────────────────────
+  "inkilap/milli-uyanis": [
+    {
+      question:
+        "Mondros Ateşkes Anlaşması'nın 7. maddesi (\"Müttefikler, güvenliklerini tehdit edebilecek herhangi bir stratejik noktayı işgal edebilir.\") aşağıdakilerden hangisine OLANAK SAĞLAMIŞTIR?",
+      options: [
+        "İtilaf Devletleri'nin Anadolu'yu fiilen işgaline",
+        "Osmanlı Devleti'nin toprak kazanmasına",
+        "Yeni bir devletin doğrudan kurulmasına",
+        "TBMM'nin hemen açılmasına",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Erzurum Kongresi'nde alınan \"Vatan bir bütündür, parçalanamaz.\" kararı aşağıdaki ilkelerden hangisini ifade eder?",
+      options: [
+        "Milli birlik ve bağımsızlık",
+        "Cumhuriyetin ilanı",
+        "Saltanatın kaldırılması",
+        "Yabancı yardımın kabulü",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Din: Zekat, Sadaka, Hac ─────────────────────────────────────
+  "din/zekat-sadaka-hac": [
+    {
+      question:
+        "Zekât ile sadaka arasındaki en temel fark nedir?",
+      options: [
+        "Zekât belirli koşulları taşıyan zenginlere farzdır; sadaka ise herkesin gönüllü olarak verdiği yardımdır",
+        "Sadaka farz, zekât sünnettir",
+        "Sadaka yalnız Ramazan'da verilir",
+        "İkisi de aynı anlamı taşır",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Hac ibadetinin İslam toplumuna kazandırdığı en önemli özellik aşağıdakilerden hangisidir?",
+      options: [
+        "Farklı milletlerden Müslümanların eşit koşullarda buluşarak birlik ve kardeşlik duygusunu pekiştirmesi",
+        "Yalnız zenginlerin yaptığı bir gezi olması",
+        "Belirli bir ülkede yapılan turistik gezi olması",
+        "Sadece bireysel ibadet olması",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── İngilizce: Teen Life ────────────────────────────────────────
+  "ingilizce/teen-life": [
+    {
+      question:
+        "Read the dialogue and choose the best response.\n— Ali: How often do you go to the cinema?\n— Mark: ___",
+      options: [
+        "About twice a month, usually on weekends.",
+        "Yes, I went yesterday.",
+        "The cinema is near my school.",
+        "I really love action movies.",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Choose the option that best COMPLETES the sentence:\n\"Teenagers should ___ enough sleep to stay healthy and focused at school.\"",
+      options: ["get", "leave", "miss", "throw"],
+      correctIndex: 0,
+    },
+  ],
+
   // ─── İngilizce ──────────────────────────────────────────────────
   "ingilizce/friendship": [
     {

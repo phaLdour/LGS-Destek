@@ -51,6 +51,85 @@ body {
   }
 }
 
+/* ────────────────────────────────────────────────────────────────
+   TÜRKÇE SÖZLÜK — kitap sayfası çevirme animasyonu
+   600ms toplam: 280ms yarı (görsel olarak sayfa kenardan kıvrılır),
+   içerik değişir, sonraki 320ms tam açılır. Cubic-bezier ile yumuşak.
+   ──────────────────────────────────────────────────────────────── */
+.book-scene {
+  perspective: 1500px;
+  perspective-origin: center;
+}
+.book-page {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition:
+    transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 280ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 280ms ease;
+  will-change: transform, opacity;
+}
+.book-flip-next {
+  animation: book-flip-next 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.book-flip-prev {
+  animation: book-flip-prev 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes book-flip-next {
+  0% {
+    transform: rotateY(0deg);
+    transform-origin: right center;
+    opacity: 1;
+  }
+  45% {
+    transform: rotateY(-85deg);
+    transform-origin: right center;
+    opacity: 0.6;
+    box-shadow: -8px 0 24px -8px rgba(22, 36, 76, 0.35);
+  }
+  55% {
+    transform: rotateY(85deg);
+    transform-origin: left center;
+    opacity: 0.6;
+    box-shadow: 8px 0 24px -8px rgba(22, 36, 76, 0.35);
+  }
+  100% {
+    transform: rotateY(0deg);
+    transform-origin: left center;
+    opacity: 1;
+  }
+}
+@keyframes book-flip-prev {
+  0% {
+    transform: rotateY(0deg);
+    transform-origin: left center;
+    opacity: 1;
+  }
+  45% {
+    transform: rotateY(85deg);
+    transform-origin: left center;
+    opacity: 0.6;
+    box-shadow: 8px 0 24px -8px rgba(22, 36, 76, 0.35);
+  }
+  55% {
+    transform: rotateY(-85deg);
+    transform-origin: right center;
+    opacity: 0.6;
+    box-shadow: -8px 0 24px -8px rgba(22, 36, 76, 0.35);
+  }
+  100% {
+    transform: rotateY(0deg);
+    transform-origin: right center;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-flip-next,
+  .book-flip-prev {
+    animation: none;
+  }
+}
+
 /* İnce, markaya uygun kaydırma çubuğu */
 ::-webkit-scrollbar {
   width: 10px;

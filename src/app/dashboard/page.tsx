@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Archive, FileText, Sparkles, Zap } from "lucide-react";
+import { Sparkles, Zap } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { OnboardingTour } from "@/components/onboarding/Tour";
@@ -72,39 +72,6 @@ export default async function DashboardPage() {
 
       {/* Hatalarımı Çöz — sadece havuzda soru varsa görünür */}
       <WrongPracticeCard />
-
-      {/* Deneme Sınavı & Çıkmış Sorular yan yana */}
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <Link
-          href="/deneme"
-          className="group flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-navy/30 bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
-        >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
-            <FileText className="h-8 w-8" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-extrabold">Deneme Sınavı</p>
-            <p className="text-sm text-white/85">
-              Gerçek LGS formatında dene
-            </p>
-          </div>
-        </Link>
-
-        <Link
-          href="/cikmis-sorular"
-          className="group flex items-center gap-4 overflow-hidden rounded-2xl border border-indigo-300/60 bg-gradient-to-br from-indigo-600 to-purple-700 p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
-        >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
-            <Archive className="h-8 w-8" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-extrabold">Çıkmış Sorular</p>
-            <p className="text-sm text-white/85">
-              2018-2025 MEB LGS sınavları
-            </p>
-          </div>
-        </Link>
-      </div>
 
       {/* İstatistikler */}
       <section className="mt-8">
