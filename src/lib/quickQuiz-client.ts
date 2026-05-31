@@ -1,11 +1,16 @@
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { PoolQuestion } from "./quickQuiz-types";
 
 /**
  * Client-only Hızlı Sorular yardımcıları.
  * @content modülünü import ETMEZ → client bundle'a ders içerikleri sızmaz.
+ *
+ * Veri stratejisi: localStorage öncelikli (hızlı, offline) + Supabase senkron
+ * (cihazlar arası). İlk mount'ta hydrateFromSupabase() çağrılır.
  */
 
 const STORAGE_KEY = "rehberim:quick-solved";
+let hydrated = false;
 
 function readSolved(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -31,6 +36,62 @@ export function markSolved(id: string) {
   const s = readSolved();
   s.add(id);
   writeSolved(s);
+  // Supabase'e arka planda (fire & forget) — başarısız olursa localStorage hâlâ doğru
+  void pushSolvedToSupabase(id);
+}
+
+async function pushSolvedToSupabase(id: string) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("quick_solved").upsert(
+      { user_id: user.id, question_key: id },
+      { onConflict: "user_id,question_key" },
+    );
+  } catch {
+    // sessiz başarısızlık — yerel kayıt esastır
+  }
+}
+
+/**
+ * Mount'ta çağrılır: Supabase'teki çözülmüş kayıtları localStorage ile birleştirir.
+ * Tek seferlik (module-level `hydrated` flag).
+ */
+export async function hydrateFromSupabase(): Promise<void> {
+  if (hydrated) return;
+  hydrated = true;
+  if (!isSupabaseConfigured() || typeof window === "undefined") return;
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("quick_solved")
+      .select("question_key");
+    const remote = new Set(
+      (data ?? []).map((r: { question_key: string }) => r.question_key),
+    );
+    const local = readSolved();
+    // birleşim → yerel
+    const merged = new Set([...local, ...remote]);
+    writeSolved(merged);
+    // yereldeki ama uzakta olmayanları push et (önceki offline çalışmalar)
+    const missing = [...local].filter((id) => !remote.has(id));
+    if (missing.length > 0) {
+      await supabase.from("quick_solved").upsert(
+        missing.map((id) => ({ user_id: user.id, question_key: id })),
+        { onConflict: "user_id,question_key" },
+      );
+    }
+  } catch {
+    // sessiz
+  }
 }
 
 /** Verilen ID kümesini "çözüldü" işaretlerinden kaldırır (Yeniden başlat). */

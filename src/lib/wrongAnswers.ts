@@ -1,11 +1,16 @@
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+
 /**
- * Yanlış cevaplanan soruları takip eder. localStorage tabanlı (offline çalışır).
- * Aşama 7'de Supabase ile senkronizasyon eklenecek.
+ * Yanlış cevaplanan soruları takip eder.
+ *
+ * Veri stratejisi: localStorage öncelikli (offline) + Supabase senkron
+ * (cihazlar arası). İlk mount'ta hydrateWrongFromSupabase() çağrılır.
  *
  * Soru kimliği: `subject/topic#index` (PoolQuestion.id ile aynı).
  */
 
 const STORAGE_KEY = "rehberim:wrong-answers";
+let hydrated = false;
 
 export type WrongRecord = {
   /** Toplam kaç kez yanlış yapıldı */
@@ -42,12 +47,14 @@ function write(store: Store) {
 export function saveWrong(id: string) {
   const s = read();
   const rec = s[id];
-  s[id] = {
+  const next: WrongRecord = {
     wrongCount: (rec?.wrongCount ?? 0) + 1,
     correctStreak: 0,
     lastWrongAt: Date.now(),
   };
+  s[id] = next;
   write(s);
+  void pushWrongToSupabase(id, next);
 }
 
 /**
@@ -61,8 +68,11 @@ export function markCorrect(id: string) {
   const nextStreak = rec.correctStreak + 1;
   if (nextStreak >= 2) {
     delete s[id];
+    void deleteWrongFromSupabase(id);
   } else {
-    s[id] = { ...rec, correctStreak: nextStreak };
+    const next = { ...rec, correctStreak: nextStreak };
+    s[id] = next;
+    void pushWrongToSupabase(id, next);
   }
   write(s);
 }
@@ -80,4 +90,105 @@ export function getWrongCount(): number {
 /** Tüm havuzu temizle (debug/profil için). */
 export function clearWrongPool() {
   write({});
+}
+
+// ── Supabase senkron (arka plan, fire & forget) ──────────────────────
+
+async function pushWrongToSupabase(id: string, rec: WrongRecord) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("wrong_answers").upsert(
+      {
+        user_id: user.id,
+        question_key: id,
+        wrong_count: rec.wrongCount,
+        correct_streak: rec.correctStreak,
+        last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+      },
+      { onConflict: "user_id,question_key" },
+    );
+  } catch {
+    // sessiz
+  }
+}
+
+async function deleteWrongFromSupabase(id: string) {
+  if (!isSupabaseConfigured()) return;
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase
+      .from("wrong_answers")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("question_key", id);
+  } catch {
+    // sessiz
+  }
+}
+
+/**
+ * Mount'ta çağrılır: uzaktaki kayıtları yerelle birleştirir.
+ * Çatışma çözümü: hangi kayıt daha yeni (lastWrongAt) ise o kazanır.
+ */
+export async function hydrateWrongFromSupabase(): Promise<void> {
+  if (hydrated) return;
+  hydrated = true;
+  if (!isSupabaseConfigured() || typeof window === "undefined") return;
+  try {
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("wrong_answers")
+      .select("question_key, wrong_count, correct_streak, last_wrong_at");
+    const local = read();
+    const merged: Store = { ...local };
+    for (const row of (data ?? []) as {
+      question_key: string;
+      wrong_count: number;
+      correct_streak: number;
+      last_wrong_at: string;
+    }[]) {
+      const remoteTs = new Date(row.last_wrong_at).getTime();
+      const localRec = local[row.question_key];
+      if (!localRec || localRec.lastWrongAt <= remoteTs) {
+        merged[row.question_key] = {
+          wrongCount: row.wrong_count,
+          correctStreak: row.correct_streak,
+          lastWrongAt: remoteTs,
+        };
+      }
+    }
+    write(merged);
+    // yerelde olup uzakta olmayanları push et
+    const remoteKeys = new Set(
+      (data ?? []).map((r: { question_key: string }) => r.question_key),
+    );
+    const missing = Object.entries(local).filter(([k]) => !remoteKeys.has(k));
+    if (missing.length > 0) {
+      await supabase.from("wrong_answers").upsert(
+        missing.map(([k, rec]) => ({
+          user_id: user.id,
+          question_key: k,
+          wrong_count: rec.wrongCount,
+          correct_streak: rec.correctStreak,
+          last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+        })),
+        { onConflict: "user_id,question_key" },
+      );
+    }
+  } catch {
+    // sessiz
+  }
 }

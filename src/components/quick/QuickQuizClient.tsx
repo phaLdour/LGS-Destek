@@ -13,11 +13,13 @@ import {
 import type { PoolQuestion, QuickScope } from "@/lib/quickQuiz-types";
 import {
   filterAndShuffle,
+  hydrateFromSupabase,
   markSolved,
   resetSolvedFor,
 } from "@/lib/quickQuiz-client";
 import {
   getWrongIds,
+  hydrateWrongFromSupabase,
   markCorrect as markWrongCorrect,
   saveWrong,
 } from "@/lib/wrongAnswers";
@@ -66,26 +68,34 @@ export function QuickQuizClient({
   const [reviewIndex, setReviewIndex] = useState<number | null>(null);
   const saved = useRef(false);
 
-  // Mount: havuzu kur (çözülmüşleri çıkar + karıştır)
+  // Mount: önce Supabase'ten çekip yerel ile birleştir, sonra havuzu kur.
   useEffect(() => {
-    let p: PoolQuestion[];
-    if (wrongMode) {
-      const ids = getWrongIds();
-      p = initialPool.filter((q) => ids.has(q.id));
-      for (let i = p.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [p[i], p[j]] = [p[j], p[i]];
+    async function setup() {
+      // Sırasıyla bekle: önce uzak veri yerelle birleşsin, sonra filtre uygula.
+      await Promise.all([
+        hydrateFromSupabase(),
+        wrongMode ? hydrateWrongFromSupabase() : Promise.resolve(),
+      ]);
+      let p: PoolQuestion[];
+      if (wrongMode) {
+        const ids = getWrongIds();
+        p = initialPool.filter((q) => ids.has(q.id));
+        for (let i = p.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [p[i], p[j]] = [p[j], p[i]];
+        }
+      } else {
+        p = filterAndShuffle(initialPool);
       }
-    } else {
-      p = filterAndShuffle(initialPool);
+      setPool(p);
+      setStartMs(Date.now());
+      if (p.length === 0) {
+        setPhase(initialPool.length === 0 || wrongMode ? "done" : "exhausted");
+      } else {
+        setPhase("active");
+      }
     }
-    setPool(p);
-    setStartMs(Date.now());
-    if (p.length === 0) {
-      setPhase(initialPool.length === 0 || wrongMode ? "done" : "exhausted");
-    } else {
-      setPhase("active");
-    }
+    void setup();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

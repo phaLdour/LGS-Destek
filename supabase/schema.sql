@@ -66,3 +66,44 @@ create policy "own quiz" on public.quiz_results
 
 create index if not exists quiz_results_user_idx
   on public.quiz_results (user_id, created_at desc);
+
+-- Hızlı Sorular: çözülen soruların cihazlar arası senkronu
+-- localStorage'da da tutulur (offline) ama burası kaynak doğru kabul edilir
+create table if not exists public.quick_solved (
+  user_id uuid not null references auth.users on delete cascade,
+  question_key text not null,           -- "subject/topic#index" formatında
+  solved_at timestamptz not null default now(),
+  primary key (user_id, question_key)
+);
+
+alter table public.quick_solved enable row level security;
+
+drop policy if exists "own quick solved" on public.quick_solved;
+create policy "own quick solved" on public.quick_solved
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create index if not exists quick_solved_user_idx
+  on public.quick_solved (user_id, solved_at desc);
+
+-- Yanlış cevap havuzu: cihazlar arası senkron + spaced repetition için meta
+create table if not exists public.wrong_answers (
+  user_id uuid not null references auth.users on delete cascade,
+  question_key text not null,           -- "subject/topic#index"
+  wrong_count int not null default 1,
+  correct_streak int not null default 0,
+  last_wrong_at timestamptz not null default now(),
+  primary key (user_id, question_key)
+);
+
+alter table public.wrong_answers enable row level security;
+
+drop policy if exists "own wrongs" on public.wrong_answers;
+create policy "own wrongs" on public.wrong_answers
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create index if not exists wrong_answers_user_idx
+  on public.wrong_answers (user_id, last_wrong_at desc);

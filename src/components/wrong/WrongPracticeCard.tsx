@@ -3,13 +3,20 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
-import { getWrongCount } from "@/lib/wrongAnswers";
+import {
+  getWrongCount,
+  hydrateWrongFromSupabase,
+} from "@/lib/wrongAnswers";
 
 export function WrongPracticeCard() {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
+    // Önce yerelden hızlı göster, sonra Supabase hidrasyonu sonrası güncelle.
     setCount(getWrongCount());
+    void hydrateWrongFromSupabase().then(() => {
+      setCount(getWrongCount());
+    });
   }, []);
 
   // Hiç hata yoksa kartı gösterme (gereksiz gürültü)
