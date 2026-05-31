@@ -4,6 +4,30 @@
 
 :root {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Light tema (varsayılan) */
+  --rb-bg: #f4f6fb;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #f4f6fb;
+  --rb-border: #e2e6f0;
+  --rb-text: #16244c;
+  --rb-text-soft: rgba(22, 36, 76, 0.55);
+  --rb-scrollbar: #c7cee0;
+  --rb-scrollbar-hover: #aab4d0;
+  color-scheme: light;
+}
+
+html.dark {
+  /* Dark tema */
+  --rb-bg: #0b1228;
+  --rb-surface: #16244c;
+  --rb-surface-2: #1f3060;
+  --rb-border: #2a3b66;
+  --rb-text: #e8ecf7;
+  --rb-text-soft: rgba(232, 236, 247, 0.62);
+  --rb-scrollbar: #2a3b66;
+  --rb-scrollbar-hover: #3a4d80;
+  color-scheme: dark;
 }
 
 html,
@@ -13,9 +37,10 @@ body {
 }
 
 body {
-  color: #16244c;
-  background: #f4f6fb;
+  color: var(--rb-text);
+  background: var(--rb-bg);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 @layer utilities {
@@ -30,12 +55,132 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c7cee0;
+  background: var(--rb-scrollbar);
   border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #aab4d0;
+  background: var(--rb-scrollbar-hover);
   background-clip: content-box;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   DARK MODE OVERRIDE
+   "rehberim-*" tailwind sınıfları light tema için tasarlandı.
+   Dark mode'da semantik anlamlarına göre yeniden boyandılar.
+   bg-rehberim-navy (vurgu/buton) light kalır (kontrast korunur);
+   text-rehberim-navy (yazı) açık tonlara çevrilir.
+   ──────────────────────────────────────────────────────────────── */
+html.dark body {
+  background-color: var(--rb-bg);
+  color: var(--rb-text);
+}
+
+/* Yüzeyler (kart, input, drawer) */
+html.dark .bg-white {
+  background-color: var(--rb-surface) !important;
+}
+html.dark .bg-rehberim-muted {
+  background-color: var(--rb-surface-2) !important;
+}
+html.dark .bg-rehberim-muted\/40 {
+  background-color: color-mix(in srgb, var(--rb-surface-2) 50%, transparent) !important;
+}
+html.dark .bg-rehberim-muted\/50 {
+  background-color: color-mix(in srgb, var(--rb-surface-2) 60%, transparent) !important;
+}
+
+/* Sınırlar */
+html.dark .border-rehberim-border {
+  border-color: var(--rb-border) !important;
+}
+html.dark .divide-rehberim-border > * + * {
+  border-color: var(--rb-border) !important;
+}
+
+/* Yazılar */
+html.dark .text-rehberim-navy {
+  color: var(--rb-text) !important;
+}
+html.dark .text-rehberim-navy\/70,
+html.dark .text-rehberim-navy\/60,
+html.dark .text-rehberim-navy\/55 {
+  color: var(--rb-text-soft) !important;
+}
+html.dark .text-rehberim-navy\/45,
+html.dark .text-rehberim-navy\/50,
+html.dark .text-rehberim-navy\/40 {
+  color: rgba(232, 236, 247, 0.5) !important;
+}
+
+/* Light pastel uyarı / accent kutuları → koyulaştır */
+html.dark .bg-red-50 {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+html.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+html.dark .bg-green-50 {
+  background-color: rgba(34, 197, 94, 0.12) !important;
+}
+html.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+}
+html.dark .bg-blue-50\/50 {
+  background-color: rgba(59, 130, 246, 0.06) !important;
+}
+html.dark .bg-emerald-50\/50 {
+  background-color: rgba(16, 185, 129, 0.06) !important;
+}
+html.dark .bg-orange-50 {
+  background-color: rgba(249, 115, 22, 0.12) !important;
+}
+html.dark .bg-rehberim-accent\/10 {
+  background-color: rgba(245, 158, 11, 0.14) !important;
+}
+html.dark .bg-rehberim-accent\/15 {
+  background-color: rgba(245, 158, 11, 0.18) !important;
+}
+html.dark .bg-rehberim-accent\/5 {
+  background-color: rgba(245, 158, 11, 0.08) !important;
+}
+
+/* Light pastel border'lar */
+html.dark .border-red-200 {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+html.dark .border-red-300 {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+}
+html.dark .border-amber-200 {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+html.dark .border-blue-200 {
+  border-color: rgba(59, 130, 246, 0.35) !important;
+}
+html.dark .border-emerald-200 {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Pastel yazılar (uyarı kartlarında) — daha okunaklı tonlar */
+html.dark .text-red-600,
+html.dark .text-red-700 {
+  color: rgb(252, 165, 165) !important;
+}
+html.dark .text-amber-700,
+html.dark .text-amber-800 {
+  color: rgb(252, 211, 77) !important;
+}
+html.dark .text-green-700 {
+  color: rgb(134, 239, 172) !important;
+}
+html.dark .text-blue-700 {
+  color: rgb(147, 197, 253) !important;
+}
+html.dark .text-emerald-700 {
+  color: rgb(110, 231, 183) !important;
+}
+
+/* Maskotu (Owl) ve baykuş svg metin/bg renkleri zaten tonlarıyla çalışıyor;
+   gradient'li lacivert başlık kutuları olduğu gibi kalır (kontrast doğru). */

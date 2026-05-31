@@ -36,11 +36,27 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+// İlk paint'ten önce tema sınıfını uygula (FOUC önleme).
+const themeInit = `
+(function(){try{
+  var k='rehberim:theme';
+  var v=localStorage.getItem(k);
+  var dark=v==='dark'||(!v && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if(dark) document.documentElement.classList.add('dark');
+}catch(e){}})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" className={inter.variable}>
+    <html lang="tr" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script
+          // FOUC önleme: head'den önce class uygulanır
+          dangerouslySetInnerHTML={{ __html: themeInit }}
+        />
+      </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
         {children}
       </body>

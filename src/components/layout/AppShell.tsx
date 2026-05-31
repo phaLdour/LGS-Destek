@@ -15,6 +15,7 @@ import {
 import { LogoLockup } from "@/components/brand/Logo";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { MascotButton } from "@/components/mascot/MascotButton";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export type ShellUser = {
   name: string;
@@ -77,9 +78,10 @@ export function AppShell({
         </nav>
         <div className="border-t border-rehberim-border p-3">
           <UserCard user={user} />
+          <ThemeToggle variant="menu" />
           <button
             onClick={handleLogout}
-            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-red-50 hover:text-red-600"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-red-50 hover:text-red-600"
           >
             <LogOut className="h-5 w-5" />
             Çıkış yap
@@ -97,7 +99,10 @@ export function AppShell({
           <Menu className="h-6 w-6" />
         </button>
         <LogoLockup className="scale-90" />
-        <Avatar user={user} size={32} />
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Avatar user={user} size={32} />
+        </div>
       </header>
 
       {/* ===== Mobil drawer ===== */}
@@ -137,9 +142,10 @@ export function AppShell({
             </nav>
             <div className="border-t border-rehberim-border p-3">
               <UserCard user={user} />
+              <ThemeToggle variant="menu" />
               <button
                 onClick={handleLogout}
-                className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-red-50 hover:text-red-600"
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-red-50 hover:text-red-600"
               >
                 <LogOut className="h-5 w-5" />
                 Çıkış yap
