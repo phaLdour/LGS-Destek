@@ -145,26 +145,35 @@ const NAV_SUBJECTS: { stems: string[]; route: string }[] = [
 /**
  * "x kelimesinin anlamı" / "x ne demek" gibi formlarda hedef sözcüğü
  * yakalar; bulduysa /sozluk?ara=X rotasını döner.
+ * RAW text üzerinde çalışır — Türkçe karakterler (ö, ü, ı, ş, ç, ğ)
+ * korunur ki "kötü kelimesinin anlamı" sözlükte "kötü" olarak aratılsın.
  */
-function trySozlukLookup(input: string): CannedResult | null {
-  // Desenler: "X kelimesinin anlamı", "X ne demek", "X sözcüğünün anlamı"
-  const patterns = [
-    /([a-zçğıiöşü]+)\s+kelimesinin\s+anlami/i,
-    /([a-zçğıiöşü]+)\s+sozcugunun\s+anlami/i,
-    /([a-zçğıiöşü]+)\s+ne\s+demek/i,
-    /([a-zçğıiöşü]+)\s+nedir\s*\?*$/i,
-    /([a-zçğıiöşü]+)\s+anlami\s+nedir/i,
+function trySozlukLookup(rawText: string): CannedResult | null {
+  // Türkçe lowercase (İ → i, I → ı vs.) ve fazla boşlukları temizle
+  const text = rawText
+    .toLocaleLowerCase("tr")
+    .replace(/\s+/g, " ")
+    .trim();
+  // Türkçe karakter set'i dâhil regex'ler. "anlamı" ve "anlami" her ikisini
+  // de yakalar (bazen kullanıcı şapkasız yazar).
+  const W = "[a-zçğıiöşüâîû]+";
+  const patterns: RegExp[] = [
+    new RegExp(`(${W})\\s+kelimesinin\\s+anlam[ıi]`, "i"),
+    new RegExp(`(${W})\\s+sözcüğünün\\s+anlam[ıi]`, "i"),
+    new RegExp(`(${W})\\s+sozcugunun\\s+anlam[ıi]`, "i"),
+    new RegExp(`(${W})\\s+ne\\s+demek`, "i"),
+    new RegExp(`(${W})\\s+nedir\\s*\\?*$`, "i"),
+    new RegExp(`(${W})\\s+anlam[ıi]\\s+nedir`, "i"),
   ];
+  const skip = ["ne", "bu", "ben", "biz", "siz", "kim", "hangi", "şu", "ona", "ona"];
   for (const re of patterns) {
-    const m = input.match(re);
+    const m = text.match(re);
     if (m && m[1]) {
       const w = m[1].trim();
-      // Çok kısa veya genel kelimeler (ne, bu, ben…) sözlüğe gitmesin
       if (w.length < 2) continue;
-      const skip = ["ne", "bu", "ben", "biz", "siz", "kim", "hangi"];
       if (skip.includes(w)) continue;
       return {
-        reply: `"${w}" kelimesini sözlükte aratıyorum.`,
+        reply: `“${w}” kelimesini sözlükte aratıyorum.`,
         navigate: `/sozluk?ara=${encodeURIComponent(w)}`,
       };
     }
@@ -183,9 +192,8 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
     return { reply: "Tamam, ana sayfaya götürüyorum.", navigate: "/dashboard" };
   }
 
-  // Sözlük: özel "kelimenin anlamı" formu
-  const sozlukLookup = trySozlukLookup(input);
-  if (sozlukLookup) return sozlukLookup;
+  // (Sözlük "x kelimesinin anlamı" formu matchCanned tarafından raw text
+  //  ile önceden denenir — burada yalnız genel "sözlük" niyeti kalır.)
   if (input.includes("sozluk") || (input.includes("kelime") && (input.includes("ara") || hasVerb))) {
     return { reply: "Türkçe Sözlük'e götürüyorum.", navigate: "/sozluk" };
   }
@@ -198,9 +206,36 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
   if (input.includes("cikmis")) {
     return { reply: "Çıkmış Sorular arşivine götürüyorum.", navigate: "/cikmis-sorular" };
   }
-  // Puan hesapla
-  if ((input.includes("puan") && input.includes("hesap")) || input.includes("net hesap") || input.includes("lgs puan")) {
-    return { reply: "LGS Puan Hesaplama sayfasına götürüyorum.", navigate: "/puan-hesapla" };
+  // Puan hesapla — açıklama isteyen formlara formül + sayfa, yalın gezinme
+  //   isteyene sadece yönlendirme verilir.
+  const wantsPuan =
+    (input.includes("puan") && input.includes("hesap")) ||
+    input.includes("net hesap") ||
+    input.includes("lgs puan");
+  if (wantsPuan) {
+    const explanatory =
+      input.includes("nasil") ||
+      input.includes("nedir") ||
+      input.includes("formul") ||
+      input.includes("nasil hesap") ||
+      input.includes("ne kadar") ||
+      input.includes("anlat");
+    if (explanatory) {
+      return {
+        reply:
+          "LGS puanı şöyle hesaplanır:\n\n" +
+          "1) Her ders için NET = Doğru − (Yanlış ÷ 3). Boş cevap nete etki etmez.\n" +
+          "2) Net, dersin ağırlık katsayısıyla çarpılır: Türkçe / Matematik / Fen Bilimleri ×4 — T.C. İnkılap / Din Kültürü / İngilizce ×1.\n" +
+          "3) Hızlı tahmin formülü: 100 + (Σ ağırlıklı net / 270) × 400. Tam doğru → 500, tüm boş → 100.\n" +
+          "4) MEB resmi formülü ayrıca her dersin ülke ortalaması ve standart sapmasını kullanır (standart puan).\n\n" +
+          "Detaylı hesap için netlerini girebileceğin sayfaya götürüyorum.",
+        navigate: "/puan-hesapla",
+      };
+    }
+    return {
+      reply: "LGS Puan Hesaplama sayfasına götürüyorum.",
+      navigate: "/puan-hesapla",
+    };
   }
   // Rozetler
   if (input.includes("rozet") || input.includes("basarim") || input.includes("madalya")) {
@@ -1444,6 +1479,9 @@ export function matchCanned(text: string): CannedResult | null {
 
   return (
     tryIntents(input, tokens) ??
+    // Sözlük "x kelimesinin anlamı" raw text üzerinden (Türkçe karakter
+    // korunarak); tryNavigation'dan ÖNCE denenir.
+    trySozlukLookup(text) ??
     tryNavigation(input, tokens) ??
     // Önce saf aritmetik (9 çarpı 5, 2+3 gibi sayısal işlemler).
     // Formül kavramı eşleşmeden önce çağrılır ki "9 çarpı 5" → 45 dönsün,

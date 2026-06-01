@@ -160,6 +160,17 @@ html.dark body {
 html.dark .bg-white {
   background-color: var(--rb-surface) !important;
 }
+/* Opacity varyantları (örn. SessionBar "Çalışma sürüyor" şeridi bg-white/95
+   kullanıyor; dark modda açık beyaz kalıp yazıyı yutuyordu) */
+html.dark .bg-white\/95,
+html.dark .bg-white\/90,
+html.dark .bg-white\/85,
+html.dark .bg-white\/80,
+html.dark .bg-white\/70,
+html.dark .bg-white\/60,
+html.dark .bg-white\/50 {
+  background-color: rgba(22, 36, 76, 0.95) !important;
+}
 html.dark .bg-rehberim-muted {
   background-color: var(--rb-surface-2) !important;
 }
