@@ -46,6 +46,7 @@ export function SozlukClient({
   const [query, setQuery] = useState("");
   const [flipDir, setFlipDir] = useState<Direction | null>(null);
   const [jumpInput, setJumpInput] = useState("");
+  const [notFound, setNotFound] = useState(false);
 
   // AI Baykuş veya başka bir kaynaktan ?ara=X ile gelirse arama kutusunu doldur
   useEffect(() => {
@@ -56,29 +57,45 @@ export function SozlukClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  const filtered = useMemo(() => {
+  // Arama yazılınca SOZLUK içinde uygun kelimenin sayfasına otomatik atla.
+  // Önce tam eşleşme, sonra prefix, sonra includes denenir.
+  useEffect(() => {
     const q = query.trim().toLocaleLowerCase("tr");
-    if (!q) return kelimeler;
-    return kelimeler.filter((k) =>
-      k.kelime.toLocaleLowerCase("tr").includes(q),
-    );
+    if (!q) {
+      setNotFound(false);
+      return;
+    }
+    const lower = (s: string) => s.toLocaleLowerCase("tr");
+    let idx = kelimeler.findIndex((k) => lower(k.kelime) === q);
+    if (idx < 0) {
+      idx = kelimeler.findIndex((k) => lower(k.kelime).startsWith(q));
+    }
+    if (idx < 0) {
+      idx = kelimeler.findIndex((k) => lower(k.kelime).includes(q));
+    }
+    if (idx >= 0) {
+      setNotFound(false);
+      setPage(idx + 1);
+    } else {
+      setNotFound(true);
+    }
   }, [kelimeler, query]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-
-  // Arama değişince sayfa 1'e dön
-  useEffect(() => {
-    setPage(1);
-  }, [query]);
+  const totalPages = Math.max(1, Math.ceil(kelimeler.length / pageSize));
 
   const currentItems = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return filtered.slice(start, start + pageSize);
-  }, [filtered, page, pageSize]);
+    return kelimeler.slice(start, start + pageSize);
+  }, [kelimeler, page, pageSize]);
 
   function go(direction: Direction) {
     if (direction === "next" && page >= totalPages) return;
     if (direction === "prev" && page <= 1) return;
+    // Kullanıcı kelimeler arası dolaşıyorsa arama kutusunu temizle
+    if (query) {
+      setQuery("");
+      setNotFound(false);
+    }
     setFlipDir(direction);
     setTimeout(() => {
       setPage((p) => p + (direction === "next" ? 1 : -1));
@@ -89,6 +106,10 @@ export function SozlukClient({
   function jumpToPage(target: number) {
     const clamped = Math.max(1, Math.min(totalPages, Math.floor(target)));
     if (clamped === page) return;
+    if (query) {
+      setQuery("");
+      setNotFound(false);
+    }
     const direction: Direction = clamped > page ? "next" : "prev";
     setFlipDir(direction);
     setTimeout(() => {
@@ -165,6 +186,17 @@ export function SozlukClient({
         </form>
       </div>
 
+      {/* Arama eşleşmedi uyarısı (mevcut sayfa yine görünür) */}
+      {notFound && (
+        <div className="flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-xs font-semibold text-amber-800">
+          <Sparkles className="h-4 w-4 shrink-0" />
+          <span>
+            “{query.trim()}” sözlükte bulunamadı. Farklı bir kelime
+            deneyebilirsin.
+          </span>
+        </div>
+      )}
+
       {/* Kitap sahnesi */}
       <div className="book-scene">
         <div
@@ -181,10 +213,7 @@ export function SozlukClient({
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Sparkles className="mb-3 h-10 w-10 text-rehberim-navy/30" />
               <p className="text-sm font-bold text-rehberim-navy">
-                Aradığın kelime bulunamadı.
-              </p>
-              <p className="mt-1 text-xs text-rehberim-navy/55">
-                Farklı bir kelime dene ya da arama kutusunu temizle.
+                Sözlükte henüz kelime yok.
               </p>
             </div>
           ) : (
