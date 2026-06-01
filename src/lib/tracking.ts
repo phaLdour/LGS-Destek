@@ -32,10 +32,8 @@ export type Stats = {
   quizzesSolved: number;
   questionsAnswered: number;
   accuracyPct: number;
-  /** LGS net formülü: Σ(Doğru) − Σ(Yanlış)/3, negatif olursa 0 */
-  totalNet: number;
-  /** Test başına ortalama net (quizzesSolved > 0 ise) */
-  averageNet: number;
+  /** Bugün (yerel saat 00:00'dan beri) cevaplanan toplam soru sayısı */
+  questionsToday: number;
 };
 
 const DEFAULT_GOAL = 30;
@@ -151,8 +149,7 @@ export async function getStats(): Promise<Stats> {
     quizzesSolved: 0,
     questionsAnswered: 0,
     accuracyPct: 0,
-    totalNet: 0,
-    averageNet: 0,
+    questionsToday: 0,
   };
 
   const ctx = await getClientAndUser();
@@ -173,12 +170,15 @@ export async function getStats(): Promise<Stats> {
         .from("topic_progress")
         .select("topic_id", { count: "exact", head: true })
         .eq("status", "done"),
-      ctx.supabase.from("quiz_results").select("correct_count, wrong_count"),
+      ctx.supabase
+        .from("quiz_results")
+        .select("correct_count, wrong_count, created_at"),
     ]);
 
   const quizRows = (quizzes ?? []) as {
     correct_count: number;
     wrong_count: number;
+    created_at: string;
   }[];
   base.quizzesSolved = quizRows.length;
   const totalCorrect = quizRows.reduce((s, r) => s + r.correct_count, 0);
@@ -187,9 +187,17 @@ export async function getStats(): Promise<Stats> {
   base.accuracyPct = base.questionsAnswered
     ? Math.round((totalCorrect / base.questionsAnswered) * 100)
     : 0;
-  // LGS net: D − (Y/3); negatif olamaz
-  base.totalNet = Math.max(0, totalCorrect - totalWrong / 3);
-  base.averageNet = base.quizzesSolved ? base.totalNet / base.quizzesSolved : 0;
+
+  // Bugün cevaplanan soru: yerel günün başlangıcından sonraki quiz kayıtları
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  base.questionsToday = quizRows.reduce((sum, r) => {
+    const ts = new Date(r.created_at).getTime();
+    if (ts >= todayStart.getTime()) {
+      return sum + r.correct_count + r.wrong_count;
+    }
+    return sum;
+  }, 0);
 
   const rows = (sessions ?? []) as {
     duration_seconds: number;

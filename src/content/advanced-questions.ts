@@ -501,6 +501,221 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       correctIndex: 0,
     },
   ],
+
+  // ─── Türkçe: Cümlenin ögeleri (paragraftan öge bulma) ───────────
+  "turkce/cumlenin-ogeleri": [
+    {
+      question:
+        "\"Küçük çocuk, bahçedeki yaşlı kediyi sevdi.\" cümlesinde altı çizili \"yaşlı kediyi\" ifadesi cümlenin hangi ögesidir?",
+      options: ["Belirtili nesne", "Özne", "Dolaylı tümleç", "Zarf tümleci"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisi tek başına anlamlı bir öge içermez (öznesiz cümledir)?",
+      options: [
+        "Bahçeye girildi.",
+        "Çocuk kapıyı açtı.",
+        "Yağmur sabaha kadar yağdı.",
+        "Annem bana bir kalem aldı.",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Doğrusal denklemler (gerçek hayat) ──────────────
+  "matematik/dogrusal-denklemler": [
+    {
+      question:
+        "Bir taksinin açılış ücreti 25 TL, kilometre başına ücreti 6 TL'dir. x kilometre yapılan bir yolculuğun toplam ücretini veren denklem aşağıdakilerden hangisidir?",
+      options: ["y = 25 + 6x", "y = 6 + 25x", "y = 25 − 6x", "y = 31x"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "y = 2x − 1 doğrusunun y eksenini kestiği nokta hangisidir?",
+      options: ["(0, −1)", "(0, 1)", "(−1, 0)", "(1, 0)"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Dönüşüm geometrisi (yansıma/öteleme) ────────────
+  "matematik/donusum-geometrisi": [
+    {
+      question:
+        "Bir noktanın x eksenine göre simetriği alındığında, koordinatları nasıl değişir?",
+      options: [
+        "(x, y) → (x, −y)",
+        "(x, y) → (−x, y)",
+        "(x, y) → (−x, −y)",
+        "(x, y) → (y, x)",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir cismin 3 birim sağa, 2 birim yukarı ötelenmesi sonucunda (4, 1) noktasının yeni konumu hangisi olur?",
+      options: ["(7, 3)", "(1, −1)", "(3, 2)", "(4, 3)"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Veri analizi (grafik okuma) ─────────────────────
+  "matematik/veri-analizi": [
+    {
+      question:
+        "Bir sınıftaki 30 öğrencinin matematik notlarının aritmetik ortalaması 70'tir. 5 yeni öğrenci sınıfa katıldığında ortalama 72 oluyor. Yeni öğrencilerin notlarının toplamı kaçtır?",
+      options: ["420", "350", "360", "400"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki sayı dizisinin medyanı kaçtır?\n\n4, 8, 6, 12, 10",
+      options: ["8", "10", "6", "12"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Fen: Elektrik yükleri (devre yorumla) ──────────────────────
+  "fen-bilimleri/elektrik-yukleri-ve-elektrik-enerjisi": [
+    {
+      question:
+        "İki cisim sürtüldüğünde, elektronların hareketi açısından aşağıdakilerden hangisi DOĞRUDUR?",
+      options: [
+        "Elektron alan cisim eksi (−), kaybeden cisim artı (+) yüklenir",
+        "Her iki cisim de aynı yükü kazanır",
+        "Elektron alan cisim artı (+), kaybeden cisim eksi (−) yüklenir",
+        "Yükler değişmez, yalnız ısı oluşur",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir devrede ampuller paralel bağlandığında, bir ampul söndüğünde diğerleri ne olur?",
+      options: [
+        "Diğerleri yanmaya devam eder",
+        "Hepsi söner",
+        "Daha parlak olurlar",
+        "Yanıp sönerler",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Fen: Canlılar ve enerji ilişkileri ─────────────────────────
+  "fen-bilimleri/canlilar-ve-enerji-iliskileri": [
+    {
+      question:
+        "Bir besin zincirinde enerji aktarımı için aşağıdakilerden hangisi DOĞRUDUR?",
+      options: [
+        "Üreticilerden tüketicilere doğru, her basamakta enerji azalır",
+        "Tüketicilerden üreticilere doğru enerji aktarılır",
+        "Enerji her basamakta aynı kalır",
+        "Enerji yalnız üreticiler arasında dolaşır",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdakilerden hangisi karbon döngüsünde solunum yoluyla atmosfere karbondioksit verir?",
+      options: [
+        "Tüm canlılar (bitki dahil)",
+        "Yalnız bitkiler",
+        "Yalnız hayvanlar",
+        "Yalnız insanlar",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── İnkılap: Milli bir destan (kongre kararları) ──────────────
+  "inkilap/milli-bir-destan": [
+    {
+      question:
+        "Sivas Kongresi'nde alınan \"Manda ve himaye kabul edilemez.\" kararı aşağıdaki ilkelerden hangisini doğrudan ifade eder?",
+      options: [
+        "Tam bağımsızlık",
+        "Saltanatın kaldırılması",
+        "Cumhuriyetin ilanı",
+        "Halifeliğin kaldırılması",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "TBMM'nin 23 Nisan 1920'de açılması Türk milleti için aşağıdakilerden hangisi açısından bir dönüm noktasıdır?",
+      options: [
+        "Milli egemenliğe dayalı yeni bir devletin temelinin atılması",
+        "Padişahlığın güçlenmesi",
+        "İtilaf Devletleri ile barış imzalanması",
+        "Halifeliğin yeniden kurulması",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── İnkılap: Atatürkçülük ve çağdaşlaşan Türkiye ───────────────
+  "inkilap/ataturkculuk-ve-cagdaslasan-turkiye": [
+    {
+      question:
+        "1928'de yapılan Harf İnkılabı'nın temel amacı aşağıdakilerden hangisidir?",
+      options: [
+        "Halkın okuma-yazma oranını artırmak ve çağdaş eğitime geçmek",
+        "Yalnız aydınların kullanacağı bir alfabe oluşturmak",
+        "Yabancı dil öğretimini zorunlu yapmak",
+        "Eski yazıları korumak",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Atatürk'ün \"Hayatta en hakiki mürşit ilimdir.\" sözü hangi ilkeyi ön plana çıkarır?",
+      options: ["Akılcılık ve bilimsellik", "Saltanatçılık", "Geleneksellik", "Tarihsellik"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Din: Din ve hayat ──────────────────────────────────────────
+  "din/din-ve-hayat": [
+    {
+      question:
+        "İslam dininin temel amacı aşağıdakilerden hangisidir?",
+      options: [
+        "İnsanın hem dünya hem ahiret mutluluğunu sağlamak",
+        "Yalnız bireysel ibadetleri öğretmek",
+        "Yalnız ticari kuralları belirlemek",
+        "Sadece toplumsal kuralları düzenlemek",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "\"Komşusu açken tok yatan bizden değildir.\" hadisi İslam'da hangi değeri ön plana çıkarır?",
+      options: ["Yardımlaşma ve dayanışma", "Bireysellik", "Mal biriktirme", "Ekonomi yapma"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── İngilizce: In the kitchen ──────────────────────────────────
+  "ingilizce/in-the-kitchen": [
+    {
+      question:
+        "Choose the option that best COMPLETES the recipe instruction:\n\"First, ___ the onions into small pieces.\"",
+      options: ["chop", "drink", "boil", "sleep"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Read the dialogue and choose the best response.\n— Anna: How much sugar do we need for the cake?\n— Tom: ___",
+      options: [
+        "Two cups, please.",
+        "Yes, I love cakes.",
+        "The cake is delicious.",
+        "I don't have a kitchen.",
+      ],
+      correctIndex: 0,
+    },
+  ],
 };
 
 /** Verilen ders/konu için zor (yeni nesil) soruları döner; yoksa boş dizi. */

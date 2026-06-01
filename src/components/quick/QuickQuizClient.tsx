@@ -49,6 +49,7 @@ export function QuickQuizClient({
   subtitle,
   backHref,
   wrongMode = false,
+  wrongFilter = "all",
 }: {
   scope: QuickScope;
   /** Server'dan gelen kapsamdaki tüm sorular (çözülmüş olsun olmasın). */
@@ -58,6 +59,8 @@ export function QuickQuizClient({
   backHref: string;
   /** true ise: yalnız yanlış cevap havuzundaki soruları getirir; markSolved çağırmaz. */
   wrongMode?: boolean;
+  /** wrongMode true iken hangi yanlışları çek: "all" tüm geçmiş / "today" bugün */
+  wrongFilter?: "all" | "today";
 }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [pool, setPool] = useState<PoolQuestion[]>([]);
@@ -78,7 +81,7 @@ export function QuickQuizClient({
       ]);
       let p: PoolQuestion[];
       if (wrongMode) {
-        const ids = getWrongIds();
+        const ids = getWrongIds(wrongFilter);
         p = initialPool.filter((q) => ids.has(q.id));
         for (let i = p.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));

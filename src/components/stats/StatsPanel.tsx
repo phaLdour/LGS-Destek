@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Clock,
   Flame,
-  Gauge,
   ListChecks,
   Loader2,
   Target,
@@ -85,7 +84,7 @@ export function StatsPanel() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <Card
           icon={<ListChecks className="h-5 w-5" />}
           label="Çözülen test"
@@ -98,15 +97,9 @@ export function StatsPanel() {
           accent
         />
         <Card
-          icon={<Gauge className="h-5 w-5" />}
-          label="Ortalama net"
-          value={stats.averageNet.toFixed(2)}
-          accent
-        />
-        <Card
           icon={<CheckCircle2 className="h-5 w-5" />}
-          label="Çözülen soru"
-          value={`${stats.questionsAnswered}`}
+          label="Günlük Soru"
+          value={`${stats.questionsToday}`}
         />
       </div>
 

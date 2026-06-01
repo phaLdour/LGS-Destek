@@ -13,27 +13,28 @@ export function WrongPracticeCard() {
 
   useEffect(() => {
     // Önce yerelden hızlı göster, sonra Supabase hidrasyonu sonrası güncelle.
-    setCount(getWrongCount());
+    setCount(getWrongCount("today"));
     void hydrateWrongFromSupabase().then(() => {
-      setCount(getWrongCount());
+      setCount(getWrongCount("today"));
     });
   }, []);
 
-  // Hiç hata yoksa kartı gösterme (gereksiz gürültü)
+  // Bugün hata yoksa kartı gösterme (gereksiz gürültü)
   if (count === null || count === 0) return null;
 
   return (
     <Link
-      href="/hatalarim"
+      href="/hatalarim?gun=bugun"
       className="group mt-4 flex items-center gap-4 overflow-hidden rounded-2xl border border-red-300/60 bg-gradient-to-br from-red-500 to-rose-600 p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
     >
       <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
         <AlertCircle className="h-8 w-8" />
       </span>
       <div className="min-w-0 flex-1">
-        <p className="text-lg font-extrabold">Hatalarımı Çöz</p>
+        <p className="text-lg font-extrabold">Bugünün Hataları</p>
         <p className="text-sm text-white/85">
-          {count} soruluk yanlış cevap havuzun var — pekiştirmenin tam zamanı
+          Bugün yaptığın {count} soruluk yanlış cevap havuzu — şimdi
+          pekiştirmek tam zamanı.
         </p>
       </div>
       <span className="hidden rounded-full bg-white/25 px-3 py-1 text-xs font-bold uppercase tracking-wider sm:block">

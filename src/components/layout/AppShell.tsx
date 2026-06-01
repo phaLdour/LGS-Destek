@@ -9,6 +9,7 @@ import {
   BookOpen,
   Calculator,
   FileText,
+  History,
   Home,
   Languages,
   LogOut,
@@ -19,7 +20,6 @@ import {
 import { LogoLockup } from "@/components/brand/Logo";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { MascotButton } from "@/components/mascot/MascotButton";
-import { LookupContextMenu } from "@/components/sozluk/LookupContextMenu";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export type ShellUser = {
@@ -33,6 +33,7 @@ const NAV = [
   { href: "/dashboard#dersler", label: "Dersler", icon: BookOpen },
   { href: "/deneme", label: "Deneme Sınavı", icon: FileText },
   { href: "/cikmis-sorular", label: "Çıkmış Sorular", icon: Archive },
+  { href: "/hatalarim?gun=tum", label: "Geçmiş Hatalarım", icon: History },
   { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
   { href: "/rozetlerim", label: "Rozetler", icon: Award },
@@ -189,9 +190,6 @@ export function AppShell({
 
       {/* ===== Maskot AI ===== */}
       <MascotButton />
-
-      {/* ===== Sağ tık: seçili kelimeyi sözlükte aç ===== */}
-      <LookupContextMenu />
     </div>
   );
 }

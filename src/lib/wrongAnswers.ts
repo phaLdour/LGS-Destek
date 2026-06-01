@@ -77,14 +77,35 @@ export function markCorrect(id: string) {
   write(s);
 }
 
-/** Havuzdaki yanlış soru ID'lerinin kümesi. */
-export function getWrongIds(): Set<string> {
-  return new Set(Object.keys(read()));
+export type WrongFilter = "all" | "today";
+
+/** Yerel günün başlangıcı (00:00) — bugün filtresi için. */
+function todayStartMs(): number {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
 }
 
-/** Havuzdaki yanlış soru sayısı. */
-export function getWrongCount(): number {
-  return Object.keys(read()).length;
+/**
+ * Havuzdaki yanlış soru ID'lerinin kümesi.
+ * filter "today" verilirse yalnız bugün yapılmış (lastWrongAt >= bugün 00:00)
+ * kayıtların id'leri döner.
+ */
+export function getWrongIds(filter: WrongFilter = "all"): Set<string> {
+  const s = read();
+  if (filter === "all") return new Set(Object.keys(s));
+  const start = todayStartMs();
+  const out = new Set<string>();
+  for (const [id, rec] of Object.entries(s)) {
+    if (rec.lastWrongAt >= start) out.add(id);
+  }
+  return out;
+}
+
+/** Havuzdaki yanlış soru sayısı (filtreli veya tümü). */
+export function getWrongCount(filter: WrongFilter = "all"): number {
+  if (filter === "all") return Object.keys(read()).length;
+  return getWrongIds("today").size;
 }
 
 /** Tüm havuzu temizle (debug/profil için). */
