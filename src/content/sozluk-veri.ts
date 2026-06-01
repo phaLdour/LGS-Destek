@@ -1683,7 +1683,7 @@ export const SOZLUK: Kelime[] = [
 ];
 
 /** Sayfa başına kelime sayısı. */
-export const PAGE_SIZE = 10;
+export const PAGE_SIZE = 1;
 
 export function getTotalPages(): number {
   return Math.ceil(SOZLUK.length / PAGE_SIZE);

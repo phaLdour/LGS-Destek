@@ -142,14 +142,84 @@ const NAV_SUBJECTS: { stems: string[]; route: string }[] = [
   { stems: ["ingiliz"], route: "/ders/ingilizce" },
 ];
 
+/**
+ * "x kelimesinin anlamı" / "x ne demek" gibi formlarda hedef sözcüğü
+ * yakalar; bulduysa /sozluk?ara=X rotasını döner.
+ */
+function trySozlukLookup(input: string): CannedResult | null {
+  // Desenler: "X kelimesinin anlamı", "X ne demek", "X sözcüğünün anlamı"
+  const patterns = [
+    /([a-zçğıiöşü]+)\s+kelimesinin\s+anlami/i,
+    /([a-zçğıiöşü]+)\s+sozcugunun\s+anlami/i,
+    /([a-zçğıiöşü]+)\s+ne\s+demek/i,
+    /([a-zçğıiöşü]+)\s+nedir\s*\?*$/i,
+    /([a-zçğıiöşü]+)\s+anlami\s+nedir/i,
+  ];
+  for (const re of patterns) {
+    const m = input.match(re);
+    if (m && m[1]) {
+      const w = m[1].trim();
+      // Çok kısa veya genel kelimeler (ne, bu, ben…) sözlüğe gitmesin
+      if (w.length < 2) continue;
+      const skip = ["ne", "bu", "ben", "biz", "siz", "kim", "hangi"];
+      if (skip.includes(w)) continue;
+      return {
+        reply: `"${w}" kelimesini sözlükte aratıyorum.`,
+        navigate: `/sozluk?ara=${encodeURIComponent(w)}`,
+      };
+    }
+  }
+  return null;
+}
+
 function tryNavigation(input: string, tokens: string[]): CannedResult | null {
   const hasVerb = NAV_VERBS.some((v) => tokens.includes(v));
 
+  // Profil / Anasayfa
   if (input.includes("profil")) {
     return { reply: "Tabii, profil sayfana götürüyorum.", navigate: "/profile" };
   }
   if (input.includes("anasayfa") || input.includes("ana sayfa") || tokens.includes("dashboard")) {
     return { reply: "Tamam, ana sayfaya götürüyorum.", navigate: "/dashboard" };
+  }
+
+  // Sözlük: özel "kelimenin anlamı" formu
+  const sozlukLookup = trySozlukLookup(input);
+  if (sozlukLookup) return sozlukLookup;
+  if (input.includes("sozluk") || (input.includes("kelime") && (input.includes("ara") || hasVerb))) {
+    return { reply: "Türkçe Sözlük'e götürüyorum.", navigate: "/sozluk" };
+  }
+
+  // Deneme sınavı
+  if (input.includes("deneme") && (input.includes("sinav") || hasVerb || input.includes("girmek"))) {
+    return { reply: "Deneme Sınavı sayfasına götürüyorum.", navigate: "/deneme" };
+  }
+  // Çıkmış sorular
+  if (input.includes("cikmis")) {
+    return { reply: "Çıkmış Sorular arşivine götürüyorum.", navigate: "/cikmis-sorular" };
+  }
+  // Puan hesapla
+  if ((input.includes("puan") && input.includes("hesap")) || input.includes("net hesap") || input.includes("lgs puan")) {
+    return { reply: "LGS Puan Hesaplama sayfasına götürüyorum.", navigate: "/puan-hesapla" };
+  }
+  // Rozetler
+  if (input.includes("rozet") || input.includes("basarim") || input.includes("madalya")) {
+    return { reply: "Rozetlerine götürüyorum.", navigate: "/rozetlerim" };
+  }
+  // Hatalarım
+  if (input.includes("hatalarim") || input.includes("hatali soru") || (input.includes("hata") && hasVerb)) {
+    if (input.includes("bugun")) {
+      return { reply: "Bugünün hatalarına götürüyorum.", navigate: "/hatalarim?gun=bugun" };
+    }
+    return { reply: "Hatalarım sayfasına götürüyorum.", navigate: "/hatalarim" };
+  }
+  // Hızlı Sorular
+  if (input.includes("hizli soru") || input.includes("hizli sorular")) {
+    return { reply: "Hızlı Sorular'a götürüyorum.", navigate: "/hizli-sorular" };
+  }
+  // Dersler listesi (ders adı geçmiyorsa)
+  if (input.includes("dersler") && hasVerb) {
+    return { reply: "Dersler sayfasına götürüyorum.", navigate: "/dersler" };
   }
 
   if (!hasVerb) return null;

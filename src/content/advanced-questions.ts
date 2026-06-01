@@ -577,7 +577,7 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
   ],
 
   // ─── Fen: Elektrik yükleri (devre yorumla) ──────────────────────
-  "fen-bilimleri/elektrik-yukleri-ve-elektrik-enerjisi": [
+  "fen-bilimleri/elektrik-yukleri-ve-enerjisi": [
     {
       question:
         "İki cisim sürtüldüğünde, elektronların hareketi açısından aşağıdakilerden hangisi DOĞRUDUR?",
@@ -602,8 +602,8 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
     },
   ],
 
-  // ─── Fen: Canlılar ve enerji ilişkileri ─────────────────────────
-  "fen-bilimleri/canlilar-ve-enerji-iliskileri": [
+  // ─── Fen: Enerji Dönüşümleri ve Çevre Bilimi ────────────────────
+  "fen-bilimleri/enerji-donusumleri-ve-cevre": [
     {
       question:
         "Bir besin zincirinde enerji aktarımı için aşağıdakilerden hangisi DOĞRUDUR?",

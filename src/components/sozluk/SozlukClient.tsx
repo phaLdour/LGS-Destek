@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -40,10 +41,20 @@ export function SozlukClient({
   kelimeler: Kelime[];
   pageSize: number;
 }) {
+  const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const [flipDir, setFlipDir] = useState<Direction | null>(null);
   const [jumpInput, setJumpInput] = useState("");
+
+  // AI Baykuş veya başka bir kaynaktan ?ara=X ile gelirse arama kutusunu doldur
+  useEffect(() => {
+    const ara = searchParams.get("ara");
+    if (ara && ara.trim()) {
+      setQuery(ara.trim());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLocaleLowerCase("tr");
@@ -110,7 +121,7 @@ export function SozlukClient({
               <strong>mecaz</strong> ayrımı ve her anlam için örnek cümle.
             </p>
             <p className="mt-1 text-xs text-white/70">
-              {kelimeler.length} kelime · sayfa başına {pageSize} · toplam{" "}
+              {kelimeler.length} kelime · her sayfada bir kelime · toplam{" "}
               {Math.ceil(kelimeler.length / pageSize)} sayfa
             </p>
           </div>

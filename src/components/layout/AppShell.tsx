@@ -4,18 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  AlertCircle,
   Archive,
   Award,
   BookOpen,
   Calculator,
   FileText,
-  History,
   Home,
   Languages,
   LogOut,
   Menu,
   User as UserIcon,
   X,
+  Zap,
 } from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -30,10 +31,11 @@ export type ShellUser = {
 
 const NAV = [
   { href: "/dashboard", label: "Anasayfa", icon: Home },
-  { href: "/dashboard#dersler", label: "Dersler", icon: BookOpen },
+  { href: "/dersler", label: "Dersler", icon: BookOpen },
+  { href: "/hizli-sorular", label: "Hızlı Sorular", icon: Zap },
   { href: "/deneme", label: "Deneme Sınavı", icon: FileText },
   { href: "/cikmis-sorular", label: "Çıkmış Sorular", icon: Archive },
-  { href: "/hatalarim?gun=tum", label: "Geçmiş Hatalarım", icon: History },
+  { href: "/hatalarim", label: "Hatalarım", icon: AlertCircle },
   { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
   { href: "/rozetlerim", label: "Rozetler", icon: Award },
