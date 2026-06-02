@@ -3,6 +3,13 @@ import { ChevronRight, Flame } from "lucide-react";
 import { getAllSubjects } from "@/content";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
+/**
+ * Bir konunun performans yüzdesinin "anlamlı" sayılması için gereken
+ * en az soru sayısı. Daha azında istatistik gürültülü (1 soruda %0 ya
+ * da %100 yanıltıcı olur).
+ */
+const MIN_RELIABLE = 8;
+
 type RawRow = {
   subject_slug: string;
   topic_id: string;
@@ -72,12 +79,17 @@ export async function SubjectHeatmap() {
       const a = agg.get(`${s.slug}/${t.id}`);
       const total = a?.total ?? 0;
       const correct = a?.correct ?? 0;
+      // Yalnız en az MIN_RELIABLE soru çözülmüş konularda yüzde hesabı
+      // anlamlı sayılır; aksi hâlde pct null (gri "henüz yetersiz veri").
       return {
         id: t.id,
         name: t.name,
         total,
         correct,
-        pct: total > 0 ? Math.round((correct / total) * 100) : null,
+        pct:
+          total >= MIN_RELIABLE
+            ? Math.round((correct / total) * 100)
+            : null,
       };
     });
     const attempted = topics.filter((t) => t.pct !== null);
@@ -108,11 +120,12 @@ export async function SubjectHeatmap() {
     );
   }
 
-  // En zayıf 3 konu (genel) — odak önerisi
+  // En zayıf 3 konu (genel) — odak önerisi.
+  // Sadece pct anlamlı olanlar (en az MIN_RELIABLE soru) değerlendirilir.
   const weakest = subjects
     .flatMap((s) =>
       s.topics
-        .filter((t) => t.pct !== null && t.total >= 4) // en az 4 soru çözülmüş
+        .filter((t) => t.pct !== null)
         .map((t) => ({ subjectSlug: s.slug, subjectName: s.name, ...t })),
     )
     .sort((a, b) => (a.pct ?? 0) - (b.pct ?? 0))
@@ -182,14 +195,24 @@ export async function SubjectHeatmap() {
             </div>
             {/* Konu nokta grid'i (tıklayınca konunun ders sayfasına gider) */}
             <div className="flex flex-wrap gap-1.5">
-              {s.topics.map((t) => (
-                <Link
-                  key={t.id}
-                  href={`/ders/${s.slug}/${t.id}`}
-                  title={`${t.name}${t.pct !== null ? ` — %${t.pct} (${t.correct}/${t.total})` : " — henüz çözülmedi"}`}
-                  className={`h-3 w-3 rounded-sm transition hover:scale-125 ${colorFor(t.pct)}`}
-                />
-              ))}
+              {s.topics.map((t) => {
+                let tip: string;
+                if (t.pct !== null) {
+                  tip = `${t.name} — %${t.pct} (${t.correct}/${t.total})`;
+                } else if (t.total === 0) {
+                  tip = `${t.name} — henüz çözülmedi`;
+                } else {
+                  tip = `${t.name} — yetersiz veri (${t.total}/${MIN_RELIABLE} soru, oran için en az ${MIN_RELIABLE} gerekir)`;
+                }
+                return (
+                  <Link
+                    key={t.id}
+                    href={`/ders/${s.slug}/${t.id}`}
+                    title={tip}
+                    className={`h-3 w-3 rounded-sm transition hover:scale-125 ${colorFor(t.pct)}`}
+                  />
+                );
+              })}
             </div>
           </div>
         ))}

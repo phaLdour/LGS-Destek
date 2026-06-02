@@ -124,9 +124,12 @@ export async function getUserContext(): Promise<UserContext | null> {
     }
   }
 
+  // SubjectHeatmap ile aynı eşik: en az 8 soru çözülmüş konularda
+  // performans değerlendirilir (1-2 soruda %0 yanıltıcı olur).
+  const MIN_RELIABLE = 8;
   const weakTopics: WeakTopic[] = [];
   for (const [k, v] of agg.entries()) {
-    if (v.total < 4) continue;
+    if (v.total < MIN_RELIABLE) continue;
     const pct = Math.round((v.correct / v.total) * 100);
     if (pct >= 75) continue;
     const [subjectSlug, topicId] = k.split("/");
