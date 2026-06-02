@@ -165,7 +165,11 @@ function trySozlukLookup(rawText: string): CannedResult | null {
     new RegExp(`(${W})\\s+nedir\\s*\\?*$`, "i"),
     new RegExp(`(${W})\\s+anlam[ıi]\\s+nedir`, "i"),
   ];
-  const skip = ["ne", "bu", "ben", "biz", "siz", "kim", "hangi", "şu", "ona", "ona"];
+  const skip = [
+    "ne", "bu", "ben", "biz", "siz", "kim", "hangi", "şu",
+    "ona", "ondan", "buna", "buradan", "niye", "neden", "niçin",
+    "şimdi", "şuna", "ona", "şunun", "bunun",
+  ];
   for (const re of patterns) {
     const m = text.match(re);
     if (m && m[1]) {
@@ -253,7 +257,7 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
     return { reply: "Hızlı Sorular'a götürüyorum.", navigate: "/hizli-sorular" };
   }
   // Dersler listesi (ders adı geçmiyorsa)
-  if (input.includes("dersler") && hasVerb) {
+  if (input.includes("dersler") || (input.includes("tum") && input.includes("ders"))) {
     return { reply: "Dersler sayfasına götürüyorum.", navigate: "/dersler" };
   }
 

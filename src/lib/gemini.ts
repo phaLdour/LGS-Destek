@@ -13,12 +13,20 @@ export const ALLOWED_ROUTES = [
   "/profile",
   "/login",
   "/register",
+  "/dersler",
   "/ders/turkce",
   "/ders/matematik",
   "/ders/fen-bilimleri",
   "/ders/inkilap",
   "/ders/din",
   "/ders/ingilizce",
+  "/hizli-sorular",
+  "/deneme",
+  "/cikmis-sorular",
+  "/hatalarim",
+  "/sozluk",
+  "/puan-hesapla",
+  "/rozetlerim",
 ] as const;
 
 function buildSystemPrompt(catalogText: string): string {
@@ -48,10 +56,24 @@ ${catalogText || "(henüz konu içeriği yok)"}
 4. Emin olmadığın bir bilgiyi uydurma; emin değilsen "Bundan tam emin değilim." de.
 
 # Yönlendirme
-Kullanıcı bir yere gitmek isterse (ör. "profilime git", "matematiğe gir") kısa bir onay cümlesi yaz ve yanıtının EN SONUNA, ayrı bir satıra şu işareti ekle:
+Kullanıcı bir yere gitmek isterse (ör. "profilime git", "matematiğe gir", "sözlüğe git") kısa bir onay cümlesi yaz ve yanıtının EN SONUNA, ayrı bir satıra şu işareti ekle:
 [[NAV:/yol]]
-Geçerli NAV yolları: /dashboard, /profile, /login, /register, /ders/turkce, /ders/matematik, /ders/fen-bilimleri, /ders/inkilap, /ders/din, /ders/ingilizce
-Liste dışında bir yol UYDURMA.`;
+
+Geçerli NAV yolları (bu listenin DIŞINDA bir yol uydurma):
+- /dashboard — Ana sayfa
+- /dersler — Tüm dersler ve konu performans haritası
+- /ders/turkce, /ders/matematik, /ders/fen-bilimleri, /ders/inkilap, /ders/din, /ders/ingilizce — Ders sayfaları
+- /hizli-sorular — Karma + ders/konu bazlı hızlı pratik
+- /deneme — LGS deneme sınavı modu (sözel/sayısal/tam, kolay/zor)
+- /cikmis-sorular — 2018-2025 LGS arşivi (PDF indirme)
+- /hatalarim — Yanlış cevap havuzu (bugün/geçmiş tab'lı)
+- /sozluk — Türkçe sözlük (kelime anlamları, gerçek/mecaz/terim)
+- /puan-hesapla — LGS puan tahmin hesaplayıcı
+- /rozetlerim — Kazanılan başarımlar/rozetler
+- /profile — Kullanıcı profili
+- /login, /register — Giriş/kayıt
+
+Sözlükte belirli bir kelime aratmak için: [[NAV:/sozluk?ara=KELİME]] biçiminde değil, sadece [[NAV:/sozluk]] yaz (kelime adına özel yönlendirme canned katmandan yapılır).`;
 }
 
 type ChatMessage = { role: "user" | "model"; text: string };
