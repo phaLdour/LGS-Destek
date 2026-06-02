@@ -94,8 +94,11 @@ create table if not exists public.wrong_answers (
   wrong_count int not null default 1,
   correct_streak int not null default 0,
   last_wrong_at timestamptz not null default now(),
+  next_due_at timestamptz,              -- spaced repetition vade tarihi (null → lastWrongAt + 1g)
   primary key (user_id, question_key)
 );
+-- Eski deploy'lar için tablo varsa kolon ekle (idempotent)
+alter table public.wrong_answers add column if not exists next_due_at timestamptz;
 
 alter table public.wrong_answers enable row level security;
 

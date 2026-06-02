@@ -19,7 +19,19 @@ export type WrongRecord = {
   correctStreak: number;
   /** Son yanlış cevap tarihi (epoch ms) */
   lastWrongAt: number;
+  /**
+   * Bu kelimenin/sorunun bir sonraki gösterim "vadesi" (epoch ms).
+   * now() >= nextDueAt ise vadesi gelmiş.
+   * - Yeni hata: now + 1 gün
+   * - 1 doğru cevap: now + 3 gün
+   * - 2 doğru cevap üst üste: kayıt silinir (ustalaşmış)
+   * Eski kayıtlarda yoksa: lastWrongAt + 1 gün varsayılır (geriye uyum).
+   */
+  nextDueAt?: number;
 };
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const THREE_DAYS_MS = 3 * ONE_DAY_MS;
 
 type Store = Record<string, WrongRecord>;
 
@@ -47,10 +59,12 @@ function write(store: Store) {
 export function saveWrong(id: string) {
   const s = read();
   const rec = s[id];
+  const now = Date.now();
   const next: WrongRecord = {
     wrongCount: (rec?.wrongCount ?? 0) + 1,
     correctStreak: 0,
-    lastWrongAt: Date.now(),
+    lastWrongAt: now,
+    nextDueAt: now + ONE_DAY_MS,
   };
   s[id] = next;
   write(s);
@@ -70,14 +84,19 @@ export function markCorrect(id: string) {
     delete s[id];
     void deleteWrongFromSupabase(id);
   } else {
-    const next = { ...rec, correctStreak: nextStreak };
+    // 1. doğru cevap: 3 gün ileri it
+    const next: WrongRecord = {
+      ...rec,
+      correctStreak: nextStreak,
+      nextDueAt: Date.now() + THREE_DAYS_MS,
+    };
     s[id] = next;
     void pushWrongToSupabase(id, next);
   }
   write(s);
 }
 
-export type WrongFilter = "all" | "today";
+export type WrongFilter = "all" | "today" | "due";
 
 /** Yerel günün başlangıcı (00:00) — bugün filtresi için. */
 function todayStartMs(): number {
@@ -86,18 +105,33 @@ function todayStartMs(): number {
   return d.getTime();
 }
 
+/** Bir kaydın "vadesi gelmiş" sayılması için zaman damgası.
+ *  Eski kayıtlarda nextDueAt yoksa lastWrongAt + 1 gün varsayılır. */
+function dueTs(rec: WrongRecord): number {
+  return rec.nextDueAt ?? rec.lastWrongAt + ONE_DAY_MS;
+}
+
 /**
  * Havuzdaki yanlış soru ID'lerinin kümesi.
- * filter "today" verilirse yalnız bugün yapılmış (lastWrongAt >= bugün 00:00)
- * kayıtların id'leri döner.
+ * - "all": tüm havuz (eski davranış)
+ * - "today": bugün yapılmış (lastWrongAt >= bugün 00:00)
+ * - "due": vadesi gelmiş (nextDueAt <= şimdi)
  */
 export function getWrongIds(filter: WrongFilter = "all"): Set<string> {
   const s = read();
   if (filter === "all") return new Set(Object.keys(s));
-  const start = todayStartMs();
   const out = new Set<string>();
+  if (filter === "today") {
+    const start = todayStartMs();
+    for (const [id, rec] of Object.entries(s)) {
+      if (rec.lastWrongAt >= start) out.add(id);
+    }
+    return out;
+  }
+  // "due"
+  const now = Date.now();
   for (const [id, rec] of Object.entries(s)) {
-    if (rec.lastWrongAt >= start) out.add(id);
+    if (dueTs(rec) <= now) out.add(id);
   }
   return out;
 }
@@ -105,7 +139,7 @@ export function getWrongIds(filter: WrongFilter = "all"): Set<string> {
 /** Havuzdaki yanlış soru sayısı (filtreli veya tümü). */
 export function getWrongCount(filter: WrongFilter = "all"): number {
   if (filter === "all") return Object.keys(read()).length;
-  return getWrongIds("today").size;
+  return getWrongIds(filter).size;
 }
 
 /** Tüm havuzu temizle (debug/profil için). */
@@ -130,6 +164,9 @@ async function pushWrongToSupabase(id: string, rec: WrongRecord) {
         wrong_count: rec.wrongCount,
         correct_streak: rec.correctStreak,
         last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+        next_due_at: rec.nextDueAt
+          ? new Date(rec.nextDueAt).toISOString()
+          : null,
       },
       { onConflict: "user_id,question_key" },
     );
@@ -172,7 +209,9 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
     if (!user) return;
     const { data } = await supabase
       .from("wrong_answers")
-      .select("question_key, wrong_count, correct_streak, last_wrong_at");
+      .select(
+        "question_key, wrong_count, correct_streak, last_wrong_at, next_due_at",
+      );
     const local = read();
     const merged: Store = { ...local };
     for (const row of (data ?? []) as {
@@ -180,6 +219,7 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
       wrong_count: number;
       correct_streak: number;
       last_wrong_at: string;
+      next_due_at: string | null;
     }[]) {
       const remoteTs = new Date(row.last_wrong_at).getTime();
       const localRec = local[row.question_key];
@@ -188,6 +228,9 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
           wrongCount: row.wrong_count,
           correctStreak: row.correct_streak,
           lastWrongAt: remoteTs,
+          nextDueAt: row.next_due_at
+            ? new Date(row.next_due_at).getTime()
+            : remoteTs + ONE_DAY_MS,
         };
       }
     }
@@ -205,6 +248,9 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
           wrong_count: rec.wrongCount,
           correct_streak: rec.correctStreak,
           last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+          next_due_at: rec.nextDueAt
+            ? new Date(rec.nextDueAt).toISOString()
+            : null,
         })),
         { onConflict: "user_id,question_key" },
       );

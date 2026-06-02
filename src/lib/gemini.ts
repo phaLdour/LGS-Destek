@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getTopicCatalog } from "@/content";
+import type { UserContext } from "@/lib/userContext";
 
 export function isGeminiConfigured(): boolean {
   return Boolean(process.env.GEMINI_API_KEY);
@@ -29,8 +30,32 @@ export const ALLOWED_ROUTES = [
   "/rozetlerim",
 ] as const;
 
-function buildSystemPrompt(catalogText: string): string {
-  return `Senin adın "Rehber Baykuş". Rehberim adlı LGS (8. sınıf) çalışma platformunun maskotu ve yardım asistanısın. Türkçe, kibar, kısa ve net konuşursun.
+/** UserContext'i Gemini system prompt'una uygun kısa bir metin haline getirir. */
+function buildContextBlock(ctx: UserContext | null): string {
+  if (!ctx) return "";
+  const lines: string[] = ["# Kullanıcı durumu (cevaplarını buna göre kişiselleştir, ama her cevapta bunu söyleme)"];
+  if (ctx.firstName) lines.push(`- Adı: ${ctx.firstName}`);
+  if (ctx.thisWeekMinutes > 0) {
+    const h = Math.floor(ctx.thisWeekMinutes / 60);
+    const m = ctx.thisWeekMinutes % 60;
+    lines.push(`- Bu hafta toplam çalışma: ${h > 0 ? `${h}s ${m}dk` : `${m} dk`}`);
+  }
+  if (ctx.streakDays > 0) lines.push(`- Çalışma serisi: ${ctx.streakDays} gün`);
+  if (ctx.weakTopics.length > 0) {
+    const ws = ctx.weakTopics
+      .map((w) => `${w.subjectName}/${w.topicName} (%${w.pct})`)
+      .join(", ");
+    lines.push(`- Zorlandığı konular: ${ws}`);
+  }
+  if (ctx.dueWrongCount > 0) {
+    lines.push(`- Tekrar zamanı gelmiş yanlış sorular: ${ctx.dueWrongCount}`);
+  }
+  lines.push("");
+  return lines.join("\n");
+}
+
+function buildSystemPrompt(catalogText: string, ctxBlock: string): string {
+  return `${ctxBlock}Senin adın "Rehber Baykuş". Rehberim adlı LGS (8. sınıf) çalışma platformunun maskotu ve yardım asistanısın. Türkçe, kibar, kısa ve net konuşursun.
 
 # Görevlerin
 1. Platform yardımı: kayıt olma, giriş yapma, Google ile giriş, profil özelleştirme ve fotoğraf yükleme, menüde gezinme.
@@ -111,6 +136,7 @@ function extractMarkers(
 
 export async function generateReply(
   history: ChatMessage[],
+  ctx: UserContext | null = null,
 ): Promise<GeminiResult> {
   const catalog = getTopicCatalog();
   const catalogText = catalog
@@ -122,7 +148,7 @@ export async function generateReply(
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: MODEL,
-    systemInstruction: buildSystemPrompt(catalogText),
+    systemInstruction: buildSystemPrompt(catalogText, buildContextBlock(ctx)),
   });
 
   const latest = history[history.length - 1];

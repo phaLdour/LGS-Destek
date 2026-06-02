@@ -4,8 +4,9 @@ import { ArrowLeft, Shuffle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { QuickQuizClient } from "@/components/quick/QuickQuizClient";
 import { getSubjectContent, getTopic } from "@/content";
-import { collectAllQuestions } from "@/lib/quickQuiz";
+import { collectAllQuestions, collectWeightedQuestions } from "@/lib/quickQuiz";
 import { getShellUser } from "@/lib/user";
+import { getWeakTopicKeys } from "@/lib/userContext";
 
 export default async function HizliSorularQuizPage({
   params,
@@ -17,8 +18,14 @@ export default async function HizliSorularQuizPage({
   const subjectContent = getSubjectContent(subject);
   if (!subjectContent) notFound();
 
-  // Dersin karması
+  // Dersin karması — bu dersteki zayıf konulardan ağırlık verilir
   if (topic === "karma") {
+    const weakAll = await getWeakTopicKeys();
+    // Sadece bu derse ait zayıfları al
+    const weakForSubject = new Set(
+      [...weakAll].filter((k) => k.startsWith(`${subject}/`)),
+    );
+    const smart = weakForSubject.size > 0;
     return (
       <AppShell user={user}>
         <Link
@@ -37,15 +44,22 @@ export default async function HizliSorularQuizPage({
               Karma — {subjectContent.name}
             </h1>
             <p className="text-sm text-white/85">
-              Bu derste tüm konulardan karışık
+              {smart
+                ? "Zayıf konularından daha çok soru gelir"
+                : "Bu derste tüm konulardan karışık"}
             </p>
           </div>
         </header>
         <QuickQuizClient
           scope={{ kind: "karma-subject", subject }}
-          initialPool={collectAllQuestions({ kind: "karma-subject", subject })}
+          initialPool={collectWeightedQuestions(
+            { kind: "karma-subject", subject },
+            weakForSubject,
+          )}
           title={`Karma — ${subjectContent.name}`}
-          subtitle="Tüm konulardan karışık"
+          subtitle={
+            smart ? "Akıllı havuz (zayıf konulara ağırlık)" : "Tüm konulardan karışık"
+          }
           backHref={`/hizli-sorular/${subject}`}
         />
       </AppShell>

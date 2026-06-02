@@ -59,8 +59,11 @@ export function QuickQuizClient({
   backHref: string;
   /** true ise: yalnız yanlış cevap havuzundaki soruları getirir; markSolved çağırmaz. */
   wrongMode?: boolean;
-  /** wrongMode true iken hangi yanlışları çek: "all" tüm geçmiş / "today" bugün */
-  wrongFilter?: "all" | "today";
+  /** wrongMode true iken hangi yanlışları çek:
+   *  - "all"   : tüm geçmiş
+   *  - "today" : sadece bugün yapılanlar
+   *  - "due"   : vadesi gelmiş (spaced repetition) */
+  wrongFilter?: "all" | "today" | "due";
 }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [pool, setPool] = useState<PoolQuestion[]>([]);

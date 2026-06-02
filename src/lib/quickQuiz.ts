@@ -61,3 +61,25 @@ export function collectAllQuestions(scope: QuickScope): PoolQuestion[] {
   }
   return out;
 }
+
+/**
+ * Akıllı havuz: zayıf konuların soruları 2x kopyalanır → karıştırma
+ * sonrası ağırlıkları artar. Boş weakTopics ile davranış collectAllQuestions
+ * ile aynıdır.
+ *
+ * weakTopics: "subjectSlug/topicId" formatlı set.
+ */
+export function collectWeightedQuestions(
+  scope: QuickScope,
+  weakTopics: Set<string>,
+): PoolQuestion[] {
+  const base = collectAllQuestions(scope);
+  if (weakTopics.size === 0) return base;
+  const extra: PoolQuestion[] = [];
+  for (const q of base) {
+    if (weakTopics.has(`${q.subjectSlug}/${q.topicId}`)) {
+      extra.push(q);
+    }
+  }
+  return [...base, ...extra];
+}

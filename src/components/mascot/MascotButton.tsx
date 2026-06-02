@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { OwlSvg } from "@/components/brand/Owl";
 import { ChatPanel, type ChatMessage } from "./ChatPanel";
 
-const GREETING: ChatMessage = {
+const FALLBACK_GREETING: ChatMessage = {
   role: "model",
   text: "Merhaba! Ben Rehber Baykuş 🦉 Derslerinle ilgili sorularını yanıtlayabilir ya da seni doğru sayfaya götürebilirim. Örneğin \"suyun pH değeri kaç?\" diye sorabilir veya \"matematiğe gir\" diyebilirsin.",
 };
@@ -13,9 +13,31 @@ const GREETING: ChatMessage = {
 export function MascotButton() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
+  const [messages, setMessages] = useState<ChatMessage[]>([FALLBACK_GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [greetingLoaded, setGreetingLoaded] = useState(false);
+
+  // İlk açılışta kullanıcı stats'ına göre kişisel selam çek
+  useEffect(() => {
+    if (greetingLoaded) return;
+    let cancelled = false;
+    fetch("/api/chat/greeting")
+      .then((r) => r.json())
+      .then((data: { reply?: string }) => {
+        if (cancelled) return;
+        if (data.reply) {
+          setMessages([{ role: "model", text: data.reply }]);
+        }
+        setGreetingLoaded(true);
+      })
+      .catch(() => {
+        if (!cancelled) setGreetingLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [greetingLoaded]);
 
   async function handleSend() {
     const text = input.trim();

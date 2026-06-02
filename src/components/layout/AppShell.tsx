@@ -64,7 +64,7 @@ export function AppShell({
   const isActive = (href: string) => pathname === href.split("#")[0];
 
   return (
-    <div className="min-h-screen bg-rehberim-muted">
+    <div className="min-h-screen bg-rehberim-muted" suppressHydrationWarning>
       {/* ===== Masaüstü sol panel ===== */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-rehberim-border bg-white lg:flex">
         <div className="flex h-16 items-center border-b border-rehberim-border px-5">

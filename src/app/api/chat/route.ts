@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateReply, isGeminiConfigured } from "@/lib/gemini";
 import { matchCanned } from "@/lib/cannedAnswers";
+import { getUserContext } from "@/lib/userContext";
 
 export const runtime = "nodejs";
 
@@ -59,7 +60,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await generateReply(history);
+    // Gemini'ye kullanıcı bağlamını ilet (giriş varsa) — kişiselleşmiş cevaplar
+    const ctx = await getUserContext().catch(() => null);
+    const result = await generateReply(history, ctx);
     return NextResponse.json({ ...result, configured: true, source: "ai" });
   } catch (err) {
     console.error("Gemini hatası:", err);

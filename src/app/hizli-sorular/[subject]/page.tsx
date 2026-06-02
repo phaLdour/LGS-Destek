@@ -5,8 +5,9 @@ import { AppShell } from "@/components/layout/AppShell";
 import { QuickQuizClient } from "@/components/quick/QuickQuizClient";
 import { QuickTopicList } from "@/components/quick/QuickTopicList";
 import { getSubjectContent } from "@/content";
-import { collectAllQuestions } from "@/lib/quickQuiz";
+import { collectAllQuestions, collectWeightedQuestions } from "@/lib/quickQuiz";
 import { getShellUser } from "@/lib/user";
+import { getWeakTopicKeys } from "@/lib/userContext";
 
 export default async function HizliSorularSubjectPage({
   params,
@@ -16,8 +17,10 @@ export default async function HizliSorularSubjectPage({
   const { subject } = await params;
   const user = await getShellUser();
 
-  // Tüm derslerden karma
+  // Tüm derslerden karma — zayıf konulardan ağırlık verilir
   if (subject === "karma") {
+    const weakTopics = await getWeakTopicKeys();
+    const smart = weakTopics.size > 0;
     return (
       <AppShell user={user}>
         <Link
@@ -33,14 +36,23 @@ export default async function HizliSorularSubjectPage({
           </span>
           <div>
             <h1 className="text-xl font-extrabold">Karma — Tüm Dersler</h1>
-            <p className="text-sm text-white/85">Her dersten rastgele sorular</p>
+            <p className="text-sm text-white/85">
+              {smart
+                ? "Zayıf konularından daha çok soru gelir"
+                : "Her dersten rastgele sorular"}
+            </p>
           </div>
         </header>
         <QuickQuizClient
           scope={{ kind: "karma-all" }}
-          initialPool={collectAllQuestions({ kind: "karma-all" })}
+          initialPool={collectWeightedQuestions(
+            { kind: "karma-all" },
+            weakTopics,
+          )}
           title="Karma"
-          subtitle="Tüm derslerden rastgele"
+          subtitle={
+            smart ? "Akıllı havuz (zayıf konulara ağırlık)" : "Tüm derslerden rastgele"
+          }
           backHref="/hizli-sorular"
         />
       </AppShell>
