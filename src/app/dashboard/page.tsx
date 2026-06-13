@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { StatsPanel } from "@/components/stats/StatsPanel";
+import { WeeklyDigestCard } from "@/components/stats/WeeklyDigestCard";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { getShellUser } from "@/lib/user";
 
@@ -58,6 +59,9 @@ export default async function DashboardPage() {
           Karma + ders ders
         </span>
       </Link>
+
+      {/* Haftalık özet (veri yoksa gizli) */}
+      <WeeklyDigestCard />
 
       {/* İstatistikler */}
       <section className="mt-8">

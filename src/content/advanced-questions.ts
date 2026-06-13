@@ -716,6 +716,241 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       correctIndex: 0,
     },
   ],
+
+  // ─── Türkçe: Anlatım bozuklukları (2024 LGS tarzı) ──────────────
+  "turkce/anlatim-bozukluklari": [
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde bir anlatım bozukluğu vardır?",
+      options: [
+        "Eve giderken yolda hem yağmur yağıyor hem de güneş açıyordu, çok şaşırdım.",
+        "Sınıfta hemen hemen yaklaşık otuz öğrenci vardı.",
+        "Bu kitabı yarın size geri vereceğim.",
+        "Annem akşam yemeğine misafir bekliyor.",
+      ],
+      correctIndex: 1,
+    },
+    {
+      question:
+        "\"Toplantıya katılan herkes tek tek görüşlerini söyledi ve aldıkları kararı oybirliğiyle onayladılar.\" cümlesindeki anlatım bozukluğunun nedeni aşağıdakilerden hangisidir?",
+      options: [
+        "Özne-yüklem uyumsuzluğu (özne tekil, yüklem çoğul)",
+        "Gereksiz sözcük kullanımı",
+        "Tamlama yanlışı",
+        "Yüklem eksikliği",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde \"anlam belirsizliği\" söz konusudur?",
+      options: [
+        "Onun annesini sokakta gördüm.",
+        "Babam bize yeni bir bisiklet aldı.",
+        "Bahçedeki çiçekler güzel açtı.",
+        "Yarın okula erken gideceğim.",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Türkçe: Fiilde çatı ────────────────────────────────────────
+  "turkce/fiilde-cati": [
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde yüklem \"edilgen çatılı\" bir fiildir?",
+      options: [
+        "Bahçedeki ağaçlar dün budandı.",
+        "Çocuklar parkta oyun oynadı.",
+        "Annem akşam yemeği hazırlıyor.",
+        "Yağmur sabaha kadar yağdı.",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "\"Sınıf temizlendi.\" cümlesinde fiilin çatısı için aşağıdakilerden hangisi DOĞRUDUR?",
+      options: [
+        "Nesnesine göre edilgen, öznesine göre öznesi olan (özne sözde özne)",
+        "Nesnesine göre geçişli, öznesine göre etken",
+        "Nesnesine göre geçişsiz, öznesine göre dönüşlü",
+        "Nesnesine göre işteş, öznesine göre etken",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Türkçe: Yazım kuralları ─────────────────────────────────────
+  "turkce/yazim-kurallari": [
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde bir yazım yanlışı vardır?",
+      options: [
+        "Akşamleyin Atatürk'ün doğum gününü kutlayacağız.",
+        "Bu kitabı 2025'te yayımladılar.",
+        "Pazartesi günü İstanbul'a gideceğim.",
+        "Türkiye'nin Doğu'sunda kar yağıyor.",
+      ],
+      correctIndex: 3,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde \"de/da\" bağlacının yazımı YANLIŞTIR?",
+      options: [
+        "Ali de gelecekmiş bu akşam.",
+        "Sen de aynı şeyi düşünüyor musun?",
+        "Çocuklar parkta oynuyorlar.",
+        "Aslı'da yarın gelmek istiyor.",
+      ],
+      correctIndex: 3,
+    },
+    {
+      question:
+        "Aşağıdaki sözcüklerden hangisi büyük harfle YANLIŞ yazılmıştır?",
+      options: [
+        "Marmara Denizi",
+        "Atatürk Üniversitesi",
+        "Cumhuriyet Bayramı",
+        "Türk Dili ve Edebiyatı dersi",
+      ],
+      correctIndex: 3,
+    },
+  ],
+
+  // ─── Türkçe: Noktalama işaretleri ────────────────────────────────
+  "turkce/noktalama-isaretleri": [
+    {
+      question:
+        "\"Yarın okula erken gel ders saat 9'da başlayacak.\" cümlesinde hangi noktalama işareti eksiktir?",
+      options: ["Virgül (,)", "Noktalı virgül (;)", "İki nokta (:)", "Üç nokta (…)"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde virgülün kullanımı YANLIŞTIR?",
+      options: [
+        "Bahçeden gül, lale, papatya ve menekşe topladım.",
+        "Ali, yarın okula gelmeyecek.",
+        "Hızlı, koşan, çocuk düştü.",
+        "Bu konuyu, biraz daha açar mısın?",
+      ],
+      correctIndex: 2,
+    },
+    {
+      question:
+        "Aşağıdaki cümlelerin hangisinde \"iki nokta (:)\" işareti doğru kullanılmıştır?",
+      options: [
+        "Annem bana şunu söyledi: \"Akşam erken eve dön.\"",
+        "Yarın: okula gideceğim.",
+        "Kitabı: çantama koydum.",
+        "Çocuk: koşarak geldi.",
+      ],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Çarpanlar ve katlar ──────────────────────────────
+  "matematik/carpanlar-ve-katlar": [
+    {
+      question:
+        "120 sayısının asal çarpanları aşağıdakilerden hangisidir?",
+      options: ["2, 3, 5", "2, 5, 7", "3, 5, 7", "2, 3, 7"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "İki sayının EBOB'u 12, EKOK'u 72'dir. Sayılardan biri 24 ise diğeri kaçtır?",
+      options: ["36", "30", "48", "24"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir manav, biri 24 elma ve diğeri 36 portakal olan iki sandığı eşit sayıda meyve içeren paketlere bölmek istiyor. Hiç meyve artmayacak şekilde her pakette en çok kaç meyve olmalıdır (her pakette aynı meyveden olmalı)?",
+      options: ["12", "6", "18", "24"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Eşitsizlikler ────────────────────────────────────
+  "matematik/esitsizlikler": [
+    {
+      question:
+        "2x − 3 < 7 eşitsizliğini sağlayan en büyük tam sayı x değeri kaçtır?",
+      options: ["4", "5", "3", "6"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir öğrenci, 100 TL ile defter ve kalem almak istiyor. Bir defter 15 TL, bir kalem 5 TL. 4 defter aldığına göre en fazla kaç kalem alabilir?",
+      options: ["8", "7", "9", "10"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "−4 < 2x − 6 ≤ 8 eşitsizliğini sağlayan x tam sayıları kaç tanedir?",
+      options: ["6", "5", "7", "4"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Matematik: Geometrik cisimler ──────────────────────────────
+  "matematik/geometrik-cisimler": [
+    {
+      question:
+        "Taban yarıçapı 3 cm, yüksekliği 10 cm olan bir dik silindirin hacmi kaç π cm³'tür?",
+      options: ["90π", "60π", "30π", "100π"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir dik prizmanın taban alanı 24 cm², yüksekliği 8 cm olduğuna göre hacmi kaç cm³'tür?",
+      options: ["192", "96", "32", "48"],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Bir küpün hacmi 64 cm³ ise yüzey alanı kaç cm²'dir?",
+      options: ["96", "64", "48", "128"],
+      correctIndex: 0,
+    },
+  ],
+
+  // ─── Fen Bilimleri: Mevsimler ve iklim ───────────────────────────
+  "fen-bilimleri/mevsimler-ve-iklim": [
+    {
+      question:
+        "Aşağıdakilerden hangisi Dünya'nın eksen eğikliğinin SONUCUDUR?",
+      options: [
+        "Mevsimlerin oluşması",
+        "Gece ve gündüzün oluşması",
+        "Ay'ın evrelerinin oluşması",
+        "Gelgit olayının oluşması",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "21 Aralık tarihinde Kuzey Yarım Küre'de yaşanan durum aşağıdakilerden hangisidir?",
+      options: [
+        "Kış mevsimi başlar, en uzun gece yaşanır",
+        "Yaz mevsimi başlar, en uzun gündüz yaşanır",
+        "Gece ve gündüz eşittir",
+        "İlkbahar mevsimi başlar",
+      ],
+      correctIndex: 0,
+    },
+    {
+      question:
+        "Aşağıdakilerden hangisi \"iklim\" ile \"hava durumu\" arasındaki temel farkı en doğru ifade eder?",
+      options: [
+        "İklim uzun yıllar ortalamasıdır, hava durumu kısa süreli atmosfer olaylarıdır",
+        "İklim sadece sıcaklığa bakar, hava durumu yağmura bakar",
+        "İklim yalnız yazları, hava durumu yalnız kışları değerlendirir",
+        "İklim küresel, hava durumu yalnız Türkiye için kullanılır",
+      ],
+      correctIndex: 0,
+    },
+  ],
 };
 
 /** Verilen ders/konu için zor (yeni nesil) soruları döner; yoksa boş dizi. */

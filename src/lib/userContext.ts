@@ -18,6 +18,8 @@ export type WeakTopic = {
 export type UserContext = {
   firstName: string | null;
   thisWeekMinutes: number;
+  /** Son 7 gün içinde cevaplanan toplam soru sayısı (haftalık özet için). */
+  thisWeekQuestions: number;
   streakDays: number;
   weakTopics: WeakTopic[]; // en zayıf 2 konu (pct artan, en az 4 soru çözülmüş)
   /** Bugün için bekleyen ("due") hata sayısı — wrong_answers next_due_at <= now */
@@ -62,7 +64,7 @@ export async function getUserContext(): Promise<UserContext | null> {
       .gte("started_at", streakStart.toISOString()),
     supabase
       .from("quiz_results")
-      .select("subject_slug, topic_id, correct_count, wrong_count"),
+      .select("subject_slug, topic_id, correct_count, wrong_count, created_at"),
     supabase.from("wrong_answers").select("next_due_at, last_wrong_at"),
   ]);
 
@@ -75,6 +77,7 @@ export async function getUserContext(): Promise<UserContext | null> {
     topic_id: string;
     correct_count: number;
     wrong_count: number;
+    created_at: string;
   }[];
   const wrongs = (wrongRes.data ?? []) as {
     next_due_at: string | null;
@@ -90,6 +93,14 @@ export async function getUserContext(): Promise<UserContext | null> {
     if (ts >= weekStart) weekSeconds += s.duration_seconds;
   }
   const thisWeekMinutes = Math.round(weekSeconds / 60);
+
+  // Bu hafta cevaplanan soru sayısı (correct + wrong)
+  let thisWeekQuestions = 0;
+  for (const q of quizzes) {
+    if (new Date(q.created_at) >= weekStart) {
+      thisWeekQuestions += q.correct_count + q.wrong_count;
+    }
+  }
 
   // Streak (bugünden veya dünden geriye doğru)
   let streakDays = 0;
@@ -159,6 +170,7 @@ export async function getUserContext(): Promise<UserContext | null> {
   return {
     firstName,
     thisWeekMinutes,
+    thisWeekQuestions,
     streakDays,
     weakTopics: topWeak,
     dueWrongCount,
