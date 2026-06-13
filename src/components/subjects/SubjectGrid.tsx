@@ -1,11 +1,11 @@
 import Link from "next/link";
 import {
   AbcIcon,
+  AtaturkSignatureIcon,
   AtomIcon,
   HelloBubbleIcon,
-  MathSquareIcon,
   MosqueIcon,
-  TrFlagIcon,
+  PiIcon,
 } from "./icons";
 
 type Subject = {
@@ -32,7 +32,7 @@ export const SUBJECTS: Subject[] = [
     slug: "matematik",
     name: "Matematik",
     short: "Sayılar, cebir, geometri",
-    Icon: MathSquareIcon,
+    Icon: PiIcon,
     badge: "from-[#F59E0B] to-[#D97706]",
     iconClass: "text-white",
   },
@@ -48,9 +48,9 @@ export const SUBJECTS: Subject[] = [
     slug: "inkilap",
     name: "T.C. İnkılap Tarihi",
     short: "Atatürkçülük ve yakın tarih",
-    Icon: TrFlagIcon,
-    badge: "from-[#F4F6FB] to-[#E2E6F0]",
-    iconClass: "text-rehberim-navy",
+    Icon: AtaturkSignatureIcon,
+    badge: "from-[#1C2C5C] to-[#243A6E]",
+    iconClass: "text-white",
   },
   {
     slug: "din",
