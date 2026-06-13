@@ -21,18 +21,24 @@ export function AbcIcon({ className }: IconProps) {
   );
 }
 
-/** Matematik → Pi (π) sembolü */
+/** Matematik → Pi (π) — kıvrak, kuyruklu tipografik glif */
 export function PiIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      {/* yatay üst çubuk (pi'nin tepesi) */}
-      <rect x="8" y="14" width="32" height="5.5" rx="1.8" fill="currentColor" />
-      {/* sol ayak */}
-      <rect x="13" y="19.5" width="6" height="20" rx="1.5" fill="currentColor" />
-      {/* sağ ayak (hafifçe sağa eğimli his vermek için biraz daha geniş bırakıyoruz) */}
-      <rect x="29" y="19.5" width="6" height="20" rx="1.5" fill="currentColor" />
-      {/* alt zemin vurgusu (dengeli oturma) */}
-      <rect x="10" y="38" width="28" height="2.5" rx="1.2" fill="currentColor" opacity="0.45" />
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* üst yatay çubuk — iki uçtan hafif taşar */}
+        <path d="M8 15 H40" />
+        {/* sol ayak — ucu hafif sola kıvrık (serif hissi) */}
+        <path d="M17 15 V31 Q17 37 11 37" />
+        {/* sağ ayak — ucu belirgin sağa kuyruklu (π'nin ikonik kuyruğu) */}
+        <path d="M31 15 V32 Q31 38 37 35" />
+      </g>
     </svg>
   );
 }
@@ -51,32 +57,51 @@ export function AtomIcon({ className }: IconProps) {
   );
 }
 
-/** T.C. İnkılap Tarihi → Atatürk imzası (basit kaligrafik silüet) */
-export function AtaturkSignatureIcon({ className }: IconProps) {
+/** T.C. İnkılap Tarihi → kalpaklı Atatürk profili silüeti (sağa bakan) */
+export function AtaturkProfileIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <g
+      {/*
+        Sağa bakan profil silüeti.
+        Kalpak (kürk başlık) + alın → kaş → burun → dudak → çene hattı +
+        boyun ve yaka. Tek dolu path; küçük boyutta net okunur.
+      */}
+      <path
+        fill="currentColor"
+        d="M14 12
+           C 13 11, 13 9.5, 14.5 9
+           L 32 9
+           C 34 9, 35 10.5, 35 12.5
+           L 35 17
+           C 36.5 19, 37.5 21.5, 37.5 24
+           C 37.5 27, 36.5 29, 34.5 30.5
+           C 33 31.6, 31.5 32, 31.5 33.5
+           L 31.5 40
+           L 19 40
+           L 19 34
+           C 19 32.5, 18 31.8, 16.8 31
+           C 14 29, 12 25.8, 12 21.5
+           C 12 17.5, 12.8 14, 14 12
+           Z"
+      />
+      {/* burun-dudak girinti vurgusu (yüz hattını belirginleştirir) */}
+      <path
         fill="none"
-        stroke="currentColor"
-        strokeWidth="2.6"
+        stroke="#fff"
+        strokeWidth="1.4"
         strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {/* K büyük harf — soldan dik gövde + iki açı */}
-        <path d="M7 16 L7 34" />
-        <path d="M7 25 L15 17" />
-        <path d="M7 25 L15 34" />
-        {/* "Atatürk" soyadı akıcı el yazısı — birleşik kıvrımlı path */}
-        <path
-          d="M17 30
-             C 19 22, 22 22, 24 28
-             S 28 34, 30 28
-             C 32 24, 34 23, 36 26
-             S 41 28, 43 24"
-        />
-        {/* Alt yatay imza çizgisi (klasik kaligrafik altçizgi) */}
-        <path d="M10 38 L42 38" strokeWidth="2" opacity="0.55" />
-      </g>
+        opacity="0.45"
+        d="M35.5 23 q 1.5 1.5 -0.5 3 M33 28 q -1.5 0.8 -3 0.4"
+      />
+      {/* kalpak alt kenarı (başlık ile alnı ayıran çizgi) */}
+      <path
+        fill="none"
+        stroke="#fff"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        opacity="0.5"
+        d="M14.5 15.5 L34 15.5"
+      />
     </svg>
   );
 }
