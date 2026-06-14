@@ -256,28 +256,28 @@ export function PastExamClient({
             })}
           </div>
 
-          {/* soru görüntüsü */}
-          <div className="overflow-hidden rounded-xl border border-rehberim-border bg-white">
+          {/* soru görüntüsü — viewport'a sığsın diye yükseklik sınırlı */}
+          <div className="flex justify-center overflow-hidden rounded-xl border border-rehberim-border bg-white p-1">
             <Image
               src={q.image}
               alt={`${q.subject} ${q.no}. soru`}
-              width={520}
-              height={700}
-              className="h-auto w-full"
+              width={560}
+              height={760}
+              className="h-auto w-auto max-h-[52vh] max-w-full object-contain"
               unoptimized
               priority
             />
           </div>
 
           {/* şık butonları */}
-          <div className="mt-4 grid grid-cols-4 gap-2">
+          <div className="mt-3 grid grid-cols-4 gap-2">
             {LETTERS.map((letter, i) => {
               const isSel = sel === i;
               return (
                 <button
                   key={i}
                   onClick={() => pick(i)}
-                  className={`flex items-center justify-center rounded-xl border py-3 text-base font-extrabold transition ${
+                  className={`flex items-center justify-center rounded-xl border py-2.5 text-base font-extrabold transition ${
                     isSel
                       ? "border-rehberim-accent bg-rehberim-accent text-white"
                       : "border-rehberim-border bg-white text-rehberim-navy hover:border-rehberim-accent/50"
@@ -290,7 +290,7 @@ export function PastExamClient({
           </div>
 
           {/* gezinme */}
-          <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="mt-3 flex items-center justify-between gap-2">
             <button
               onClick={() => goTo(current - 1)}
               disabled={current === 0}
@@ -394,13 +394,13 @@ export function PastExamClient({
         <p className="mb-2 text-xs font-bold uppercase tracking-wider text-rehberim-accent">
           {q.subject} · {q.no}. soru
         </p>
-        <div className="overflow-hidden rounded-xl border border-rehberim-border">
+        <div className="flex justify-center overflow-hidden rounded-xl border border-rehberim-border bg-white p-1">
           <Image
             src={q.image}
             alt={`${q.subject} ${q.no}. soru`}
-            width={520}
-            height={700}
-            className="h-auto w-full"
+            width={560}
+            height={760}
+            className="h-auto w-auto max-h-[60vh] max-w-full object-contain"
             unoptimized
           />
         </div>
