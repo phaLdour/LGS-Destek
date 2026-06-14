@@ -1,4 +1,12 @@
 import type { PastExamMeta, PastExamYear, ExamSection, PastQuestion } from "./types";
+import { SOZEL_2018, SAYISAL_2018 } from "./2018";
+import { SOZEL_2019, SAYISAL_2019 } from "./2019";
+import { SOZEL_2020, SAYISAL_2020 } from "./2020";
+import { SOZEL_2021, SAYISAL_2021 } from "./2021";
+import { SOZEL_2022, SAYISAL_2022 } from "./2022";
+import { SOZEL_2023, SAYISAL_2023 } from "./2023";
+import { SOZEL_2024, SAYISAL_2024 } from "./2024";
+import { SOZEL_2025, SAYISAL_2025 } from "./2025";
 import { SOZEL_2026, SAYISAL_2026 } from "./2026";
 
 /**
@@ -8,21 +16,32 @@ import { SOZEL_2026, SAYISAL_2026 } from "./2026";
  * PDF'ler `public/cikmis-sorular/{yil}-{bolum}.pdf` altında durur.
  * Dosya yoksa indirme butonu pasif görünür.
  *
- * İnteraktif çözüm için `questions` alanı dolu olmalı. 2026 sınavı görüntü
- * tabanlı interaktif olarak eklenmiştir (resmî cevap anahtarıyla).
+ * 9 yılın hepsi interaktif çözüme açık — sorular kitapçıktan kesilmiş
+ * PNG görüntüler, doğru cevaplar resmî A KİTAPÇIĞI cevap anahtarından.
  *
  * Kaynak: MEB ÖDSGM — odsgm.meb.gov.tr
  */
+
+const QUESTIONS_BY_YEAR: Record<number, { sozel: PastQuestion[]; sayisal: PastQuestion[] }> = {
+  2018: { sozel: SOZEL_2018, sayisal: SAYISAL_2018 },
+  2019: { sozel: SOZEL_2019, sayisal: SAYISAL_2019 },
+  2020: { sozel: SOZEL_2020, sayisal: SAYISAL_2020 },
+  2021: { sozel: SOZEL_2021, sayisal: SAYISAL_2021 },
+  2022: { sozel: SOZEL_2022, sayisal: SAYISAL_2022 },
+  2023: { sozel: SOZEL_2023, sayisal: SAYISAL_2023 },
+  2024: { sozel: SOZEL_2024, sayisal: SAYISAL_2024 },
+  2025: { sozel: SOZEL_2025, sayisal: SAYISAL_2025 },
+  2026: { sozel: SOZEL_2026, sayisal: SAYISAL_2026 },
+};
 
 /** Yıl+bölüm için interaktif soru havuzu (varsa). */
 function questionsFor(
   year: number,
   section: ExamSection,
 ): PastQuestion[] | undefined {
-  if (year === 2026) {
-    return section === "sozel" ? SOZEL_2026 : SAYISAL_2026;
-  }
-  return undefined;
+  const y = QUESTIONS_BY_YEAR[year];
+  if (!y) return undefined;
+  return section === "sozel" ? y.sozel : y.sayisal;
 }
 
 function mk(
