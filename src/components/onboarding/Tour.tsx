@@ -47,7 +47,7 @@ const STEPS: Step[] = [
     emoji: "📝",
     title: "Deneme & Çıkmış Sorular",
     body:
-      "Sınav günü provası için Deneme Sınavı modunu kullan: gerçek LGS süresi (75 + 80 dk), net hesabı dahil. 2018-2025 çıkmış sorulara da 'Çıkmış Sorular' bölümünden ulaşırsın.",
+      "Sınav günü provası için Deneme Sınavı modunu kullan: gerçek LGS süresi (75 + 80 dk), net hesabı dahil. 2018-2026 çıkmış sorulara da 'Çıkmış Sorular' bölümünden ulaşırsın.",
     icon: FileText,
   },
 ];

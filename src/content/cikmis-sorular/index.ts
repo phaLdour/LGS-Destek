@@ -1,17 +1,29 @@
-import type { PastExamMeta, PastExamYear, ExamSection } from "./types";
+import type { PastExamMeta, PastExamYear, ExamSection, PastQuestion } from "./types";
+import { SOZEL_2026, SAYISAL_2026 } from "./2026";
 
 /**
- * 2018-2025 LGS sınavları arşivi.
+ * 2018-2026 LGS sınavları arşivi.
  *
  * Her yıl iki bölüm: Sözel (75 dk / 50 soru) ve Sayısal (80 dk / 40 soru).
  * PDF'ler `public/cikmis-sorular/{yil}-{bolum}.pdf` altında durur.
  * Dosya yoksa indirme butonu pasif görünür.
  *
- * İnteraktif çözüm için `questions` alanı dolu olmalı; aşamalı olarak
- * (önce 2025 pilot) eklenir.
+ * İnteraktif çözüm için `questions` alanı dolu olmalı. 2026 sınavı görüntü
+ * tabanlı interaktif olarak eklenmiştir (resmî cevap anahtarıyla).
  *
  * Kaynak: MEB ÖDSGM — odsgm.meb.gov.tr
  */
+
+/** Yıl+bölüm için interaktif soru havuzu (varsa). */
+function questionsFor(
+  year: number,
+  section: ExamSection,
+): PastQuestion[] | undefined {
+  if (year === 2026) {
+    return section === "sozel" ? SOZEL_2026 : SAYISAL_2026;
+  }
+  return undefined;
+}
 
 function mk(
   year: number,
@@ -27,12 +39,12 @@ function mk(
     totalQuestions: total,
     durationMinutes: minutes,
     pdfPath: `/cikmis-sorular/${year}-${section}.pdf`,
+    questions: questionsFor(year, section),
     source: "MEB ÖDSGM (odsgm.meb.gov.tr)",
-    // questions: ayrı dosyalarda tanımlanır; aşağıdaki try/catch ile yüklenir
   };
 }
 
-const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
+const YEARS = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018];
 
 export const PAST_EXAMS: PastExamYear[] = YEARS.map((y) => ({
   year: y,

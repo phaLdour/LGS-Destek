@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Download, FileWarning } from "lucide-react";
+import { ArrowLeft, Download, FileWarning, Play } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { getPastExam } from "@/content/cikmis-sorular";
 import type { ExamSection } from "@/content/cikmis-sorular/types";
@@ -28,6 +28,8 @@ export default async function ExamDetailPage({
     ? existsSync(path.join(process.cwd(), "public", meta.pdfPath.replace(/^\//, "")))
     : false;
 
+  const hasInteractive = Boolean(meta.questions && meta.questions.length > 0);
+
   const user = await getShellUser();
 
   return (
@@ -48,6 +50,24 @@ export default async function ExamDetailPage({
           {meta.totalQuestions} soru · {meta.durationMinutes} dakika
         </p>
       </header>
+
+      {/* İnteraktif çöz (soru havuzu varsa) */}
+      {hasInteractive && (
+        <Link
+          href={`/cikmis-sorular/${year}/${bolum}/coz`}
+          className="group mb-3 flex items-center gap-4 rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-white shadow-card transition hover:scale-[1.01] hover:shadow-soft"
+        >
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+            <Play className="h-8 w-8" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-lg font-extrabold">İnteraktif çöz</p>
+            <p className="text-sm text-white/85">
+              Süreli, net hesaplı, gerçek MEB soruları
+            </p>
+          </div>
+        </Link>
+      )}
 
       {/* PDF indir */}
       {pdfExists ? (

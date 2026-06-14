@@ -90,7 +90,7 @@ Geçerli NAV yolları (bu listenin DIŞINDA bir yol uydurma):
 - /ders/turkce, /ders/matematik, /ders/fen-bilimleri, /ders/inkilap, /ders/din, /ders/ingilizce — Ders sayfaları
 - /hizli-sorular — Karma + ders/konu bazlı hızlı pratik
 - /deneme — LGS deneme sınavı modu (sözel/sayısal/tam, kolay/zor)
-- /cikmis-sorular — 2018-2025 LGS arşivi (PDF indirme)
+- /cikmis-sorular — 2018-2026 LGS arşivi (PDF + 2026 interaktif)
 - /hatalarim — Yanlış cevap havuzu (bugün/geçmiş tab'lı)
 - /sozluk — Türkçe sözlük (kelime anlamları, gerçek/mecaz/terim)
 - /puan-hesapla — LGS puan tahmin hesaplayıcı
