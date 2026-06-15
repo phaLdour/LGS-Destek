@@ -18,9 +18,25 @@ export function MascotButton() {
   const [loading, setLoading] = useState(false);
   const [greetingLoaded, setGreetingLoaded] = useState(false);
 
-  // İlk açılışta kullanıcı stats'ına göre kişisel selam çek
+  // İlk açılışta kullanıcı stats'ına göre kişisel selam çek.
+  // Selam bir oturum boyunca sabit olduğundan sessionStorage'da cache'lenir:
+  // her sayfa geçişinde /api/chat/greeting (→ 3 ağır Supabase query)
+  // tekrar tetiklenmez, oturumda yalnız bir kez çağrılır.
+  const GREETING_CACHE_KEY = "rehberim:greeting";
   useEffect(() => {
     if (greetingLoaded) return;
+
+    try {
+      const cached = sessionStorage.getItem(GREETING_CACHE_KEY);
+      if (cached) {
+        setMessages([{ role: "model", text: cached }]);
+        setGreetingLoaded(true);
+        return;
+      }
+    } catch {
+      // sessionStorage erişilemezse fetch'e düş
+    }
+
     let cancelled = false;
     fetch("/api/chat/greeting")
       .then((r) => r.json())
@@ -28,6 +44,11 @@ export function MascotButton() {
         if (cancelled) return;
         if (data.reply) {
           setMessages([{ role: "model", text: data.reply }]);
+          try {
+            sessionStorage.setItem(GREETING_CACHE_KEY, data.reply);
+          } catch {
+            // yoksay
+          }
         }
         setGreetingLoaded(true);
       })

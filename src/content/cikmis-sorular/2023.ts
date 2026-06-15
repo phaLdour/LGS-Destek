@@ -4,7 +4,7 @@ import type { PastQuestion } from "./types";
  * 2023 LGS interaktif soru verisi.
  *
  * Soru içerikleri kitapçıktan kesilmiş GÖRÜNTÜLERDİR
- * (public/cikmis-sorular/2023/<bolum>/<ders>-<no>.png) — şekiller/grafikler
+ * (public/cikmis-sorular/2023/<bolum>/<ders>-<no>.webp) — şekiller/grafikler
  * birebir korunur, hiçbir metin uydurulmaz.
  *
  * Doğru cevaplar, kitapçığın RESMÎ "A KİTAPÇIĞI CEVAP ANAHTARI"ndan
@@ -43,7 +43,7 @@ function build(specs: SubjectSpec[], bolum: "sozel" | "sayisal"): PastQuestion[]
         subject: s.name,
         subjectSlug: s.slug,
         no: i + 1,
-        image: `/cikmis-sorular/2023/${bolum}/${s.slug}-${i + 1}.png`,
+        image: `/cikmis-sorular/2023/${bolum}/${s.slug}-${i + 1}.webp`,
         correctIndex: L[ch],
       });
     });

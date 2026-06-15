@@ -2,12 +2,10 @@
 
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
-import { getSubjectContent } from "@/content";
 import { saveSession } from "@/lib/tracking";
 
 const STORAGE_KEY = "rehberim:study-session";
@@ -52,8 +50,11 @@ export function useStudySession(): Ctx {
 
 export function StudySessionProvider({
   children,
+  topicNames = {},
 }: {
   children: React.ReactNode;
+  /** `${subjectSlug}/${topicId}` → konu adı (server'dan, hafif). */
+  topicNames?: Record<string, string>;
 }) {
   const [session, setSession] = useState<SessionState | null>(null);
   const [summary, setSummary] = useState<SessionSummary | null>(null);
@@ -117,9 +118,8 @@ export function StudySessionProvider({
       0,
       (Date.now() - new Date(session.startedAt).getTime()) / 1000,
     );
-    const content = getSubjectContent(session.subjectSlug);
     const studiedTopicNames = session.studiedTopics.map(
-      (id) => content?.topics.find((t) => t.id === id)?.name ?? id,
+      (id) => topicNames[`${session.subjectSlug}/${id}`] ?? id,
     );
 
     setSummary({

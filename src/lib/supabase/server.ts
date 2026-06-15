@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
@@ -36,12 +37,19 @@ export async function createClient() {
   );
 }
 
-/** Geçerli kullanıcıyı döndürür; yapılandırma yoksa null. */
-export async function getCurrentUser() {
+/**
+ * Geçerli kullanıcıyı döndürür; yapılandırma yoksa null.
+ *
+ * React `cache()` ile sarılı: tek bir istek/render boyunca kaç kez
+ * çağrılırsa çağrılsın Supabase auth sunucusuna YALNIZ BİR ağ isteği
+ * yapılır. (getShellUser + SubjectHeatmap + BadgeShowcase aynı render'da
+ * çağırdığında 3 yerine 1 round-trip.)
+ */
+export const getCurrentUser = cache(async () => {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   return user;
-}
+});

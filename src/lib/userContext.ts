@@ -4,7 +4,11 @@
  * kullanıcı için null döner.
  */
 import { getAllSubjects } from "@/content";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  createClient,
+  getCurrentUser,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 
 export type WeakTopic = {
   subjectSlug: string;
@@ -36,11 +40,9 @@ function dayKey(d: Date): string {
  */
 export async function getUserContext(): Promise<UserContext | null> {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = await createClient();
 
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
   const fullName =
@@ -57,6 +59,11 @@ export async function getUserContext(): Promise<UserContext | null> {
   const streakStart = new Date();
   streakStart.setDate(streakStart.getDate() - 60);
 
+  // Quiz sonuçları için 180 günlük pencere (zayıf konu analizi + haftalık
+  // soru sayısı için fazlasıyla yeterli; sorgu yükünü sabit tutar).
+  const quizSince = new Date();
+  quizSince.setDate(quizSince.getDate() - 180);
+
   const [sessionsRes, quizzesRes, wrongRes] = await Promise.all([
     supabase
       .from("study_sessions")
@@ -64,7 +71,8 @@ export async function getUserContext(): Promise<UserContext | null> {
       .gte("started_at", streakStart.toISOString()),
     supabase
       .from("quiz_results")
-      .select("subject_slug, topic_id, correct_count, wrong_count, created_at"),
+      .select("subject_slug, topic_id, correct_count, wrong_count, created_at")
+      .gte("created_at", quizSince.toISOString()),
     supabase.from("wrong_answers").select("next_due_at, last_wrong_at"),
   ]);
 

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ChevronRight, Flame } from "lucide-react";
 import { getAllSubjects } from "@/content";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  createClient,
+  getCurrentUser,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 
 /**
  * Bir konunun performans yüzdesinin "anlamlı" sayılması için gereken
@@ -50,11 +54,9 @@ function badgeColor(pct: number | null): string {
 
 export async function SubjectHeatmap() {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = await createClient();
 
   // Topic bazlı tüm test sonuçları (karma ve karma-subject kayıtları hariç bırakılır)
   const { data } = await supabase

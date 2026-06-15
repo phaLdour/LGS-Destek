@@ -1,4 +1,14 @@
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import {
+  computeStats,
+  emptyStats,
+  DEFAULT_GOAL,
+  type Stats,
+  type QuizRow,
+  type SessionRow,
+} from "@/lib/tracking-core";
+
+export type { Stats } from "@/lib/tracking-core";
 
 export type TopicStatus = "in_progress" | "done";
 
@@ -19,29 +29,6 @@ export type QuizResultInput = {
   total: number;
   durationSeconds: number;
 };
-
-export type Stats = {
-  configured: boolean;
-  signedIn: boolean;
-  totalMinutes: number;
-  todayMinutes: number;
-  completedTopics: number;
-  streakDays: number;
-  /** Son 7 gün (eskiden yeniye), her biri {label, minutes} */
-  weekly: { label: string; minutes: number; isToday: boolean }[];
-  quizzesSolved: number;
-  questionsAnswered: number;
-  accuracyPct: number;
-  /** Bugün (yerel saat 00:00'dan beri) cevaplanan toplam soru sayısı */
-  questionsToday: number;
-};
-
-const DEFAULT_GOAL = 30;
-const DAY_LABELS = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
-
-function dayKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
 
 async function getClientAndUser() {
   if (!isSupabaseConfigured()) return null;
@@ -138,27 +125,18 @@ export async function setDailyGoal(minutes: number): Promise<boolean> {
 }
 
 export async function getStats(): Promise<Stats> {
-  const base: Stats = {
-    configured: isSupabaseConfigured(),
-    signedIn: false,
-    totalMinutes: 0,
-    todayMinutes: 0,
-    completedTopics: 0,
-    streakDays: 0,
-    weekly: buildEmptyWeek(),
-    quizzesSolved: 0,
-    questionsAnswered: 0,
-    accuracyPct: 0,
-    questionsToday: 0,
-  };
-
   const ctx = await getClientAndUser();
-  if (!ctx) return base;
-  base.signedIn = true;
+  if (!ctx) return emptyStats(isSupabaseConfigured());
 
   // Son 60 günün oturumları (streak + haftalık için yeterli)
   const since = new Date();
   since.setDate(since.getDate() - 60);
+
+  // Quiz sonuçları için 180 günlük pencere: LGS hazırlığı tek akademik yıl
+  // içinde olduğundan öğrencinin tüm geçmişini kapsar (gösterilen değerler
+  // pratikte değişmez) ama sorgu yükü zamanla büyümez.
+  const quizSince = new Date();
+  quizSince.setDate(quizSince.getDate() - 180);
 
   const [{ data: sessions }, { count: doneCount }, { data: quizzes }] =
     await Promise.all([
@@ -172,92 +150,13 @@ export async function getStats(): Promise<Stats> {
         .eq("status", "done"),
       ctx.supabase
         .from("quiz_results")
-        .select("correct_count, wrong_count, created_at"),
+        .select("correct_count, wrong_count, created_at")
+        .gte("created_at", quizSince.toISOString()),
     ]);
 
-  const quizRows = (quizzes ?? []) as {
-    correct_count: number;
-    wrong_count: number;
-    created_at: string;
-  }[];
-  base.quizzesSolved = quizRows.length;
-  const totalCorrect = quizRows.reduce((s, r) => s + r.correct_count, 0);
-  const totalWrong = quizRows.reduce((s, r) => s + r.wrong_count, 0);
-  base.questionsAnswered = totalCorrect + totalWrong;
-  base.accuracyPct = base.questionsAnswered
-    ? Math.round((totalCorrect / base.questionsAnswered) * 100)
-    : 0;
-
-  // Bugün cevaplanan soru: yerel günün başlangıcından sonraki quiz kayıtları
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  base.questionsToday = quizRows.reduce((sum, r) => {
-    const ts = new Date(r.created_at).getTime();
-    if (ts >= todayStart.getTime()) {
-      return sum + r.correct_count + r.wrong_count;
-    }
-    return sum;
-  }, 0);
-
-  const rows = (sessions ?? []) as {
-    duration_seconds: number;
-    started_at: string;
-  }[];
-
-  base.completedTopics = doneCount ?? 0;
-
-  // Günlük dakika toplamları
-  const perDay = new Map<string, number>();
-  let totalSeconds = 0;
-  for (const r of rows) {
-    totalSeconds += r.duration_seconds;
-    const d = new Date(r.started_at);
-    perDay.set(dayKey(d), (perDay.get(dayKey(d)) ?? 0) + r.duration_seconds);
-  }
-  base.totalMinutes = Math.round(totalSeconds / 60);
-
-  const today = new Date();
-  base.todayMinutes = Math.round((perDay.get(dayKey(today)) ?? 0) / 60);
-
-  // Haftalık (son 7 gün, eskiden yeniye)
-  base.weekly = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    base.weekly.push({
-      label: DAY_LABELS[d.getDay()],
-      minutes: Math.round((perDay.get(dayKey(d)) ?? 0) / 60),
-      isToday: i === 0,
-    });
-  }
-
-  // Seri (streak): bugün veya dünden başlayıp geriye doğru kesintisiz gün
-  base.streakDays = computeStreak(perDay);
-
-  return base;
-}
-
-function computeStreak(perDay: Map<string, number>): number {
-  const cursor = new Date();
-  // Bugün çalışılmadıysa dünden başlat (seri kopmasın diye)
-  if ((perDay.get(dayKey(cursor)) ?? 0) === 0) {
-    cursor.setDate(cursor.getDate() - 1);
-    if ((perDay.get(dayKey(cursor)) ?? 0) === 0) return 0;
-  }
-  let streak = 0;
-  while ((perDay.get(dayKey(cursor)) ?? 0) > 0) {
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
-}
-
-function buildEmptyWeek() {
-  const out: { label: string; minutes: number; isToday: boolean }[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    out.push({ label: DAY_LABELS[d.getDay()], minutes: 0, isToday: i === 0 });
-  }
-  return out;
+  return computeStats(
+    (sessions ?? []) as SessionRow[],
+    doneCount ?? 0,
+    (quizzes ?? []) as QuizRow[],
+  );
 }

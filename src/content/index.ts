@@ -30,6 +30,22 @@ export function getTopic(slug: string, topicId: string): Topic | null {
   return subject?.topics.find((t) => t.id === topicId) ?? null;
 }
 
+/**
+ * Hafif konu-adı haritası: `${subjectSlug}/${topicId}` → konu adı.
+ * Client bileşenlerin (StudySessionProvider) ağır `@/content` modülünü
+ * bundle'a çekmeden konu adlarını çözebilmesi için server tarafında
+ * üretilip prop olarak verilir. Sadece kısa string'lerden oluşur.
+ */
+export function getTopicNameMap(): Record<string, string> {
+  const map: Record<string, string> = {};
+  for (const subject of Object.values(CONTENT)) {
+    for (const t of subject.topics) {
+      map[`${subject.slug}/${t.id}`] = t.name;
+    }
+  }
+  return map;
+}
+
 /** İçeriği olan tüm konuların listesi (AI'ın "Konuyu çöz" yönlendirmesi için). */
 export function getTopicCatalog(): {
   route: string;

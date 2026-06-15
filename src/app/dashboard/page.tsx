@@ -8,9 +8,14 @@ import { StatsPanel } from "@/components/stats/StatsPanel";
 import { WeeklyDigestCard } from "@/components/stats/WeeklyDigestCard";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { getShellUser } from "@/lib/user";
+import { getStatsServer, getDailyGoalServer } from "@/lib/tracking-server";
 
 export default async function DashboardPage() {
-  const user = await getShellUser();
+  const [user, stats, goal] = await Promise.all([
+    getShellUser(),
+    getStatsServer(),
+    getDailyGoalServer(),
+  ]);
   const firstName = user.name.split(" ")[0];
 
   return (
@@ -91,7 +96,7 @@ export default async function DashboardPage() {
             İlerlemeni ve çalışma alışkanlığını takip et
           </p>
         </div>
-        <StatsPanel />
+        <StatsPanel initialStats={stats} initialGoal={goal} />
       </section>
 
       {/* Dersler */}

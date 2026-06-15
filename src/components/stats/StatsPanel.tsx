@@ -22,16 +22,25 @@ function fmtMin(min: number): string {
   return m ? `${h} sa ${m} dk` : `${h} sa`;
 }
 
-export function StatsPanel() {
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [goal, setGoal] = useState(30);
+export function StatsPanel({
+  initialStats,
+  initialGoal,
+}: {
+  /** Server'dan gelen hazır istatistik — verildiğinde client fetch yapılmaz. */
+  initialStats?: Stats;
+  initialGoal?: number;
+}) {
+  const [stats, setStats] = useState<Stats | null>(initialStats ?? null);
+  const [goal, setGoal] = useState(initialGoal ?? 30);
 
   useEffect(() => {
+    // Server zaten veriyi sağladıysa ikinci kez çekme (waterfall yok).
+    if (initialStats) return;
     Promise.all([getStats(), getDailyGoal()]).then(([s, g]) => {
       setStats(s);
       setGoal(g);
     });
-  }, []);
+  }, [initialStats]);
 
   if (!stats) {
     return (

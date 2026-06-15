@@ -1,7 +1,11 @@
 import { Lock } from "lucide-react";
 import { getAllSubjects } from "@/content";
 import { BADGES, evaluateBadges, type Badge } from "@/lib/badges";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  createClient,
+  getCurrentUser,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 
 const GROUP_LABELS: Record<Badge["group"], string> = {
   baslangic: "Başlangıç",
@@ -25,11 +29,9 @@ function dayKey(d: Date): string {
 
 export async function BadgeShowcase() {
   if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) return null;
+  const supabase = await createClient();
 
   // Paralel veri
   const since = new Date();

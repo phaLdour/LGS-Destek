@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
@@ -11,18 +12,28 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Article } from "@/components/study/Article";
-import { Flashcards } from "@/components/study/Flashcards";
 import { LgsTips } from "@/components/study/LgsTips";
-import { MindMap } from "@/components/study/MindMap";
 import {
   hasTopicDiagrams,
   TopicDiagrams,
 } from "@/components/study/MathDiagrams";
-import { Quiz } from "@/components/study/Quiz";
 import { TopicStudyController } from "@/components/study/TopicStudyController";
 import { YouTubeEmbed } from "@/components/study/YouTubeEmbed";
 import { getSubjectContent, getTopic } from "@/content";
 import { getShellUser } from "@/lib/user";
+
+// Ağır, etkileşimli bileşenler ayrı chunk'lara bölünür — ilk yükte (above
+// the fold) bundle'ı şişirmezler; ihtiyaç olunca yüklenir. SSR açık kalır
+// (içerik HTML'de gelir, SEO/erişim korunur).
+const MindMap = dynamic(() =>
+  import("@/components/study/MindMap").then((m) => m.MindMap),
+);
+const Flashcards = dynamic(() =>
+  import("@/components/study/Flashcards").then((m) => m.Flashcards),
+);
+const Quiz = dynamic(() =>
+  import("@/components/study/Quiz").then((m) => m.Quiz),
+);
 
 export default async function TopicPage({
   params,
