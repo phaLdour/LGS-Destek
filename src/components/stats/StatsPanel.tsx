@@ -123,18 +123,29 @@ function Card({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-rehberim-border bg-white p-4 shadow-card">
+    <div className="ring-hairline group relative overflow-hidden rounded-2xl border border-rehberim-border bg-white p-4 shadow-card transition-shadow duration-300 ease-smooth hover:shadow-soft">
+      {/* hafif accent köşe — sadece accent kartlarda */}
+      {accent && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-rehberim-accent/10 blur-2xl"
+        />
+      )}
       <span
-        className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl ${
+        className={`relative mb-2.5 flex h-9 w-9 items-center justify-center rounded-xl ring-1 transition-transform duration-300 ease-smooth group-hover:scale-[1.04] ${
           accent
-            ? "bg-rehberim-accent/15 text-rehberim-accent"
-            : "bg-rehberim-navy/5 text-rehberim-navy"
+            ? "bg-rehberim-accent/12 text-rehberim-accent ring-rehberim-accent/15"
+            : "bg-rehberim-navy/5 text-rehberim-navy ring-rehberim-navy/5"
         }`}
       >
         {icon}
       </span>
-      <p className="text-xl font-extrabold text-rehberim-navy">{value}</p>
-      <p className="text-xs font-semibold text-rehberim-navy/50">{label}</p>
+      <p className="relative text-[1.4rem] font-extrabold leading-none tracking-tight tabular-nums text-rehberim-navy">
+        {value}
+      </p>
+      <p className="relative mt-1 text-[11.5px] font-semibold uppercase tracking-wider text-rehberim-navy/50">
+        {label}
+      </p>
     </div>
   );
 }

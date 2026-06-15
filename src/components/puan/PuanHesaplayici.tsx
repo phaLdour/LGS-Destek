@@ -58,14 +58,18 @@ export function PuanHesaplayici() {
   return (
     <div className="space-y-5">
       {/* Başlık */}
-      <header className="rounded-3xl border border-rehberim-border bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light p-5 text-white shadow-card">
-        <div className="flex items-start gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+      <header className="relative overflow-hidden rounded-3xl border border-rehberim-border bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light p-5 text-white shadow-card">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-10 -top-12 h-36 w-36 rounded-full bg-rehberim-accent/15 blur-3xl"
+        />
+        <div className="relative flex items-start gap-3">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/20 backdrop-blur-sm">
             <Calculator className="h-7 w-7" />
           </span>
           <div>
-            <h1 className="text-xl font-extrabold">LGS Puan Hesapla</h1>
-            <p className="mt-1 text-sm text-white/85">
+            <h1 className="text-xl font-extrabold tracking-tight">LGS Puan Hesapla</h1>
+            <p className="mt-1 text-pretty text-sm text-white/85">
               Her ders için <strong>Doğru / Yanlış / Boş</strong> sayını gir;
               tahmini LGS puanın anında görünür.
             </p>

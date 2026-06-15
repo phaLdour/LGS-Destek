@@ -60,13 +60,17 @@ export default async function HatalarimPage({
         Anasayfaya dön
       </Link>
 
-      <header className="mb-5 flex items-center gap-4 rounded-3xl border border-red-200 bg-gradient-to-br from-red-500 to-rose-600 p-5 text-white shadow-card">
-        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+      <header className="relative mb-5 flex items-center gap-4 overflow-hidden rounded-3xl border border-red-200 bg-gradient-to-br from-red-500 to-rose-600 p-5 text-white shadow-card">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-12 h-36 w-36 rounded-full bg-white/15 blur-3xl"
+        />
+        <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/25 backdrop-blur-sm">
           <Icon className="h-8 w-8" />
         </span>
-        <div>
-          <h1 className="text-xl font-extrabold">{m.title}</h1>
-          <p className="text-sm text-white/85">{m.description}</p>
+        <div className="relative">
+          <h1 className="text-xl font-extrabold tracking-tight">{m.title}</h1>
+          <p className="text-pretty text-sm text-white/85">{m.description}</p>
         </div>
       </header>
 
@@ -81,10 +85,11 @@ export default async function HatalarimPage({
             <Link
               key={t}
               href={t === "due" ? "/hatalarim" : `/hatalarim?gun=${t}`}
-              className={`flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-bold transition ${
+              aria-current={isActive ? "page" : undefined}
+              className={`flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-bold transition-all duration-200 ease-smooth ${
                 isActive
-                  ? "border-rehberim-accent bg-rehberim-accent/10 text-rehberim-accent-dark"
-                  : "border-rehberim-border bg-white text-rehberim-navy/70 hover:bg-rehberim-muted"
+                  ? "border-rehberim-accent bg-rehberim-accent/12 text-rehberim-accent-dark shadow-card"
+                  : "border-rehberim-border bg-white text-rehberim-navy/70 hover:-translate-y-px hover:bg-rehberim-muted"
               }`}
             >
               <TIcon className="h-4 w-4" />

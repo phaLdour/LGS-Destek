@@ -77,18 +77,23 @@ export function SubjectGrid() {
         <Link
           key={slug}
           href={`/ders/${slug}`}
-          className="group flex flex-col gap-3 rounded-2xl border border-rehberim-border bg-white p-4 shadow-card transition-all hover:-translate-y-0.5 hover:border-rehberim-accent/40 hover:shadow-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-rehberim-accent sm:p-5"
+          className="group ring-hairline relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-rehberim-border bg-white p-4 shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[3px] hover:border-rehberim-accent/40 hover:shadow-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-rehberim-accent sm:p-5"
         >
+          {/* Hover'da sağ üstte sönen accent ışıltı — premium "kart canlanıyor" hissi */}
           <span
-            className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${badge} shadow-sm transition-transform group-hover:scale-105`}
+            aria-hidden
+            className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-rehberim-accent/0 blur-2xl transition-all duration-500 ease-smooth group-hover:bg-rehberim-accent/15"
+          />
+          <span
+            className={`relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${badge} shadow-card transition-transform duration-300 ease-snap group-hover:scale-[1.06] group-hover:-rotate-[3deg]`}
           >
             <Icon className={`h-7 w-7 ${iconClass}`} />
           </span>
-          <span>
-            <span className="block text-sm font-bold text-rehberim-navy sm:text-base">
+          <span className="relative">
+            <span className="block text-[15px] font-bold tracking-tight text-rehberim-navy sm:text-base">
               {name}
             </span>
-            <span className="mt-0.5 block text-xs text-rehberim-navy/55">
+            <span className="mt-0.5 block text-[12.5px] leading-snug text-rehberim-navy/55">
               {short}
             </span>
           </span>

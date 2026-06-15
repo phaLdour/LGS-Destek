@@ -20,12 +20,18 @@ export function AuthScreen({ mode }: { mode: "login" | "register" }) {
         <div className="pointer-events-none absolute -bottom-32 -left-16 h-80 w-80 rounded-full bg-rehberim-accent/10 blur-3xl" />
         {/* ince ızgara dokusu */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.05]"
           style={{
             backgroundImage:
               "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
+        />
+        {/* alta doğru hafif fade — kompozisyona derinlik katar */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-rehberim-navy-dark/60 to-transparent"
         />
 
         {/* üst: marka */}
@@ -33,24 +39,26 @@ export function AuthScreen({ mode }: { mode: "login" | "register" }) {
           <span className="text-2xl font-black tracking-tight">
             Rehber<span className="text-rehberim-accent">im</span>
           </span>
-          <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-white/70">
+          <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/70 backdrop-blur-sm">
             LGS Hazırlık
           </span>
         </div>
 
         {/* orta: başlık + karşılayan baykuş */}
         <div className="relative flex flex-1 flex-col justify-center">
-          <h2 className="max-w-sm text-balance text-[2.1rem] font-extrabold leading-[1.15] tracking-tight">
+          <h2 className="max-w-sm text-balance text-[2.15rem] font-extrabold leading-[1.12] tracking-tight">
             LGS&apos;ye giden yolda{" "}
-            <span className="text-rehberim-accent-light">yanındayız</span>
+            <span className="bg-gradient-to-r from-rehberim-accent-light to-amber-300 bg-clip-text text-transparent">
+              yanındayız
+            </span>
           </h2>
-          <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-white/70">
+          <p className="mt-4 max-w-sm text-pretty text-[15px] leading-relaxed text-white/70">
             Tüm dersler, sana yol gösteren akıllı Rehber Baykuş ve kişisel
             çalışma alanın tek bir yerde.
           </p>
 
           {/* sağa bakıp kanadını forma uzatan baykuş */}
-          <OwlPointing className="pointer-events-none mt-2 h-64 w-auto translate-x-6 animate-float self-end drop-shadow-[0_18px_36px_rgba(0,0,0,0.4)]" />
+          <OwlPointing className="pointer-events-none mt-2 h-64 w-auto translate-x-6 animate-float self-end drop-shadow-[0_22px_44px_rgba(0,0,0,0.5)]" />
         </div>
 
         {/* alt: özellikler */}
@@ -81,10 +89,10 @@ export function AuthScreen({ mode }: { mode: "login" | "register" }) {
               <LogoLockup />
             </div>
             <div className="mt-2 text-center lg:mt-0 lg:text-left">
-              <h1 className="text-[1.7rem] font-extrabold tracking-tight text-rehberim-navy">
+              <h1 className="text-[1.75rem] font-extrabold leading-tight tracking-tight text-rehberim-navy">
                 {title}
               </h1>
-              <p className="mt-1.5 text-[15px] text-rehberim-navy/55">
+              <p className="mt-1.5 text-[15px] leading-relaxed text-rehberim-navy/55">
                 {subtitle}
               </p>
             </div>

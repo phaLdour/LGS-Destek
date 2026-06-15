@@ -87,41 +87,46 @@ export function OnboardingTour() {
   const isLast = idx === STEPS.length - 1;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-rehberim-navy/60 p-4 backdrop-blur-sm sm:items-center">
-      <div className="relative w-full max-w-md animate-scale-in rounded-3xl border border-rehberim-border bg-white p-6 shadow-soft">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-rehberim-navy/55 p-4 backdrop-blur-md sm:items-center">
+      <div className="ring-hairline relative w-full max-w-md animate-scale-in overflow-hidden rounded-3xl border border-rehberim-border bg-white p-6 shadow-elevated">
+        {/* dekoratif accent ışıltı */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-rehberim-accent/12 blur-2xl"
+        />
         <button
           onClick={dismiss}
           aria-label="Kapat"
-          className="absolute right-3 top-3 rounded-md p-1.5 text-rehberim-navy/40 hover:bg-rehberim-muted hover:text-rehberim-navy"
+          className="absolute right-3 top-3 rounded-md p-1.5 text-rehberim-navy/40 transition-colors hover:bg-rehberim-muted hover:text-rehberim-navy"
         >
           <X className="h-4 w-4" />
         </button>
 
-        <div className="flex items-start gap-3">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rehberim-accent/15 text-2xl">
+        <div className="relative flex items-start gap-3">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rehberim-accent/15 text-2xl ring-1 ring-rehberim-accent/15">
             {step.emoji}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rehberim-accent">
+            <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-rehberim-accent">
               <Icon className="h-3.5 w-3.5" />
               Adım {idx + 1}/{STEPS.length}
             </p>
-            <h3 className="mt-1 text-lg font-extrabold text-rehberim-navy">
+            <h3 className="mt-1.5 text-lg font-extrabold tracking-tight text-rehberim-navy">
               {step.title}
             </h3>
           </div>
         </div>
 
-        <p className="mt-4 text-sm leading-relaxed text-rehberim-navy/75">
+        <p className="relative mt-4 text-pretty text-sm leading-relaxed text-rehberim-navy/75">
           {step.body}
         </p>
 
         {/* Progress dots */}
-        <div className="mt-5 flex justify-center gap-1.5">
+        <div className="relative mt-5 flex justify-center gap-1.5">
           {STEPS.map((_, i) => (
             <span
               key={i}
-              className={`h-1.5 rounded-full transition-all ${
+              className={`h-1.5 rounded-full transition-all duration-300 ease-smooth ${
                 i === idx
                   ? "w-6 bg-rehberim-accent"
                   : "w-1.5 bg-rehberim-border"
@@ -130,10 +135,10 @@ export function OnboardingTour() {
           ))}
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-2">
+        <div className="relative mt-5 flex items-center justify-between gap-2">
           <button
             onClick={dismiss}
-            className="text-xs font-semibold text-rehberim-navy/45 hover:text-rehberim-navy/70"
+            className="text-xs font-semibold text-rehberim-navy/45 transition-colors hover:text-rehberim-navy/70"
           >
             Atla
           </button>
@@ -141,14 +146,14 @@ export function OnboardingTour() {
             <button
               onClick={prev}
               disabled={idx === 0}
-              className="flex items-center gap-1 rounded-xl border border-rehberim-border bg-white px-3 py-2 text-sm font-bold text-rehberim-navy transition hover:bg-rehberim-muted disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex items-center gap-1 rounded-xl border border-rehberim-border bg-white px-3 py-2 text-sm font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:bg-rehberim-muted disabled:cursor-not-allowed disabled:opacity-30"
             >
               <ChevronLeft className="h-4 w-4" />
               Önceki
             </button>
             <button
               onClick={next}
-              className="flex items-center gap-1 rounded-xl bg-rehberim-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-rehberim-navy-dark"
+              className="flex items-center gap-1 rounded-xl bg-rehberim-navy px-4 py-2 text-sm font-bold text-white shadow-card transition-all duration-200 ease-smooth hover:bg-rehberim-navy-dark hover:shadow-soft"
             >
               {isLast ? (
                 <>

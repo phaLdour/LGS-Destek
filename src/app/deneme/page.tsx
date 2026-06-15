@@ -47,11 +47,11 @@ export default async function DenemePage() {
         Anasayfaya dön
       </Link>
 
-      <header className="mb-5 rounded-3xl border border-rehberim-border bg-white p-5 shadow-card">
-        <h1 className="text-xl font-extrabold text-rehberim-navy">
+      <header className="ring-hairline mb-5 rounded-3xl border border-rehberim-border bg-white p-5 shadow-card">
+        <h1 className="text-xl font-extrabold tracking-tight text-rehberim-navy">
           Deneme Sınavı
         </h1>
-        <p className="mt-1 text-sm text-rehberim-navy/55">
+        <p className="mt-1 text-pretty text-sm text-rehberim-navy/55">
           Bir tür seç, ardından <strong>Kolay</strong> ya da <strong>Zor</strong>{" "}
           versiyonunu tıkla.
         </p>
@@ -65,24 +65,30 @@ export default async function DenemePage() {
           return (
             <div
               key={m.kind}
-              className={`overflow-hidden rounded-2xl border border-rehberim-border bg-white shadow-card`}
+              className="ring-hairline overflow-hidden rounded-2xl border border-rehberim-border bg-white shadow-card transition-shadow duration-300 ease-smooth hover:shadow-soft"
             >
               <div
-                className={`flex items-center gap-4 bg-gradient-to-br ${m.tint} p-5 text-white`}
+                className={`relative flex items-center gap-4 overflow-hidden bg-gradient-to-br ${m.tint} p-5 text-white`}
               >
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/15 blur-3xl"
+                />
+                <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/25 backdrop-blur-sm">
                   <Icon className="h-8 w-8" />
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-lg font-extrabold">
+                <div className="relative min-w-0 flex-1">
+                  <p className="text-lg font-extrabold tracking-tight">
                     {easy.kind === "sozel"
                       ? "Sözel Bölüm"
                       : easy.kind === "sayisal"
                         ? "Sayısal Bölüm"
                         : "Tam Deneme"}
                   </p>
-                  <p className="text-sm text-white/85">{m.description}</p>
-                  <p className="mt-1 text-xs font-bold text-white/95">
+                  <p className="text-pretty text-sm text-white/85">
+                    {m.description}
+                  </p>
+                  <p className="mt-1 text-xs font-bold tabular-nums text-white/95">
                     {easy.totalQuestions} soru
                   </p>
                 </div>
@@ -91,13 +97,13 @@ export default async function DenemePage() {
               <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-2">
                 <Link
                   href={`/deneme/${m.kind}?zorluk=kolay`}
-                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition hover:border-rehberim-accent/50 hover:bg-rehberim-muted"
+                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/50 hover:bg-rehberim-muted"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700 ring-1 ring-green-200">
                     <Sparkles className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-extrabold text-rehberim-navy">
+                    <p className="text-sm font-extrabold tracking-tight text-rehberim-navy">
                       Kolay
                     </p>
                     <p className="text-xs text-rehberim-navy/55">
@@ -107,13 +113,13 @@ export default async function DenemePage() {
                 </Link>
                 <Link
                   href={`/deneme/${m.kind}?zorluk=zor`}
-                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition hover:border-red-400/60 hover:bg-rehberim-muted"
+                  className="group flex items-center gap-3 rounded-xl border border-rehberim-border bg-rehberim-muted/40 p-4 transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-red-400/60 hover:bg-rehberim-muted"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-600 ring-1 ring-red-200">
                     <Flame className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-extrabold text-rehberim-navy">
+                    <p className="text-sm font-extrabold tracking-tight text-rehberim-navy">
                       Zor
                     </p>
                     <p className="text-xs text-rehberim-navy/55">

@@ -106,11 +106,21 @@ export function MascotButton() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Rehber Baykuş'u aç"
-        className="group flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light shadow-soft ring-2 ring-white transition hover:scale-105 active:scale-95"
+        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light shadow-elevated ring-2 ring-white transition-all duration-300 ease-snap hover:scale-[1.06] active:scale-95"
       >
-        <OwlSvg className="h-9 w-9 transition group-hover:rotate-[-6deg]" />
+        {/* yumuşak iç ışıltı — premium "canlı" hissi */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/0 to-white/15"
+        />
+        <OwlSvg className="relative h-9 w-9 transition-transform duration-300 ease-smooth group-hover:rotate-[-6deg]" />
         {!open && (
-          <span className="absolute right-0 top-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-rehberim-accent" />
+          <span className="absolute right-0 top-0 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-white bg-rehberim-accent">
+            <span
+              aria-hidden
+              className="absolute inset-0 animate-ping rounded-full bg-rehberim-accent opacity-60"
+            />
+          </span>
         )}
       </button>
     </div>

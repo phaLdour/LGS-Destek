@@ -104,8 +104,10 @@ export function Logo({ className, preferPng = true, title }: Props) {
 /** Yatay logo + yazı kilidi. */
 export function LogoLockup({ className }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
-      <Logo className="h-9 w-9 shrink-0" />
+    <span
+      className={`group inline-flex items-center gap-2.5 ${className ?? ""}`}
+    >
+      <Logo className="h-9 w-9 shrink-0 transition-transform duration-300 ease-snap group-hover:rotate-[-3deg] group-hover:scale-105" />
       <span className="text-xl font-extrabold tracking-tight text-rehberim-navy">
         Rehber<span className="text-rehberim-accent">im</span>
       </span>

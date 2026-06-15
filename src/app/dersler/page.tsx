@@ -13,9 +13,11 @@ export default async function DerslerPage() {
   const user = await getShellUser();
   return (
     <AppShell user={user}>
-      <header className="mb-6 rounded-3xl border border-rehberim-border bg-white p-5 shadow-card">
-        <h1 className="text-xl font-extrabold text-rehberim-navy">Dersler</h1>
-        <p className="mt-1 text-sm text-rehberim-navy/55">
+      <header className="ring-hairline mb-6 rounded-3xl border border-rehberim-border bg-white p-5 shadow-card">
+        <h1 className="text-xl font-extrabold tracking-tight text-rehberim-navy">
+          Dersler
+        </h1>
+        <p className="mt-1 text-pretty text-sm text-rehberim-navy/55">
           LGS müfredatındaki tüm dersler ve konularındaki performansın.
         </p>
       </header>

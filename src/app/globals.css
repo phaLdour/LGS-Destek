@@ -36,19 +36,63 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  /* Premium tipografi: kerning + optik boyut + akıllı rakamlar */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings:
+    "cv11" 1,    /* Inter: tek katlı 'a' */
+    "ss03" 1,    /* Inter: yuvarlatılmış noktalama */
+    "ss01" 1,    /* Inter: tek katlı 'l' */
+    "kern" 1,
+    "calt" 1;
+}
+
 body {
   color: var(--rb-text);
   background: var(--rb-bg);
-  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.005em;
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
+}
+
+/* Başlıklarda hafif sıkılaştırılmış izleme — Inter'in optik boyutuyla uyumlu */
+h1, h2, h3, h4 {
+  letter-spacing: -0.022em;
+}
+
+/* Sayılar (istatistik kartları, puanlar) için sabit genişlikli akıllı rakamlar */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Hızlı erişilebilirlik: klavye odağı her zaman markanın turuncusunda
+   görünür halka. Mouse ile tıklamada gizlenir. */
+:focus-visible {
+  outline: 2px solid #F59E0B;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* Premium kart "hairline" — light modda üstte 1px beyaz iç çizgi
+     kart kenarına subpiksel keskinlik verir; dark modda yok edilir. */
+  .ring-hairline {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  }
+}
+
+html.dark .ring-hairline {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* ────────────────────────────────────────────────────────────────

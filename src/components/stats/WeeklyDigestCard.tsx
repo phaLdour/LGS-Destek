@@ -37,14 +37,18 @@ export async function WeeklyDigestCard() {
   const focus = weakTopics[0];
 
   return (
-    <section className="mt-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent/10 via-white to-amber-50 p-5 shadow-card">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rehberim-accent/15 text-rehberim-accent">
+    <section className="ring-hairline relative mt-4 overflow-hidden rounded-2xl border border-rehberim-accent/25 bg-gradient-to-br from-rehberim-accent/10 via-white to-amber-50 p-5 shadow-card">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-rehberim-accent/15 blur-3xl"
+      />
+      <div className="relative mb-3 flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-rehberim-accent/15 text-rehberim-accent ring-1 ring-rehberim-accent/15">
             <Calendar className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-sm font-extrabold text-rehberim-navy">
+            <p className="text-sm font-extrabold tracking-tight text-rehberim-navy">
               {isSunday ? "Bu haftanın özeti 🦉" : "Bu hafta"}
             </p>
             <p className="text-xs text-rehberim-navy/55">
@@ -110,12 +114,14 @@ function Stat({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-rehberim-border bg-white p-3 text-center">
-      <span className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-lg bg-rehberim-accent/10 text-rehberim-accent">
+    <div className="ring-hairline relative rounded-xl border border-rehberim-border bg-white p-3 text-center shadow-card">
+      <span className="mx-auto mb-1 flex h-7 w-7 items-center justify-center rounded-lg bg-rehberim-accent/10 text-rehberim-accent ring-1 ring-rehberim-accent/12">
         {icon}
       </span>
-      <p className="text-base font-extrabold text-rehberim-navy">{value}</p>
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-rehberim-navy/50">
+      <p className="text-base font-extrabold tracking-tight tabular-nums text-rehberim-navy">
+        {value}
+      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-rehberim-navy/50">
         {label}
       </p>
     </div>
