@@ -14,6 +14,7 @@ import {
   Languages,
   LogOut,
   Menu,
+  Swords,
   User as UserIcon,
   X,
   Zap,
@@ -38,6 +39,7 @@ const NAV = [
   { href: "/hatalarim", label: "Hatalarım", icon: AlertCircle },
   { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
+  { href: "/rekabet", label: "Rekabet", icon: Swords },
   { href: "/rozetlerim", label: "Rozetler", icon: Award },
   { href: "/profile", label: "Profil", icon: UserIcon },
 ];
