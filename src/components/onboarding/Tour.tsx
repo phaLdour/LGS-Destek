@@ -8,11 +8,14 @@ import {
   ChevronRight,
   FileText,
   Sparkles,
+  Swords,
   X,
   Zap,
 } from "lucide-react";
 
-const STORAGE_KEY = "rehberim:onboarding-done";
+// v2: 5. adım eklendi (Rekabet). Mevcut kullanıcılarda tour bir kez
+// daha açılır (yalnız bu yeni adımı görürler; ilk 4 değişmedi).
+const STORAGE_KEY = "rehberim:onboarding-done-v2";
 
 type Step = {
   emoji: string;
@@ -49,6 +52,13 @@ const STEPS: Step[] = [
     body:
       "Sınav günü provası için Deneme Sınavı modunu kullan: gerçek LGS süresi (75 + 80 dk), net hesabı dahil. 2018-2026 çıkmış sorulara da 'Çıkmış Sorular' bölümünden ulaşırsın.",
     icon: FileText,
+  },
+  {
+    emoji: "⚔️",
+    title: "Rakiplerinle yarış",
+    body:
+      "Rekabet sekmesinden 1v1 düello yapabilirsin. 10 soruda en hızlı ve doğru net'i atan kazanır, lig sisteminde tırmanırsın. Her ayın 1'inde yeni sezon başlar.",
+    icon: Swords,
   },
 ];
 
