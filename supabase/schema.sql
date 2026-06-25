@@ -393,6 +393,7 @@ grant execute on function public.match_make(uuid, int, int, text, text[]) to aut
 -- yalnız SELECT kalır (kendi satırı aktif maçta + her iki taraf finished'ta).
 drop policy if exists "own answer in own active match" on public.comp_match_answers;
 drop policy if exists "participants read finished answers" on public.comp_match_answers;
+drop policy if exists "answers readable by participants" on public.comp_match_answers;
 create policy "answers readable by participants" on public.comp_match_answers
   for select to authenticated
   using (
