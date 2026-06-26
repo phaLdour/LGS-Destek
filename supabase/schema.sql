@@ -409,9 +409,14 @@ create policy "answers readable by participants" on public.comp_match_answers
 -- comp_ensure_season_and_rank: TR-saat ile sezon hesabı; yoksa
 -- comp_seasons ve comp_ranks insert; mevcut/yeni rütbeyi döner.
 -- ──────────────────────────────────────────────────────────────
+-- Faz 3 hot-fix: RETURNS TABLE kolonlarına out_ öneki — Postgres'in
+-- "v_season_id" referansını RETURN TABLE'daki season_id ile karıştırıp
+-- "column reference 'season_id' is ambiguous" atmasını engeller.
+drop function if exists public.comp_ensure_season_and_rank(uuid);
+
 create or replace function public.comp_ensure_season_and_rank(
   p_user_id uuid
-) returns table(season_id int, tier int, points int)
+) returns table(out_season_id int, out_tier int, out_points int)
 language plpgsql security definer
 as $$
 declare
@@ -423,7 +428,6 @@ declare
   v_month int;
   v_year int;
 begin
-  -- TR yerel saatine kaydır
   v_now_tr := (now() at time zone 'Europe/Istanbul')::timestamp;
   v_year := extract(year from v_now_tr)::int;
   v_month := extract(month from v_now_tr)::int;
@@ -437,7 +441,6 @@ begin
     when 10 then 'Ekim'     when 11 then 'Kasım'  when 12 then 'Aralık'
   end || ' ' || v_year::text;
 
-  -- Sezon yoksa oluştur
   insert into public.comp_seasons (id, starts_at, ends_at, label)
   values (
     v_season_id,
@@ -447,15 +450,12 @@ begin
   )
   on conflict (id) do nothing;
 
-  -- Rütbe yoksa varsayılan (Yükselme 2, 50 puan) ekle
   insert into public.comp_ranks (user_id, season_id)
   values (p_user_id, v_season_id)
   on conflict (user_id, season_id) do nothing;
 
   return query
-  select v_season_id,
-         r.tier,
-         r.points
+  select v_season_id, r.tier, r.points
     from public.comp_ranks r
    where r.user_id = p_user_id and r.season_id = v_season_id;
 end;
@@ -792,8 +792,8 @@ declare
   v_active_id uuid;
   v_match_id uuid;
 begin
-  -- Sezon + rütbeyi garanti et
-  select s.season_id, s.tier into v_season_id, v_tier
+  -- Sezon + rütbeyi garanti et (out_ önekli kolonlar, Faz 3 hot-fix)
+  select s.out_season_id, s.out_tier into v_season_id, v_tier
     from public.comp_ensure_season_and_rank(auth.uid()) s;
 
   -- Aktif maç kontrolü
@@ -818,7 +818,7 @@ begin
     joined_at = now(),
     expand_at = now() + interval '8 seconds';
 
-  -- match_make çağır
+  -- match_make çağır (Faz 2'nin 5-param signature'ı; Faz 3'te 6-param ile yeniden tanımlanır)
   v_match_id := public.match_make(
     auth.uid(),
     v_season_id,
@@ -931,14 +931,15 @@ begin
     else 3
   end;
 
-  -- En yakın tier'dan başla, eşitlikte en eski beklemiş kazansın
-  select user_id, tier into v_opponent, v_opp_tier
-    from public.comp_queue
-   where user_id <> p_user_id
-     and season_id = p_season_id
-     and abs(tier - p_tier) <= v_band
-     and coalesce(subject_filter, '') = coalesce(p_subject_filter, '')
-   order by abs(tier - p_tier) asc, joined_at asc
+  -- En yakın tier'dan başla, eşitlikte en eski beklemiş kazansın.
+  -- Defansif qualifying (q alias): planner'ın ambiguous yorumlamasını önler.
+  select q.user_id, q.tier into v_opponent, v_opp_tier
+    from public.comp_queue q
+   where q.user_id <> p_user_id
+     and q.season_id = p_season_id
+     and abs(q.tier - p_tier) <= v_band
+     and coalesce(q.subject_filter, '') = coalesce(p_subject_filter, '')
+   order by abs(q.tier - p_tier) asc, q.joined_at asc
    for update skip locked
    limit 1;
 
@@ -985,7 +986,8 @@ begin
   -- Stale temizlik: 5dk+ kuyrukta kalmış (browser kapatılmış, tick durmuş) satırları sil
   delete from public.comp_queue where joined_at < now() - interval '5 minutes';
 
-  select s.season_id, s.tier into v_season_id, v_tier
+  -- out_ önekli kolonlar (Faz 3 hot-fix: ambiguous column referansını çözer)
+  select s.out_season_id, s.out_tier into v_season_id, v_tier
     from public.comp_ensure_season_and_rank(auth.uid()) s;
 
   select id into v_active_id
