@@ -84,7 +84,9 @@ export function MatchClient({
   const [error, setError] = useState<string | null>(null);
   const finalizingRef = useRef(false);
   const subRef = useRef<{ unsubscribe: () => void } | null>(null);
-  const [usePolling, setUsePolling] = useState(false);
+  // Realtime postgres_changes RLS'e tabi; aktif maçta rakibin INSERT'i client'a
+  // düşmüyor (anti-cheat policy). Polling'i her zaman aktif tut.
+  const [usePolling, setUsePolling] = useState(true);
 
   // Timer (1000ms)
   useEffect(() => {
@@ -334,8 +336,20 @@ export function MatchClient({
             Cevapların tamam!
           </h2>
           <p className="mt-2 text-sm text-rehberim-navy/55">
-            Rakibin bitirmeyi bekliyor. Sonuç ekranı otomatik açılır.
+            Rakibin {opponentAnswered}/{match.questionCount} cevap verdi.
+            {opponentAnswered >= match.questionCount
+              ? " Sonuç hesaplanıyor…"
+              : " Bitince sonuç ekranı otomatik açılır."}
           </p>
+          {/* Stuck kalma garantisi: rakip de bitirdiyse ya da kullanıcı
+              beklemekten vazgeçtiyse manuel finalize tetiklenebilir. */}
+          <button
+            onClick={() => triggerFinalize()}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-rehberim-border bg-white px-4 py-2 text-sm font-bold text-rehberim-navy/70 transition-all duration-200 ease-smooth hover:bg-rehberim-muted"
+          >
+            <Check className="h-4 w-4" />
+            Sonucu şimdi gör
+          </button>
         </div>
       )}
 

@@ -136,14 +136,13 @@ export async function POST(
   }
 
   // Her iki taraf da 10 cevap verdi mi? Auto-finalize.
+  // Rakibin sayısını SECURITY DEFINER RPC ile al (aktif maç RLS'i count'u 0 yapar).
   let autoFinalized = false;
   if (qIndex + 1 >= match.question_ids.length) {
-    const { count: oppCount } = await supabase
-      .from("comp_match_answers")
-      .select("q_index", { count: "exact", head: true })
-      .eq("match_id", id)
-      .neq("player_id", user.id);
-    if ((oppCount ?? 0) >= match.question_ids.length) {
+    const { data: oppCount } = await supabase.rpc("comp_opponent_progress", {
+      p_match_id: id,
+    });
+    if (typeof oppCount === "number" && oppCount >= match.question_ids.length) {
       await supabase.rpc("comp_finalize_match", { p_match_id: id });
       autoFinalized = true;
     }

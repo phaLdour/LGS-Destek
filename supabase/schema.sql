@@ -1070,3 +1070,43 @@ end;
 $$;
 
 grant execute on function public.comp_queue_reset() to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- comp_opponent_progress: Çağıran kullanıcının rakibinin verdiği cevap
+-- sayısını döner. RLS bypass (SECURITY DEFINER) — aktif maçta normalde
+-- "answers readable by participants" policy'si rakibin satırlarını
+-- saklıyor (anti-cheat: choice/is_correct sızmasın). Bu fonksiyon
+-- YALNIZ sayıyı döndürür; hassas bilgi sızmaz.
+-- ────────────────────────────────────────────────────────────────────
+create or replace function public.comp_opponent_progress(p_match_id uuid)
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_p1 uuid; v_p2 uuid;
+  v_caller uuid := auth.uid();
+  v_other uuid;
+  v_cnt int;
+begin
+  select player1_id, player2_id into v_p1, v_p2
+    from public.comp_matches
+   where id = p_match_id;
+
+  if v_p1 is null then
+    return 0;
+  end if;
+  if v_caller <> v_p1 and v_caller <> v_p2 then
+    return 0;
+  end if;
+
+  v_other := case when v_caller = v_p1 then v_p2 else v_p1 end;
+
+  select count(*) into v_cnt
+    from public.comp_match_answers
+   where match_id = p_match_id and player_id = v_other;
+
+  return coalesce(v_cnt, 0);
+end;
+$$;
+
+grant execute on function public.comp_opponent_progress(uuid) to authenticated;

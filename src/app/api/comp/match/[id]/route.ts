@@ -48,19 +48,18 @@ export async function GET(
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  // Cevap sayaçları
-  const [{ count: myCount }, { count: oppCount }] = await Promise.all([
+  // Cevap sayaçları — kendi satırlarımı RLS okuyor, rakipte RLS'i SECURITY DEFINER
+  // RPC ile bypass et (anti-cheat: sadece sayı döner, choice/is_correct değil).
+  const [{ count: myCount }, oppRpc] = await Promise.all([
     supabase
       .from("comp_match_answers")
       .select("q_index", { count: "exact", head: true })
       .eq("match_id", id)
       .eq("player_id", user.id),
-    supabase
-      .from("comp_match_answers")
-      .select("q_index", { count: "exact", head: true })
-      .eq("match_id", id)
-      .neq("player_id", user.id),
+    supabase.rpc("comp_opponent_progress", { p_match_id: id }),
   ]);
+  const oppCount =
+    typeof oppRpc.data === "number" ? oppRpc.data : 0;
 
   let question = null;
   if (qParam !== null) {
@@ -98,6 +97,6 @@ export async function GET(
     },
     question,
     myAnsweredCount: myCount ?? 0,
-    opponentAnsweredCount: oppCount ?? 0,
+    opponentAnsweredCount: oppCount,
   });
 }
