@@ -895,3 +895,176 @@ begin
   exception when others then null;
   end;
 end $$;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 3 — Eşleşme rampası + stale cleanup + manuel reset
+-- ════════════════════════════════════════════════════════════════════
+-- Eski match_make (5 parametreli) imzasını sil, 6 parametreli yeniden yarat.
+drop function if exists public.match_make(uuid, int, int, text, text[]);
+
+create or replace function public.match_make(
+  p_user_id        uuid,
+  p_season_id      int,
+  p_tier           int,
+  p_subject_filter text,
+  p_question_ids   text[],
+  p_age_seconds    int default 0
+) returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_opponent uuid;
+  v_match_id uuid;
+  v_opp_tier int;
+  v_now      timestamptz := now();
+  v_band     int;
+begin
+  -- Tier rampı (yaşa göre): kuyrukta uzun bekleyen oyuncular için arama bandını genişlet
+  --   <=15s → 0 (sadece aynı tier)
+  --   <=45s → 1
+  --   <=90s → 2
+  --   >90s  → 3
+  v_band := case
+    when p_age_seconds <= 15 then 0
+    when p_age_seconds <= 45 then 1
+    when p_age_seconds <= 90 then 2
+    else 3
+  end;
+
+  -- En yakın tier'dan başla, eşitlikte en eski beklemiş kazansın
+  select user_id, tier into v_opponent, v_opp_tier
+    from public.comp_queue
+   where user_id <> p_user_id
+     and season_id = p_season_id
+     and abs(tier - p_tier) <= v_band
+     and coalesce(subject_filter, '') = coalesce(p_subject_filter, '')
+   order by abs(tier - p_tier) asc, joined_at asc
+   for update skip locked
+   limit 1;
+
+  if v_opponent is null then
+    return null;
+  end if;
+
+  insert into public.comp_matches (
+    season_id, player1_id, player2_id,
+    p1_tier_at_start, p2_tier_at_start,
+    question_ids, subject_filter,
+    deadline_at
+  )
+  values (
+    p_season_id, p_user_id, v_opponent,
+    p_tier, v_opp_tier,
+    p_question_ids, p_subject_filter,
+    v_now + interval '10 minutes'
+  )
+  returning id into v_match_id;
+
+  delete from public.comp_queue
+   where user_id in (p_user_id, v_opponent);
+
+  return v_match_id;
+end;
+$$;
+
+grant execute on function public.match_make(uuid, int, int, text, text[], int) to authenticated;
+
+-- comp_join_queue: 5dk+ stale satırları sil, yeni match_make signature'ı ile çağır
+create or replace function public.comp_join_queue(
+  p_subject_filter text,
+  p_question_ids text[]
+) returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_season_id int;
+  v_tier int;
+  v_active_id uuid;
+  v_match_id uuid;
+begin
+  -- Stale temizlik: 5dk+ kuyrukta kalmış (browser kapatılmış, tick durmuş) satırları sil
+  delete from public.comp_queue where joined_at < now() - interval '5 minutes';
+
+  select s.season_id, s.tier into v_season_id, v_tier
+    from public.comp_ensure_season_and_rank(auth.uid()) s;
+
+  select id into v_active_id
+    from public.comp_matches
+   where (player1_id = auth.uid() or player2_id = auth.uid())
+     and status = 'active'
+     and deadline_at > now()
+   limit 1;
+  if v_active_id is not null then
+    return v_active_id;
+  end if;
+
+  insert into public.comp_queue
+    (user_id, season_id, tier, subject_filter, expand_at)
+  values
+    (auth.uid(), v_season_id, v_tier, p_subject_filter, now() + interval '15 seconds')
+  on conflict (user_id) do update set
+    tier = excluded.tier,
+    subject_filter = excluded.subject_filter,
+    joined_at = now(),
+    expand_at = now() + interval '15 seconds';
+
+  v_match_id := public.match_make(
+    auth.uid(), v_season_id, v_tier,
+    p_subject_filter, p_question_ids,
+    0
+  );
+  return v_match_id;
+end;
+$$;
+
+grant execute on function public.comp_join_queue(text, text[]) to authenticated;
+
+-- comp_tick_queue: kuyruktaki joined_at'tan yaşı hesapla, match_make'e bant olarak geçir
+create or replace function public.comp_tick_queue(
+  p_question_ids text[]
+) returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_season_id int;
+  v_tier int;
+  v_subject_filter text;
+  v_joined_at timestamptz;
+  v_age int;
+begin
+  select season_id, tier, subject_filter, joined_at
+    into v_season_id, v_tier, v_subject_filter, v_joined_at
+    from public.comp_queue
+   where user_id = auth.uid();
+  if v_season_id is null then
+    return null;
+  end if;
+
+  v_age := greatest(0, extract(epoch from (now() - v_joined_at))::int);
+
+  return public.match_make(
+    auth.uid(), v_season_id, v_tier,
+    v_subject_filter, p_question_ids, v_age
+  );
+end;
+$$;
+
+grant execute on function public.comp_tick_queue(text[]) to authenticated;
+
+-- comp_queue_reset: kullanıcının kuyruk satırını siler, aktif maç varsa abandoned'a alır.
+-- "Baştan başla" butonu için: takılı kalmış kuyruk + arta kalan eski aktif maç temizliği.
+create or replace function public.comp_queue_reset()
+returns void
+language plpgsql security definer
+as $$
+begin
+  delete from public.comp_queue where user_id = auth.uid();
+
+  update public.comp_matches
+     set status = 'abandoned', finished_at = now()
+   where (player1_id = auth.uid() or player2_id = auth.uid())
+     and status = 'active';
+end;
+$$;
+
+grant execute on function public.comp_queue_reset() to authenticated;
