@@ -1,4 +1,26 @@
 {
   "$comment": "Konu videoları kaydı. Anahtar: '<ders-slug>/<konu-id>'. Bu dosya tools/video-pipeline tarafından otomatik yazılır; elle düzenlersen JSON geçerliliğini koru.",
-  "videos": {}
+  "videos": {
+    "fen-bilimleri/basinc": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basinc-8ece75a5.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basinc-8ece75a5.webp",
+      "duration": 617,
+      "createdAt": "2026-08-22T01:51:32Z",
+      "sourceRef": "notebooklm:7ee30fbc-b0ef-41c9-bbc2-2bfb96269d68/8ece75a5-e7d6-4d64-af48-e14fb2e5e0ae"
+    },
+    "fen-bilimleri/basit-makineler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basit-makineler-20d5f21c.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basit-makineler-20d5f21c.webp",
+      "duration": 516,
+      "createdAt": "2026-08-22T01:51:32Z",
+      "sourceRef": "notebooklm:62022b6d-fe83-43ab-ae07-c9bec8c73700/20d5f21c-0371-489f-837e-77629a6ddce9"
+    },
+    "fen-bilimleri/madde-ve-endustri": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/madde-ve-endustri-6ec9b883.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/madde-ve-endustri-6ec9b883.webp",
+      "duration": 532,
+      "createdAt": "2026-08-22T01:51:32Z",
+      "sourceRef": "notebooklm:cae9ac1f-53c0-4e3c-b366-2bfd7b7e5526/6ec9b883-930b-4e91-8a4a-8fa15a08e030"
+    }
+  }
 }
