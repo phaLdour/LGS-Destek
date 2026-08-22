@@ -61,10 +61,22 @@ def load_env(path: Path | None) -> None:
 
 
 def export_content(force: bool = False) -> dict[str, Any]:
-    """src/content → JSON (npx tsx ile). Sonuç .work/content.json içinde önbelleklenir."""
+    """src/content → JSON.
+
+    Öncelik: CONTENT_JSON ortam değişkeni → yanımızdaki content.json (repo/Node
+    olmayan makineler, ör. PC ajanı) → `npx tsx export_content.ts` (repo içinde).
+    """
+    shipped = os.environ.get("CONTENT_JSON")
+    if shipped and Path(shipped).exists():
+        return json.loads(Path(shipped).read_text(encoding="utf-8"))
+    local = HERE / "content.json"
+    content_dir = REPO_DIR / "src" / "content"
+    if local.exists() and not content_dir.exists():
+        return json.loads(local.read_text(encoding="utf-8"))
     WORK_DIR.mkdir(parents=True, exist_ok=True)
     out = WORK_DIR / "content.json"
-    content_dir = REPO_DIR / "src" / "content"
+    if not content_dir.exists():
+        raise SystemExit("İçerik bulunamadı: ne CONTENT_JSON ne content.json ne de src/content var.")
     newest = max(p.stat().st_mtime for p in content_dir.glob("*.ts"))
     if not force and out.exists() and out.stat().st_mtime >= newest:
         return json.loads(out.read_text(encoding="utf-8"))
@@ -109,6 +121,8 @@ def select_candidates(content: dict[str, Any], registry: dict[str, Any], *,
             continue
         if key in have and have[key].get("src"):
             continue
+        if (t.get("video") or {}).get("src"):  # content.json içinde gömülü kayıt (ajan modu)
+            continue
         if t.get("youtubeId") and not include_youtube and not only:
             continue
         out.append((s, t))
@@ -130,8 +144,17 @@ def publish_file(mp4: Path, key: str, *, artifact_id: str | None, backend, dry_r
              f"{before['duration']:.0f} sn", human_size(before["size"]))
     max_h = int(os.environ.get("VIDEO_HEIGHT", "720"))
     crf = int(os.environ.get("VIDEO_CRF", "26"))
+    max_mb = float(os.environ.get("MAX_FILE_MB", "48"))  # Supabase ücretsiz plan: 50 MB
     info = transcode_for_web(mp4, out_mp4, max_height=max_h, crf=crf)
-    make_poster(out_mp4, out_webp)
+    # Boyut sınırını aşarsa kademeli olarak daha sıkı sıkıştır.
+    for attempt_crf, attempt_h in ((crf + 3, max_h), (crf + 5, min(max_h, 540)), (crf + 8, 480)):
+        if info["size"] <= max_mb * 1024 * 1024:
+            break
+        log.info("[%s] %s > %.0f MB → yeniden sıkıştırılıyor (crf %d, %dp)", key,
+                 human_size(info["size"]), max_mb, attempt_crf, attempt_h)
+        info = transcode_for_web(mp4, out_mp4, max_height=attempt_h, crf=attempt_crf)
+    poster_path = make_poster(out_mp4, out_webp)
+    out_webp = poster_path
     log.info("[%s] sıkıştırıldı: %dx%d, %s → %s (%.0f%%)", key, info["width"], info["height"],
              human_size(before["size"]), human_size(info["size"]),
              100.0 * info["size"] / max(1, before["size"]))
@@ -140,9 +163,9 @@ def publish_file(mp4: Path, key: str, *, artifact_id: str | None, backend, dry_r
         return {"src": str(out_mp4), "poster": str(out_webp), "duration": info["duration"], "size": info["size"]}
 
     storage_key_mp4 = f"{subject}/{topic}-{suffix}.mp4"
-    storage_key_webp = f"{subject}/{topic}-{suffix}.webp"
+    storage_key_webp = f"{subject}/{topic}-{suffix}{out_webp.suffix}"
     src_url = backend.upload(out_mp4, storage_key_mp4, "video/mp4")
-    poster_url = backend.upload(out_webp, storage_key_webp, "image/webp")
+    poster_url = backend.upload(out_webp, storage_key_webp, "image/webp" if out_webp.suffix == ".webp" else "image/jpeg")
     log.info("[%s] yüklendi: %s", key, src_url)
     return {"src": src_url, "poster": poster_url, "duration": info["duration"], "size": info["size"]}
 
@@ -150,6 +173,47 @@ def publish_file(mp4: Path, key: str, *, artifact_id: str | None, backend, dry_r
 def commit_message(key: str, content: dict[str, Any]) -> str:
     s, t = find_topic(content, key)
     return f"Video: {s['name']} · {t['name']} (NotebookLM)\n\nKonu: {key}"
+
+
+class ResultSink:
+    """Yayınlanan videonun nereye kaydedileceği.
+
+    - results_dir verilmişse: <results_dir>/<ders__konu>.json yazılır (PC ajanı modu;
+      videos.json güncellemesi ve push daha sonra repo tarafında yapılır).
+    - verilmemişse: videos.json güncellenir ve commit atılır (push en sonda).
+    """
+
+    def __init__(self, content: dict[str, Any], results_dir: Path | None, *, push: bool):
+        self.content = content
+        self.results_dir = results_dir
+        self.push = push
+        self.recorded: list[str] = []
+
+    def record(self, key: str, info: dict[str, Any], source_ref: str | None) -> None:
+        entry = {
+            "key": key,
+            "src": info["src"],
+            "poster": info.get("poster"),
+            "duration": info.get("duration"),
+            "size": info.get("size"),
+            "sourceRef": source_ref,
+            "recordedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        }
+        if self.results_dir is not None:
+            self.results_dir.mkdir(parents=True, exist_ok=True)
+            out = self.results_dir / f"{key.replace('/', '__')}.json"
+            out.write_text(json.dumps(entry, ensure_ascii=False, indent=2), encoding="utf-8")
+            log.info("[%s] sonuç yazıldı: %s", key, out)
+        else:
+            register_video(REPO_DIR, key, src=info["src"], poster=info.get("poster"),
+                           duration=info.get("duration"), source_ref=source_ref)
+            git_commit_and_push(REPO_DIR, commit_message(key, self.content), push=False)
+        self.recorded.append(key)
+
+    def finish(self) -> None:
+        if self.results_dir is None and self.recorded and self.push:
+            if not git_commit_and_push(REPO_DIR, "Video kayıtları", push=True):
+                log.error("Push yapılamadı; commit'ler yerelde duruyor (git push origin main ile gönder).")
 
 
 # ------------------------------------------------------------------------ run
@@ -171,6 +235,7 @@ async def cmd_run(args: argparse.Namespace) -> int:
     backend = None if args.dry_run else get_backend(REPO_DIR)
     if backend:
         log.info("Depo: %s", backend.describe())
+    sink = ResultSink(content, Path(args.results_dir) if args.results_dir else None, push=not args.no_push)
 
     collected = 0
     started = 0
@@ -204,9 +269,7 @@ async def cmd_run(args: argparse.Namespace) -> int:
                 log.info("[%s] (dry-run) kayıt yapılmadı: %s", key, info)
                 return
             async with lock:
-                register_video(REPO_DIR, key, src=info["src"], poster=info["poster"],
-                               duration=info["duration"], source_ref=f"notebooklm:{state.notebook_id}/{state.video_artifact_id}")
-                git_commit_and_push(REPO_DIR, commit_message(key, content), push=False)
+                sink.record(key, info, f"notebooklm:{state.notebook_id}/{state.video_artifact_id}")
             collected += 1
 
         async def handle(subject: dict, topic: dict) -> None:
@@ -266,9 +329,8 @@ async def cmd_run(args: argparse.Namespace) -> int:
 
         await asyncio.gather(*(handle(s, t) for s, t in candidates))
 
-    if not args.dry_run and collected and not args.no_push:
-        if not git_commit_and_push(REPO_DIR, "Video kayıtları", push=True):
-            log.error("Push yapılamadı; commit'ler yerelde duruyor (git push origin main ile gönder).")
+    if not args.dry_run:
+        sink.finish()
 
     log.info("Özet: %d video yayınlandı, %d yeni üretim başlatıldı, %d sorun.", collected, started, len(failures))
     for f in failures:
@@ -327,9 +389,9 @@ def cmd_process(args: argparse.Namespace) -> int:
     print(json.dumps(info, ensure_ascii=False, indent=2))
     if args.dry_run:
         return 0
-    register_video(REPO_DIR, args.key, src=info["src"], poster=info["poster"],
-                   duration=info["duration"], source_ref=args.ref)
-    git_commit_and_push(REPO_DIR, commit_message(args.key, content), push=not args.no_push)
+    sink = ResultSink(content, Path(args.results_dir) if args.results_dir else None, push=not args.no_push)
+    sink.record(args.key, info, args.ref)
+    sink.finish()
     return 0
 
 
@@ -342,6 +404,14 @@ async def cmd_account(args: argparse.Namespace) -> int:
         print(f"Rehberim notebook sayısı: {len(states)}")
         for k, st in sorted(states.items()):
             print(f"  {k:<40} {st.video_status or 'video yok'}")
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps({
+            "account": acct,
+            "notebooks": {k: {"notebook_id": st.notebook_id, "artifact_id": st.video_artifact_id,
+                              "status": st.video_status, "duration": st.duration_seconds}
+                          for k, st in states.items()},
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
     return 0
 
 
@@ -352,6 +422,9 @@ async def cmd_videos(args: argparse.Namespace) -> int:
     from nlm import NotebookLM, storage_path_from_env
     async with NotebookLM(storage_path_from_env()) as nlm:
         vids = await nlm.list_all_videos()
+    if args.out:
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out).write_text(json.dumps(vids, ensure_ascii=False, indent=2), encoding="utf-8")
     if args.json:
         print(json.dumps(vids, ensure_ascii=False, indent=2))
         return 0
@@ -379,8 +452,9 @@ async def cmd_adopt(args: argparse.Namespace) -> int:
     print(json.dumps(info, ensure_ascii=False, indent=2))
     if args.dry_run:
         return 0
-    register_video(REPO_DIR, args.key, src=info["src"], poster=info["poster"], duration=info["duration"], source_ref=ref)
-    git_commit_and_push(REPO_DIR, commit_message(args.key, content), push=not args.no_push)
+    sink = ResultSink(content, Path(args.results_dir) if args.results_dir else None, push=not args.no_push)
+    sink.record(args.key, info, ref)
+    sink.finish()
     return 0
 
 
@@ -408,6 +482,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--collect-only", action="store_true", help="Yeni üretim başlatma, hazır olanları yayınla")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--no-push", action="store_true")
+    p.add_argument("--results-dir", default=None, help="videos.json yerine sonuç JSON'larını buraya yaz (ajan modu)")
 
     p = sub.add_parser("collect", help="Hazır videoları indirip yayınla (yeni üretim yok)")
     p.add_argument("--subject")
@@ -415,6 +490,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--include-youtube", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--no-push", action="store_true")
+    p.add_argument("--results-dir", default=None)
 
     p = sub.add_parser("process", help="Elle indirilmiş MP4'ü yayınla")
     p.add_argument("mp4")
@@ -422,11 +498,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--ref", default=None, help="Kaynak referansı (ör. notebooklm:...)")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--no-push", action="store_true")
+    p.add_argument("--results-dir", default=None)
 
-    sub.add_parser("account", help="NotebookLM hesap/kota bilgisi")
+    p = sub.add_parser("account", help="NotebookLM hesap/kota bilgisi")
+    p.add_argument("--out", default=None, help="JSON çıktı dosyası")
 
     p = sub.add_parser("videos", help="Hesaptaki tüm video artefaktlarını listele")
     p.add_argument("--json", action="store_true")
+    p.add_argument("--out", default=None, help="JSON çıktı dosyası")
 
     p = sub.add_parser("adopt", help="Var olan bir notebook videosunu siteye yayınla")
     p.add_argument("--notebook", required=True, help="Notebook kimliği")
@@ -434,6 +513,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--key", required=True, help="Konu anahtarı (ders/konu)")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--no-push", action="store_true")
+    p.add_argument("--results-dir", default=None)
 
     args = ap.parse_args(argv)
     logging.basicConfig(

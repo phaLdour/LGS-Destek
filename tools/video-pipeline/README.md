@@ -64,14 +64,33 @@ kartlar + tuzaklar + sorular).
 Yüklenen dosya adı `ders/konu-<artifactid8>.mp4` → her yeni üretim yeni URL
 alır; bu yüzden `Cache-Control: immutable` güvenlidir.
 
-## Cowork oturumunda çalışma düzeni (bulut)
+## Cowork oturumunda çalışma düzeni (bulut + PC ajanı)
 
-1. Repo'yu klonla, `npm install --legacy-peer-deps`, `pip install -r requirements.txt`.
-2. Kullanıcının PC'sinden `Desktop\Rehberim\nlm-home\profiles\default\storage_state.json`
-   ve `Desktop\Rehberim\config.env` dosyalarını oturuma al; `config.env` içinde
-   `NOTEBOOKLM_STORAGE` yolunu oturumdaki dosyaya çevir.
-3. `pipeline.py run --limit N` (N ≤ günlük kota). Bitince güncellenen
-   `storage_state.json` dosyasını PC'ye geri yaz (çerezler döner; eski kopya
-   bir süre sonra geçersiz olur).
-4. Push edemiyorsan (`git push` yetkisi yoksa) commit'ler yerelde kalır;
-   push yetkisi gelince `git push origin main`.
+Cowork bulut ortamının ağı kısıtlıdır: NotebookLM, Google, Supabase ve
+Cloudflare'e **erişemez** (yalnızca paket depoları ve GitHub API açık). Bu
+yüzden üretim kullanıcının PC'sinde, dosya tabanlı bir ajanla yapılır:
+
+```
+Desktop\Rehberim\
+  config.env                 NotebookLM yolu + depo anahtarları (PC'de kalır)
+  nlm-home\                  notebooklm-py profili (storage_state.json, çerezler yerinde döner)
+  nlm-venv\                  Python ortamı (NotebookLM-Giris.bat kurar)
+  ajan\Ajan-Baslat.bat       ajanı başlatır (pencere açık kalır)
+  ajan\agent.py              komut kuyruğu: komutlar\*.json → sonuclar\<id>\
+  ajan\pipeline\             bu klasörün kopyası + content.json (Node gerekmez)
+```
+
+Cowork tarafında akış:
+
+1. `npx -y tsx tools/video-pipeline/export_content.ts > content.json` → PC'ye
+   `ajan\pipeline\content.json` olarak yaz (kayıtlı videolar da içinde; ajan
+   bunları atlar). Pipeline kodu değiştiyse `ajan\pipeline\*.py` dosyalarını da güncelle.
+2. `ajan\komutlar\<id>.json` yaz: `{"id": "<id>", "argv": ["run", "--limit", "3"]}`
+   (ajan `--env` ve `--results-dir` ekler). Diğer komutlar: `account`, `videos`,
+   `collect`, `adopt --notebook … --key …`, `process …`, `ping`, `stop`.
+3. `ajan\heartbeat.json` (ajan açık mı?) ve `ajan\sonuclar\<id>\durum.json`
+   (`running|done|failed`, `log_tail`, `results`) dosyalarını oku.
+4. `sonuclar\<id>\<ders>__<konu>.json` → `src/content/videos.json`'a işle
+   (`registry.register_video`), commit + push → Vercel yayınlar.
+
+Push yetkisi yoksa commit'ler yerelde kalır; yetki gelince `git push origin main`.

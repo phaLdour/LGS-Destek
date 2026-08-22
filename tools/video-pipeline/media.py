@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -12,16 +14,86 @@ class MediaError(RuntimeError):
     pass
 
 
+_FFMPEG_CACHE: dict[str, str | None] = {}
+
+
+def _find_ffmpeg() -> str:
+    """PATH'teki ffmpeg; yoksa imageio-ffmpeg paketinin getirdiği ikili."""
+    if "ffmpeg" in _FFMPEG_CACHE and _FFMPEG_CACHE["ffmpeg"]:
+        return _FFMPEG_CACHE["ffmpeg"]  # type: ignore[return-value]
+    path = os.environ.get("FFMPEG_BIN") or shutil.which("ffmpeg")
+    if not path:
+        try:
+            import imageio_ffmpeg  # type: ignore
+
+            path = imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:  # noqa: BLE001
+            path = None
+    if not path:
+        raise MediaError("ffmpeg bulunamadı. PATH'e ekle veya 'pip install imageio-ffmpeg'.")
+    _FFMPEG_CACHE["ffmpeg"] = path
+    return path
+
+
+def _find_ffprobe() -> str | None:
+    if "ffprobe" in _FFMPEG_CACHE:
+        return _FFMPEG_CACHE["ffprobe"]
+    path = os.environ.get("FFPROBE_BIN") or shutil.which("ffprobe")
+    if not path:
+        # ffmpeg'in yanında ffprobe varsa onu kullan
+        ff = Path(_find_ffmpeg())
+        cand = ff.with_name("ffprobe" + ff.suffix)
+        path = str(cand) if cand.exists() else None
+    _FFMPEG_CACHE["ffprobe"] = path
+    return path
+
+
 def _require(tool: str) -> str:
+    if tool == "ffmpeg":
+        return _find_ffmpeg()
+    if tool == "ffprobe":
+        p = _find_ffprobe()
+        if not p:
+            raise MediaError("ffprobe bulunamadı.")
+        return p
     path = shutil.which(tool)
     if not path:
-        raise MediaError(f"{tool} bulunamadı (PATH). ffmpeg kurulu olmalı.")
+        raise MediaError(f"{tool} bulunamadı (PATH).")
     return path
+
+
+_DURATION_RE = re.compile(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)")
+_VIDEO_RE = re.compile(r"Stream #\d+:\d+.*?Video:\s*([A-Za-z0-9_]+).*?(\d{2,5})x(\d{2,5})")
+_BITRATE_RE = re.compile(r"bitrate:\s*(\d+)\s*kb/s")
+
+
+def _probe_with_ffmpeg(path: Path) -> dict:
+    """ffprobe yoksa 'ffmpeg -i' çıktısından süre/çözünürlük okur."""
+    ffmpeg = _find_ffmpeg()
+    r = subprocess.run([ffmpeg, "-hide_banner", "-i", str(path)], capture_output=True, text=True)
+    text = r.stderr or ""
+    dur = 0.0
+    m = _DURATION_RE.search(text)
+    if m:
+        dur = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+    w = h = 0
+    vcodec = None
+    m = _VIDEO_RE.search(text)
+    if m:
+        vcodec, w, h = m.group(1), int(m.group(2)), int(m.group(3))
+    br = 0
+    m = _BITRATE_RE.search(text)
+    if m:
+        br = int(m.group(1)) * 1000
+    return {"duration": dur, "width": w, "height": h, "bitrate": br,
+            "size": path.stat().st_size, "vcodec": vcodec}
 
 
 def probe(path: Path) -> dict:
     """Süre (sn), genişlik, yükseklik, toplam bit hızı ve boyut (bayt)."""
-    ffprobe = _require("ffprobe")
+    ffprobe = _find_ffprobe()
+    if not ffprobe:
+        return _probe_with_ffmpeg(path)
     out = subprocess.run(
         [
             ffprobe, "-v", "error", "-print_format", "json",
@@ -93,13 +165,19 @@ def make_poster(src: Path, dst: Path, *, at_seconds: float | None = None, width:
     if dur and t >= dur:
         t = max(0.0, dur / 2)
     dst.parent.mkdir(parents=True, exist_ok=True)
-    cmd = [
+    base = [
         ffmpeg, "-y", "-hide_banner", "-loglevel", "error", "-nostdin",
         "-ss", f"{t:.2f}", "-i", str(src), "-frames:v", "1",
         "-vf", f"scale={width}:-2:flags=lanczos",
-        "-c:v", "libwebp", "-quality", "82", "-compression_level", "6",
-        str(dst),
     ]
+    if dst.suffix.lower() == ".webp":
+        cmd = base + ["-c:v", "libwebp", "-quality", "82", "-compression_level", "6", str(dst)]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            return dst
+        except subprocess.CalledProcessError:
+            dst = dst.with_suffix(".jpg")  # libwebp yoksa JPEG'e düş
+    cmd = base + ["-c:v", "mjpeg", "-q:v", "3", "-pix_fmt", "yuvj420p", str(dst)]
     try:
         subprocess.run(cmd, check=True, capture_output=True, text=True)
     except subprocess.CalledProcessError as e:
