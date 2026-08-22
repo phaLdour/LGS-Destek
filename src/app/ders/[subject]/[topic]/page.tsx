@@ -18,8 +18,9 @@ import {
   TopicDiagrams,
 } from "@/components/study/MathDiagrams";
 import { TopicStudyController } from "@/components/study/TopicStudyController";
+import { VideoPlayer } from "@/components/study/VideoPlayer";
 import { YouTubeEmbed } from "@/components/study/YouTubeEmbed";
-import { getSubjectContent, getTopic } from "@/content";
+import { getSubjectContent, getTopic, topicHasVideo } from "@/content";
 import { getShellUser } from "@/lib/user";
 
 // Ağır, etkileşimli bileşenler ayrı chunk'lara bölünür — ilk yükte (above
@@ -46,7 +47,8 @@ export default async function TopicPage({
   if (!subjectContent || !topicData) notFound();
 
   const user = await getShellUser();
-  const hasVideo = Boolean(topicData.youtubeId);
+  // Yerleşik video (videos.json) öncelikli; yoksa eski YouTube kaydı.
+  const hasVideo = topicHasVideo(topicData);
   const hasMindMap = Boolean(topicData.mindMap?.branches.length);
   const hasCards = (topicData.cards?.length ?? 0) > 0;
   const hasArticle = Boolean(topicData.article && topicData.article.trim());
@@ -99,8 +101,14 @@ export default async function TopicPage({
         icon={<Video className="h-5 w-5" />}
         title="Videolu özet"
       >
-        {hasVideo ? (
-          <YouTubeEmbed id={topicData.youtubeId!} title={topicData.name} />
+        {topicData.video ? (
+          <VideoPlayer
+            video={topicData.video}
+            title={topicData.name}
+            id={`${subject}/${topic}`}
+          />
+        ) : topicData.youtubeId ? (
+          <YouTubeEmbed id={topicData.youtubeId} title={topicData.name} />
         ) : (
           <Placeholder text="Bu konu için video özeti yakında eklenecek." />
         )}

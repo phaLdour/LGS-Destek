@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronRight, Circle, Loader2 } from "lucide-react";
+import { Check, ChevronRight, Circle, Loader2, Video } from "lucide-react";
 import type { Topic } from "@/content/types";
 import {
   getTopicProgress,
@@ -92,8 +92,18 @@ export function TopicList({
               </button>
 
               <Link href={`/ders/${subjectSlug}/${t.id}`} className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-rehberim-navy">
-                  {t.name}
+                <p className="flex items-center gap-1.5 truncate text-sm font-bold text-rehberim-navy">
+                  <span className="truncate">{t.name}</span>
+                  {(t.video?.src || t.youtubeId) && (
+                    <span
+                      title="Konu videosu var"
+                      aria-label="Konu videosu var"
+                      className="inline-flex shrink-0 items-center gap-0.5 rounded-md bg-rehberim-accent/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rehberim-accent-dark"
+                    >
+                      <Video className="h-3 w-3" />
+                      Video
+                    </span>
+                  )}
                 </p>
                 <p className="truncate text-xs text-rehberim-navy/55">
                   {t.summary}

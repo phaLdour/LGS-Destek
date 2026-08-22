@@ -1,0 +1,4 @@
+{
+  "$comment": "Konu videoları kaydı. Anahtar: '<ders-slug>/<konu-id>'. Bu dosya tools/video-pipeline tarafından otomatik yazılır; elle düzenlersen JSON geçerliliğini koru.",
+  "videos": {}
+}
