@@ -253,6 +253,35 @@ class NotebookLM:
         )
         return Path(path)
 
+    async def list_all_videos(self) -> list[dict[str, Any]]:
+        """Hesaptaki TÜM notebook'ların video artefaktları (eski videoları bulmak için)."""
+        assert self.client
+        out: list[dict[str, Any]] = []
+        for nb in await self.client.notebooks.list():
+            try:
+                videos = await self.client.artifacts.list_video(nb.id)
+            except Exception as e:  # noqa: BLE001
+                log.debug("Artifact listesi alınamadı (%s): %s", nb.id, e)
+                continue
+            for art in videos:
+                out.append({
+                    "notebook_id": nb.id,
+                    "notebook_title": nb.title,
+                    "artifact_id": art.id,
+                    "artifact_title": getattr(art, "title", None),
+                    "status": art.status_str,
+                    "duration": getattr(art, "duration_seconds", None),
+                    "created_at": str(getattr(art, "created_at", "") or ""),
+                })
+        return out
+
+    async def download_artifact(self, notebook_id: str, artifact_id: str | None, dest: Path) -> Path:
+        """Herhangi bir notebook'tan (başlık biçimine bakmadan) video indirir."""
+        assert self.client
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        path = await self.client.artifacts.download_video(notebook_id, str(dest), artifact_id=artifact_id)
+        return Path(path)
+
     async def delete_notebook(self, notebook_id: str) -> None:
         assert self.client
         await self.client.notebooks.delete(notebook_id)

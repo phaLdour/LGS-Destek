@@ -345,6 +345,45 @@ async def cmd_account(args: argparse.Namespace) -> int:
     return 0
 
 
+# ---------------------------------------------------------------- videos / adopt
+
+async def cmd_videos(args: argparse.Namespace) -> int:
+    """Hesaptaki tüm video artefaktlarını listeler (eski YouTube videolarını bulmak için)."""
+    from nlm import NotebookLM, storage_path_from_env
+    async with NotebookLM(storage_path_from_env()) as nlm:
+        vids = await nlm.list_all_videos()
+    if args.json:
+        print(json.dumps(vids, ensure_ascii=False, indent=2))
+        return 0
+    for v in vids:
+        dur = f"{v['duration']:.0f} sn" if v.get("duration") else ""
+        print(f"{v['notebook_id']}  {v['artifact_id'][:8]}  {v['status']:<11} {dur:>7}  {v['notebook_title']!s:<40} {v['artifact_title'] or ''}")
+    print(f"\nToplam {len(vids)} video artefaktı")
+    return 0
+
+
+async def cmd_adopt(args: argparse.Namespace) -> int:
+    """Var olan bir notebook videosunu (örn. eski Fen videoları) indirip siteye yayınlar."""
+    from nlm import NotebookLM, storage_path_from_env
+    content = export_content()
+    find_topic(content, args.key)
+    backend = None if args.dry_run else get_backend(REPO_DIR)
+    dl_dir = WORK_DIR / "downloads"
+    dest = dl_dir / f"{args.key.replace('/', '__')}-{(args.artifact or args.notebook)[:8]}.mp4"
+    async with NotebookLM(storage_path_from_env()) as nlm:
+        if not dest.exists() or dest.stat().st_size < 1000:
+            log.info("[%s] indiriliyor (notebook %s)...", args.key, args.notebook)
+            await nlm.download_artifact(args.notebook, args.artifact, dest)
+    ref = f"notebooklm:{args.notebook}/{args.artifact or 'latest'}"
+    info = publish_file(dest, args.key, artifact_id=args.artifact or args.notebook, backend=backend, dry_run=args.dry_run)
+    print(json.dumps(info, ensure_ascii=False, indent=2))
+    if args.dry_run:
+        return 0
+    register_video(REPO_DIR, args.key, src=info["src"], poster=info["poster"], duration=info["duration"], source_ref=ref)
+    git_commit_and_push(REPO_DIR, commit_message(args.key, content), push=not args.no_push)
+    return 0
+
+
 # ----------------------------------------------------------------------- main
 
 def main(argv: list[str] | None = None) -> int:
@@ -386,6 +425,16 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("account", help="NotebookLM hesap/kota bilgisi")
 
+    p = sub.add_parser("videos", help="Hesaptaki tüm video artefaktlarını listele")
+    p.add_argument("--json", action="store_true")
+
+    p = sub.add_parser("adopt", help="Var olan bir notebook videosunu siteye yayınla")
+    p.add_argument("--notebook", required=True, help="Notebook kimliği")
+    p.add_argument("--artifact", default=None, help="Video artefakt kimliği (yoksa en yenisi)")
+    p.add_argument("--key", required=True, help="Konu anahtarı (ders/konu)")
+    p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--no-push", action="store_true")
+
     args = ap.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -409,6 +458,10 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_process(args)
     if args.cmd == "account":
         return asyncio.run(cmd_account(args))
+    if args.cmd == "videos":
+        return asyncio.run(cmd_videos(args))
+    if args.cmd == "adopt":
+        return asyncio.run(cmd_adopt(args))
     return 2
 
 

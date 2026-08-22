@@ -69,7 +69,7 @@ def git_commit_and_push(repo_dir: Path, message: str, *, push: bool = True,
     if not status:
         log.info("Commit edilecek değişiklik yok.")
         return True
-    _git(repo_dir, "-c", "commit.gpgsign=false", "commit", "-q", "-m", message)
+    _git(repo_dir, "commit", "-q", "-m", message)
     log.info("Commit: %s", message.splitlines()[0])
     if not push:
         return True
