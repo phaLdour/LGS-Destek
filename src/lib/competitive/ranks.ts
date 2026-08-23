@@ -172,17 +172,19 @@ export function applyDelta(
 }
 
 /**
- * Sezon reset (yumuşak — kullanıcı kararı):
- * Yeni sezonda tier 2 kademe iner, puan 50'ye sıfırlanır,
+ * Sezon reset (yumuşak — kullanıcı kararı, Faz 5'te SQL'de uygulanır:
+ * comp_ensure_season_and_rank):
+ * Yeni sezonda tier 2 kademe iner (taban: DEFAULT_NEW_USER_TIER — kimse
+ * yeni başlayanların altından başlamaz), puan 50'ye sıfırlanır,
  * highest_tier_reached yeni tier'a eşitlenir (bir sonraki sezon
- * için temiz başlangıç).
+ * için temiz başlangıç). Lig nişanı (comp_profiles.best_tier) etkilenmez.
  */
 export function seasonReset(prevTier: number): {
   tier: number;
   points: number;
   highestTierReached: number;
 } {
-  const tier = clamp(prevTier - 2, 0, MAX_TIER);
+  const tier = clamp(prevTier - 2, DEFAULT_NEW_USER_TIER, MAX_TIER);
   return {
     tier,
     points: 50,
