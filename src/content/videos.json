@@ -1,0 +1,159 @@
+{
+  "$comment": "Konu videoları kaydı. Anahtar: '<ders-slug>/<konu-id>'. Bu dosya tools/video-pipeline tarafından otomatik yazılır; elle düzenlersen JSON geçerliliğini koru.",
+  "videos": {
+    "fen-bilimleri/basinc": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basinc-8ece75a5.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basinc-8ece75a5.webp",
+      "duration": 617,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:7ee30fbc-b0ef-41c9-bbc2-2bfb96269d68/8ece75a5-e7d6-4d64-af48-e14fb2e5e0ae"
+    },
+    "fen-bilimleri/basit-makineler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basit-makineler-20d5f21c.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/basit-makineler-20d5f21c.webp",
+      "duration": 516,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:62022b6d-fe83-43ab-ae07-c9bec8c73700/20d5f21c-0371-489f-837e-77629a6ddce9"
+    },
+    "fen-bilimleri/elektrik-yukleri-ve-enerjisi": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/elektrik-yukleri-ve-enerjisi-1a080da5.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/elektrik-yukleri-ve-enerjisi-1a080da5.webp",
+      "duration": 657,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:fec48afa-a32e-4d8c-8447-eb429bb2f14a/1a080da5-e3e0-40f7-8945-641cb0ebd486"
+    },
+    "fen-bilimleri/enerji-donusumleri-ve-cevre": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/enerji-donusumleri-ve-cevre-18320b12.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/enerji-donusumleri-ve-cevre-18320b12.webp",
+      "duration": 608,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:28f2482c-545f-4fec-a8d9-2a60f53b9f5e/18320b12-0cc3-47ac-a61b-6af12181ec9c"
+    },
+    "fen-bilimleri/madde-ve-endustri": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/madde-ve-endustri-6ec9b883.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/fen-bilimleri/madde-ve-endustri-6ec9b883.webp",
+      "duration": 532,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:cae9ac1f-53c0-4e3c-b366-2bfd7b7e5526/6ec9b883-930b-4e91-8a4a-8fa15a08e030"
+    },
+    "matematik/carpanlar-ve-katlar": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/carpanlar-ve-katlar-13fcdfa7.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/carpanlar-ve-katlar-13fcdfa7.webp",
+      "duration": 612,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:b2cde1fe-0c11-4297-83d4-afae3e75caf3/13fcdfa7-10e2-4645-a6c2-30445de35aa2"
+    },
+    "matematik/cebirsel-ifadeler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/cebirsel-ifadeler-cbc00668.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/cebirsel-ifadeler-cbc00668.webp",
+      "duration": 546,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:1226127a-7623-4a23-8ef5-307e0b5bb8e9/cbc00668-49a8-4c4b-8d2d-9505a04a4b44"
+    },
+    "matematik/dogrusal-denklemler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/dogrusal-denklemler-e492ac9f.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/dogrusal-denklemler-e492ac9f.webp",
+      "duration": 669,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:4e3f90b8-de43-4a57-9aad-a7bd33ba2ec2/e492ac9f-03c3-459f-9cbc-9d3d9c0badcb"
+    },
+    "matematik/donusum-geometrisi": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/donusum-geometrisi-094cf931.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/donusum-geometrisi-094cf931.webp",
+      "duration": 502,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:0cb9bcd9-b7f3-4e13-bf34-bcb938d2fd89/094cf931-0eee-4b8b-b3cf-71cd7e969577"
+    },
+    "matematik/esitsizlikler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/esitsizlikler-c81d2529.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/esitsizlikler-c81d2529.webp",
+      "duration": 518,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:f372dca3-30e8-4ecb-b9d4-239694274baf/c81d2529-98dd-449b-8768-85e9ec480168"
+    },
+    "matematik/geometrik-cisimler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/geometrik-cisimler-d84c9343.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/geometrik-cisimler-d84c9343.webp",
+      "duration": 505,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:2dd9a08b-c3c6-40e9-907f-b76708aab111/d84c9343-fb21-4656-b222-e0461653ab4f"
+    },
+    "matematik/karekoklu-ifadeler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/karekoklu-ifadeler-2490d3f0.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/karekoklu-ifadeler-2490d3f0.webp",
+      "duration": 568,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:40d1a602-d014-4958-b600-c0be6ad9fa7b/2490d3f0-0f58-45fe-ad93-7029f6922cb5"
+    },
+    "matematik/olasilik": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/olasilik-67626669.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/olasilik-67626669.webp",
+      "duration": 642,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:e870524a-c03b-4e2b-9166-47a46f966599/67626669-1e7c-4971-9d36-ef3a663c84e1"
+    },
+    "matematik/ucgenler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/ucgenler-6c2d1621.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/ucgenler-6c2d1621.webp",
+      "duration": 558,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:97ba98b8-6836-475f-885c-0aac93ff5a8d/6c2d1621-5637-4f4c-811c-457ef5d139e1"
+    },
+    "matematik/uslu-ifadeler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/uslu-ifadeler-8c9c5f84.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/uslu-ifadeler-8c9c5f84.webp",
+      "duration": 621,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:44ccacf0-09c4-4e7b-8dd4-4b335dcef880/8c9c5f84-1343-46cb-97fa-b212bb24ab2f"
+    },
+    "matematik/veri-analizi": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/veri-analizi-53aa42b1.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/matematik/veri-analizi-53aa42b1.webp",
+      "duration": 659,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:9fbc9f82-c5d0-4397-9b34-0a2b3d48b984/53aa42b1-ba0f-4eab-adf0-d997fc69b61f"
+    },
+    "turkce/cumlede-anlam": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/cumlede-anlam-237c644b.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/cumlede-anlam-237c644b.webp",
+      "duration": 618,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:8ad3d405-a38d-4df4-93c1-71174d278613/237c644b-770e-4f99-bd41-3fd25837cf8c"
+    },
+    "turkce/cumlenin-ogeleri": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/cumlenin-ogeleri-fb8238b1.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/cumlenin-ogeleri-fb8238b1.webp",
+      "duration": 631,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:f6c539e3-4415-4d1e-b937-96045ba1b3d5/fb8238b1-1c5c-45f9-96b0-213c90070dcb"
+    },
+    "turkce/fiilde-cati": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/fiilde-cati-242a7bf0.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/fiilde-cati-242a7bf0.webp",
+      "duration": 623,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:ca814560-c313-4dff-9b01-111e3f7ee80b/242a7bf0-91eb-4aaa-82e4-6fbd6f3696fb"
+    },
+    "turkce/fiilimsiler": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/fiilimsiler-08ac3e24.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/fiilimsiler-08ac3e24.webp",
+      "duration": 570,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:aad656bb-3480-4c62-894b-2e116a1b98e9/08ac3e24-f2b5-4e29-9d46-ec0126f7fbb3"
+    },
+    "turkce/paragrafta-anlam": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/paragrafta-anlam-80200f29.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/paragrafta-anlam-80200f29.webp",
+      "duration": 460,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:ae598247-4f38-4e85-b660-3dedb9d2b0a9/80200f29-564c-4681-ad89-007d58e5b6a9"
+    },
+    "turkce/sozcukte-anlam": {
+      "src": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/sozcukte-anlam-99c95756.mp4",
+      "poster": "https://olvlrgduwpmxrfwiijsm.supabase.co/storage/v1/object/public/videolar/turkce/sozcukte-anlam-99c95756.webp",
+      "duration": 672,
+      "createdAt": "2026-08-22T12:34:00Z",
+      "sourceRef": "notebooklm:8c4f80a8-0323-4cfa-9e89-63e378bed88c/99c95756-d1e0-4fad-ae91-e99b637440a3"
+    }
+  }
+}

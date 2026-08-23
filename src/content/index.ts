@@ -1,19 +1,38 @@
-import type { SubjectContent, Topic } from "./types";
+import type { SubjectContent, Topic, TopicVideo } from "./types";
 import { FEN_BILIMLERI } from "./fen-bilimleri";
 import { TURKCE } from "./turkce";
 import { INKILAP } from "./inkilap";
 import { MATEMATIK } from "./matematik";
 import { DIN } from "./din";
 import { INGILIZCE } from "./ingilizce";
+import { getTopicVideo } from "./videos";
 
-const CONTENT: Record<string, SubjectContent> = {
-  [FEN_BILIMLERI.slug]: FEN_BILIMLERI,
-  [TURKCE.slug]: TURKCE,
-  [INKILAP.slug]: INKILAP,
-  [MATEMATIK.slug]: MATEMATIK,
-  [DIN.slug]: DIN,
-  [INGILIZCE.slug]: INGILIZCE,
-};
+/**
+ * Yerleşik konu videolarını (videos.json) konu nesnelerine birleştirir.
+ * Video kaydı varsa `topic.video` dolar; yoksa eski `youtubeId` geri
+ * dönüş olarak kalır. Modül yüklenirken bir kez çalışır.
+ */
+function attachVideos(subject: SubjectContent): SubjectContent {
+  return {
+    ...subject,
+    topics: subject.topics.map((t) => {
+      const video = getTopicVideo(subject.slug, t.id);
+      return video ? { ...t, video } : t;
+    }),
+  };
+}
+
+const CONTENT: Record<string, SubjectContent> = Object.fromEntries(
+  [FEN_BILIMLERI, TURKCE, INKILAP, MATEMATIK, DIN, INGILIZCE].map((s) => [
+    s.slug,
+    attachVideos(s),
+  ]),
+);
+
+/** Konunun videosu var mı (yerleşik video veya eski YouTube kaydı)? */
+export function topicHasVideo(topic: Topic): boolean {
+  return Boolean(topic.video?.src) || Boolean(topic.youtubeId);
+}
 
 /** İçeriği olan ders varsa döner, yoksa null (ders sayfası "yakında" gösterir). */
 export function getSubjectContent(slug: string): SubjectContent | null {
@@ -65,4 +84,4 @@ export function getTopicCatalog(): {
   return out;
 }
 
-export type { SubjectContent, Topic };
+export type { SubjectContent, Topic, TopicVideo };

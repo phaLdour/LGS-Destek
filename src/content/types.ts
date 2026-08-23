@@ -53,13 +53,38 @@ export type QuizQuestion = {
   explanation?: string;
 };
 
+/**
+ * Sitede yerleşik oynatılan konu videosu (NotebookLM ile üretilip depoya
+ * yüklenen MP4). Kayıtlar `src/content/videos.json` dosyasında tutulur ve
+ * video otomasyonu (tools/video-pipeline) tarafından yazılır.
+ */
+export type TopicVideo = {
+  /** MP4 (H.264 + AAC) adresi — tarayıcıda doğrudan oynatılır. */
+  src: string;
+  /** Kapak görseli (WebP/JPG). Yoksa oynatıcı ilk kareyi gösterir. */
+  poster?: string;
+  /** Süre (saniye). Oynatıcı yüklenmeden önce gösterilir. */
+  duration?: number;
+  /** Üretim tarihi (ISO 8601). */
+  createdAt?: string;
+  /** İsteğe bağlı altyazı dosyası (WebVTT). */
+  captions?: string;
+  /** Üretim kaynağı (ör. NotebookLM notebook kimliği) — sadece kayıt amaçlı. */
+  sourceRef?: string;
+};
+
 export type Topic = {
   id: string;
   name: string;
   /** Kısa tanıtım metni (konu listesinde görünür) */
   summary: string;
-  /** YouTube video kimliği (ör. "dQw4w9WgXcQ"). Boşsa video bölümü gizlenir. */
+  /**
+   * Eski düzen: YouTube video kimliği. Yalnızca `video` yoksa kullanılır
+   * (geriye dönük uyumluluk). Yeni videolar `video` alanıyla gelir.
+   */
   youtubeId?: string;
+  /** Yerleşik oynatıcıda gösterilen konu videosu (videos.json'dan birleştirilir). */
+  video?: TopicVideo;
   /** Konu (zihin) haritası: merkez + dallar. Boşsa o bölüm gizlenir. */
   mindMap?: MindMap;
   /** Çalışma kartları (flashcard). Boşsa o bölüm gizlenir. */
