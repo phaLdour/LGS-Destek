@@ -1,5 +1,6 @@
 import { getSubjectContent } from "@/content";
 import { ADVANCED_QUESTIONS } from "@/content/advanced-questions";
+import { shuffleQuestionOptions } from "@/lib/shuffleOptions";
 import type { PoolQuestion } from "./quickQuiz-types";
 import { collectAllQuestions } from "./quickQuiz";
 
@@ -115,7 +116,10 @@ function collectAdvancedForSubject(subjectSlug: string): PoolQuestion[] {
         subjectName: subj.name,
         topicId: t.id,
         topicName: t.name,
-        question: q,
+        // Zor havuz da aynı şık-sırası eğiliminden etkileniyor (90 sorunun
+        // 85'i A). Kolay havuz @/content içinde karıştırılıyor; bu havuz
+        // oradan geçmediği için burada karıştırılır.
+        question: shuffleQuestionOptions(q),
       }),
     );
   }

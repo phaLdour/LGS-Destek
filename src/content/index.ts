@@ -6,6 +6,7 @@ import { MATEMATIK } from "./matematik";
 import { DIN } from "./din";
 import { INGILIZCE } from "./ingilizce";
 import { getTopicVideo } from "./videos";
+import { shuffleQuestionList } from "@/lib/shuffleOptions";
 
 /**
  * Yerleşik konu videolarını (videos.json) konu nesnelerine birleştirir.
@@ -22,10 +23,28 @@ function attachVideos(subject: SubjectContent): SubjectContent {
   };
 }
 
+/**
+ * Şıkları sabit sırayla karıştırır (bkz. lib/shuffleOptions).
+ *
+ * Havuz yazılırken doğru cevap neredeyse hep ilk şıkka konmuştu; bu
+ * dönüşüm olmadan öğrenci soruyu okumadan A işaretleyerek ~%90 alabiliyor.
+ * Modül yüklenirken bir kez çalışır, sonuç önbelleklenir.
+ */
+function shuffleOptions(subject: SubjectContent): SubjectContent {
+  return {
+    ...subject,
+    topics: subject.topics.map((t) => ({
+      ...t,
+      quiz: shuffleQuestionList(t.quiz),
+      quickQuestions: shuffleQuestionList(t.quickQuestions),
+    })),
+  };
+}
+
 const CONTENT: Record<string, SubjectContent> = Object.fromEntries(
   [FEN_BILIMLERI, TURKCE, INKILAP, MATEMATIK, DIN, INGILIZCE].map((s) => [
     s.slug,
-    attachVideos(s),
+    shuffleOptions(attachVideos(s)),
   ]),
 );
 
