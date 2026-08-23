@@ -13,6 +13,7 @@ const GROUP_LABELS: Record<Badge["group"], string> = {
   soru: "Soru",
   ders: "Ders Ustaları",
   sinav: "Sınav",
+  rekabet: "Rekabet",
 };
 
 const GROUP_ORDER: Badge["group"][] = [
@@ -21,6 +22,7 @@ const GROUP_ORDER: Badge["group"][] = [
   "soru",
   "ders",
   "sinav",
+  "rekabet",
 ];
 
 function dayKey(d: Date): string {
@@ -37,7 +39,15 @@ export async function BadgeShowcase() {
   const since = new Date();
   since.setDate(since.getDate() - 60);
 
-  const [sessions, topicProgress, quizzes, existingBadges] = await Promise.all([
+  const [
+    sessions,
+    topicProgress,
+    quizzes,
+    existingBadges,
+    compRanks,
+    compTrophies,
+    compProfile,
+  ] = await Promise.all([
     supabase
       .from("study_sessions")
       .select("duration_seconds, started_at")
@@ -50,6 +60,17 @@ export async function BadgeShowcase() {
       .from("quiz_results")
       .select("subject_slug, correct_count, wrong_count, total_questions"),
     supabase.from("user_badges").select("badge_key"),
+    // Rekabet rozetleri (Faz 6) — tüm sezonların toplamı
+    supabase
+      .from("comp_ranks")
+      .select("wins, losses, draws, win_streak, best_win_streak")
+      .eq("user_id", user.id),
+    supabase.from("comp_trophies").select("rank_position").eq("user_id", user.id),
+    supabase
+      .from("comp_profiles")
+      .select("best_tier")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
 
   const sessionRows = (sessions.data ?? []) as {
@@ -124,6 +145,29 @@ export async function BadgeShowcase() {
     }
   }
 
+  // Rekabet metrikleri
+  const rankRows = (compRanks.data ?? []) as {
+    wins: number;
+    losses: number;
+    draws: number;
+    win_streak: number;
+    best_win_streak: number;
+  }[];
+  const trophyRows = (compTrophies.data ?? []) as { rank_position: number }[];
+  const compWins = rankRows.reduce((a, r) => a + r.wins, 0);
+  const compMatches = rankRows.reduce(
+    (a, r) => a + r.wins + r.losses + r.draws,
+    0,
+  );
+  const compBestStreak = rankRows.reduce(
+    (a, r) => Math.max(a, r.best_win_streak ?? 0, r.win_streak ?? 0),
+    0,
+  );
+  const compBestTier =
+    typeof compProfile.data?.best_tier === "number"
+      ? compProfile.data.best_tier
+      : 0;
+
   const earned = evaluateBadges({
     totalMinutes: Math.round(totalSeconds / 60),
     completedTopics,
@@ -134,6 +178,12 @@ export async function BadgeShowcase() {
     bestExamNet,
     topicsDonePerSubject,
     totalTopicsPerSubject,
+    compMatches,
+    compWins,
+    compBestStreak,
+    compBestTier,
+    compTrophies: trophyRows.length,
+    compSeasonWins: trophyRows.filter((t) => t.rank_position === 1).length,
   });
 
   // Yeni kazanılanları kaydet (zaten sahip olunmayanlar)
