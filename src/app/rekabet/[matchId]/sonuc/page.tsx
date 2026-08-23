@@ -92,6 +92,10 @@ export default async function SonucPage({
   if (match.winner_id === user.id) outcome = "win";
   else if (match.winner_id && match.winner_id !== user.id) outcome = "loss";
 
+  // Forfeit bilgisi: sonuç ekranı özel mesajı için
+  const isForfeit = !!match.forfeited_by;
+  const iForfeited = match.forfeited_by === user.id;
+
   const shellUser = await getShellUser();
 
   return (
@@ -104,6 +108,8 @@ export default async function SonucPage({
           myAnswers={myAnswers}
           opponentAnswers={oppAnswers}
           questions={questions}
+          isForfeit={isForfeit}
+          iForfeited={iForfeited}
         />
       </div>
     </AppShell>

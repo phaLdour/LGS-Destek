@@ -46,6 +46,8 @@ export function MatchResult({
   myAnswers,
   opponentAnswers,
   questions,
+  isForfeit = false,
+  iForfeited = false,
 }: {
   matchOutcome: "win" | "loss" | "draw";
   me: SideSummary;
@@ -53,6 +55,8 @@ export function MatchResult({
   myAnswers: AnswerRow[];
   opponentAnswers: AnswerRow[];
   questions: ReplayQuestion[];
+  isForfeit?: boolean;
+  iForfeited?: boolean;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -72,6 +76,27 @@ export function MatchResult({
 
   return (
     <div className="space-y-5">
+      {/* Forfeit (hükmen) bilgi kutusu */}
+      {isForfeit &&
+        (iForfeited ? (
+          <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <X className="mt-0.5 h-5 w-5 shrink-0" />
+            <p>
+              <span className="font-extrabold">Bu maçtan ayrıldın.</span> Hükmen
+              mağlup sayıldın ve <strong>−30 puan</strong> kaybettin. Bir dahaki
+              sefere maçı tamamlamayı dene!
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            <Trophy className="mt-0.5 h-5 w-5 shrink-0" />
+            <p>
+              <span className="font-extrabold">Rakibin maçı terk etti.</span>{" "}
+              Hükmen kazandın ve <strong>+30 puan</strong> kazandın!
+            </p>
+          </div>
+        ))}
+
       {/* Sonuç başlığı + delta */}
       <div
         className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${Title.color} p-6 text-white shadow-soft`}

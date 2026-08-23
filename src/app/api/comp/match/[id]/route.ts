@@ -39,7 +39,7 @@ export async function GET(
   const { data: match } = await supabase
     .from("comp_matches")
     .select(
-      "id, season_id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, subject_filter, is_friendly, started_at, deadline_at, status",
+      "id, season_id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, subject_filter, is_friendly, started_at, deadline_at, status, forfeited_by",
     )
     .eq("id", id)
     .maybeSingle();
@@ -94,6 +94,7 @@ export async function GET(
       startedAt: match.started_at,
       deadlineAt: match.deadline_at,
       status: match.status,
+      forfeitedBy: match.forfeited_by ?? null,
     },
     question,
     myAnsweredCount: myCount ?? 0,

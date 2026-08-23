@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   ChevronLeft,
@@ -34,13 +34,22 @@ const ANLAM_BADGE: Record<
   },
 };
 
-export function SozlukClient({
-  kelimeler,
-  pageSize,
-}: {
+type SozlukClientProps = {
   kelimeler: Kelime[];
   pageSize: number;
-}) {
+};
+
+// useSearchParams() bir Suspense boundary gerektirir (Next.js CSR bailout).
+// Dışa açılan bileşen içeriği Suspense ile sarar.
+export function SozlukClient(props: SozlukClientProps) {
+  return (
+    <Suspense fallback={null}>
+      <SozlukClientInner {...props} />
+    </Suspense>
+  );
+}
+
+function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");

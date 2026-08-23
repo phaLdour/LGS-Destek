@@ -2,22 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, RotateCcw, Swords, X } from "lucide-react";
+import { AlertTriangle, Loader2, RotateCcw, Swords, X } from "lucide-react";
 import { LeagueBadge } from "./LeagueBadge";
 import { rankLabel } from "@/lib/competitive/ranks";
 import { subscribeToMatchmaking } from "@/lib/competitive/realtime";
 
 /**
  * Matchmaking ekranı:
- *   - Mount'ta `POST /api/comp/queue/join` ile kuyruğa girer
- *   - Realtime ile `comp_matches` INSERT bildirimi bekler
- *   - 3 sn'de bir `POST /api/comp/queue/tick` polling fallback
- *   - "İptal" → `POST /api/comp/queue/leave` → /rekabet
- *   - 60sn+ sonra "Baştan başla" → reset + yeniden join (stale kuyruk
- *     veya arta kalmış aktif maç temizliği için)
+ *   - Mount'ta önce `GET /api/comp/active-match`: devam eden maç varsa
+ *     forfeit onayı sorar (yeni maç aramak eskisini hükmen mağlup eder).
+ *   - Onay sonrası (ya da aktif maç yoksa) `POST /api/comp/queue/join`.
+ *   - Realtime ile `comp_matches` INSERT bildirimi bekler.
+ *   - 3 sn'de bir `POST /api/comp/queue/tick` polling fallback.
+ *   - "İptal" → `POST /api/comp/queue/leave` → /rekabet.
+ *   - 60sn+ sonra "Baştan başla" → reset + yeniden join.
  *
  * matched sonucunda doğrudan /rekabet/[matchId]'e yönlendirir.
  */
+type Mode = "checking" | "confirm-forfeit" | "searching";
+
 export function MatchmakingScreen({
   userId,
   tier,
@@ -28,6 +31,9 @@ export function MatchmakingScreen({
   subjectFilter: string | null;
 }) {
   const router = useRouter();
+  const [mode, setMode] = useState<Mode>("checking");
+  const [activeMatchId, setActiveMatchId] = useState<string | null>(null);
+  const [forfeiting, setForfeiting] = useState(false);
   const [statusText, setStatusText] = useState("Rakip aranıyor…");
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -44,8 +50,31 @@ export function MatchmakingScreen({
     router.replace(`/rekabet/${matchId}`);
   }
 
-  // İlk join + dinleyici
+  // Mount'ta aktif maç kontrolü → forfeit onayı ya da direkt arama
   useEffect(() => {
+    let cancelled = false;
+    fetch("/api/comp/active-match")
+      .then((r) => r.json())
+      .then((d) => {
+        if (cancelled) return;
+        if (d?.matchId) {
+          setActiveMatchId(d.matchId as string);
+          setMode("confirm-forfeit");
+        } else {
+          setMode("searching");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setMode("searching"); // kontrol edemezsek aramaya geç
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // İlk join + Realtime dinleyici (yalnız searching modunda)
+  useEffect(() => {
+    if (mode !== "searching") return;
     let cancelled = false;
 
     subRef.current = subscribeToMatchmaking({
@@ -79,10 +108,11 @@ export function MatchmakingScreen({
       subRef.current?.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mode]);
 
-  // Polling fallback + zaman sayacı
+  // Polling fallback + zaman sayacı (yalnız searching modunda)
   useEffect(() => {
+    if (mode !== "searching") return;
     if (matchedRef.current) return;
     const tickId = setInterval(async () => {
       if (matchedRef.current) return;
@@ -103,15 +133,14 @@ export function MatchmakingScreen({
       clearInterval(elapsedId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mode]);
 
-  // Bekleme süresine göre ipucu metni (schema'daki tier ramp eşikleriyle uyumlu)
+  // Bekleme süresine göre ipucu metni (schema tier ramp eşikleriyle uyumlu)
   useEffect(() => {
     if (elapsed > 90) setStatusText("Geniş bant — tüm liglerden rakip arıyoruz…");
     else if (elapsed > 45)
       setStatusText("±2 lige genişledik — biraz daha sabır…");
-    else if (elapsed > 15)
-      setStatusText("Komşu liglere bakıyoruz…");
+    else if (elapsed > 15) setStatusText("Komşu liglere bakıyoruz…");
     else setStatusText("Rakip aranıyor — ortalama bekleme 15 sn…");
   }, [elapsed]);
 
@@ -129,9 +158,7 @@ export function MatchmakingScreen({
     setResetting(true);
     setError(null);
     try {
-      // 1) Kuyruk ve eski aktif maçı temizle
       await fetch("/api/comp/queue/reset", { method: "POST" });
-      // 2) Sayacı sıfırla, yeniden katıl
       setElapsed(0);
       setLastTick("—");
       matchedRef.current = false;
@@ -153,7 +180,99 @@ export function MatchmakingScreen({
     }
   }
 
-  // Şu anki arama bandı (schema'daki match_make eşikleriyle birebir)
+  // Eski maçı terk et → hükmen mağlup → yeni aramaya geç
+  async function handleForfeitAndSearch() {
+    if (forfeiting || !activeMatchId) return;
+    setForfeiting(true);
+    setError(null);
+    try {
+      const r = await fetch(`/api/comp/match/${activeMatchId}/forfeit`, {
+        method: "POST",
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        setError(d?.error ? `Terk edilemedi: ${d.error}` : "Terk edilemedi.");
+        setForfeiting(false);
+        return;
+      }
+      setActiveMatchId(null);
+      setMode("searching");
+    } catch {
+      setError("Bağlantı hatası — tekrar dene.");
+    } finally {
+      setForfeiting(false);
+    }
+  }
+
+  // ── Faz: aktif maç kontrol ediliyor ──
+  if (mode === "checking") {
+    return (
+      <div className="ring-hairline rounded-3xl border border-rehberim-border bg-white p-8 text-center shadow-card">
+        <Loader2 className="mx-auto h-8 w-8 animate-spin text-rehberim-accent" />
+        <p className="mt-3 text-sm text-rehberim-navy/55">Hazırlanıyor…</p>
+      </div>
+    );
+  }
+
+  // ── Faz: devam eden maç var, forfeit onayı ──
+  if (mode === "confirm-forfeit") {
+    return (
+      <div className="ring-hairline relative overflow-hidden rounded-3xl border border-rehberim-border bg-white p-8 text-center shadow-card">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 text-red-500 ring-1 ring-red-100">
+          <AlertTriangle className="h-8 w-8" />
+        </div>
+        <h1 className="mt-5 text-xl font-extrabold tracking-tight text-rehberim-navy">
+          Devam eden bir maçın var
+        </h1>
+        <p className="mx-auto mt-2 max-w-sm text-pretty text-sm text-rehberim-navy/60">
+          Yeni maç aramak için mevcut maçı terk etmen gerekiyor. Terk edersen{" "}
+          <strong className="text-red-600">hükmen mağlup</strong> sayılırsın ve{" "}
+          <strong className="text-red-600">−30 puan</strong> kaybedersin.
+          Rakibin hükmen kazanır.
+        </p>
+
+        {error && (
+          <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <button
+            onClick={handleForfeitAndSearch}
+            disabled={forfeiting}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rose-500 to-red-600 px-5 py-3 text-sm font-extrabold text-white shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:opacity-50"
+          >
+            {forfeiting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Swords className="h-4 w-4" />
+            )}
+            Terk et ve yeni maç ara
+          </button>
+          <button
+            onClick={() => router.replace("/rekabet")}
+            disabled={forfeiting}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-rehberim-border bg-white px-5 py-3 text-sm font-bold text-rehberim-navy/70 transition-all duration-200 ease-smooth hover:bg-rehberim-muted disabled:opacity-50"
+          >
+            <X className="h-4 w-4" />
+            Vazgeç
+          </button>
+        </div>
+        {activeMatchId && (
+          <button
+            onClick={() => router.replace(`/rekabet/${activeMatchId}`)}
+            disabled={forfeiting}
+            className="mt-4 text-xs font-semibold text-rehberim-navy/45 underline-offset-2 hover:text-rehberim-navy/70 hover:underline disabled:opacity-50"
+          >
+            Maça geri dön
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  // ── Faz: rakip aranıyor ──
   const searchBand =
     elapsed <= 15 ? "±0" : elapsed <= 45 ? "±1" : elapsed <= 90 ? "±2" : "±3";
 
@@ -191,15 +310,19 @@ export function MatchmakingScreen({
         </span>
       </div>
 
-      {/* Debug paneli — kullanıcıya görünür "ne arıyoruz" şeffaflığı */}
+      {/* Debug paneli — "ne arıyoruz" şeffaflığı */}
       <dl className="relative mt-6 grid grid-cols-3 gap-2 rounded-2xl bg-rehberim-muted/60 px-4 py-3 text-xs">
         <div>
           <dt className="text-rehberim-navy/50">Bant</dt>
-          <dd className="font-bold text-rehberim-navy tabular-nums">{searchBand} lig</dd>
+          <dd className="font-bold text-rehberim-navy tabular-nums">
+            {searchBand} lig
+          </dd>
         </div>
         <div>
           <dt className="text-rehberim-navy/50">Filtre</dt>
-          <dd className="truncate font-bold text-rehberim-navy">{subjectFilter ?? "karma"}</dd>
+          <dd className="truncate font-bold text-rehberim-navy">
+            {subjectFilter ?? "karma"}
+          </dd>
         </div>
         <div>
           <dt className="text-rehberim-navy/50">Son tick</dt>

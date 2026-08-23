@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -9,7 +9,16 @@ import { GoogleButton } from "./GoogleButton";
 
 type Mode = "login" | "register";
 
+// useSearchParams() bir Suspense boundary gerektirir (Next.js CSR bailout).
 export function AuthForm({ mode }: { mode: Mode }) {
+  return (
+    <Suspense fallback={null}>
+      <AuthFormInner mode={mode} />
+    </Suspense>
+  );
+}
+
+function AuthFormInner({ mode }: { mode: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/dashboard";

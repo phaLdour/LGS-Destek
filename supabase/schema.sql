@@ -1110,3 +1110,114 @@ end;
 $$;
 
 grant execute on function public.comp_opponent_progress(uuid) to authenticated;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 4 — Hükmen Mağlubiyet (Forfeit)
+-- ════════════════════════════════════════════════════════════════════
+-- Kullanıcı aktif bir maçtan çıkıp yeni maç aradığında eski maç forfeit
+-- edilir: çıkan hükmen mağlup (-30), kalan hükmen galip (+30). forfeited_by
+-- kolonu sonuç ekranındaki özel mesajın tek kaynağı.
+
+alter table public.comp_matches
+  add column if not exists forfeited_by uuid references auth.users;
+
+-- comp_forfeit_match: çağıran (auth.uid()) maçı terk eder → hükmen mağlup.
+-- Sabit ±30 puan. comp_ranks tier traversal'ı comp_finalize_match ile aynı.
+-- Idempotent: status<>'active' ise no-op.
+create or replace function public.comp_forfeit_match(p_match_id uuid)
+returns void
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_caller uuid := auth.uid();
+  v_winner uuid;                 -- kalan (kazanan)
+  v_loser  uuid := v_caller;     -- çıkan (kaybeden)
+  v_p1_delta int;
+  v_p2_delta int;
+  v_rank record;
+  v_delta int;
+  v_new_tier int;
+  v_new_points int;
+  v_new_highest int;
+  v_floor_tier int;
+  v_uid uuid;
+begin
+  select * into v_m from public.comp_matches where id = p_match_id for update;
+  if v_m.id is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if v_caller <> v_m.player1_id and v_caller <> v_m.player2_id then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if v_m.status <> 'active' then
+    return;  -- zaten bitmiş; idempotent
+  end if;
+
+  -- Kazanan = rakip
+  v_winner := case when v_caller = v_m.player1_id
+                   then v_m.player2_id else v_m.player1_id end;
+
+  -- Sabit delta: çıkan -30, kalan +30
+  if v_caller = v_m.player1_id then
+    v_p1_delta := -30; v_p2_delta := 30;
+  else
+    v_p1_delta := 30;  v_p2_delta := -30;
+  end if;
+
+  -- Her iki oyuncunun comp_ranks satırını güncelle (tier traversal ortak)
+  foreach v_uid in array array[v_m.player1_id, v_m.player2_id] loop
+    v_delta := case when v_uid = v_m.player1_id then v_p1_delta else v_p2_delta end;
+
+    select * into v_rank from public.comp_ranks
+     where user_id = v_uid and season_id = v_m.season_id
+     for update;
+    -- Rütbe satırı yoksa atla (teorik; join sırasında garanti edilir)
+    if v_rank.user_id is null then
+      continue;
+    end if;
+
+    v_new_tier := v_rank.tier;
+    v_new_points := v_rank.points + v_delta;
+    v_new_highest := v_rank.highest_tier_reached;
+
+    while v_new_points >= 100 and v_new_tier < 9 loop
+      v_new_points := v_new_points - 100;
+      v_new_tier := v_new_tier + 1;
+      if v_new_tier > v_new_highest then
+        v_new_highest := v_new_tier;
+      end if;
+    end loop;
+
+    v_floor_tier := (v_new_highest / 2) * 2;
+    while v_new_points < 0 and v_new_tier > v_floor_tier loop
+      v_new_tier := v_new_tier - 1;
+      v_new_points := v_new_points + 100;
+    end loop;
+    if v_new_points < 0 then v_new_points := 0; end if;
+    if v_new_tier < 9 and v_new_points > 99 then v_new_points := 99; end if;
+
+    update public.comp_ranks set
+      tier = v_new_tier,
+      points = v_new_points,
+      highest_tier_reached = v_new_highest,
+      win_streak = case when v_uid = v_winner then win_streak + 1 else 0 end,
+      wins   = wins   + (case when v_uid = v_winner then 1 else 0 end),
+      losses = losses + (case when v_uid = v_loser  then 1 else 0 end),
+      updated_at = now()
+    where user_id = v_uid and season_id = v_m.season_id;
+  end loop;
+
+  -- Maçı forfeit olarak kapat
+  update public.comp_matches set
+    status = 'finished',
+    winner_id = v_winner,
+    forfeited_by = v_loser,
+    p1_delta = v_p1_delta,
+    p2_delta = v_p2_delta,
+    finished_at = now()
+  where id = p_match_id;
+end;
+$$;
+
+grant execute on function public.comp_forfeit_match(uuid) to authenticated;
