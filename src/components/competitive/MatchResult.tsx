@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowRight, Check, Home, Swords, Trophy, X } from "lucide-react";
 import { DeltaAnimator } from "./DeltaAnimator";
 import { LeagueBadge } from "./LeagueBadge";
+import { LeagueCrest } from "./LeagueCrest";
+import { crestTitle } from "@/lib/competitive/rewards";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -48,6 +50,10 @@ export function MatchResult({
   questions,
   isForfeit = false,
   iForfeited = false,
+  opponentName = "Rakip",
+  opponentId = null,
+  opponentBestTier = null,
+  myBestTier = null,
 }: {
   matchOutcome: "win" | "loss" | "draw";
   me: SideSummary;
@@ -57,6 +63,11 @@ export function MatchResult({
   questions: ReplayQuestion[];
   isForfeit?: boolean;
   iForfeited?: boolean;
+  /** Faz 5: rakibin herkese açık adı / profili / lig nişanı */
+  opponentName?: string;
+  opponentId?: string | null;
+  opponentBestTier?: number | null;
+  myBestTier?: number | null;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -127,6 +138,7 @@ export function MatchResult({
         <SideCard
           title="Sen"
           tier={me.tierAtStart}
+          bestTier={myBestTier}
           score={me.score}
           correct={me.correct}
           blank={me.blank}
@@ -135,8 +147,10 @@ export function MatchResult({
           highlight={matchOutcome === "win"}
         />
         <SideCard
-          title="Rakip"
+          title={opponentName}
+          href={opponentId ? `/rekabet/oyuncu/${opponentId}` : undefined}
           tier={opponent.tierAtStart}
+          bestTier={opponentBestTier}
           score={opponent.score}
           correct={opponent.correct}
           blank={opponent.blank}
@@ -216,7 +230,9 @@ export function MatchResult({
 
 function SideCard({
   title,
+  href,
   tier,
+  bestTier,
   score,
   correct,
   blank,
@@ -225,7 +241,11 @@ function SideCard({
   highlight,
 }: {
   title: string;
+  /** Varsa başlık herkese açık profile link olur */
+  href?: string;
   tier: number;
+  /** Lig nişanı (tüm zamanlar); null = gösterme */
+  bestTier?: number | null;
   score: number;
   correct: number;
   blank: number;
@@ -234,6 +254,16 @@ function SideCard({
   highlight?: boolean;
 }) {
   const wrong = 10 - correct - blank;
+  const heading = (
+    <span className="flex min-w-0 items-center gap-1.5">
+      <span className="truncate text-sm font-extrabold tracking-tight text-rehberim-navy">
+        {title}
+      </span>
+      {bestTier !== null && bestTier !== undefined && (
+        <LeagueCrest tier={bestTier} size={16} title={crestTitle(bestTier)} />
+      )}
+    </span>
+  );
   return (
     <div
       className={`rounded-xl border p-3 ${
@@ -244,9 +274,13 @@ function SideCard({
     >
       <div className="flex items-center gap-2">
         <LeagueBadge tier={tier} size="sm" />
-        <span className="text-sm font-extrabold tracking-tight text-rehberim-navy">
-          {title}
-        </span>
+        {href ? (
+          <Link href={href} className="min-w-0 hover:underline" title="Oyuncu profili">
+            {heading}
+          </Link>
+        ) : (
+          heading
+        )}
       </div>
       <p className="mt-3 text-[11px] font-semibold uppercase tracking-wider text-rehberim-navy/55">
         Skor

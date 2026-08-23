@@ -1221,3 +1221,386 @@ end;
 $$;
 
 grant execute on function public.comp_forfeit_match(uuid) to authenticated;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 5 — Rank ödülleri: herkese açık profil, lig nişanı, sezon kupaları,
+--         yumuşak sezon reseti, liderlik tablosu
+-- ════════════════════════════════════════════════════════════════════
+-- Kalıcı ödüller:
+--   * Lig nişanı  — tüm zamanlarda ulaşılan en yüksek kademe
+--                   (comp_profiles.best_tier, yalnız yukarı gider).
+--   * Sezon kupası — sezon kapandığında bitirilen lig/kademe + sıralama
+--                   (comp_trophies, sezon başına bir satır, asla silinmez).
+-- Herkese açık yüzey: comp_profiles (takma ad, avatar, best_tier) ve
+-- comp_trophies tüm giriş yapmış kullanıcılarca okunabilir; yazma
+-- yalnız security definer fonksiyonlarla.
+-- Sezon geçişi: yumuşak reset — yeni sezonda 2 kademe aşağı (taban Yükselme 2), 50 puan.
+-- Sezon kapanışı cron'suz: comp_ensure_season_and_rank her çağrıda
+-- süresi dolmuş açık sezonları kapatır (kupa dağıtımı idempotent).
+
+-- 1) Herkese açık rekabet profili ─────────────────────────────────
+create table if not exists public.comp_profiles (
+  user_id      uuid primary key references auth.users on delete cascade,
+  nickname     text,                                  -- kullanıcı seçer (2-20 kr), null = türetilmiş ad
+  display_name text not null default 'Öğrenci',       -- metadata'dan türetilir: "Kıvanç Y."
+  avatar_url   text,
+  best_tier    int  not null default 2 check (best_tier between 0 and 9),
+  updated_at   timestamptz not null default now()
+);
+
+alter table public.comp_profiles enable row level security;
+drop policy if exists "profiles readable" on public.comp_profiles;
+create policy "profiles readable" on public.comp_profiles
+  for select to authenticated using (true);
+-- Yazma politikası YOK: yalnız security definer fonksiyonlar yazar.
+
+-- 2) Sezon kupaları (kalıcı) ─────────────────────────────────────
+create table if not exists public.comp_trophies (
+  user_id      uuid not null references auth.users on delete cascade,
+  season_id    int  not null references public.comp_seasons,
+  final_tier   int  not null,
+  final_points int  not null,
+  rank_position int not null,          -- sezon sıralaması (1 = sezon şampiyonu)
+  participants int  not null,          -- o sezon en az 1 maç oynayan oyuncu sayısı
+  wins         int  not null default 0,
+  losses       int  not null default 0,
+  draws        int  not null default 0,
+  awarded_at   timestamptz not null default now(),
+  primary key (user_id, season_id)
+);
+
+alter table public.comp_trophies enable row level security;
+drop policy if exists "trophies readable" on public.comp_trophies;
+create policy "trophies readable" on public.comp_trophies
+  for select to authenticated using (true);
+
+create index if not exists comp_trophies_user_idx
+  on public.comp_trophies (user_id, season_id desc);
+
+-- 3) Sezon kapanış damgası ───────────────────────────────────────
+alter table public.comp_seasons
+  add column if not exists closed_at timestamptz;
+
+-- 4) comp_ranks RLS: herkes okuyabilir (liderlik + herkese açık profil),
+--    doğrudan yazma KAPALI (anti-cheat: tüm yazma yolları security definer RPC).
+drop policy if exists "own rank write" on public.comp_ranks;
+drop policy if exists "own rank read"  on public.comp_ranks;
+drop policy if exists "ranks readable" on public.comp_ranks;
+create policy "ranks readable" on public.comp_ranks
+  for select to authenticated using (true);
+
+-- 5) Görünen ad türetme: "Ad Soyad" → "Ad S." (reşit olmayan kullanıcı
+--    gizliliği: soyad ve e-posta asla herkese açık yüzeye çıkmaz).
+create or replace function public.comp_derive_display_name(p_meta jsonb)
+returns text
+language plpgsql immutable
+as $$
+declare
+  v_full  text := trim(coalesce(p_meta->>'full_name', p_meta->>'name', ''));
+  v_parts text[];
+  v_n     int;
+begin
+  if v_full = '' then
+    return 'Öğrenci';
+  end if;
+  v_parts := regexp_split_to_array(v_full, '\s+');
+  v_n := array_length(v_parts, 1);
+  if v_n >= 2 then
+    return v_parts[1] || ' ' || left(v_parts[v_n], 1) || '.';
+  end if;
+  return v_parts[1];
+end;
+$$;
+
+-- 6) Profil upsert (auth metadata → comp_profiles). best_tier monoton.
+create or replace function public.comp_upsert_profile(p_user_id uuid)
+returns void
+language plpgsql security definer
+as $$
+declare
+  v_meta   jsonb;
+  v_name   text;
+  v_avatar text;
+  v_best   int;
+begin
+  select raw_user_meta_data into v_meta
+    from auth.users where id = p_user_id;
+  if not found then
+    return;
+  end if;
+  v_meta   := coalesce(v_meta, '{}'::jsonb);
+  v_name   := public.comp_derive_display_name(v_meta);
+  v_avatar := coalesce(v_meta->>'avatar_url', v_meta->>'picture');
+
+  select coalesce(max(highest_tier_reached), 2) into v_best
+    from public.comp_ranks where user_id = p_user_id;
+
+  insert into public.comp_profiles (user_id, display_name, avatar_url, best_tier)
+  values (p_user_id, v_name, v_avatar, v_best)
+  on conflict (user_id) do update set
+    display_name = excluded.display_name,
+    avatar_url   = excluded.avatar_url,
+    best_tier    = greatest(public.comp_profiles.best_tier, excluded.best_tier),
+    updated_at   = now();
+end;
+$$;
+
+revoke execute on function public.comp_upsert_profile(uuid) from public, anon, authenticated;
+
+-- 7) Trigger: comp_ranks değişince best_tier'ı yukarı çek (asla aşağı inmez)
+create or replace function public.comp_ranks_best_tier_trg()
+returns trigger
+language plpgsql security definer
+as $$
+begin
+  if not exists (select 1 from public.comp_profiles where user_id = new.user_id) then
+    perform public.comp_upsert_profile(new.user_id);
+  end if;
+  update public.comp_profiles
+     set best_tier = new.highest_tier_reached, updated_at = now()
+   where user_id = new.user_id
+     and best_tier < new.highest_tier_reached;
+  return new;
+end;
+$$;
+
+drop trigger if exists comp_ranks_best_tier on public.comp_ranks;
+create trigger comp_ranks_best_tier
+  after insert or update of highest_tier_reached on public.comp_ranks
+  for each row execute function public.comp_ranks_best_tier_trg();
+
+-- 8) Kullanıcının kendi profilini senkronlaması (ad/avatar değişince client çağırır)
+create or replace function public.comp_sync_profile()
+returns void
+language plpgsql security definer
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  perform public.comp_upsert_profile(auth.uid());
+end;
+$$;
+
+grant execute on function public.comp_sync_profile() to authenticated;
+
+-- 9) Takma ad: 2-20 karakter, harf/rakam/boşluk/._- ; boş → türetilmiş ada dön
+create or replace function public.comp_set_nickname(p_nickname text)
+returns text
+language plpgsql security definer
+as $$
+declare
+  v_nick text;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  v_nick := nullif(regexp_replace(trim(coalesce(p_nickname, '')), '\s+', ' ', 'g'), '');
+  if v_nick is not null then
+    if char_length(v_nick) < 2 or char_length(v_nick) > 20 then
+      raise exception 'nickname_length' using errcode = '22023';
+    end if;
+    if v_nick !~ '^[A-Za-z0-9ÇĞİÖŞÜçğıöşü._ -]+$' then
+      raise exception 'nickname_chars' using errcode = '22023';
+    end if;
+  end if;
+  perform public.comp_upsert_profile(auth.uid());
+  update public.comp_profiles
+     set nickname = v_nick, updated_at = now()
+   where user_id = auth.uid();
+  return v_nick;
+end;
+$$;
+
+grant execute on function public.comp_set_nickname(text) to authenticated;
+
+-- 10) Sezon kapanışı: kupaları dağıt (idempotent, yalnız süresi dolmuş sezon)
+create or replace function public.comp_close_season(p_season_id int)
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_count int := 0;
+begin
+  if not exists (
+    select 1 from public.comp_seasons s
+     where s.id = p_season_id
+       and s.closed_at is null
+       and s.ends_at <= now()
+  ) then
+    return 0;
+  end if;
+
+  with ranked as (
+    select r.user_id, r.tier, r.points, r.wins, r.losses, r.draws,
+           row_number() over (
+             order by r.tier desc, r.points desc, r.wins desc, r.updated_at asc
+           )::int as pos,
+           count(*) over ()::int as total
+      from public.comp_ranks r
+     where r.season_id = p_season_id
+       and (r.wins + r.losses + r.draws) > 0
+  )
+  insert into public.comp_trophies
+    (user_id, season_id, final_tier, final_points, rank_position, participants, wins, losses, draws)
+  select user_id, p_season_id, tier, points, pos, total, wins, losses, draws
+    from ranked
+  on conflict (user_id, season_id) do nothing;
+  get diagnostics v_count = row_count;
+
+  update public.comp_seasons set closed_at = now() where id = p_season_id;
+  return v_count;
+end;
+$$;
+
+revoke execute on function public.comp_close_season(int) from public, anon, authenticated;
+
+-- Süresi dolmuş tüm açık sezonları kapat (cron yerine lazy tetik)
+create or replace function public.comp_close_open_seasons()
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_s record;
+  v_total int := 0;
+begin
+  for v_s in
+    select id from public.comp_seasons
+     where closed_at is null and ends_at <= now()
+     order by id
+  loop
+    v_total := v_total + public.comp_close_season(v_s.id);
+  end loop;
+  return v_total;
+end;
+$$;
+
+revoke execute on function public.comp_close_open_seasons() from public, anon, authenticated;
+
+-- 11) comp_ensure_season_and_rank — Faz 5: sezon kapanışı + yumuşak reset + profil senkronu
+create or replace function public.comp_ensure_season_and_rank(
+  p_user_id uuid
+) returns table(out_season_id int, out_tier int, out_points int)
+language plpgsql security definer
+as $$
+declare
+  v_now_tr timestamp;
+  v_season_id int;
+  v_starts_tr timestamp;
+  v_ends_tr timestamp;
+  v_label text;
+  v_month int;
+  v_year int;
+begin
+  v_now_tr := (now() at time zone 'Europe/Istanbul')::timestamp;
+  v_year := extract(year from v_now_tr)::int;
+  v_month := extract(month from v_now_tr)::int;
+  v_season_id := v_year * 100 + v_month;
+  v_starts_tr := date_trunc('month', v_now_tr);
+  v_ends_tr := v_starts_tr + interval '1 month';
+  v_label := case v_month
+    when 1 then 'Ocak'      when 2 then 'Şubat'   when 3 then 'Mart'
+    when 4 then 'Nisan'     when 5 then 'Mayıs'   when 6 then 'Haziran'
+    when 7 then 'Temmuz'    when 8 then 'Ağustos' when 9 then 'Eylül'
+    when 10 then 'Ekim'     when 11 then 'Kasım'  when 12 then 'Aralık'
+  end || ' ' || v_year::text;
+
+  insert into public.comp_seasons (id, starts_at, ends_at, label)
+  values (
+    v_season_id,
+    v_starts_tr at time zone 'Europe/Istanbul',
+    v_ends_tr at time zone 'Europe/Istanbul',
+    v_label
+  )
+  on conflict (id) do nothing;
+
+  -- Faz 5: süresi dolmuş sezonları kapat (kupa dağıtımı)
+  perform public.comp_close_open_seasons();
+
+  -- Faz 5: yumuşak reset — en son sezon satırından 2 kademe aşağı, 50 puan.
+  -- Taban: yeni kullanıcı varsayılanı (tier 2 = Yükselme 2); kimse sezona
+  -- yeni başlayanların altından başlamaz.
+  insert into public.comp_ranks (user_id, season_id, tier, points, highest_tier_reached)
+  select p_user_id, v_season_id,
+         greatest(2, r.tier - 2), 50, greatest(2, r.tier - 2)
+    from public.comp_ranks r
+   where r.user_id = p_user_id and r.season_id < v_season_id
+   order by r.season_id desc
+   limit 1
+  on conflict (user_id, season_id) do nothing;
+
+  -- Önceki sezon yoksa varsayılan (Yükselme 2 / 50)
+  insert into public.comp_ranks (user_id, season_id)
+  values (p_user_id, v_season_id)
+  on conflict (user_id, season_id) do nothing;
+
+  -- Faz 5: herkese açık profil (ad/avatar) tazele
+  perform public.comp_upsert_profile(p_user_id);
+
+  return query
+  select v_season_id, r.tier, r.points
+    from public.comp_ranks r
+   where r.user_id = p_user_id and r.season_id = v_season_id;
+end;
+$$;
+
+grant execute on function public.comp_ensure_season_and_rank(uuid) to authenticated;
+
+-- 12) Liderlik tablosu: sezon sıralaması (yalnız ≥1 maç oynayanlar).
+--     İlk p_limit satır + çağıranın kendi satırı (sıralama dışındaysa da).
+create or replace function public.comp_leaderboard(
+  p_season_id int default null,
+  p_limit int default 50
+) returns table (
+  rank_position int,
+  user_id      uuid,
+  display_name text,
+  avatar_url   text,
+  best_tier    int,
+  tier         int,
+  points       int,
+  wins         int,
+  losses       int,
+  draws        int,
+  win_streak   int,
+  is_me        boolean
+)
+language sql stable security definer
+as $$
+  with season as (
+    select coalesce(
+      p_season_id,
+      extract(year  from (now() at time zone 'Europe/Istanbul'))::int * 100
+      + extract(month from (now() at time zone 'Europe/Istanbul'))::int
+    ) as id
+  ),
+  ranked as (
+    select r.user_id, r.tier, r.points, r.wins, r.losses, r.draws, r.win_streak,
+           row_number() over (
+             order by r.tier desc, r.points desc, r.wins desc, r.updated_at asc
+           )::int as pos
+      from public.comp_ranks r, season
+     where r.season_id = season.id
+       and (r.wins + r.losses + r.draws) > 0
+  )
+  select x.pos,
+         x.user_id,
+         coalesce(p.nickname, p.display_name, 'Öğrenci'),
+         p.avatar_url,
+         coalesce(p.best_tier, x.tier),
+         x.tier, x.points, x.wins, x.losses, x.draws, x.win_streak,
+         (x.user_id = auth.uid())
+    from ranked x
+    left join public.comp_profiles p on p.user_id = x.user_id
+   where auth.uid() is not null
+     and (x.pos <= least(greatest(coalesce(p_limit, 50), 1), 200)
+          or x.user_id = auth.uid())
+   order by x.pos;
+$$;
+
+grant execute on function public.comp_leaderboard(int, int) to authenticated;
+
+-- 13) Backfill: mevcut oyuncular için profil satırı + kapanmış sezon kupaları
+select public.comp_upsert_profile(u.user_id)
+  from (select distinct user_id from public.comp_ranks) u;
+select public.comp_close_open_seasons();

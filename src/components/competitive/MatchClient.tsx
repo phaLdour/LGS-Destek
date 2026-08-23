@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Clock, Loader2, Users } from "lucide-react";
 import { LeagueBadge } from "./LeagueBadge";
+import { LeagueCrest } from "./LeagueCrest";
 import { rankLabel } from "@/lib/competitive/ranks";
+import { crestTitle } from "@/lib/competitive/rewards";
 import { subscribeToMatch } from "@/lib/competitive/realtime";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -50,6 +52,7 @@ export function MatchClient({
   myTier,
   opponentTier,
   opponentName = "Rakip",
+  opponentBestTier = null,
   myAnsweredCountInitial,
   opponentAnsweredCountInitial,
 }: {
@@ -58,7 +61,10 @@ export function MatchClient({
   myUserId: string;
   myTier: number;
   opponentTier: number;
+  /** Rakibin herkese açık adı (takma ad / "Ad S.") */
   opponentName?: string;
+  /** Rakibin lig nişanı (tüm zamanlar en yüksek kademe); null = nişansız */
+  opponentBestTier?: number | null;
   myAnsweredCountInitial: number;
   opponentAnsweredCountInitial: number;
 }) {
@@ -226,9 +232,16 @@ export function MatchClient({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="text-right leading-tight">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-rehberim-navy/55">
-              {opponentName}
+          <div className="min-w-0 text-right leading-tight">
+            <p className="flex items-center justify-end gap-1 text-[11px] font-semibold uppercase tracking-wider text-rehberim-navy/55">
+              {opponentBestTier !== null && opponentBestTier !== undefined && (
+                <LeagueCrest
+                  tier={opponentBestTier}
+                  size={14}
+                  title={crestTitle(opponentBestTier)}
+                />
+              )}
+              <span className="max-w-[9rem] truncate">{opponentName}</span>
             </p>
             <p className="tabular-nums text-sm font-extrabold text-rehberim-navy">
               {opponentAnswered}/{match.questionCount}

@@ -8,6 +8,8 @@ import {
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
 import { DEFAULT_NEW_USER_TIER } from "@/lib/competitive/ranks";
+import { isUuid } from "@/lib/competitive/rewards";
+import { getPublicProfile } from "@/lib/competitive/server";
 import { getShellUser } from "@/lib/user";
 
 export const metadata = { title: "Maç — Rekabet" };
@@ -22,6 +24,8 @@ export default async function MatchPage({
   if (!user) redirect("/login");
 
   const { matchId } = await params;
+  // UUID olmayan yollar (ör. yanlış link) DB'ye gitmeden lobiye dönsün
+  if (!isUuid(matchId)) redirect("/rekabet");
   const supabase = await createClient();
 
   const { data: match } = await supabase
@@ -66,8 +70,13 @@ export default async function MatchPage({
   const isP1 = match.player1_id === user.id;
   const myTier = isP1 ? match.p1_tier_at_start : match.p2_tier_at_start;
   const opponentTier = isP1 ? match.p2_tier_at_start : match.p1_tier_at_start;
+  const opponentId = isP1 ? match.player2_id : match.player1_id;
 
-  const shellUser = await getShellUser();
+  // Faz 5: rakibin herkese açık kimliği (takma ad + lig nişanı)
+  const [shellUser, opponentProfile] = await Promise.all([
+    getShellUser(),
+    getPublicProfile(opponentId),
+  ]);
 
   return (
     <AppShell user={shellUser}>
@@ -94,6 +103,8 @@ export default async function MatchPage({
           myUserId={user.id}
           myTier={myTier ?? DEFAULT_NEW_USER_TIER}
           opponentTier={opponentTier ?? DEFAULT_NEW_USER_TIER}
+          opponentName={opponentProfile?.name ?? "Rakip"}
+          opponentBestTier={opponentProfile?.bestTier ?? null}
           myAnsweredCountInitial={myAnswered}
           opponentAnsweredCountInitial={oppCount ?? 0}
         />

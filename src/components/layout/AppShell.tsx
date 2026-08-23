@@ -20,6 +20,8 @@ import {
   Zap,
 } from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
+import { LeagueCrest } from "@/components/competitive/LeagueCrest";
+import { crestTitle } from "@/lib/competitive/rewards";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { MascotButton } from "@/components/mascot/MascotButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -28,6 +30,11 @@ export type ShellUser = {
   name: string;
   email: string;
   avatarUrl: string | null;
+  /**
+   * Faz 5: tüm zamanların en yüksek rekabet kademesi (lig nişanı).
+   * null/undefined = hiç rekabet oynamamış → nişan gösterilmez.
+   */
+  bestTier?: number | null;
 };
 
 const NAV = [
@@ -232,9 +239,21 @@ export function AppShell({
 }
 
 function UserCard({ user }: { user: ShellUser }) {
+  const hasCrest = user.bestTier !== null && user.bestTier !== undefined;
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-rehberim-muted px-3 py-2.5">
-      <Avatar user={user} size={36} />
+    <Link
+      href="/profile"
+      className="flex items-center gap-3 rounded-xl bg-rehberim-muted px-3 py-2.5 transition-colors hover:bg-rehberim-border/60"
+      title={hasCrest ? crestTitle(user.bestTier as number) : undefined}
+    >
+      <span className="relative inline-flex shrink-0">
+        <Avatar user={user} size={36} />
+        {hasCrest && (
+          <span className="absolute -bottom-1.5 -right-1.5 leading-none">
+            <LeagueCrest tier={user.bestTier as number} size={18} decorative />
+          </span>
+        )}
+      </span>
       <div className="min-w-0">
         <p className="truncate text-sm font-bold text-rehberim-navy">
           {user.name}
@@ -243,7 +262,7 @@ function UserCard({ user }: { user: ShellUser }) {
           <p className="truncate text-xs text-rehberim-navy/50">{user.email}</p>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
 

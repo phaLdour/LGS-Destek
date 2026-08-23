@@ -6,14 +6,22 @@ import {
   Link as LinkIcon,
   Lock,
   Swords,
+  Trophy,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { AvatarWithCrest } from "@/components/competitive/AvatarWithCrest";
 import { LeagueBadge } from "@/components/competitive/LeagueBadge";
+import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { RankCard } from "@/components/competitive/RankCard";
 import { SeasonResetCountdown } from "@/components/competitive/SeasonResetCountdown";
-import { getCompetitiveOverview } from "@/lib/competitive/server";
+import {
+  getCompetitiveOverview,
+  getPublicProfile,
+  getTrophies,
+} from "@/lib/competitive/server";
+import { getCurrentUser } from "@/lib/supabase/server";
 import { getShellUser } from "@/lib/user";
-import { LEAGUES, rankLabel } from "@/lib/competitive/ranks";
+import { LEAGUES, leagueOf, rankLabel } from "@/lib/competitive/ranks";
 
 export const metadata = {
   title: "Rekabet — Rehberim",
@@ -22,12 +30,21 @@ export const metadata = {
 };
 
 export default async function RekabetPage() {
-  const [user, overview] = await Promise.all([
+  const [user, overview, authUser] = await Promise.all([
     getShellUser(),
     getCompetitiveOverview(),
+    getCurrentUser(),
   ]);
 
   const { rank, isNewcomer, signedIn, configured } = overview;
+
+  // Faz 5: kalıcı ödüller — lig nişanı + kupa sayısı (yalnız giriş yapmışsa)
+  const [profile, trophies] = authUser
+    ? await Promise.all([
+        getPublicProfile(authUser.id),
+        getTrophies(authUser.id),
+      ])
+    : [null, []];
 
   return (
     <AppShell user={user}>
@@ -77,6 +94,65 @@ export default async function RekabetPage() {
         winStreak={rank.winStreak}
       />
 
+      {/* Faz 5: kalıcı ödüller — lig nişanı + kupa rafı özeti */}
+      {signedIn && (
+        <section className="ring-hairline mt-3 flex flex-wrap items-center gap-4 rounded-2xl border border-rehberim-border bg-white p-4 shadow-card">
+          {profile ? (
+            <>
+              <Link
+                href={`/rekabet/oyuncu/${profile.userId}`}
+                className="shrink-0"
+                title="Herkese açık profilin"
+              >
+                <AvatarWithCrest user={user} bestTier={profile.bestTier} size={56} />
+              </Link>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-rehberim-navy/55">
+                  Lig nişanın · kalıcı
+                </p>
+                <p className="truncate text-base font-extrabold tracking-tight text-rehberim-navy">
+                  {leagueOf(profile.bestTier).name} ligi{" "}
+                  <span className="font-semibold text-rehberim-navy/50">
+                    · en yüksek {rankLabel(profile.bestTier)}
+                  </span>
+                </p>
+                <p className="mt-0.5 text-xs text-rehberim-navy/55">
+                  Herkese <strong className="text-rehberim-navy/75">{profile.name}</strong>{" "}
+                  olarak görünüyorsun ·{" "}
+                  <span className="inline-flex items-center gap-1">
+                    <Trophy className="h-3 w-3" />
+                    {trophies.length} kupa
+                  </span>
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <Link
+                  href="/profile#rekabet"
+                  className="rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:shadow-card"
+                >
+                  Kupa rafı &amp; takma ad
+                </Link>
+                <Link
+                  href="/rekabet/liderlik"
+                  className="rounded-xl bg-rehberim-navy px-3 py-2 text-xs font-bold text-white shadow-soft transition-all duration-200 ease-smooth hover:-translate-y-px hover:bg-rehberim-navy-dark"
+                >
+                  Liderlik
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <LeagueCrest tier={rank.tier} size={40} className="opacity-50 grayscale" decorative />
+              <p className="min-w-0 flex-1 text-sm text-rehberim-navy/65">
+                <span className="font-bold text-rehberim-navy">Lig nişanı</span>{" "}
+                — ilk maçından sonra profilinde ve liderlik tablosunda
+                herkesin göreceği kalıcı arman açılır.
+              </p>
+            </>
+          )}
+        </section>
+      )}
+
       {/* Ana CTA — Maç ara */}
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Link
@@ -110,8 +186,11 @@ export default async function RekabetPage() {
             <LinkIcon className="h-6 w-6" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-extrabold tracking-tight text-rehberim-navy">
+            <p className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-rehberim-navy">
               Arkadaşına meydan oku
+              <span className="rounded-full bg-rehberim-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-navy/55 ring-1 ring-rehberim-border">
+                Yakında
+              </span>
             </p>
             <p className="text-pretty text-sm text-rehberim-navy/55">
               Bir link paylaş, özel maç oyna (ranklı değil)
@@ -194,17 +273,41 @@ export default async function RekabetPage() {
         </div>
       </section>
 
-      {/* Faz 1 not — şeffaflık için */}
+      {/* Ödüller ve sezon kuralları */}
       <section className="mt-8 rounded-2xl border border-rehberim-border bg-rehberim-muted/40 p-5">
         <h3 className="text-sm font-extrabold uppercase tracking-wider text-rehberim-navy/65">
-          🚧 Geliştirme aşaması
+          Ödüller ve sezon
         </h3>
-        <p className="mt-2 text-sm leading-relaxed text-rehberim-navy/70">
-          Rekabetçi mod 5 fazlık bir özellik. Bu sayfa <strong>Faz 1</strong>{" "}
-          — lig sistemi, kademe görselleri, sezon yapısı hazır. Yakında:
-          gerçek zamanlı maçlar (Faz 2), takma ad ve arkadaş düellosu
-          (Faz 3), rozetler ve liderlik (Faz 4), bildirimler (Faz 5).
-        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <div className="flex items-start gap-3">
+            <LeagueCrest tier={4} size={30} decorative />
+            <p className="text-sm leading-relaxed text-rehberim-navy/70">
+              <strong className="text-rehberim-navy">Lig nişanı.</strong>{" "}
+              Ulaştığın en yüksek ligin arması kalıcıdır; sezon reseti ile
+              düşmez, profilinde ve rakiplerine görünür.
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-yellow-500 text-amber-950 shadow-card">
+              <Trophy className="h-4 w-4" />
+            </span>
+            <p className="text-sm leading-relaxed text-rehberim-navy/70">
+              <strong className="text-rehberim-navy">Sezon kupası.</strong>{" "}
+              Her ayın 1&apos;inde sezon kapanır; bitirdiğin lig ve
+              sıralaman kupa olarak rafına eklenir. İlk 3 altın/gümüş/bronz.
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-xl bg-rehberim-navy text-white shadow-card">
+              <ArrowRight className="h-4 w-4 -rotate-90" />
+            </span>
+            <p className="text-sm leading-relaxed text-rehberim-navy/70">
+              <strong className="text-rehberim-navy">Yumuşak reset.</strong>{" "}
+              Yeni sezona bir önceki sezonun 2 kademe altından (en az
+              Yükselme 2), 50 puanla başlarsın — nişanın ve kupaların kalır.
+            </p>
+          </div>
+        </div>
       </section>
     </AppShell>
   );

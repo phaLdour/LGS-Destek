@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { MatchResult } from "@/components/competitive/MatchResult";
 import { getMatchReplayQuestion } from "@/lib/competitive/match-questions";
+import { isUuid } from "@/lib/competitive/rewards";
+import { getPublicProfiles } from "@/lib/competitive/server";
 import {
   createClient,
   getCurrentUser,
@@ -21,6 +23,7 @@ export default async function SonucPage({
   if (!user) redirect("/login");
 
   const { matchId } = await params;
+  if (!isUuid(matchId)) redirect("/rekabet");
   const supabase = await createClient();
 
   const { data: match } = await supabase
@@ -96,7 +99,14 @@ export default async function SonucPage({
   const isForfeit = !!match.forfeited_by;
   const iForfeited = match.forfeited_by === user.id;
 
-  const shellUser = await getShellUser();
+  // Faz 5: iki tarafın herkese açık kimliği (takma ad + lig nişanı)
+  const opponentId = isP1 ? match.player2_id : match.player1_id;
+  const [shellUser, profiles] = await Promise.all([
+    getShellUser(),
+    getPublicProfiles([user.id, opponentId]),
+  ]);
+  const opponentProfile = profiles.get(opponentId) ?? null;
+  const myProfile = profiles.get(user.id) ?? null;
 
   return (
     <AppShell user={shellUser}>
@@ -110,6 +120,10 @@ export default async function SonucPage({
           questions={questions}
           isForfeit={isForfeit}
           iForfeited={iForfeited}
+          opponentName={opponentProfile?.name ?? "Rakip"}
+          opponentId={opponentId}
+          opponentBestTier={opponentProfile?.bestTier ?? null}
+          myBestTier={myProfile?.bestTier ?? null}
         />
       </div>
     </AppShell>

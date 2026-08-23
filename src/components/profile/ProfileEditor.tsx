@@ -64,6 +64,8 @@ export function ProfileEditor({
         data: { avatar_url: busted },
       });
       if (updErr) throw updErr;
+      // Faz 5: herkese açık rekabet profilini (avatar) tazele — best effort
+      await supabase.rpc("comp_sync_profile").then(() => undefined, () => undefined);
 
       setAvatarUrl(busted);
       setMsg({ type: "ok", text: "Profil fotoğrafın güncellendi." });
@@ -90,6 +92,8 @@ export function ProfileEditor({
         data: { full_name: name },
       });
       if (error) throw error;
+      // Faz 5: herkese açık rekabet profilini ("Ad S.") tazele — best effort
+      await supabase.rpc("comp_sync_profile").then(() => undefined, () => undefined);
       setMsg({ type: "ok", text: "Adın güncellendi." });
       router.refresh();
     } catch {
