@@ -29,7 +29,7 @@ const STEPS: Step[] = [
     emoji: "👋",
     title: "Rehberim'e hoş geldin!",
     body:
-      "LGS müfredatının tamamı burada — 6 ders, ~140 konu, AI Baykuş yardımcı, denemeler ve daha fazlası. Sana kısa bir tur atalım.",
+      "LGS müfredatının tamamı burada — 6 ders, 49 konu, AI Baykuş yardımcı, denemeler ve daha fazlası. Sana kısa bir tur atalım.",
     icon: Sparkles,
   },
   {

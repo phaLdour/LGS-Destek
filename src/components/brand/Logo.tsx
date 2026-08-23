@@ -83,8 +83,15 @@ export function LogoSvg({
   );
 }
 
-/** PNG varsa (/public/logo.png) onu, yoksa SVG'yi gösterir. */
-export function Logo({ className, preferPng = true, title }: Props) {
+/**
+ * Varsayılan olarak yerleşik SVG logoyu çizer.
+ *
+ * `preferPng` yalnızca public/logo.png gerçekten varsa açılmalıdır: img
+ * hatası sunucudan gelen HTML yüklenirken, React hidrasyonundan ÖNCE
+ * tetiklenir; o an onError bağlı olmadığı için SVG yedeği devreye giremez
+ * ve kullanıcı kırık görsel simgesi görür.
+ */
+export function Logo({ className, preferPng = false, title }: Props) {
   const [pngFailed, setPngFailed] = useState(false);
 
   if (preferPng && !pngFailed) {
