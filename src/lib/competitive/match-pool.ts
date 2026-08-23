@@ -12,7 +12,11 @@ import type { QuickScope } from "@/lib/quickQuiz-types";
  *
  * Geçerli soru sayısı 10'dan azsa null döner — route 422 vermeli.
  */
-export function pickQuestionIds(subjectFilter: string | null): string[] | null {
+export function pickQuestionIds(
+  subjectFilter: string | null,
+  /** Faz 7: kullanıcının önceki maçlarda gördüğü sorular — önce bunlar elenir */
+  seen?: Set<string>,
+): string[] | null {
   const scope: QuickScope = subjectFilter
     ? { kind: "karma-subject", subject: subjectFilter }
     : { kind: "karma-all" };
@@ -25,6 +29,16 @@ export function pickQuestionIds(subjectFilter: string | null): string[] | null {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+
+  // Görülmemişleri öne al; havuz yetmezse görülmüşlerle tamamla
+  // (asla 10'un altına düşmeyiz — maç her zaman kurulabilir).
+  if (seen && seen.size > 0) {
+    const fresh = arr.filter((q) => !seen.has(q.id));
+    const rest = arr.filter((q) => seen.has(q.id));
+    const ordered = fresh.concat(rest);
+    return ordered.slice(0, 10).map((q) => q.id);
+  }
+
   return arr.slice(0, 10).map((q) => q.id);
 }
 
