@@ -6,7 +6,12 @@ import { AvatarWithCrest } from "@/components/competitive/AvatarWithCrest";
 import { LeagueBadge } from "@/components/competitive/LeagueBadge";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { TrophyShelf } from "@/components/competitive/TrophyShelf";
-import { leagueOf, POINTS_PER_TIER, rankLabel } from "@/lib/competitive/ranks";
+import {
+  leagueOf,
+  MAX_TIER,
+  POINTS_PER_TIER,
+  rankLabel,
+} from "@/lib/competitive/ranks";
 import { crestTitle, isUuid } from "@/lib/competitive/rewards";
 import { seasonForDate } from "@/lib/competitive/seasons";
 import {
@@ -121,6 +126,12 @@ export default async function OyuncuPage({
                   <Pencil className="h-3 w-3" />
                   Takma adı düzenle
                 </Link>
+                <Link
+                  href="/rekabet/gecmis"
+                  className="inline-flex items-center gap-1 rounded-full border border-rehberim-border bg-white px-2.5 py-1 text-[11px] font-bold text-rehberim-navy/70"
+                >
+                  Maç geçmişin
+                </Link>
               </div>
             )}
           </div>
@@ -144,7 +155,10 @@ export default async function OyuncuPage({
                   {rankLabel(seasonRank.tier)}
                 </p>
                 <p className="text-xs text-rehberim-navy/55">
-                  {seasonRank.points}/{POINTS_PER_TIER} puan · {seasonRank.wins}G{" "}
+                  {seasonRank.tier >= MAX_TIER
+                    ? `${seasonRank.points} puan`
+                    : `${seasonRank.points}/${POINTS_PER_TIER} puan`}{" "}
+                  · {seasonRank.wins}G{" "}
                   {seasonRank.losses}M
                   {seasonRank.draws > 0 && ` ${seasonRank.draws}B`} · {seasonMatches} maç
                 </p>

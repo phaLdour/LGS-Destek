@@ -6,6 +6,7 @@
  * (mevcut `getStatsServer` örüntüsüne sadık).
  */
 
+import { cache } from "react";
 import {
   createClient,
   getCurrentUser,
@@ -157,8 +158,12 @@ function toPublicProfile(r: ProfileRow): PublicProfile {
   };
 }
 
-/** Herkese açık rekabet profili (comp_profiles). Satır yoksa null. */
-export async function getPublicProfile(
+/**
+ * Herkese açık rekabet profili (comp_profiles). Satır yoksa null.
+ * React `cache()` ile sarılı: tek render'da aynı kullanıcı için birden çok
+ * çağrı (ör. /profile'da getShellUser + CompetitiveIdentity) tek sorguya iner.
+ */
+export const getPublicProfile = cache(async function getPublicProfile(
   userId: string,
 ): Promise<PublicProfile | null> {
   if (!isSupabaseConfigured()) return null;
@@ -169,7 +174,7 @@ export async function getPublicProfile(
     .eq("user_id", userId)
     .maybeSingle();
   return data ? toPublicProfile(data as ProfileRow) : null;
-}
+});
 
 /** Birden çok kullanıcının profili (maç ekranı: rakip kimliği). */
 export async function getPublicProfiles(
@@ -341,4 +346,167 @@ export async function getAllTimeRecord(userId: string): Promise<AllTimeRecord> {
     }),
     empty,
   );
+}
+
+export type MatchHistoryRow = {
+  matchId: string;
+  finishedAt: string | null;
+  outcome: "win" | "loss" | "draw";
+  isForfeit: boolean;
+  iForfeited: boolean;
+  delta: number;
+  myCorrect: number;
+  opponentCorrect: number;
+  myTierAfter: number | null;
+  tierChange: "up" | "down" | null;
+  subjectFilter: string | null;
+  opponent: PublicProfile | null;
+};
+
+/**
+ * Kullanıcının bitmiş maçları — en yeni önce. Sonuç ekranına link verir.
+ * RLS: katılımcı kendi maçlarını okuyabilir.
+ */
+export async function getMatchHistory(
+  userId: string,
+  limit = 20,
+): Promise<MatchHistoryRow[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("comp_matches")
+    .select(
+      "id, player1_id, player2_id, winner_id, forfeited_by, p1_delta, p2_delta, p1_correct, p2_correct, p1_tier_at_start, p2_tier_at_start, p1_tier_after, p2_tier_after, subject_filter, finished_at",
+    )
+    .or(`player1_id.eq.${userId},player2_id.eq.${userId}`)
+    .eq("status", "finished")
+    .order("finished_at", { ascending: false })
+    .limit(limit);
+
+  type Row = {
+    id: string;
+    player1_id: string;
+    player2_id: string;
+    winner_id: string | null;
+    forfeited_by: string | null;
+    p1_delta: number | null;
+    p2_delta: number | null;
+    p1_correct: number | null;
+    p2_correct: number | null;
+    p1_tier_at_start: number;
+    p2_tier_at_start: number;
+    p1_tier_after: number | null;
+    p2_tier_after: number | null;
+    subject_filter: string | null;
+    finished_at: string | null;
+  };
+
+  const rows = (data ?? []) as Row[];
+  if (rows.length === 0) return [];
+
+  // Rakip kimlikleri tek sorguda
+  const opponentIds = Array.from(
+    new Set(
+      rows.map((r) => (r.player1_id === userId ? r.player2_id : r.player1_id)),
+    ),
+  );
+  const profiles = await getPublicProfiles(opponentIds);
+
+  return rows.map((r) => {
+    const isP1 = r.player1_id === userId;
+    const opponentId = isP1 ? r.player2_id : r.player1_id;
+    const tierStart = isP1 ? r.p1_tier_at_start : r.p2_tier_at_start;
+    const tierAfter = isP1 ? r.p1_tier_after : r.p2_tier_after;
+
+    let outcome: "win" | "loss" | "draw" = "draw";
+    if (r.winner_id === userId) outcome = "win";
+    else if (r.winner_id) outcome = "loss";
+
+    let tierChange: "up" | "down" | null = null;
+    if (typeof tierAfter === "number") {
+      if (tierAfter > tierStart) tierChange = "up";
+      else if (tierAfter < tierStart) tierChange = "down";
+    }
+
+    return {
+      matchId: r.id,
+      finishedAt: r.finished_at,
+      outcome,
+      isForfeit: !!r.forfeited_by,
+      iForfeited: r.forfeited_by === userId,
+      delta: (isP1 ? r.p1_delta : r.p2_delta) ?? 0,
+      myCorrect: (isP1 ? r.p1_correct : r.p2_correct) ?? 0,
+      opponentCorrect: (isP1 ? r.p2_correct : r.p1_correct) ?? 0,
+      myTierAfter: tierAfter,
+      tierChange,
+      subjectFilter: r.subject_filter,
+      opponent: profiles.get(opponentId) ?? null,
+    };
+  });
+}
+
+/**
+ * Faz 7: henüz gösterilmemiş sezon kupası (kapanış özeti için).
+ * En yeni görülmemiş kupayı döner; yoksa null.
+ */
+export async function getUnseenTrophy(userId: string): Promise<Trophy | null> {
+  if (!isSupabaseConfigured()) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("comp_trophies")
+    .select(
+      "season_id, final_tier, final_points, rank_position, participants, wins, losses, draws, comp_seasons(label)",
+    )
+    .eq("user_id", userId)
+    .is("seen_at", null)
+    .order("season_id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!data) return null;
+
+  type Row = {
+    season_id: number;
+    final_tier: number;
+    final_points: number;
+    rank_position: number;
+    participants: number;
+    wins: number;
+    losses: number;
+    draws: number;
+    comp_seasons: { label: string } | { label: string }[] | null;
+  };
+  const r = data as unknown as Row;
+  const sea = Array.isArray(r.comp_seasons) ? r.comp_seasons[0] : r.comp_seasons;
+  return {
+    seasonId: r.season_id,
+    seasonLabel: sea?.label ?? seasonLabelFromId(r.season_id),
+    finalTier: r.final_tier,
+    finalPoints: r.final_points,
+    position: r.rank_position,
+    participants: r.participants,
+    wins: r.wins,
+    losses: r.losses,
+    draws: r.draws,
+  };
+}
+
+/**
+ * Faz 7: kullanıcının daha önce gördüğü soru id'leri (bitmiş maçlardan).
+ * Yeni maçta tekrar gelmemeleri için havuzdan elenir.
+ */
+export async function getSeenQuestionIds(userId: string): Promise<Set<string>> {
+  const seen = new Set<string>();
+  if (!isSupabaseConfigured()) return seen;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("comp_matches")
+    .select("question_ids")
+    .or(`player1_id.eq.${userId},player2_id.eq.${userId}`)
+    .eq("status", "finished")
+    .order("finished_at", { ascending: false })
+    .limit(50);
+  for (const row of (data ?? []) as { question_ids: string[] }[]) {
+    for (const id of row.question_ids ?? []) seen.add(id);
+  }
+  return seen;
 }

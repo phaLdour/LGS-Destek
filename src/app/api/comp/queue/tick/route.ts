@@ -5,6 +5,7 @@ import {
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
 import { pickQuestionIds } from "@/lib/competitive/match-pool";
+import { getSeenQuestionIds } from "@/lib/competitive/server";
 
 /**
  * POST /api/comp/queue/tick
@@ -64,7 +65,11 @@ export async function POST() {
     return NextResponse.json({ status: "waiting" });
   }
 
-  const questionIds = pickQuestionIds(queueRow.subject_filter ?? null);
+  // Faz 7: daha önce görülen sorular havuzun sonuna itilir
+  const questionIds = pickQuestionIds(
+    queueRow.subject_filter ?? null,
+    await getSeenQuestionIds(user.id),
+  );
   if (!questionIds) {
     // Beklenmeyen — kuyruğa girerken kontrol edildi
     return NextResponse.json({ status: "waiting" });

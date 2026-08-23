@@ -39,7 +39,7 @@ export async function GET(
   const { data: match } = await supabase
     .from("comp_matches")
     .select(
-      "id, season_id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, subject_filter, is_friendly, started_at, deadline_at, status, forfeited_by",
+      "id, season_id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, subject_filter, is_friendly, started_at, deadline_at, status, forfeited_by, p1_seen_at, p2_seen_at",
     )
     .eq("id", id)
     .maybeSingle();
@@ -60,6 +60,23 @@ export async function GET(
   ]);
   const oppCount =
     typeof oppRpc.data === "number" ? oppRpc.data : 0;
+
+  // Faz 7: varlık damgası — bu istek zaten 3 sn'de bir geliyor, ek maliyet yok.
+  // Rakibin kaç saniyedir sessiz olduğunu da hesaplayıp client'a veriyoruz.
+  let opponentIdleSeconds: number | null = null;
+  if (match.status === "active") {
+    await supabase
+      .rpc("comp_touch_presence", { p_match_id: id })
+      .then(() => undefined, () => undefined);
+    const isP1 = match.player1_id === user.id;
+    const oppSeen = (isP1 ? match.p2_seen_at : match.p1_seen_at) ?? match.started_at;
+    if (oppSeen) {
+      opponentIdleSeconds = Math.max(
+        0,
+        Math.floor((Date.now() - new Date(oppSeen).getTime()) / 1000),
+      );
+    }
+  }
 
   let question = null;
   if (qParam !== null) {
@@ -99,5 +116,6 @@ export async function GET(
     question,
     myAnsweredCount: myCount ?? 0,
     opponentAnsweredCount: oppCount,
+    opponentIdleSeconds,
   });
 }

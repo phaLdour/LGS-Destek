@@ -3,6 +3,7 @@ import { LeagueBadge } from "./LeagueBadge";
 import {
   divisionOf,
   leagueOf,
+  MAX_TIER,
   POINTS_PER_TIER,
   rankLabel,
 } from "@/lib/competitive/ranks";
@@ -32,6 +33,9 @@ export function RankCard({
   className?: string;
 }) {
   const league = leagueOf(tier);
+  // Şampiyonlar 1 (tier 9) tavan kademedir: puan 100'ü aşarak birikmeye
+  // devam eder, terfi yoktur. Orada "93/100" yerine düz puan gösterilir.
+  const isApex = tier >= MAX_TIER;
   const pct = Math.min(100, Math.round((points / POINTS_PER_TIER) * 100));
   const totalMatches = wins + losses;
   const winRate =
@@ -57,7 +61,8 @@ export function RankCard({
             {rankLabel(tier)}
           </h2>
           <p className="mt-1 text-xs text-rehberim-navy/55">
-            Kademe {divisionOf(tier)} · {points}/{POINTS_PER_TIER} puan
+            Kademe {divisionOf(tier)} ·{" "}
+            {isApex ? `${points} puan` : `${points}/${POINTS_PER_TIER} puan`}
           </p>
 
           {winStreak >= 3 && (
@@ -72,8 +77,10 @@ export function RankCard({
       {/* Kademe ilerlemesi */}
       <div className="relative mt-5">
         <div className="flex items-center justify-between text-xs font-semibold text-rehberim-navy/55">
-          <span>Kademe ilerleme</span>
-          <span className="tabular-nums text-rehberim-navy">{pct}%</span>
+          <span>{isApex ? "Zirve kademe" : "Kademe ilerleme"}</span>
+          <span className="tabular-nums text-rehberim-navy">
+            {isApex ? "Tavan yok" : `${pct}%`}
+          </span>
         </div>
         <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-rehberim-muted">
           <div

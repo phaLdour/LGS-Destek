@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Clock, Loader2, Users } from "lucide-react";
+import { Check, Clock, Loader2, Users, WifiOff } from "lucide-react";
 import { LeagueBadge } from "./LeagueBadge";
 import { LeagueCrest } from "./LeagueCrest";
 import { rankLabel } from "@/lib/competitive/ranks";
@@ -88,6 +88,9 @@ export function MatchClient({
     return Math.max(0, Math.floor(ms / 1000));
   });
   const [error, setError] = useState<string | null>(null);
+  // Faz 7: rakip kaç saniyedir sessiz (server hesaplıyor); 90+ ise buton çıkar
+  const [opponentIdle, setOpponentIdle] = useState<number | null>(null);
+  const [claiming, setClaiming] = useState(false);
   const finalizingRef = useRef(false);
   const subRef = useRef<{ unsubscribe: () => void } | null>(null);
   // Realtime postgres_changes RLS'e tabi; aktif maçta rakibin INSERT'i client'a
@@ -152,12 +155,40 @@ export function MatchClient({
         if (typeof d?.opponentAnsweredCount === "number") {
           setOpponentAnswered(d.opponentAnsweredCount);
         }
+        setOpponentIdle(
+          typeof d?.opponentIdleSeconds === "number"
+            ? d.opponentIdleSeconds
+            : null,
+        );
       } catch {
         // sessiz
       }
     }, 3000);
     return () => clearInterval(id);
   }, [usePolling, match.id, triggerFinalize]);
+
+  // Faz 7: rakip koptuysa hükmen galibiyeti talep et
+  async function handleClaimAbandoned() {
+    if (claiming) return;
+    setClaiming(true);
+    setError(null);
+    try {
+      const r = await fetch(`/api/comp/match/${match.id}/claim-abandoned`, {
+        method: "POST",
+      });
+      const d = await r.json();
+      if (d?.claimed) {
+        triggerFinalize();
+        return;
+      }
+      setError("Rakibin yeniden bağlandı — maç devam ediyor.");
+      setOpponentIdle(0);
+    } catch {
+      setError("Bağlantı hatası — tekrar dene.");
+    } finally {
+      setClaiming(false);
+    }
+  }
 
   async function handleConfirm() {
     if (sending || selected === null || !currentQ) return;
@@ -275,6 +306,28 @@ export function MatchClient({
           ))}
         </div>
       </div>
+
+      {/* Faz 7: rakip bağlantısı koptu mu? */}
+      {phase === "playing" &&
+        opponentIdle !== null &&
+        opponentIdle >= 90 && (
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+            <WifiOff className="h-5 w-5 shrink-0 text-amber-600" />
+            <p className="min-w-0 flex-1">
+              <span className="font-extrabold">Rakibin {Math.floor(opponentIdle / 60)} dk+ sessiz.</span>{" "}
+              Bağlantısı kopmuş olabilir. Beklemek istemiyorsan maçı hükmen
+              kazanabilirsin (+30 puan).
+            </p>
+            <button
+              onClick={handleClaimAbandoned}
+              disabled={claiming}
+              className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-sm font-extrabold text-white shadow-card transition hover:bg-amber-700 disabled:opacity-60"
+            >
+              {claiming && <Loader2 className="h-4 w-4 animate-spin" />}
+              Hükmen kazan
+            </button>
+          </div>
+        )}
 
       {/* Soru kartı */}
       {phase === "playing" && currentQ && (

@@ -42,6 +42,11 @@ export function NicknameEditor({
         const m = error.message ?? "";
         if (m.includes("nickname_length")) {
           setMsg({ type: "err", text: "Takma ad 2 ile 20 karakter arasında olmalı." });
+        } else if (m.includes("nickname_taken")) {
+          setMsg({
+            type: "err",
+            text: "Bu takma ad başka bir öğrenci tarafından alınmış. Başka bir ad dene.",
+          });
         } else if (m.includes("nickname_chars")) {
           setMsg({
             type: "err",

@@ -9,7 +9,7 @@ export type Badge = {
   name: string;
   description: string;
   /** Kategori — sıralama ve grup başlığı için */
-  group: "baslangic" | "seri" | "soru" | "ders" | "sinav";
+  group: "baslangic" | "seri" | "soru" | "ders" | "sinav" | "rekabet";
 };
 
 export const BADGES: Badge[] = [
@@ -132,6 +132,64 @@ export const BADGES: Badge[] = [
     description: "Bir deneme sınavında 80+ net çıkardın",
     group: "sinav",
   },
+
+  // Rekabet (1v1 düello) — Faz 6
+  {
+    key: "ilk-duello",
+    emoji: "🗡️",
+    name: "İlk Düello",
+    description: "İlk 1v1 maçını oynadın",
+    group: "rekabet",
+  },
+  {
+    key: "ilk-zafer",
+    emoji: "⚔️",
+    name: "İlk Zafer",
+    description: "İlk maçını kazandın",
+    group: "rekabet",
+  },
+  {
+    key: "duellocu",
+    emoji: "🛡️",
+    name: "Düellocu",
+    description: "Toplam 10 maç oynadın",
+    group: "rekabet",
+  },
+  {
+    key: "yenilmez",
+    emoji: "🔥",
+    name: "Yenilmez",
+    description: "5 maçlık galibiyet serisi yakaladın",
+    group: "rekabet",
+  },
+  {
+    key: "yildiz-ligi",
+    emoji: "⭐",
+    name: "Yıldızlara Çıkış",
+    description: "Yıldızlar ligine yükseldin",
+    group: "rekabet",
+  },
+  {
+    key: "sampiyon-ligi",
+    emoji: "👑",
+    name: "Şampiyonlar Ligi",
+    description: "Şampiyonlar ligine yükseldin",
+    group: "rekabet",
+  },
+  {
+    key: "kupa-sahibi",
+    emoji: "🏅",
+    name: "Kupa Sahibi",
+    description: "İlk sezon kupanı kazandın",
+    group: "rekabet",
+  },
+  {
+    key: "sezon-sampiyonu",
+    emoji: "🥇",
+    name: "Sezon Şampiyonu",
+    description: "Bir sezonu birinci sırada bitirdin",
+    group: "rekabet",
+  },
 ];
 
 export type BadgeEvalInput = {
@@ -144,6 +202,13 @@ export type BadgeEvalInput = {
   bestExamNet: number; // __deneme_*__ kayıtları arasında en yüksek net
   topicsDonePerSubject: Record<string, number>; // {turkce: 8, ...}
   totalTopicsPerSubject: Record<string, number>; // {turkce: 15, ...}
+  // Rekabet (tüm sezonların toplamı) — Faz 6
+  compMatches: number;
+  compWins: number;
+  compBestStreak: number; // en uzun galibiyet serisi (comp_ranks.best_win_streak)
+  compBestTier: number; // tüm zamanların en yüksek kademesi (lig nişanı)
+  compTrophies: number; // sezon kupası sayısı
+  compSeasonWins: number; // 1. bitirilen sezon sayısı
 };
 
 /** Stats + ek metriklere göre kazanılan rozet anahtarları kümesini döner. */
@@ -176,6 +241,16 @@ export function evaluateBadges(input: BadgeEvalInput): Set<string> {
 
   if (input.hasPerfectQuiz) earned.add("hassas-atis");
   if (input.bestExamNet >= 80) earned.add("deneme-fatihi");
+
+  // Rekabet — lig eşikleri ranks.ts ile aynı: 4 = Yıldızlar 2, 8 = Şampiyonlar 2
+  if (input.compMatches >= 1) earned.add("ilk-duello");
+  if (input.compWins >= 1) earned.add("ilk-zafer");
+  if (input.compMatches >= 10) earned.add("duellocu");
+  if (input.compBestStreak >= 5) earned.add("yenilmez");
+  if (input.compBestTier >= 4) earned.add("yildiz-ligi");
+  if (input.compBestTier >= 8) earned.add("sampiyon-ligi");
+  if (input.compTrophies >= 1) earned.add("kupa-sahibi");
+  if (input.compSeasonWins >= 1) earned.add("sezon-sampiyonu");
 
   return earned;
 }

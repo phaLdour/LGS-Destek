@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, Swords, Trophy } from "lucide-react";
+import { ExternalLink, History, Swords, Trophy } from "lucide-react";
 import type { ShellUser } from "@/components/layout/AppShell";
 import { leagueOf, rankLabel } from "@/lib/competitive/ranks";
 import { getPublicProfile, getTrophies } from "@/lib/competitive/server";
@@ -46,6 +46,14 @@ export async function CompetitiveIdentity({
           </p>
         </div>
         {profile && (
+          <div className="flex flex-wrap gap-2">
+          <Link
+            href="/rekabet/gecmis"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:shadow-card"
+          >
+            <History className="h-3.5 w-3.5" />
+            Maç geçmişi
+          </Link>
           <Link
             href={`/rekabet/oyuncu/${userId}`}
             className="inline-flex items-center gap-1.5 rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:shadow-card"
@@ -53,6 +61,7 @@ export async function CompetitiveIdentity({
             <ExternalLink className="h-3.5 w-3.5" />
             Herkese açık profilini gör
           </Link>
+          </div>
         )}
       </div>
 

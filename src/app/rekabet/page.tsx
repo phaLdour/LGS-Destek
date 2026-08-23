@@ -13,15 +13,27 @@ import { AvatarWithCrest } from "@/components/competitive/AvatarWithCrest";
 import { LeagueBadge } from "@/components/competitive/LeagueBadge";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { RankCard } from "@/components/competitive/RankCard";
+import { SeasonSummary } from "@/components/competitive/SeasonSummary";
 import { SeasonResetCountdown } from "@/components/competitive/SeasonResetCountdown";
 import {
   getCompetitiveOverview,
   getPublicProfile,
   getTrophies,
+  getUnseenTrophy,
 } from "@/lib/competitive/server";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { getShellUser } from "@/lib/user";
 import { LEAGUES, leagueOf, rankLabel } from "@/lib/competitive/ranks";
+
+/** match-pool.ts'teki isValidSubjectFilter whitelist'i ile birebir aynı. */
+const DUELLO_DERSLERI = [
+  { slug: "turkce", name: "Türkçe" },
+  { slug: "matematik", name: "Matematik" },
+  { slug: "fen-bilimleri", name: "Fen Bilimleri" },
+  { slug: "inkilap", name: "İnkılap" },
+  { slug: "din", name: "Din Kültürü" },
+  { slug: "ingilizce", name: "İngilizce" },
+] as const;
 
 export const metadata = {
   title: "Rekabet — Rehberim",
@@ -39,12 +51,13 @@ export default async function RekabetPage() {
   const { rank, isNewcomer, signedIn, configured } = overview;
 
   // Faz 5: kalıcı ödüller — lig nişanı + kupa sayısı (yalnız giriş yapmışsa)
-  const [profile, trophies] = authUser
+  const [profile, trophies, unseenTrophy] = authUser
     ? await Promise.all([
         getPublicProfile(authUser.id),
         getTrophies(authUser.id),
+        getUnseenTrophy(authUser.id),
       ])
-    : [null, []];
+    : [null, [], null];
 
   return (
     <AppShell user={user}>
@@ -94,6 +107,9 @@ export default async function RekabetPage() {
         winStreak={rank.winStreak}
       />
 
+      {/* Faz 7: sezon kapanış özeti (bir kez) */}
+      {unseenTrophy && <SeasonSummary trophy={unseenTrophy} />}
+
       {/* Faz 5: kalıcı ödüller — lig nişanı + kupa rafı özeti */}
       {signedIn && (
         <section className="ring-hairline mt-3 flex flex-wrap items-center gap-4 rounded-2xl border border-rehberim-border bg-white p-4 shadow-card">
@@ -126,6 +142,12 @@ export default async function RekabetPage() {
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap gap-2">
+                <Link
+                  href="/rekabet/gecmis"
+                  className="rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:shadow-card"
+                >
+                  Maç geçmişi
+                </Link>
                 <Link
                   href="/profile#rekabet"
                   className="rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:shadow-card"
@@ -232,6 +254,37 @@ export default async function RekabetPage() {
             liginde. İlk maçını oyna ve tırmanmaya başla.
           </p>
         </div>
+      )}
+
+      {/* Faz 7: ders seçici — "matematikte iddialıyım" diyen için doğrudan yol */}
+      {signedIn && (
+        <section className="mt-5 rounded-2xl border border-rehberim-border bg-white p-4 shadow-card">
+          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-rehberim-navy/65">
+              Derse özel düello
+            </h2>
+            <p className="text-xs text-rehberim-navy/50">
+              Sorular yalnız seçtiğin dersten gelir
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/rekabet/eslesme"
+              className="rounded-xl border border-rehberim-accent/40 bg-rehberim-accent/10 px-3 py-2 text-xs font-bold text-rehberim-accent-dark transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-card"
+            >
+              Karma (tüm dersler)
+            </Link>
+            {DUELLO_DERSLERI.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/rekabet/eslesme?ders=${d.slug}`}
+                className="rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy/75 transition-all duration-200 ease-smooth hover:-translate-y-px hover:border-rehberim-accent/40 hover:text-rehberim-navy hover:shadow-card"
+              >
+                {d.name}
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* Lig vitrini — tüm ligler bir bakışta */}

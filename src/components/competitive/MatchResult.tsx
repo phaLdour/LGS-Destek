@@ -2,10 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Check, Home, Swords, Trophy, X } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Home,
+  Swords,
+  TrendingDown,
+  Trophy,
+  X,
+} from "lucide-react";
 import { DeltaAnimator } from "./DeltaAnimator";
 import { LeagueBadge } from "./LeagueBadge";
 import { LeagueCrest } from "./LeagueCrest";
+import { leagueOf, rankLabel } from "@/lib/competitive/ranks";
 import { crestTitle } from "@/lib/competitive/rewards";
 
 const LETTERS = ["A", "B", "C", "D"];
@@ -54,6 +63,7 @@ export function MatchResult({
   opponentId = null,
   opponentBestTier = null,
   myBestTier = null,
+  myTierAfter = null,
 }: {
   matchOutcome: "win" | "loss" | "draw";
   me: SideSummary;
@@ -68,6 +78,8 @@ export function MatchResult({
   opponentId?: string | null;
   opponentBestTier?: number | null;
   myBestTier?: number | null;
+  /** Faz 6: maç sonundaki kademem — terfi/düşüş kutlaması için */
+  myTierAfter?: number | null;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -85,8 +97,70 @@ export function MatchResult({
   const myNet = Math.max(0, me.correct - myWrong / 3);
   const oppNet = Math.max(0, opponent.correct - oppWrong / 3);
 
+  // Faz 6: bu maçta kademe değişti mi?
+  const promoted =
+    myTierAfter !== null &&
+    myTierAfter !== undefined &&
+    myTierAfter > me.tierAtStart;
+  const demoted =
+    myTierAfter !== null &&
+    myTierAfter !== undefined &&
+    myTierAfter < me.tierAtStart;
+  const newLeague =
+    promoted || demoted ? leagueOf(myTierAfter as number) : null;
+  const leagueChanged =
+    newLeague !== null && newLeague.slug !== leagueOf(me.tierAtStart).slug;
+
   return (
     <div className="space-y-5">
+      {/* Faz 6: terfi kutlaması — lig sisteminin ödül anı */}
+      {promoted && newLeague && (
+        <div
+          className={`ring-hairline relative overflow-hidden rounded-3xl border border-rehberim-border bg-gradient-to-br ${newLeague.color.gradientFrom} ${newLeague.color.gradientTo} p-5 text-white shadow-soft`}
+        >
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full bg-white/25 blur-3xl"
+          />
+          <div className="relative flex items-center gap-4">
+            <span className="animate-scale-in">
+              <LeagueCrest
+                tier={myTierAfter as number}
+                size={64}
+                title={`${rankLabel(myTierAfter as number)} kademesi`}
+              />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/80">
+                {leagueChanged ? "Yeni lig" : "Terfi"}
+              </p>
+              <p className="text-2xl font-extrabold tracking-tight">
+                {rankLabel(myTierAfter as number)}
+              </p>
+              <p className="text-sm text-white/85">
+                {leagueChanged
+                  ? `${newLeague.name} ligine yükseldin! Nişanın da güncellendi.`
+                  : "Bir üst kademeye çıktın — böyle devam!"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Kademe düşüşü — sessiz kalmasın ama kutlama değil */}
+      {demoted && myTierAfter !== null && (
+        <div className="flex items-start gap-3 rounded-2xl border border-rehberim-border bg-rehberim-muted/50 p-4 text-sm text-rehberim-navy/70">
+          <TrendingDown className="mt-0.5 h-5 w-5 shrink-0 text-rehberim-navy/40" />
+          <p>
+            <span className="font-extrabold text-rehberim-navy">
+              {rankLabel(myTierAfter)} kademesine düştün.
+            </span>{" "}
+            Çıktığın ligin altına düşmezsin — bir sonraki maçta geri
+            tırmanabilirsin.
+          </p>
+        </div>
+      )}
+
       {/* Forfeit (hükmen) bilgi kutusu */}
       {isForfeit &&
         (iForfeited ? (

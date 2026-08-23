@@ -8,6 +8,7 @@ import {
   isValidSubjectFilter,
   pickQuestionIds,
 } from "@/lib/competitive/match-pool";
+import { getSeenQuestionIds } from "@/lib/competitive/server";
 
 /**
  * POST /api/comp/queue/join
@@ -42,7 +43,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_subject" }, { status: 422 });
   }
 
-  const questionIds = pickQuestionIds(subjectFilter);
+  // Faz 7: daha önce gördüğü sorular havuzun sonuna itilir
+  const seen = await getSeenQuestionIds(user.id);
+  const questionIds = pickQuestionIds(subjectFilter, seen);
   if (!questionIds) {
     return NextResponse.json(
       { error: "insufficient_pool" },
