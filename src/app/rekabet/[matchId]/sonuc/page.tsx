@@ -124,6 +124,9 @@ export default async function SonucPage({
           opponentId={opponentId}
           opponentBestTier={opponentProfile?.bestTier ?? null}
           myBestTier={myProfile?.bestTier ?? null}
+          myTierAfter={
+            (isP1 ? match.p1_tier_after : match.p2_tier_after) ?? null
+          }
         />
       </div>
     </AppShell>
