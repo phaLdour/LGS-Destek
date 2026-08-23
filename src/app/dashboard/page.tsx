@@ -48,8 +48,8 @@ export default async function DashboardPage() {
               Merhaba, {firstName}! 👋
             </h1>
             <p className="mt-2 max-w-md text-pretty text-[14.5px] leading-relaxed text-white/70">
-              LGS yolculuğunda neye çalışmak istersin? Sol paneldeki menüden
-              dersini, denemeni veya sözlüğü seçebilirsin.
+              LGS yolculuğunda neye çalışmak istersin? Menüden dersini,
+              denemeni veya sözlüğü seçebilirsin.
             </p>
           </div>
           <OwlSvg className="hidden h-28 w-28 animate-float drop-shadow-[0_14px_28px_rgba(0,0,0,0.35)] sm:block" />
