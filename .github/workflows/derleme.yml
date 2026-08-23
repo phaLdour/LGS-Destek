@@ -1,0 +1,48 @@
+# Her push ve pull request'te projeyi derler.
+#
+# Amaç: kırık kodun Vercel'e — dolayısıyla öğrencilerin gördüğü siteye —
+# ulaşmasını engellemek. Vercel kırık bir derlemeyi zaten yayınlamaz, ama
+# bu kontrol hatayı daha erken ve daha okunur biçimde gösterir.
+#
+# Ücretsiz GitHub Actions kotası içinde kalır (derleme başına ~2 dakika).
+
+name: Derleme kontrolü
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  derleme:
+    name: Tip kontrolü, lint ve üretim derlemesi
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v4
+
+      - name: Node kurulumu
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Bağımlılıklar
+        run: npm ci
+
+      - name: Tip kontrolü
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npm run lint
+
+      # Derleme yalnızca kodun geçerliliğini sınar; bu değerler sahtedir ve
+      # gerçek anahtarların yerine geçmez. Üretim anahtarları Vercel'de durur.
+      - name: Üretim derlemesi
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://ornek.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: derleme-icin-sahte-anahtar
+          GEMINI_API_KEY: derleme-icin-sahte-anahtar
+          NEXT_PUBLIC_SITE_URL: https://lgs-destek.vercel.app
