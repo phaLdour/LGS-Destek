@@ -159,10 +159,11 @@ create table if not exists public.comp_ranks (
   user_id              uuid not null references auth.users on delete cascade,
   season_id            int  not null references public.comp_seasons,
   tier                 int  not null default 2 check (tier between 0 and 9),
-  points               int  not null default 50 check (points between 0 and 99),
+  points               int  not null default 50 check (points >= 0),  -- tier 9'da 100+ birikir
   highest_tier_reached int  not null default 2,
   challenge_next       boolean not null default false,
   win_streak           int  not null default 0,
+  best_win_streak      int  not null default 0,  -- en uzun seri (rozetler)
   wins                 int  not null default 0,
   losses               int  not null default 0,
   draws                int  not null default 0,
@@ -227,6 +228,7 @@ create table if not exists public.comp_matches (
   p2_correct       int, p2_blank int, p2_duration_s int,
   p2_score         numeric, p2_delta int,
   p1_reaction      text, p2_reaction text,
+  p1_tier_after    int,  p2_tier_after int,   -- maç sonu kademe (terfi tespiti)
   winner_id        uuid,
   finished_at      timestamptz
 );
@@ -577,6 +579,8 @@ declare
   v_new_points int;
   v_new_highest int;
   v_floor_tier int;
+  v_p1_after int;
+  v_p2_after int;
 begin
   select * into v_m from public.comp_matches where id = p_match_id for update;
   if v_m.id is null then
@@ -712,9 +716,17 @@ begin
     wins = v_p1_rank.wins + (case when v_winner = v_m.player1_id then 1 else 0 end),
     losses = v_p1_rank.losses + (case when v_winner = v_m.player2_id then 1 else 0 end),
     draws = v_p1_rank.draws + (case when v_winner is null then 1 else 0 end),
-    challenge_next = (v_winner = v_m.player1_id and v_margin >= 0.7),
+    -- Faz 6: en uzun seri kalıcı olarak saklanır (win_streak kopunca sıfırlanır)
+    best_win_streak = greatest(
+      v_p1_rank.best_win_streak,
+      case when v_winner = v_m.player1_id then v_p1_rank.win_streak + 1 else 0 end
+    ),
+    -- Hot-fix: beraberlikte v_winner ve v_margin NULL → NULL and NULL = NULL →
+    -- not-null ihlali (maç hiç sonuçlanmıyordu). coalesce ile false'a sabitlendi.
+    challenge_next = coalesce(v_winner = v_m.player1_id and v_margin >= 0.7, false),
     updated_at = now()
   where user_id = v_m.player1_id and season_id = v_m.season_id;
+  v_p1_after := v_new_tier;
 
   -- p2 — aynı mantık
   select * into v_p2_rank from public.comp_ranks
@@ -750,13 +762,20 @@ begin
     wins = v_p2_rank.wins + (case when v_winner = v_m.player2_id then 1 else 0 end),
     losses = v_p2_rank.losses + (case when v_winner = v_m.player1_id then 1 else 0 end),
     draws = v_p2_rank.draws + (case when v_winner is null then 1 else 0 end),
-    challenge_next = (v_winner = v_m.player2_id and v_margin >= 0.7),
+    best_win_streak = greatest(
+      v_p2_rank.best_win_streak,
+      case when v_winner = v_m.player2_id then v_p2_rank.win_streak + 1 else 0 end
+    ),
+    challenge_next = coalesce(v_winner = v_m.player2_id and v_margin >= 0.7, false),
     updated_at = now()
   where user_id = v_m.player2_id and season_id = v_m.season_id;
+  v_p2_after := v_new_tier;
 
   -- Maç finished olarak işaretle
   update public.comp_matches set
     status = 'finished',
+    p1_tier_after = v_p1_after,
+    p2_tier_after = v_p2_after,
     winner_id = v_winner,
     p1_correct = v_p1_correct,
     p1_blank = v_p1_blank,
@@ -1142,6 +1161,8 @@ declare
   v_new_highest int;
   v_floor_tier int;
   v_uid uuid;
+  v_p1_after int;
+  v_p2_after int;
 begin
   select * into v_m from public.comp_matches where id = p_match_id for update;
   if v_m.id is null then
@@ -1202,15 +1223,28 @@ begin
       points = v_new_points,
       highest_tier_reached = v_new_highest,
       win_streak = case when v_uid = v_winner then win_streak + 1 else 0 end,
+      best_win_streak = greatest(
+        best_win_streak,
+        case when v_uid = v_winner then win_streak + 1 else 0 end
+      ),
       wins   = wins   + (case when v_uid = v_winner then 1 else 0 end),
       losses = losses + (case when v_uid = v_loser  then 1 else 0 end),
       updated_at = now()
     where user_id = v_uid and season_id = v_m.season_id;
+
+    -- Faz 6: maç sonu kademe (sonuç ekranındaki terfi kutlaması için)
+    if v_uid = v_m.player1_id then
+      v_p1_after := v_new_tier;
+    else
+      v_p2_after := v_new_tier;
+    end if;
   end loop;
 
   -- Maçı forfeit olarak kapat
   update public.comp_matches set
     status = 'finished',
+    p1_tier_after = v_p1_after,
+    p2_tier_after = v_p2_after,
     winner_id = v_winner,
     forfeited_by = v_loser,
     p1_delta = v_p1_delta,
@@ -1604,3 +1638,297 @@ grant execute on function public.comp_leaderboard(int, int) to authenticated;
 select public.comp_upsert_profile(u.user_id)
   from (select distinct user_id from public.comp_ranks) u;
 select public.comp_close_open_seasons();
+
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 5 HOT-FIX — Şampiyonlar tavanı, süresi dolan maçlar, takma ad tekilliği
+-- ════════════════════════════════════════════════════════════════════
+-- 1) KRİTİK: comp_ranks.points CHECK (0..99), Şampiyonlar 1'de (tier 9)
+--    puanın birikmesine izin veren kural ile çelişiyordu. Tier 9'daki bir
+--    oyuncu 100+ puana ulaştığında comp_finalize_match / comp_forfeit_match
+--    "violates check constraint comp_ranks_points_check" ile patlıyor, maç
+--    hiç sonuçlanmıyordu. Kısıt yalnız "negatif olamaz"a indirildi.
+-- 2) Süresi dolmuş ama kimsenin açmadığı maçlar sonsuza dek 'active'
+--    kalıyordu (iki taraf da puan almıyordu). Lazy sweeper eklendi.
+-- 3) Takma ad tekilliği: iki öğrenci aynı takma adı alıp birbirini
+--    taklit edebiliyordu. Büyük/küçük harf duyarsız benzersiz indeks.
+
+-- ── 0) Faz 6 kolonları: en uzun seri + maç sonu kademe ──────────────
+-- best_win_streak: comp_ranks.win_streak "şu anki" seriyi tutar, kopunca
+-- sıfırlanır. Rozetler için "en uzun seri" kalıcı olarak ayrı tutulur.
+-- p1/p2_tier_after: maç sonundaki kademe. Sonuç ekranı, maçın kendisinde
+-- terfi olup olmadığını sonradan bakıldığında da doğru gösterebilsin diye
+-- maç satırına yazılır (comp_ranks.tier o an değişmiş olabilir).
+alter table public.comp_ranks
+  add column if not exists best_win_streak int not null default 0;
+alter table public.comp_matches
+  add column if not exists p1_tier_after int,
+  add column if not exists p2_tier_after int;
+
+-- ── 1) Puan tavanı kısıtı ───────────────────────────────────────────
+alter table public.comp_ranks drop constraint if exists comp_ranks_points_check;
+alter table public.comp_ranks
+  add constraint comp_ranks_points_check check (points >= 0);
+
+-- ── 2) Süresi dolan maçları sonuçlandır (lazy sweeper) ──────────────
+-- Kullanıcının süresi geçmiş 'active' maçlarını comp_finalize_match ile
+-- kapatır. comp_finalize_match idempotent; puanlar normal kurallarla işler.
+create or replace function public.comp_finalize_expired_for_user(p_user_id uuid)
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_n int := 0;
+begin
+  for v_m in
+    select id from public.comp_matches
+     where (player1_id = p_user_id or player2_id = p_user_id)
+       and status = 'active'
+       and deadline_at <= now()
+     order by started_at
+     limit 20
+  loop
+    begin
+      perform public.comp_finalize_match(v_m.id);
+      v_n := v_n + 1;
+    exception when others then
+      -- Tek bir bozuk maç, kuyruğa girmeyi engellemesin
+      null;
+    end;
+  end loop;
+  return v_n;
+end;
+$$;
+
+revoke execute on function public.comp_finalize_expired_for_user(uuid) from public, anon, authenticated;
+
+-- ── 3) Takma ad benzersizliği (büyük/küçük harf duyarsız) ───────────
+create unique index if not exists comp_profiles_nickname_key
+  on public.comp_profiles (lower(nickname))
+  where nickname is not null;
+
+-- comp_set_nickname: benzersizlik hatasını anlamlı koda çevir + boşluk kırpma
+create or replace function public.comp_set_nickname(p_nickname text)
+returns text
+language plpgsql security definer
+as $$
+declare
+  v_nick text;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  v_nick := nullif(regexp_replace(trim(coalesce(p_nickname, '')), '\s+', ' ', 'g'), '');
+  if v_nick is not null then
+    if char_length(v_nick) < 2 or char_length(v_nick) > 20 then
+      raise exception 'nickname_length' using errcode = '22023';
+    end if;
+    if v_nick !~ '^[A-Za-z0-9ÇĞİÖŞÜçğıöşü._ -]+$' then
+      raise exception 'nickname_chars' using errcode = '22023';
+    end if;
+    if exists (
+      select 1 from public.comp_profiles
+       where lower(nickname) = lower(v_nick) and user_id <> auth.uid()
+    ) then
+      raise exception 'nickname_taken' using errcode = '23505';
+    end if;
+  end if;
+  perform public.comp_upsert_profile(auth.uid());
+  update public.comp_profiles
+     set nickname = v_nick, updated_at = now()
+   where user_id = auth.uid();
+  return v_nick;
+exception when unique_violation then
+  raise exception 'nickname_taken' using errcode = '23505';
+end;
+$$;
+
+grant execute on function public.comp_set_nickname(text) to authenticated;
+
+-- ── 4) comp_ensure_season_and_rank: sweeper'ı bağla ─────────────────
+-- Kullanıcı kuyruğa girerken (veya lobiyi açarken) kendi süresi geçmiş
+-- maçları sessizce sonuçlansın.
+create or replace function public.comp_ensure_season_and_rank(
+  p_user_id uuid
+) returns table(out_season_id int, out_tier int, out_points int)
+language plpgsql security definer
+as $$
+declare
+  v_now_tr timestamp;
+  v_season_id int;
+  v_starts_tr timestamp;
+  v_ends_tr timestamp;
+  v_label text;
+  v_month int;
+  v_year int;
+begin
+  v_now_tr := (now() at time zone 'Europe/Istanbul')::timestamp;
+  v_year := extract(year from v_now_tr)::int;
+  v_month := extract(month from v_now_tr)::int;
+  v_season_id := v_year * 100 + v_month;
+  v_starts_tr := date_trunc('month', v_now_tr);
+  v_ends_tr := v_starts_tr + interval '1 month';
+  v_label := case v_month
+    when 1 then 'Ocak'      when 2 then 'Şubat'   when 3 then 'Mart'
+    when 4 then 'Nisan'     when 5 then 'Mayıs'   when 6 then 'Haziran'
+    when 7 then 'Temmuz'    when 8 then 'Ağustos' when 9 then 'Eylül'
+    when 10 then 'Ekim'     when 11 then 'Kasım'  when 12 then 'Aralık'
+  end || ' ' || v_year::text;
+
+  insert into public.comp_seasons (id, starts_at, ends_at, label)
+  values (
+    v_season_id,
+    v_starts_tr at time zone 'Europe/Istanbul',
+    v_ends_tr at time zone 'Europe/Istanbul',
+    v_label
+  )
+  on conflict (id) do nothing;
+
+  -- Hot-fix: kullanıcının süresi geçmiş maçlarını kapat (sezon kapanışından ÖNCE,
+  -- ki son maçların puanları o sezonun kupasına yansısın)
+  perform public.comp_finalize_expired_for_user(p_user_id);
+
+  -- Faz 5: süresi dolmuş sezonları kapat (kupa dağıtımı)
+  perform public.comp_close_open_seasons();
+
+  -- Faz 5: yumuşak reset — en son sezon satırından 2 kademe aşağı, 50 puan.
+  -- Taban: yeni kullanıcı varsayılanı (tier 2 = Yükselme 2); kimse sezona
+  -- yeni başlayanların altından başlamaz.
+  insert into public.comp_ranks (user_id, season_id, tier, points, highest_tier_reached)
+  select p_user_id, v_season_id,
+         greatest(2, r.tier - 2), 50, greatest(2, r.tier - 2)
+    from public.comp_ranks r
+   where r.user_id = p_user_id and r.season_id < v_season_id
+   order by r.season_id desc
+   limit 1
+  on conflict (user_id, season_id) do nothing;
+
+  -- Önceki sezon yoksa varsayılan (Yükselme 2 / 50)
+  insert into public.comp_ranks (user_id, season_id)
+  values (p_user_id, v_season_id)
+  on conflict (user_id, season_id) do nothing;
+
+  -- Faz 5: herkese açık profil (ad/avatar) tazele
+  perform public.comp_upsert_profile(p_user_id);
+
+  return query
+  select v_season_id, r.tier, r.points
+    from public.comp_ranks r
+   where r.user_id = p_user_id and r.season_id = v_season_id;
+end;
+$$;
+
+grant execute on function public.comp_ensure_season_and_rank(uuid) to authenticated;
+
+-- Faz 6 backfill: mevcut "şu anki seri" değerlerini en uzun seri olarak al
+update public.comp_ranks
+   set best_win_streak = greatest(best_win_streak, win_streak)
+ where best_win_streak < win_streak;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 7 — Sezon özeti, rakip kopma tespiti, soru tekrarı önleme
+-- ════════════════════════════════════════════════════════════════════
+
+-- 1) Kupa görüldü damgası: sezon kapanış özeti bir kez gösterilsin
+alter table public.comp_trophies
+  add column if not exists seen_at timestamptz;
+
+create or replace function public.comp_mark_trophy_seen(p_season_id int)
+returns void
+language plpgsql security definer
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  update public.comp_trophies
+     set seen_at = now()
+   where user_id = auth.uid() and season_id = p_season_id and seen_at is null;
+end;
+$$;
+
+grant execute on function public.comp_mark_trophy_seen(int) to authenticated;
+
+-- 2) Varlık (presence) damgaları: rakip bağlantısı koptu mu?
+-- Maç ekranı zaten 3 sn'de bir /api/comp/match/[id] çağırıyor; o çağrı
+-- kendi damgasını günceller. Otomatik hükmen YOK — kalan oyuncuya bir
+-- buton gösterilir, kararı o verir (kötü internet yanlış pozitif üretmesin).
+alter table public.comp_matches
+  add column if not exists p1_seen_at timestamptz,
+  add column if not exists p2_seen_at timestamptz;
+
+create or replace function public.comp_touch_presence(p_match_id uuid)
+returns void
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+begin
+  select player1_id, player2_id, status into v_m
+    from public.comp_matches where id = p_match_id;
+  if v_m.status is null or v_m.status <> 'active' then
+    return;
+  end if;
+  if auth.uid() = v_m.player1_id then
+    update public.comp_matches set p1_seen_at = now() where id = p_match_id;
+  elsif auth.uid() = v_m.player2_id then
+    update public.comp_matches set p2_seen_at = now() where id = p_match_id;
+  end if;
+end;
+$$;
+
+grant execute on function public.comp_touch_presence(uuid) to authenticated;
+
+-- comp_claim_abandoned: rakip p_idle_seconds'tir sessizse çağıran hükmen kazanır.
+-- Güvenlik: yalnız katılımcı çağırabilir; rakip damgası yoksa maç başlangıcı
+-- baz alınır; maç en az 60 sn sürmüş olmalı. Puanlar comp_forfeit_match ile
+-- aynı sabit ±30, ama terk eden RAKİP olarak işaretlenir.
+create or replace function public.comp_claim_abandoned(p_match_id uuid)
+returns boolean
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_caller uuid := auth.uid();
+  v_opponent uuid;
+  v_opp_seen timestamptz;
+  v_idle int := 90;   -- rakip bu kadar saniyedir sessizse kopmuş sayılır
+  v_min_age int := 60; -- maçın en az bu kadar sürmüş olması gerekir
+begin
+  select * into v_m from public.comp_matches where id = p_match_id for update;
+  if v_m.id is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if v_caller <> v_m.player1_id and v_caller <> v_m.player2_id then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if v_m.status <> 'active' then
+    return false;
+  end if;
+  if v_m.started_at > now() - make_interval(secs => v_min_age) then
+    return false;
+  end if;
+
+  if v_caller = v_m.player1_id then
+    v_opponent := v_m.player2_id;
+    v_opp_seen := coalesce(v_m.p2_seen_at, v_m.started_at);
+  else
+    v_opponent := v_m.player1_id;
+    v_opp_seen := coalesce(v_m.p1_seen_at, v_m.started_at);
+  end if;
+
+  if v_opp_seen > now() - make_interval(secs => v_idle) then
+    return false;  -- rakip hâlâ bağlı
+  end if;
+
+  -- Rakip terk etmiş sayılır: comp_forfeit_match'in kural setini rakip
+  -- adına uygula (tek doğruluk kaynağı olsun diye aynı fonksiyon).
+  perform set_config('request.jwt.claim.sub', v_opponent::text, true);
+  perform public.comp_forfeit_match(p_match_id);
+  perform set_config('request.jwt.claim.sub', v_caller::text, true);
+  return true;
+end;
+$$;
+
+grant execute on function public.comp_claim_abandoned(uuid) to authenticated;
