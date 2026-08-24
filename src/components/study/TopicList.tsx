@@ -78,7 +78,7 @@ export function TopicList({
                 aria-label={status === "done" ? "Bitti olarak işaretli" : "Bitti olarak işaretle"}
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition ${
                   status === "done"
-                    ? "border-rehberim-accent bg-rehberim-accent text-white"
+                    ? "border-rehberim-accent bg-rehberim-accent text-rehberim-navy"
                     : "border-rehberim-border bg-white text-rehberim-navy/30 hover:text-rehberim-navy/60"
                 }`}
               >

@@ -74,7 +74,7 @@ export default async function DashboardPage() {
         </span>
         <div className="relative min-w-0 flex-1">
           <p className="text-lg font-extrabold tracking-tight">Hızlı Sorular</p>
-          <p className="text-sm text-white/85">
+          <p className="text-sm text-rehberim-navy/75">
             10 saniyede bir soru — konularını hızlıca pekiştir
           </p>
         </div>

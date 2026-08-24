@@ -36,7 +36,7 @@ export default async function HizliSorularSubjectPage({
           </span>
           <div>
             <h1 className="text-xl font-extrabold">Karma — Tüm Dersler</h1>
-            <p className="text-sm text-white/85">
+            <p className="text-sm text-rehberim-navy/75">
               {smart
                 ? "Zayıf konularından daha çok soru gelir"
                 : "Her dersten rastgele sorular"}

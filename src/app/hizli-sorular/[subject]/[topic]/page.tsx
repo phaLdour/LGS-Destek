@@ -43,7 +43,7 @@ export default async function HizliSorularQuizPage({
             <h1 className="text-xl font-extrabold">
               Karma — {subjectContent.name}
             </h1>
-            <p className="text-sm text-white/85">
+            <p className="text-sm text-rehberim-navy/75">
               {smart
                 ? "Zayıf konularından daha çok soru gelir"
                 : "Bu derste tüm konulardan karışık"}

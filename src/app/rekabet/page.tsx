@@ -192,7 +192,7 @@ export default async function RekabetPage() {
             <p className="text-lg font-extrabold tracking-tight">
               {signedIn ? "Maç ara" : "Giriş yap ve başla"}
             </p>
-            <p className="text-sm text-white/85">
+            <p className="text-sm text-rehberim-navy/75">
               {signedIn
                 ? "Liginden bir rakiple eşleş"
                 : "Rekabet için giriş gerek"}

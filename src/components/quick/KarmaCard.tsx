@@ -23,7 +23,7 @@ export function KarmaCard({
       </span>
       <div className="min-w-0 flex-1">
         <p className="text-lg font-extrabold">{label}</p>
-        <p className="text-sm text-white/85">{hint}</p>
+        <p className="text-sm text-rehberim-navy/75">{hint}</p>
       </div>
       <span className="absolute right-3 top-3 rounded-full bg-white/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
         ⚡ özel

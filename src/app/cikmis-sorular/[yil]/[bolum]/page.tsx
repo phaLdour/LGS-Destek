@@ -62,7 +62,7 @@ export default async function ExamDetailPage({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-lg font-extrabold">İnteraktif çöz</p>
-            <p className="text-sm text-white/85">
+            <p className="text-sm text-rehberim-navy/75">
               Süreli, net hesaplı, gerçek MEB soruları
             </p>
           </div>
