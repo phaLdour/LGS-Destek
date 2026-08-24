@@ -22,10 +22,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "\"Modern toplumlarda zamanın hızla geçtiği hissi yaygındır. Bu durum, gerçek bir zaman kıtlığından çok, sürekli uyaran içeren dijital ortamların dikkati parçalamasından kaynaklanır. Beyin, her ekran değişiminde küçük bir karar verir; bu kararlar tek tek önemsiz görünse de biriktiğinde zihinsel yorgunluğa yol açar.\"\n\nBu paragraftan aşağıdaki yargılardan hangisine ULAŞILABİLİR?",
       options: [
-        "Dijital ortamlardaki sık uyaranlar zihinsel yorgunluğa yol açabilir",
-        "Modern toplumlarda zaman gerçekten kısalmıştır",
-        "Beyin her durumda aynı verimlilikte çalışır",
-        "Dijital ortamların hiçbir yararı yoktur",
+        "Dijital ortamlardaki uyaranlar zihinsel yorgunluğa yol açabilir",
+        "Modern toplumlarda kişilerin boş zamanı geçmişe göre azalmıştır",
+        "Beyin, uyaran sayısı arttıkça karar verme hızını da artırmaktadır",
+        "Dikkat dağınıklığı yalnız ekran kullanan kişilerde görülmektedir",
       ],
       correctIndex: 0,
     },
@@ -43,7 +43,12 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
     {
       question:
         "\"(I) Sağlıklı beslenme yalnız ne yediğimizle değil, nasıl yediğimizle de ilgilidir. (II) Yemek yerken acele etmek, sindirimi olumsuz etkiler. (III) Lezzetli yemekler hazırlamak ayrı bir sanattır. (IV) Yemeği iyi çiğnemek hem doyma hissini hem de besinlerin emilimini olumlu etkiler.\"\n\nBu paragrafta numaralanmış cümlelerin hangisi anlatımın akışını bozmaktadır?",
-      options: ["III", "I", "II", "IV"],
+      options: [
+        "Üçüncü cümle (III)",
+        "Birinci cümle (I)",
+        "İkinci cümle (II)",
+        "Dördüncü cümle (IV)",
+      ],
       correctIndex: 0,
     },
   ],
@@ -115,9 +120,9 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "Bir öğrenci aynı yükü iki farklı rampadan yukarı çıkarıyor: A rampası 2 m uzunluğunda, B rampası 4 m uzunluğunda; her ikisi de aynı yüksekliğe çıkarıyor. Buna göre aşağıdakilerden hangisi DOĞRUDUR?",
       options: [
         "B rampasında daha az kuvvet uygulanır, ancak yapılan iş eşittir",
-        "A rampasında daha az kuvvet uygulanır",
-        "Her ikisinde de eşit kuvvet uygulanır",
-        "B rampasında daha çok iş yapılır",
+        "A rampasında daha az kuvvet uygulanır, çünkü yolu daha kısadır",
+        "İki rampada da eşit kuvvet uygulanır, işten kazanç sağlanmaz",
+        "B rampasında hem daha az kuvvet uygulanır hem de daha az iş yapılır",
       ],
       correctIndex: 0,
     },
@@ -139,10 +144,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Bir kamyonun lastik sayısı, üzerine yüklenen ağırlıkla birlikte artırılmaktadır. Bu uygulamanın temel amacı aşağıdakilerden hangisidir?",
       options: [
-        "Yere uygulanan basıncı azaltarak yolun bozulmasını önlemek",
-        "Yakıt tüketimini artırmak",
-        "Kamyonun toplam kütlesini azaltmak",
-        "Sürtünmeyi tamamen ortadan kaldırmak",
+        "Yere uygulanan basıncı azaltarak yolun bozulmasını engellemek",
+        "Lastiklerin yere uyguladığı toplam kuvveti tümüyle yok etmek",
+        "Yükün ağırlığını azaltarak araca binen kütleyi hafifletmek",
+        "Temas yüzeyini küçülterek yere uygulanan basıncı artırmak",
       ],
       correctIndex: 0,
     },
@@ -165,10 +170,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Mustafa Kemal'in askerî eğitimi sırasında aldığı kararlı, sorgulayıcı ve milletinin geleceğini düşünen tutumu; ilerleyen yıllarda yapacaklarının temelini oluşturur. Bu bilgi aşağıdakilerden hangisini doğrudan destekler?",
       options: [
-        "Liderlik ve karakter özellikleri çocukluk ve gençlik döneminde şekillenir",
-        "Askerî eğitim her zaman dünya görüşünü değiştirir",
-        "Sorgulayıcı insanlar yöneticiliği reddeder",
-        "Yalnız savaş tecrübesi karakter oluşturur",
+        "Liderlik özellikleri gençlik dönemindeki tutumlarla şekillenmiştir",
+        "Askerî eğitim, kişinin dünya görüşünü her durumda tümüyle değiştirir",
+        "Sorgulayıcı kişilikler yöneticilik görevlerinden uzak durmaktadır",
+        "Karakter, yalnızca savaş meydanında kazanılan tecrübeyle oluşur",
       ],
       correctIndex: 0,
     },
@@ -176,10 +181,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Mustafa Kemal'in Çanakkale Cephesi'ndeki başarısı, ona neden önemli bir kahramanlık kazandırmıştır?",
       options: [
-        "Düşmanın İstanbul'a ulaşmasını engelleyerek İtilaf Devletleri planlarını bozması",
-        "Padişaha karşı geldiği için",
-        "Çanakkale'yi siyasi olarak başkent yapması",
-        "Tüm cepheleri tek başına yönetmesi",
+        "İtilaf Devletleri'nin İstanbul'a ulaşma planını boşa çıkarması",
+        "İstanbul Hükûmeti'ne karşı ilk direniş hareketini başlatmış olması",
+        "Doğu Cephesi'nde Rus ilerleyişini tek başına durdurmuş olması",
+        "Savaş boyunca bütün cephelerin komutasını üstlenmiş olması",
       ],
       correctIndex: 0,
     },
@@ -191,10 +196,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "İslam inancında kader ve kaza kavramları arasındaki ilişkiyi en doğru biçimde açıklayan ifade hangisidir?",
       options: [
-        "Kader Allah'ın ezeli ilmiyle her şeyi takdir etmesi, kaza ise bu takdirin zamanı gelince gerçekleşmesidir",
-        "Kader ve kaza aynı anlama gelir, fark yoktur",
-        "Kader insanın iradesi, kaza Allah'ın isteğidir",
-        "Kader sadece kötü olaylar için kullanılır",
+        "Kader Allah'ın ezelde takdir etmesi, kaza bu takdirin gerçekleşmesidir",
+        "Kaza Allah'ın ezelde takdir etmesi, kader bu takdirin uygulanmasıdır",
+        "Kader insanın kendi seçimi, kaza Allah'ın bu seçime izin vermesidir",
+        "Kader yalnızca iyi olaylar, kaza ise yalnızca kötü olaylar için kullanılır",
       ],
       correctIndex: 0,
     },
@@ -202,10 +207,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "İnsanın irade ve sorumluluğu, kader inancıyla ilgili olarak nasıl değerlendirilir?",
       options: [
-        "İnsan, kendisine verilen iradeyle seçim yapar; yaptıklarından sorumludur",
-        "İnsanın hiçbir seçim hakkı yoktur",
-        "İnsan tüm fiillerinde mecburdur",
-        "İrade yalnız meleklerde vardır",
+        "İnsan, verilen iradeyle seçim yapar ve yaptıklarından sorumludur",
+        "İnsan iradesiyle seçim yapar, ancak yaptıklarından sorumlu tutulmaz",
+        "İnsanın seçim hakkı yoktur; bütün davranışları önceden zorunludur",
+        "İrade yalnız meleklere verilmiştir; insan yalnızca kaderini yaşar",
       ],
       correctIndex: 0,
     },
@@ -362,10 +367,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Aşağıdakilerden hangisi modifikasyona (kalıtsal olmayan değişime) örnektir?",
       options: [
-        "Aynı tohumdan farklı toprakta yetişen bitkilerin boylarının farklı olması",
-        "Çocuğun göz rengini anne veya babadan alması",
-        "Kan grubunun anne-babadan gelmesi",
-        "Bir kişinin parmak izinin doğuştan gelmesi",
+        "Aynı tohumdan farklı topraklarda farklı boyda bitki yetişmesi",
+        "Çocuğun göz renginin anne ya da babasınınkine benzer olması",
+        "Kan grubunun anne ve babadan gelen genlerle belirlenmesi",
+        "Parmak izi deseninin doğuştan gelip ömür boyu değişmemesi",
       ],
       correctIndex: 0,
     },
@@ -388,10 +393,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Bir tepkimede mevcut tüm tepkenler kullanılarak yalnız ürün/ürünler oluşuyorsa bu tepkime aşağıdakilerden hangisidir?",
       options: [
-        "Kimyasal değişim (yeni madde oluşumu)",
-        "Fiziksel değişim",
-        "Hâl değişimi",
-        "Yoğunluk değişimi",
+        "Yeni özellikte maddelerin oluştuğu kimyasal değişim",
+        "Maddenin yalnız dış görünümünün değiştiği fiziksel olay",
+        "Tanecikler arası uzaklığın değiştiği hâl değişimi",
+        "Kütle sabitken hacmin değiştiği yoğunluk değişimi",
       ],
       correctIndex: 0,
     },
@@ -415,9 +420,9 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "Mondros Ateşkes Anlaşması'nın 7. maddesi (\"Müttefikler, güvenliklerini tehdit edebilecek herhangi bir stratejik noktayı işgal edebilir.\") aşağıdakilerden hangisine OLANAK SAĞLAMIŞTIR?",
       options: [
         "İtilaf Devletleri'nin Anadolu'yu fiilen işgaline",
-        "Osmanlı Devleti'nin toprak kazanmasına",
-        "Yeni bir devletin doğrudan kurulmasına",
-        "TBMM'nin hemen açılmasına",
+        "Osmanlı ordusunun silahlarıyla birlikte korunmasına",
+        "Anadolu'da ulusal cemiyetlerin yasaklanmasına",
+        "Boğazlar'ın Osmanlı yönetiminde bırakılmasına",
       ],
       correctIndex: 0,
     },
@@ -425,10 +430,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Erzurum Kongresi'nde alınan \"Vatan bir bütündür, parçalanamaz.\" kararı aşağıdaki ilkelerden hangisini ifade eder?",
       options: [
-        "Milli birlik ve bağımsızlık",
-        "Cumhuriyetin ilanı",
-        "Saltanatın kaldırılması",
-        "Yabancı yardımın kabulü",
+        "Milli birlik ve bağımsızlık ilkesi",
+        "Cumhuriyet yönetiminin ilan edilmesi",
+        "Saltanat makamının kaldırılması",
+        "Manda ve himayenin kabul edilmesi",
       ],
       correctIndex: 0,
     },
@@ -440,10 +445,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Zekât ile sadaka arasındaki en temel fark nedir?",
       options: [
-        "Zekât belirli koşulları taşıyan zenginlere farzdır; sadaka ise herkesin gönüllü olarak verdiği yardımdır",
-        "Sadaka farz, zekât sünnettir",
-        "Sadaka yalnız Ramazan'da verilir",
-        "İkisi de aynı anlamı taşır",
+        "Zekât belirli şartları taşıyanlara farz, sadaka ise gönüllüdür",
+        "Zekât her Müslümana farz, sadaka ise yalnızca zenginlere farzdır",
+        "Zekât yalnız Ramazan ayında, sadaka ise yıl boyunca verilir",
+        "Zekât gönüllü bir yardım, sadaka ise malın kırkta biridir",
       ],
       correctIndex: 0,
     },
@@ -451,10 +456,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Hac ibadetinin İslam toplumuna kazandırdığı en önemli özellik aşağıdakilerden hangisidir?",
       options: [
-        "Farklı milletlerden Müslümanların eşit koşullarda buluşarak birlik ve kardeşlik duygusunu pekiştirmesi",
-        "Yalnız zenginlerin yaptığı bir gezi olması",
-        "Belirli bir ülkede yapılan turistik gezi olması",
-        "Sadece bireysel ibadet olması",
+        "Farklı milletlerden Müslümanları eşit koşullarda bir araya getirmesi",
+        "Yalnızca belirli bir milletin katılabildiği bir ibadet olması",
+        "Zenginlerin üstünlüğünü görünür kılan bir tören niteliği taşıması",
+        "Toplumdan uzaklaşarak yalnız başına yapılan bir ibadet olması",
       ],
       correctIndex: 0,
     },
@@ -467,9 +472,9 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "Read the dialogue and choose the best response.\n— Ali: How often do you go to the cinema?\n— Mark: ___",
       options: [
         "About twice a month, usually on weekends.",
-        "Yes, I went yesterday.",
-        "The cinema is near my school.",
-        "I really love action movies.",
+        "It takes about twenty minutes by bus.",
+        "For about two hours every Sunday afternoon.",
+        "I have been going there since last year.",
       ],
       correctIndex: 0,
     },
@@ -488,9 +493,9 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "Read the dialogue and choose the best response.\n\n— Mia: I had a bad day at school today. I lost my notebook.\n— Eric: ___",
       options: [
         "I'm sorry to hear that. Let me help you look for it.",
-        "Congratulations! That sounds wonderful.",
-        "I love your new haircut.",
-        "Let's celebrate this great news.",
+        "That's great news! You must be really proud of it.",
+        "Never mind, you can buy a new school bag tomorrow.",
+        "I'm so glad you found it. Where exactly was it hiding?",
       ],
       correctIndex: 0,
     },
@@ -593,10 +598,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Bir devrede ampuller paralel bağlandığında, bir ampul söndüğünde diğerleri ne olur?",
       options: [
-        "Diğerleri yanmaya devam eder",
-        "Hepsi söner",
-        "Daha parlak olurlar",
-        "Yanıp sönerler",
+        "Diğer ampuller aynı parlaklıkta yanmaya devam eder",
+        "Devre açık kalacağı için diğer ampuller de söner",
+        "Diğer ampullerin üzerine düşen gerilim artar, parlarlar",
+        "Diğer ampuller yanar ancak parlaklıkları belirgin azalır",
       ],
       correctIndex: 0,
     },
@@ -608,10 +613,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Bir besin zincirinde enerji aktarımı için aşağıdakilerden hangisi DOĞRUDUR?",
       options: [
-        "Üreticilerden tüketicilere doğru, her basamakta enerji azalır",
-        "Tüketicilerden üreticilere doğru enerji aktarılır",
-        "Enerji her basamakta aynı kalır",
-        "Enerji yalnız üreticiler arasında dolaşır",
+        "Üreticilerden tüketicilere aktarılır, her basamakta azalır",
+        "Tüketicilerden üreticilere aktarılır ve her basamakta azalır",
+        "Üreticilerden tüketicilere aktarılır ve her basamakta artar",
+        "Bütün basamaklarda aktarılan enerji miktarı sabit kalır",
       ],
       correctIndex: 0,
     },
@@ -619,10 +624,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Aşağıdakilerden hangisi karbon döngüsünde solunum yoluyla atmosfere karbondioksit verir?",
       options: [
-        "Tüm canlılar (bitki dahil)",
-        "Yalnız bitkiler",
-        "Yalnız hayvanlar",
-        "Yalnız insanlar",
+        "Bitkiler de dahil olmak üzere yaşayan bütün canlılar",
+        "Yalnızca hayvanlar; bitkiler yalnız fotosentez yapar",
+        "Yalnızca tüketiciler ve ayrıştırıcı canlı türleri",
+        "Yalnızca gündüz saatlerinde solunum yapan bitkiler",
       ],
       correctIndex: 0,
     },
@@ -646,9 +651,9 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "TBMM'nin 23 Nisan 1920'de açılması Türk milleti için aşağıdakilerden hangisi açısından bir dönüm noktasıdır?",
       options: [
         "Milli egemenliğe dayalı yeni bir devletin temelinin atılması",
-        "Padişahlığın güçlenmesi",
-        "İtilaf Devletleri ile barış imzalanması",
-        "Halifeliğin yeniden kurulması",
+        "Saltanat makamının yetkilerinin yeniden güçlendirilmesi",
+        "İtilaf Devletleri ile kalıcı bir barış antlaşması imzalanması",
+        "Halifelik makamının kaldırılıp yetkilerinin devredilmesi",
       ],
       correctIndex: 0,
     },
@@ -661,16 +666,21 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
         "1928'de yapılan Harf İnkılabı'nın temel amacı aşağıdakilerden hangisidir?",
       options: [
         "Halkın okuma-yazma oranını artırmak ve çağdaş eğitime geçmek",
-        "Yalnız aydınların kullanacağı bir alfabe oluşturmak",
-        "Yabancı dil öğretimini zorunlu yapmak",
-        "Eski yazıları korumak",
+        "Yazı dilini yalnızca aydın kesimin kullanımına açık tutmak",
+        "Yabancı dille eğitimi bütün okullarda zorunlu duruma getirmek",
+        "Eski yazıyla basılmış eserlerin çoğaltılmasını kolaylaştırmak",
       ],
       correctIndex: 0,
     },
     {
       question:
         "Atatürk'ün \"Hayatta en hakiki mürşit ilimdir.\" sözü hangi ilkeyi ön plana çıkarır?",
-      options: ["Akılcılık ve bilimsellik", "Saltanatçılık", "Geleneksellik", "Tarihsellik"],
+      options: [
+        "Akla ve bilime dayalı bilimsellik anlayışı",
+        "Milliyetçilik ve halkçılık anlayışı",
+        "Gelenekçi ve değişmez kural anlayışı",
+        "Devletçilik ve planlı kalkınma anlayışı",
+      ],
       correctIndex: 0,
     },
   ],
@@ -681,17 +691,22 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "İslam dininin temel amacı aşağıdakilerden hangisidir?",
       options: [
-        "İnsanın hem dünya hem ahiret mutluluğunu sağlamak",
-        "Yalnız bireysel ibadetleri öğretmek",
-        "Yalnız ticari kuralları belirlemek",
-        "Sadece toplumsal kuralları düzenlemek",
+        "İnsanın dünya ve ahiret mutluluğunu birlikte sağlamak",
+        "İnsanın yalnızca ahiret hayatını kazanmasını sağlamak",
+        "Toplumun yalnızca ekonomik düzenini kurallara bağlamak",
+        "Bireyin yalnızca ibadet hayatını düzenli hâle getirmek",
       ],
       correctIndex: 0,
     },
     {
       question:
         "\"Komşusu açken tok yatan bizden değildir.\" hadisi İslam'da hangi değeri ön plana çıkarır?",
-      options: ["Yardımlaşma ve dayanışma", "Bireysellik", "Mal biriktirme", "Ekonomi yapma"],
+      options: [
+        "Yardımlaşma ve toplumsal dayanışma",
+        "Tutumlu olma ve israftan kaçınma",
+        "Sabır gösterme ve zorluklara katlanma",
+        "Adaletli davranma ve hakka saygı",
+      ],
       correctIndex: 0,
     },
   ],
@@ -734,10 +749,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "\"Toplantıya katılan herkes tek tek görüşlerini söyledi ve aldıkları kararı oybirliğiyle onayladılar.\" cümlesindeki anlatım bozukluğunun nedeni aşağıdakilerden hangisidir?",
       options: [
-        "Özne-yüklem uyumsuzluğu (özne tekil, yüklem çoğul)",
-        "Gereksiz sözcük kullanımı",
-        "Tamlama yanlışı",
-        "Yüklem eksikliği",
+        "Özne ile yüklemde tekil-çoğul uyumsuzluğu olması",
+        "Anlamca çelişen sözlerin bir arada kullanılması",
+        "Ortak kullanılamayan nesnenin eksik bırakılması",
+        "Tamlayan eki eksikliğinden doğan tamlama yanlışı",
       ],
       correctIndex: 0,
     },
@@ -771,10 +786,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "\"Sınıf temizlendi.\" cümlesinde fiilin çatısı için aşağıdakilerden hangisi DOĞRUDUR?",
       options: [
-        "Nesnesine göre edilgen, öznesine göre öznesi olan (özne sözde özne)",
-        "Nesnesine göre geçişli, öznesine göre etken",
-        "Nesnesine göre geçişsiz, öznesine göre dönüşlü",
-        "Nesnesine göre işteş, öznesine göre etken",
+        "Öznesine göre edilgen, nesnesine göre geçişsizdir; sözde öznesi vardır",
+        "Öznesine göre etken, nesnesine göre geçişlidir; gerçek özne alır",
+        "Öznesine göre dönüşlü, nesnesine göre geçişsizdir; gerçek özne alır",
+        "Öznesine göre işteş, nesnesine göre geçişlidir; sözde özne alır",
       ],
       correctIndex: 0,
     },
@@ -808,10 +823,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Aşağıdaki sözcüklerden hangisi büyük harfle YANLIŞ yazılmıştır?",
       options: [
-        "Marmara Denizi",
-        "Atatürk Üniversitesi",
-        "Cumhuriyet Bayramı",
-        "Türk Dili ve Edebiyatı dersi",
+        "Van Gölü çevresindeki iller",
+        "Anadolu Üniversitesi öğrencisi",
+        "29 Ekim Cumhuriyet Bayramı töreninde",
+        "İstanbul boğazı üzerindeki yeni köprü",
       ],
       correctIndex: 3,
     },
@@ -840,10 +855,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Aşağıdaki cümlelerin hangisinde \"iki nokta (:)\" işareti doğru kullanılmıştır?",
       options: [
-        "Annem bana şunu söyledi: \"Akşam erken eve dön.\"",
-        "Yarın: okula gideceğim.",
-        "Kitabı: çantama koydum.",
-        "Çocuk: koşarak geldi.",
+        "Annem bana şunu söyledi: \\\"Akşam erken eve dön.\\\"",
+        "Sınıfın en çalışkan öğrencisi: Ayşe olarak seçildi.",
+        "Yarın sabah erken kalkıp: okula gitmem gerekiyor.",
+        "Sepette şu meyveler vardı elma: armut ve kiraz.",
       ],
       correctIndex: 0,
     },
@@ -904,7 +919,12 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
     {
       question:
         "Bir dik prizmanın taban alanı 24 cm², yüksekliği 8 cm olduğuna göre hacmi kaç cm³'tür?",
-      options: ["192", "96", "32", "48"],
+      options: [
+        "192 cm³",
+        "4608 cm³",
+        "96 cm³",
+        "64 cm³",
+      ],
       correctIndex: 0,
     },
     {
@@ -943,10 +963,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Aşağıdakilerden hangisi \"iklim\" ile \"hava durumu\" arasındaki temel farkı en doğru ifade eder?",
       options: [
-        "İklim uzun yıllar ortalamasıdır, hava durumu kısa süreli atmosfer olaylarıdır",
-        "İklim sadece sıcaklığa bakar, hava durumu yağmura bakar",
-        "İklim yalnız yazları, hava durumu yalnız kışları değerlendirir",
-        "İklim küresel, hava durumu yalnız Türkiye için kullanılır",
+        "İklim uzun yıllar ortalamasını, hava durumu anlık durumu verir",
+        "İklim anlık atmosfer olaylarını, hava durumu ortalamayı anlatır",
+        "İklim yalnız sıcaklığı, hava durumu yalnız yağışı değerlendirir",
+        "İklim yalnız kıyıları, hava durumu yalnız iç kesimleri anlatır",
       ],
       correctIndex: 0,
     },
@@ -958,10 +978,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "13 Şubat 1925'te başlayan Şeyh Sait İsyanı'nın ardından hükümet olağanüstü yetkiler kullanmış, kısa süre sonra dönemin muhalefet partisi Terakkiperver Cumhuriyet Fırkası kapatılmıştır.\n\nBu bilgilerden hareketle aşağıdaki yargılardan hangisine ulaşılabilir?",
       options: [
-        "Ülkedeki bütün siyasi partiler tek bir çatı altında birleştirilmiştir.",
-        "Muhalefet partisi kurucularının kendi kararıyla siyasetten çekilmiştir.",
-        "Çok partili siyasi hayata geçiş denemesi iç güvenlik sorunları nedeniyle kesintiye uğramıştır.",
-        "Siyasi partilerin kapatılmasında ekonomik gerekçeler belirleyici olmuştur.",
+        "Ülkedeki bütün siyasi partiler aynı yıl tek bir çatı altında birleştirilmiştir.",
+        "Muhalefet partisinin kurucuları kendi kararlarıyla siyasetten çekilmeyi seçmiştir.",
+        "Çok partili hayata geçiş denemesi iç güvenlik gerekçesiyle kesintiye uğramıştır.",
+        "Siyasi partilerin kapatılmasında ekonomik gerekçelerin belirleyici olduğu görülmüştür.",
       ],
       correctIndex: 2,
       explanation:
@@ -1066,10 +1086,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Türkiye, savaşın sonuna yaklaşıldığı 23 Şubat 1945'te Almanya ve Japonya'ya savaş ilan etmiş; ancak cephede fiilen çarpışmamıştır.\n\nBu kararın temel amacı aşağıdakilerden hangisidir?",
       options: [
-        "Kaybedilen toprakları askerî güçle geri almak",
-        "Birleşmiş Milletler'e kurucu üye olarak katılabilmek",
-        "Boğazlar üzerindeki denetimi yeniden kurmak",
-        "Hatay'ın anavatana katılmasını sağlamak",
+        "Savaşta kaybedilen toprakları askerî yolla geri almak",
+        "Birleşmiş Milletler'e kurucu üye sıfatıyla katılabilmek",
+        "Montrö ile kazanılan Boğazlar denetimini genişletmek",
+        "Hatay'ın anavatana katılmasını güvence altına almak",
       ],
       correctIndex: 1,
       explanation:
@@ -1124,10 +1144,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Kur'an-ı Kerim, bir defada değil, yaklaşık 23 yıl boyunca yaşanan olaylara ve insanların ihtiyaçlarına göre bölüm bölüm indirilmiştir.\n\nBu iniş biçiminin sağladığı en temel yarar aşağıdakilerden hangisidir?",
       options: [
-        "Kur'an'ın tamamının Mekke döneminde tamamlanmasını sağlaması",
-        "Gelen mesajın yaşanan olaylarla birlikte adım adım öğrenilip uygulanmasını kolaylaştırması",
+        "Kur'an'ın tamamının yalnız Mekke döneminde tamamlanmasını sağlaması",
+        "Mesajın olaylarla birlikte adım adım uygulanmasını kolaylaştırması",
         "Ayetlerin ezberlenmesini ve yazıya geçirilmesini gereksiz kılması",
-        "Kur'an'ın yalnızca indirildiği döneme seslenmesini sağlaması",
+        "Kur'an'ın yalnızca indiği dönemin sorunlarına seslenmesini sağlaması",
       ],
       correctIndex: 1,
       explanation:
@@ -1150,10 +1170,10 @@ export const ADVANCED_QUESTIONS: Record<string, QuizQuestion[]> = {
       question:
         "Yemame Savaşı'nda Kur'an'ı ezberlemiş çok sayıda kişinin şehit olması üzerine Hz. Ebubekir döneminde ayetler bir araya getirilerek mushaf hâline getirilmiş, Hz. Osman döneminde ise çoğaltılarak İslam beldelerine gönderilmiştir.\n\nBu iki çalışmayı yönlendiren ortak amaç aşağıdakilerden hangisidir?",
       options: [
-        "Kur'an'ı Arapça dışındaki dillere çevirerek yaymak",
-        "Sureleri iniş sırasına göre yeniden düzenlemek",
-        "Kur'an'ın eksiksiz ve aynı biçimde korunmasını güvence altına almak",
-        "Kur'an'ın sure ve ayet sayısını yeniden belirlemek",
+        "Kur'an'ı Arapça dışındaki dillere çevirerek yaygınlaştırmak",
+        "Sureleri iniş sırasına göre yeniden sıralayıp düzenlemek",
+        "Kur'an'ın eksiksiz ve aynı biçimde korunmasını sağlamak",
+        "Kur'an'ın sure ve ayet sayısını yeniden belirleyip azaltmak",
       ],
       correctIndex: 2,
       explanation:
