@@ -5,7 +5,7 @@ import { INKILAP } from "./inkilap";
 import { MATEMATIK } from "./matematik";
 import { DIN } from "./din";
 import { INGILIZCE } from "./ingilizce";
-import { getTopicVideo } from "./videos";
+import { getAllVideos, getTopicVideo } from "./videos";
 import { shuffleQuestionList } from "@/lib/shuffleOptions";
 
 /**
@@ -104,3 +104,29 @@ export function getTopicCatalog(): {
 }
 
 export type { SubjectContent, Topic, TopicVideo };
+
+/**
+ * Kaç konuda video var, toplam kaç konu var?
+ *
+ * Tanıtım sayfası bu sayıyı ekranda yazıyor. Elle yazılırsa her yeni video
+ * yüklendiğinde metni güncellemek gerekir (ve unutulursa yalan söyler);
+ * bunun yerine videos.json'dan sayılıyor. Video otomasyonu dosyayı her
+ * güncellediğinde site kendiliğinden doğru sayıyı gösterir.
+ */
+export function getVideoCoverage(): {
+  videolu: number;
+  toplam: number;
+  tamam: boolean;
+} {
+  const videolar = getAllVideos();
+  let toplam = 0;
+  let videolu = 0;
+  for (const subject of Object.values(CONTENT)) {
+    for (const t of subject.topics) {
+      toplam += 1;
+      const v = videolar[`${subject.slug}/${t.id}`];
+      if (v?.src || t.youtubeId) videolu += 1;
+    }
+  }
+  return { videolu, toplam, tamam: toplam > 0 && videolu >= toplam };
+}

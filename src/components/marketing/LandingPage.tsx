@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
 import { OwlSvg } from "@/components/brand/Owl";
+import { getVideoCoverage } from "@/content";
 
 /**
  * Giriş yapmamış ziyaretçinin gördüğü tanıtım sayfası.
@@ -18,12 +19,32 @@ import { OwlSvg } from "@/components/brand/Owl";
  * Abartılı iddia yok — bir öğrenci girdiğinde vaat edilen neyse onu bulur.
  */
 
+/**
+ * Video cümlesi elle yazılmaz: videos.json'dan sayılır. Videolar
+ * yüklendikçe metin kendiliğinden doğru kalır, "22 video" yazıp
+ * 40'a çıkınca yalan söylemez.
+ */
+function videoCumlesi(): string {
+  const { videolu, toplam, tamam } = getVideoCoverage();
+  if (videolu === 0) return "";
+  if (tamam) return " Her konuda kısa bir anlatım videosu var.";
+  return ` ${videolu} konuda ayrıca kısa bir anlatım videosu var (${toplam} konudan).`;
+}
+
+const SAYILAR = [
+  { sayi: "49", alt: "konu · 6 ders" },
+  { sayi: "2.500+", alt: "alıştırma sorusu" },
+  { sayi: "9", alt: "yıllık çıkmış sınav" },
+  { sayi: "0 TL", alt: "her zaman" },
+] as const;
+
 const OZELLIKLER = [
   {
     icon: BookOpen,
     baslik: "6 ders, 49 konu",
     metin:
-      "49 konunun hepsinde konu haritası, anlatım, çalışma kartları, LGS tuzakları ve test. Matematik, Türkçe ve Fen'de ayrıca 22 konu videosu.",
+      "49 konunun hepsinde konu haritası, anlatım, çalışma kartları, LGS tuzakları ve test." +
+      videoCumlesi(),
   },
   {
     icon: Archive,
@@ -35,7 +56,7 @@ const OZELLIKLER = [
     icon: MessageCircleQuestion,
     baslik: "Rehber Baykuş",
     metin:
-      "Takıldığın yeri sorabileceğin yapay zekâ yardımcı. Yalnız LGS konularında konuşur, seni doğru sayfaya götürür.",
+      "Takıldığın yeri sorabileceğin yapay zekâ yardımcısı. Yalnız LGS konularında konuşur, seni doğru sayfaya götürür.",
   },
   {
     icon: Swords,
@@ -71,27 +92,41 @@ export function LandingPage() {
         </Link>
       </header>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-5xl px-5 pb-4 pt-8 sm:pt-14">
-        <div className="ring-hairline relative overflow-hidden rounded-3xl bg-gradient-to-br from-rehberim-navy via-rehberim-navy to-rehberim-navy-light p-7 text-white shadow-elevated sm:p-12">
+      {/* Hero — rakamlar kahramanın içinde (tasarım tuvalinde seçilen düzen:
+          ziyaretçi kaydırmadan ölçeği görsün diye sayılar yukarı taşındı) */}
+      <section className="mx-auto max-w-5xl px-5 pb-6 pt-8 sm:pt-14">
+        <div className="ring-hairline relative overflow-hidden rounded-3xl bg-gradient-to-br from-rehberim-navy-dark via-rehberim-navy to-rehberim-navy-light p-7 text-white shadow-elevated sm:p-11">
           <span
             aria-hidden
-            className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-rehberim-accent/20 blur-3xl"
+            className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-rehberim-accent/16 blur-3xl"
           />
-          <div className="relative flex flex-col gap-8 sm:flex-row sm:items-center">
+          <div className="relative flex flex-col gap-8 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-rehberim-accent-light">
-                Ücretsiz LGS çalışma platformu
-              </p>
-              <h1 className="mt-3 text-balance text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-[2.75rem]">
-                LGS&apos;ye giden yolda{" "}
-                <span className="text-rehberim-accent-light">yanındayız</span>
+              <h1 className="text-balance text-3xl font-extrabold leading-[1.06] tracking-tight sm:text-[2.85rem]">
+                LGS&apos;nin tamamı,{" "}
+                <span className="text-rehberim-accent-light">tek yerde</span>
               </h1>
-              <p className="mt-4 max-w-md text-pretty text-[15px] leading-relaxed text-white/75">
-                Müfredatın tamamı, dokuz yılın çıkmış soruları, iki binden fazla
-                alıştırma sorusu ve seni tanıyan bir çalışma takibi. Hepsi tek
-                yerde, tamamen ücretsiz.
+              <p className="mt-4 max-w-md text-pretty text-[15.5px] leading-relaxed text-white/78">
+                Konu anlatımından çıkmış sorulara, yapay zekâ yardımcıdan 1v1
+                düelloya kadar. Ücret yok, reklam yok.
               </p>
+
+              <dl className="mt-6 grid max-w-md grid-cols-2 gap-2.5">
+                {SAYILAR.map((x) => (
+                  <div
+                    key={x.alt}
+                    className="rounded-2xl border border-white/15 bg-white/[0.08] px-4 py-3.5"
+                  >
+                    <dt className="text-[1.35rem] font-extrabold leading-none tracking-tight">
+                      {x.sayi}
+                    </dt>
+                    <dd className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-white/65">
+                      {x.alt}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/register"
@@ -107,33 +142,12 @@ export function LandingPage() {
                 </Link>
               </div>
             </div>
-            <OwlSvg decorative className="mx-auto h-40 w-40 shrink-0 animate-float drop-shadow-[0_18px_36px_rgba(0,0,0,0.4)] sm:h-48 sm:w-48" />
+            <OwlSvg
+              decorative
+              className="mx-auto h-44 w-44 shrink-0 animate-float drop-shadow-[0_18px_36px_rgba(0,0,0,0.4)] sm:mt-2 sm:h-52 sm:w-52"
+            />
           </div>
         </div>
-      </section>
-
-      {/* Sayılar */}
-      <section className="mx-auto max-w-5xl px-5 py-8">
-        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { s: "6", a: "ders" },
-            { s: "49", a: "konu" },
-            { s: "2.500+", a: "alıştırma sorusu" },
-            { s: "9", a: "yıllık çıkmış sınav" },
-          ].map((x) => (
-            <div
-              key={x.a}
-              className="ring-hairline rounded-2xl border border-rehberim-border bg-white p-4 text-center shadow-card"
-            >
-              <dt className="text-2xl font-extrabold tracking-tight text-rehberim-navy">
-                {x.s}
-              </dt>
-              <dd className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-rehberim-navy/60">
-                {x.a}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
       {/* Özellikler */}
