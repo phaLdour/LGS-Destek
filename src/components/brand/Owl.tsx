@@ -16,10 +16,24 @@ type Props = {
  * yumuşatılmış kulak püskülleri ve incelikle yontulmuş gaga.
  * Aynı palet, aynı silüet — sadece daha "rendered" hissi.
  */
+/**
+ * Baykuşun ruh hali. Yalnızca gözleri (ve "mutlu"da yanak allığını)
+ * değiştirir — silüet, renk ve oranlar her modda aynı kalır ki maskot
+ * her yerde aynı karakter olarak tanınsın.
+ */
+export type BaykusRuhHali =
+  | "normal"
+  | "mutlu"
+  | "dusunuyor"
+  | "sasirmis"
+  | "uykulu";
+
 export function OwlSvg({
   className,
   title = "Rehberim baykuş maskotu",
   decorative = false,
+  ruhHali = "normal",
+  canli = false,
 }: {
   className?: string;
   title?: string;
@@ -29,6 +43,10 @@ export function OwlSvg({
    * gereksiz yere "Rehberim baykuş maskotu" demesini engeller.
    */
   decorative?: boolean;
+  /** Gözlerin ifadesi. */
+  ruhHali?: BaykusRuhHali;
+  /** true → arada bir göz kırpar (prefers-reduced-motion'a saygılıdır). */
+  canli?: boolean;
 }) {
   return (
     <svg
@@ -112,21 +130,8 @@ export function OwlSvg({
         opacity="0.04"
       />
 
-      {/* gözler — sclera (beyaz) */}
-      <circle cx="78" cy="84" r="22" fill="#FBFCFF" />
-      <circle cx="122" cy="84" r="22" fill="#FBFCFF" />
-      {/* iris ışıltısı — turuncu halka (markanın aksenti) */}
-      <circle cx="78" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
-      <circle cx="122" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
-      {/* pupil */}
-      <circle cx="78" cy="84" r="11" fill="#16244C" data-rb="navy" />
-      <circle cx="122" cy="84" r="11" fill="#16244C" data-rb="navy" />
-      {/* ana catchlight (büyük) */}
-      <circle cx="82" cy="80" r="3.6" fill="#FFFFFF" />
-      <circle cx="126" cy="80" r="3.6" fill="#FFFFFF" />
-      {/* ikincil catchlight (küçük) — canlılık katar */}
-      <circle cx="74" cy="88" r="1.4" fill="#FFFFFF" opacity="0.7" />
-      <circle cx="118" cy="88" r="1.4" fill="#FFFFFF" opacity="0.7" />
+      {/* gözler — ruh haline göre değişen tek blok */}
+      <Gozler ruhHali={ruhHali} canli={canli} />
 
       {/* gaga — yontulmuş baklava */}
       <path
@@ -150,6 +155,95 @@ export function OwlSvg({
       <rect x="80" y="174" width="9" height="14" rx="3" fill="#F59E0B" />
       <rect x="111" y="174" width="9" height="14" rx="3" fill="#F59E0B" />
     </svg>
+  );
+}
+
+/**
+ * Baykuşun gözleri. Ruh hali yalnızca burada ele alınır; gövde kodu
+ * tek bir yerde kalır, her mod için SVG kopyalanmaz.
+ *
+ * Konumlar: sol göz merkezi (78, 84), sağ göz merkezi (122, 84), yarıçap 22.
+ */
+function Gozler({
+  ruhHali,
+  canli,
+}: {
+  ruhHali: BaykusRuhHali;
+  canli: boolean;
+}) {
+  // "mutlu" ve "uykulu" gözü zaten kapatıyor; üstüne kırpma koymak titrek durur.
+  const kirpsin = canli && ruhHali !== "mutlu" && ruhHali !== "uykulu";
+
+  if (ruhHali === "mutlu") {
+    return (
+      <g>
+        {/* ters U kavisler — gülen göz */}
+        <path
+          d="M62 90 Q78 70 94 90"
+          fill="none"
+          stroke="#FBFCFF"
+          strokeWidth="7"
+          strokeLinecap="round"
+        />
+        <path
+          d="M106 90 Q122 70 138 90"
+          fill="none"
+          stroke="#FBFCFF"
+          strokeWidth="7"
+          strokeLinecap="round"
+        />
+        {/* yanak allığı — sadece bu modda */}
+        <ellipse cx="62" cy="103" rx="9" ry="5" fill="#F59E0B" opacity="0.35" />
+        <ellipse cx="138" cy="103" rx="9" ry="5" fill="#F59E0B" opacity="0.35" />
+      </g>
+    );
+  }
+
+  if (ruhHali === "uykulu") {
+    return (
+      <g>
+        <circle cx="78" cy="84" r="22" fill="#FBFCFF" />
+        <circle cx="122" cy="84" r="22" fill="#FBFCFF" />
+        {/* yarı kapalı göz kapakları */}
+        <path
+          d="M56 84 A22 22 0 0 1 100 84 Z"
+          fill="url(#owl-body)"
+          transform="translate(0,0)"
+        />
+        <path d="M100 84 A22 22 0 0 1 144 84 Z" fill="url(#owl-body)" />
+        <circle cx="78" cy="90" r="8" fill="#16244C" data-rb="navy" />
+        <circle cx="122" cy="90" r="8" fill="#16244C" data-rb="navy" />
+      </g>
+    );
+  }
+
+  // normal / dusunuyor / sasirmis — aynı yapı, farklı pupil
+  const pupilR = ruhHali === "sasirmis" ? 13.5 : 11;
+  // "dusunuyor" yukarı-sağa bakar
+  const dx = ruhHali === "dusunuyor" ? 4 : 0;
+  const dy = ruhHali === "dusunuyor" ? -4 : 0;
+
+  return (
+    <g
+      className={kirpsin ? "motion-safe:animate-blink-slow" : undefined}
+      style={kirpsin ? { transformOrigin: "100px 84px" } : undefined}
+    >
+      {/* sclera */}
+      <circle cx="78" cy="84" r="22" fill="#FBFCFF" />
+      <circle cx="122" cy="84" r="22" fill="#FBFCFF" />
+      {/* iris ışıltısı — turuncu halka (markanın aksenti) */}
+      <circle cx="78" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
+      <circle cx="122" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
+      {/* pupil */}
+      <circle cx={78 + dx} cy={84 + dy} r={pupilR} fill="#16244C" data-rb="navy" />
+      <circle cx={122 + dx} cy={84 + dy} r={pupilR} fill="#16244C" data-rb="navy" />
+      {/* ana catchlight (büyük) */}
+      <circle cx={82 + dx} cy={80 + dy} r="3.6" fill="#FFFFFF" />
+      <circle cx={126 + dx} cy={80 + dy} r="3.6" fill="#FFFFFF" />
+      {/* ikincil catchlight (küçük) — canlılık katar */}
+      <circle cx={74 + dx} cy={88 + dy} r="1.4" fill="#FFFFFF" opacity="0.7" />
+      <circle cx={118 + dx} cy={88 + dy} r="1.4" fill="#FFFFFF" opacity="0.7" />
+    </g>
   );
 }
 

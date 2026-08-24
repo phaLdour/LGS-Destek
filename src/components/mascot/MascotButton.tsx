@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { OwlSvg } from "@/components/brand/Owl";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { OwlSvg, type BaykusRuhHali } from "@/components/brand/Owl";
+import { baykusuDinle, sayfaIpucu } from "@/lib/baykus";
 import { ChatPanel, type ChatMessage } from "./ChatPanel";
 
 const FALLBACK_GREETING: ChatMessage = {
@@ -10,13 +11,77 @@ const FALLBACK_GREETING: ChatMessage = {
   text: "Merhaba! Ben Rehber Baykuş 🦉 Derslerinle ilgili sorularını yanıtlayabilir ya da seni doğru sayfaya götürebilirim. Örneğin \"suyun pH değeri kaç?\" diye sorabilir veya \"matematiğe gir\" diyebilirsin.",
 };
 
+/** Boştayken ruh haline dönüş süresi. */
+const IFADE_SURESI = 5000;
+/** Sayfa ipucunun belirmesi için beklenen süre — hemen atılmaz. */
+const IPUCU_GECIKMESI = 22_000;
+
 export function MascotButton() {
   const router = useRouter();
+  const yol = usePathname();
   const [open, setOpen] = useState(false);
+  const [ruhHali, setRuhHali] = useState<BaykusRuhHali>("normal");
+  const [balon, setBalon] = useState<string | null>(null);
+  const zamanlayici = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([FALLBACK_GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [greetingLoaded, setGreetingLoaded] = useState(false);
+
+  /** Balonu göster, süre sonunda ifadeyi normale döndür. */
+  const konus = useCallback(
+    (metin: string | null, yeniRuh: BaykusRuhHali, sure = IFADE_SURESI) => {
+      if (zamanlayici.current) clearTimeout(zamanlayici.current);
+      setRuhHali(yeniRuh);
+      setBalon(metin);
+      zamanlayici.current = setTimeout(() => {
+        setBalon(null);
+        setRuhHali("normal");
+      }, sure);
+    },
+    [],
+  );
+
+  // Uygulamanın herhangi bir yerinden gelen "baykuşa söyle" olayları.
+  useEffect(() => {
+    return baykusuDinle((m) => {
+      if (open) {
+        // Sohbet açıkken balon kapatır; sadece ifadeyi değiştir.
+        setRuhHali(m.ruhHali);
+        return;
+      }
+      konus(m.mesaj ?? null, m.ruhHali, m.sure ?? IFADE_SURESI);
+    });
+  }, [konus, open]);
+
+  // Sayfaya özel tek cümlelik ipucu — oturumda bir kez, gecikmeli.
+  useEffect(() => {
+    if (open) return;
+    const ipucu = sayfaIpucu(yol ?? "");
+    if (!ipucu) return;
+    const depoAnahtari = `rehberim:ipucu:${ipucu.anahtar}`;
+    try {
+      if (sessionStorage.getItem(depoAnahtari)) return;
+    } catch {
+      return; // depolama yoksa ipucu hiç gösterilmesin (her geçişte tekrarlamasın)
+    }
+    const t = setTimeout(() => {
+      try {
+        sessionStorage.setItem(depoAnahtari, "1");
+      } catch {
+        /* yoksay */
+      }
+      konus(ipucu.metin, "dusunuyor", 7000);
+    }, IPUCU_GECIKMESI);
+    return () => clearTimeout(t);
+  }, [yol, open, konus]);
+
+  // Bileşen kalkarken bekleyen zamanlayıcıyı temizle.
+  useEffect(() => {
+    return () => {
+      if (zamanlayici.current) clearTimeout(zamanlayici.current);
+    };
+  }, []);
 
   // İlk açılışta kullanıcı stats'ına göre kişisel selam çek.
   // Selam bir oturum boyunca sabit olduğundan sessionStorage'da cache'lenir:
@@ -68,6 +133,7 @@ export function MascotButton() {
     setMessages(next);
     setInput("");
     setLoading(true);
+    setRuhHali("dusunuyor");
 
     try {
       const res = await fetch("/api/chat", {
@@ -104,6 +170,7 @@ export function MascotButton() {
       ]);
     } finally {
       setLoading(false);
+      setRuhHali("normal");
     }
   }
 
@@ -124,18 +191,51 @@ export function MascotButton() {
         />
       )}
 
+      {/* Konuşma balonu — sohbet kapalıyken baykuşun "sesi" */}
+      {!open && balon && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="animate-fade-in relative max-w-[15rem] rounded-2xl rounded-br-sm border border-rehberim-border bg-white px-3.5 py-2.5 text-left text-[13px] font-medium leading-snug text-rehberim-navy shadow-elevated transition-transform duration-200 ease-snap hover:-translate-y-[1px] sm:max-w-[17rem]"
+        >
+          {balon}
+          {/* balon kuyruğu — baykuşa doğru */}
+          <span
+            aria-hidden
+            className="absolute -bottom-[7px] right-4 h-3 w-3 rotate-45 border-b border-r border-rehberim-border bg-white"
+          />
+        </button>
+      )}
+
       <button
         onClick={() => setOpen((o) => !o)}
-        aria-label="Rehber Baykuş'u aç"
+        aria-label={open ? "Rehber Baykuş'u kapat" : "Rehber Baykuş'u aç"}
+        aria-expanded={open}
         className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-rehberim-navy to-rehberim-navy-light shadow-elevated ring-2 ring-white transition-all duration-300 ease-snap hover:scale-[1.06] active:scale-95"
       >
+        {/* konuşurken dışa yayılan halka — dikkat çeker, yer kaplamaz */}
+        {!open && balon && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-rehberim-accent/30"
+          />
+        )}
         {/* yumuşak iç ışıltı — premium "canlı" hissi */}
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/0 to-white/15"
         />
-        <OwlSvg className="relative h-9 w-9 transition-transform duration-300 ease-smooth group-hover:rotate-[-6deg]" />
-        {!open && (
+        {/* baykuş sürekli hafifçe süzülür + göz kırpar → "yaşıyor" hissi.
+            motion-safe: hareket hassasiyeti olan öğrenciler için kapanır. */}
+        <span className="relative motion-safe:animate-float">
+          <OwlSvg
+            className="h-9 w-9 transition-transform duration-300 ease-smooth group-hover:rotate-[-6deg]"
+            ruhHali={ruhHali}
+            canli
+            decorative
+          />
+        </span>
+        {!open && !balon && (
           <span className="absolute right-0 top-0 flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-white bg-rehberim-accent">
             <span
               aria-hidden

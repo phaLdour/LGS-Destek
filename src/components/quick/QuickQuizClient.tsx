@@ -24,6 +24,7 @@ import {
   saveWrong,
 } from "@/lib/wrongAnswers";
 import { saveQuizResult } from "@/lib/tracking";
+import { baykusaSoyle } from "@/lib/baykus";
 
 const LETTERS = ["A", "B", "C", "D"];
 
@@ -115,7 +116,8 @@ export function QuickQuizClient({
   function confirm() {
     if (selected === null || !current) return;
     const ok = selected === current.question.correctIndex;
-    setHistory((h) => [...h, { pool: current, selected, correct: ok }]);
+    const yeniGecmis = [...history, { pool: current, selected, correct: ok }];
+    setHistory(yeniGecmis);
     if (!wrongMode) markSolved(current.id);
     if (ok) {
       markWrongCorrect(current.id);
@@ -123,6 +125,7 @@ export function QuickQuizClient({
       saveWrong(current.id);
     }
     setSelected(null);
+    baykusaTepki(ok, yeniGecmis);
 
     if (index + 1 >= pool.length) {
       // havuz bitti → exhausted moduna geç (Yeniden başlat seçeneği)
@@ -454,4 +457,36 @@ export function QuickQuizClient({
       </p>
     </div>
   );
+}
+
+/**
+ * Baykuşun soru sonrası tepkisi. Her soruda konuşmaz — sadece art arda
+ * doğrularda kutlar, üst üste iki yanlıştan sonra bir kez cesaret verir.
+ * Amaç: öğrencinin ona alışması, ama rahatsız olmaması.
+ */
+function baykusaTepki(
+  dogruMu: boolean,
+  gecmis: { correct: boolean }[],
+): void {
+  let seri = 0;
+  for (let i = gecmis.length - 1; i >= 0; i--) {
+    if (gecmis[i].correct !== dogruMu) break;
+    seri++;
+  }
+
+  if (dogruMu) {
+    if (seri === 3) baykusaSoyle({ ruhHali: "mutlu", mesaj: "3 doğru üst üste! 🎉" });
+    else if (seri === 5) baykusaSoyle({ ruhHali: "mutlu", mesaj: "5'te 5 — bugün formundasın." });
+    else if (seri > 0 && seri % 10 === 0)
+      baykusaSoyle({ ruhHali: "mutlu", mesaj: `${seri} doğru! Bunu bir yere yazalım.` });
+    else if (seri === 1) baykusaSoyle({ ruhHali: "mutlu" });
+    return;
+  }
+
+  if (seri === 2)
+    baykusaSoyle({
+      ruhHali: "dusunuyor",
+      mesaj: "İki yanlış oldu — acele etme, soruyu bir daha oku.",
+    });
+  else if (seri === 1) baykusaSoyle({ ruhHali: "sasirmis" });
 }

@@ -4,27 +4,34 @@ import { OnboardingTour } from "@/components/onboarding/Tour";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { BugununPlani } from "@/components/dashboard/BugununPlani";
+import { GeriSayim } from "@/components/dashboard/GeriSayim";
+import { KaldiginYerCard } from "@/components/dashboard/KaldiginYerCard";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { WeeklyDigestCard } from "@/components/stats/WeeklyDigestCard";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
+import { getBugununPlani } from "@/lib/bugununPlani";
+import { siradakiSinav, tarihMetni } from "@/lib/sinavTarihi";
 import { getShellUser } from "@/lib/user";
 import { getStatsServer, getDailyGoalServer } from "@/lib/tracking-server";
 
 export default async function DashboardPage() {
-  const [user, stats, goal] = await Promise.all([
+  const [user, stats, goal, plan] = await Promise.all([
     getShellUser(),
     getStatsServer(),
     getDailyGoalServer(),
+    getBugununPlani(),
   ]);
   const firstName = user.name.split(" ")[0];
+  const sinav = siradakiSinav();
 
   return (
     <AppShell user={user}>
       {/* İlk girişte 4 adımlık karşılama (localStorage ile bir kez gösterilir) */}
       <OnboardingTour />
 
-      {/* Karşılama — çok katmanlı premium hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rehberim-navy via-rehberim-navy to-rehberim-navy-dark p-6 text-white shadow-soft sm:p-8">
+      {/* Karşılama — kompakt; asıl ağırlık "Bugünün planı" kartında */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rehberim-navy via-rehberim-navy to-rehberim-navy-dark p-5 text-white shadow-soft sm:p-6">
         {/* dekoratif accent ışıklar */}
         <div className="pointer-events-none absolute -right-12 -top-16 h-52 w-52 rounded-full bg-rehberim-accent/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-16 -left-10 h-44 w-44 rounded-full bg-rehberim-accent/10 blur-3xl" />
@@ -44,17 +51,31 @@ export default async function DashboardPage() {
               <span className="h-1.5 w-1.5 rounded-full bg-rehberim-accent-light" />
               Hoş geldin
             </p>
-            <h1 className="mt-3 text-[1.75rem] font-extrabold leading-tight tracking-tight sm:text-[2rem]">
+            <h1 className="mt-2.5 text-[1.6rem] font-extrabold leading-tight tracking-tight sm:text-[1.85rem]">
               Merhaba, {firstName}! 👋
             </h1>
-            <p className="mt-2 max-w-md text-pretty text-[14.5px] leading-relaxed text-white/70">
-              LGS yolculuğunda neye çalışmak istersin? Menüden dersini,
-              denemeni veya sözlüğü seçebilirsin.
+            <p className="mt-1.5 max-w-md text-pretty text-[14px] leading-relaxed text-white/70">
+              Bugün ne çalışacağını aşağıda hazırladım — istersen menüden
+              kendi dersini de seçebilirsin.
             </p>
           </div>
-          <OwlSvg className="hidden h-28 w-28 animate-float drop-shadow-[0_14px_28px_rgba(0,0,0,0.35)] sm:block" />
+          <OwlSvg className="hidden h-24 w-24 animate-float drop-shadow-[0_14px_28px_rgba(0,0,0,0.35)] sm:block" />
         </div>
       </section>
+
+      {/* Sınava kalan süre — profil > ayarlardan kapatılabilir */}
+      <GeriSayim
+        hedefIso={sinav.tarih.toISOString()}
+        yil={sinav.yil}
+        tarihMetni={tarihMetni(sinav.tarih)}
+        resmi={sinav.resmi}
+      />
+
+      {/* Günün ana görevi */}
+      <BugununPlani plan={plan} />
+
+      {/* Kaldığın yer — yeni kullanıcıda hiç görünmez */}
+      <KaldiginYerCard veri={plan.kaldiginYer} />
 
       {/* PWA install daveti (yalnız uygun cihazlarda + kapatılmamışsa görünür) */}
       <InstallPrompt />
