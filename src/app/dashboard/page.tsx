@@ -62,7 +62,7 @@ export default async function DashboardPage() {
       {/* Hızlı Sorular girişi */}
       <Link
         href="/hizli-sorular"
-        className="group relative mt-4 flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-white shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
+        className="group relative mt-4 flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-rehberim-navy shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
       >
         {/* yumuşak iç ışıltı (hover'da güçlenir) */}
         <span

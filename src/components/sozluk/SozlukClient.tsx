@@ -25,7 +25,7 @@ const ANLAM_BADGE: Record<
   mecaz: {
     label: "Mecaz",
     bg: "bg-rehberim-accent/20",
-    text: "text-rehberim-accent-dark",
+    text: "text-rehberim-accent-deep",
   },
   terim: {
     label: "Terim",

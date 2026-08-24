@@ -138,7 +138,7 @@ export function Article({ text }: { text: string }) {
         }
         if (b.type === "h2") {
           return (
-            <h4 key={i} className="text-base font-bold text-rehberim-accent-dark">
+            <h4 key={i} className="text-base font-bold text-rehberim-accent-deep">
               {renderInline(b.text, `h2-${i}`)}
             </h4>
           );

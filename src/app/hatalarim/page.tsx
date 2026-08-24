@@ -88,7 +88,7 @@ export default async function HatalarimPage({
               aria-current={isActive ? "page" : undefined}
               className={`flex items-center justify-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-bold transition-all duration-200 ease-smooth ${
                 isActive
-                  ? "border-rehberim-accent bg-rehberim-accent/12 text-rehberim-accent-dark shadow-card"
+                  ? "border-rehberim-accent bg-rehberim-accent/12 text-rehberim-accent-deep shadow-card"
                   : "border-rehberim-border bg-white text-rehberim-navy/70 hover:-translate-y-px hover:bg-rehberim-muted"
               }`}
             >

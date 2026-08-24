@@ -283,7 +283,7 @@ export function MatchmakingScreen({
         className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-rehberim-accent/15 blur-3xl"
       />
 
-      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-rehberim-accent to-amber-500 text-white shadow-card">
+      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-rehberim-accent to-amber-500 text-rehberim-navy shadow-card">
         <Swords className="h-10 w-10" />
       </div>
 

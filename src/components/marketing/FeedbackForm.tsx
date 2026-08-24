@@ -90,7 +90,7 @@ export function FeedbackForm({ fromPath }: { fromPath?: string }) {
           </button>
           <Link
             href="/dashboard"
-            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2.5 text-sm font-extrabold text-white shadow-card transition hover:-translate-y-px hover:shadow-soft"
+            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2.5 text-sm font-extrabold text-rehberim-navy shadow-card transition hover:-translate-y-px hover:shadow-soft"
           >
             Çalışmaya dön
           </Link>
@@ -154,7 +154,7 @@ export function FeedbackForm({ fromPath }: { fromPath?: string }) {
       <button
         type="submit"
         disabled={gonderiliyor}
-        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-5 py-3 text-sm font-extrabold text-white shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:opacity-60"
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-5 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:opacity-60"
       >
         {gonderiliyor ? (
           <Loader2 className="h-4 w-4 animate-spin" />

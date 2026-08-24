@@ -59,7 +59,7 @@ const KIND_STYLE: Record<
   },
   ipucu: {
     label: "İpucu",
-    chip: "border-rehberim-accent/30 bg-rehberim-accent/10 text-rehberim-accent-dark",
+    chip: "border-rehberim-accent/30 bg-rehberim-accent/10 text-rehberim-accent-deep",
     panel: "border-rehberim-accent/30 bg-rehberim-accent/5 text-rehberim-navy/80",
     icon: Lightbulb,
   },
