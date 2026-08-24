@@ -19,7 +19,9 @@ import {
   X,
   Zap,
   MessageSquare,
-  Shield,} from "lucide-react";
+  Shield,
+  School,
+} from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { crestTitle } from "@/lib/competitive/rewards";
@@ -46,6 +48,7 @@ const NAV = [
   { href: "/cikmis-sorular", label: "Çıkmış Sorular", icon: Archive },
   { href: "/hatalarim", label: "Hatalarım", icon: AlertCircle },
   { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
+  { href: "/okullar", label: "Okul Tarama", icon: School },
   { href: "/puan-hesapla", label: "Puan Hesapla", icon: Calculator },
   { href: "/rekabet", label: "Rekabet", icon: Swords },
   { href: "/rozetlerim", label: "Rozetler", icon: Award },
@@ -71,7 +74,11 @@ export function AppShell({
     router.refresh();
   }
 
-  const isActive = (href: string) => pathname === href.split("#")[0];
+  // Alt sayfalarda da menü öğesi işaretli kalsın (ör. /okullar/kabatas → Okul Tarama)
+  const isActive = (href: string) => {
+    const yol = href.split("#")[0];
+    return pathname === yol || pathname.startsWith(`${yol}/`);
+  };
 
   return (
     <div className="min-h-screen bg-rehberim-muted" suppressHydrationWarning>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Zap } from "lucide-react";
+import { School, Zap } from "lucide-react";
 import { OnboardingTour } from "@/components/onboarding/Tour";
 import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
@@ -101,6 +101,27 @@ export default async function DashboardPage() {
         </div>
         <span className="relative hidden rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-sm sm:block">
           Karma + ders ders
+        </span>
+      </Link>
+
+      {/* Hedef belirleme — okul tarama girişi */}
+      <Link
+        href="/okullar"
+        className="group ring-hairline mt-3 flex items-center gap-3 rounded-2xl border border-rehberim-border bg-white px-4 py-3 shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[1px] hover:border-rehberim-navy/20 hover:shadow-soft"
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rehberim-navy/5 text-rehberim-navy ring-1 ring-rehberim-navy/10 transition-transform duration-300 ease-snap group-hover:scale-[1.05]">
+          <School className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-extrabold tracking-tight text-rehberim-navy">
+            Hedefin hangi okul?
+          </span>
+          <span className="block truncate text-xs text-rehberim-navy/55">
+            Türkiye&apos;nin en yüksek puanlı liselerinin yıl yıl taban puanları
+          </span>
+        </span>
+        <span className="shrink-0 text-xs font-extrabold text-rehberim-accent-deep transition-transform duration-300 ease-snap group-hover:translate-x-1">
+          →
         </span>
       </Link>
 
