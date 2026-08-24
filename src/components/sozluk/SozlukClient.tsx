@@ -49,6 +49,12 @@ export function SozlukClient(props: SozlukClientProps) {
   );
 }
 
+/** Türk alfabesi — harf çubuğunun sırası. */
+const TURK_ALFABESI = [
+  "A", "B", "C", "Ç", "D", "E", "F", "G", "Ğ", "H", "I", "İ", "J", "K", "L",
+  "M", "N", "O", "Ö", "P", "R", "S", "Ş", "T", "U", "Ü", "V", "Y", "Z",
+];
+
 function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
@@ -91,6 +97,24 @@ function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
   }, [kelimeler, query]);
 
   const totalPages = Math.max(1, Math.ceil(kelimeler.length / pageSize));
+
+  /**
+   * Harf çubuğu: her harfin ilk kelimesinin sayfası. 599 kelimede
+   * "Sonraki sayfa" ile gezmek imkânsız; öğrenci harfe basıp oraya atlar.
+   */
+  const harfIndeksi = useMemo(() => {
+    const bulunan = new Map<string, number>();
+    kelimeler.forEach((k, i) => {
+      const h = k.kelime.charAt(0).toLocaleUpperCase("tr");
+      if (!bulunan.has(h)) bulunan.set(h, Math.floor(i / pageSize) + 1);
+    });
+    return TURK_ALFABESI.map((h) => ({ harf: h, sayfa: bulunan.get(h) ?? null }));
+  }, [kelimeler, pageSize]);
+
+  /** O an açık kelimenin baş harfi — çubukta işaretlenir. */
+  const aktifHarf =
+    kelimeler[(page - 1) * pageSize]?.kelime.charAt(0).toLocaleUpperCase("tr") ??
+    null;
 
   const currentItems = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -198,6 +222,39 @@ function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
           </button>
         </form>
       </div>
+
+      {/* Harf çubuğu — 599 kelimede en hızlı gezinme yolu */}
+      <nav
+        aria-label="Harfe göre atla"
+        className="ring-hairline flex flex-wrap gap-1 rounded-2xl border border-rehberim-border bg-white p-2 shadow-card"
+      >
+        {harfIndeksi.map(({ harf, sayfa }) => {
+          const aktif = harf === aktifHarf;
+          return (
+            <button
+              key={harf}
+              type="button"
+              onClick={() => sayfa !== null && jumpToPage(sayfa)}
+              disabled={sayfa === null || flipDir !== null}
+              aria-current={aktif ? "true" : undefined}
+              title={
+                sayfa === null
+                  ? `${harf} harfiyle başlayan kelime yok`
+                  : `${harf} harfine atla`
+              }
+              className={`h-8 min-w-[1.9rem] rounded-lg px-1.5 text-xs font-extrabold transition ${
+                aktif
+                  ? "bg-rehberim-navy text-white"
+                  : sayfa === null
+                    ? "cursor-not-allowed text-rehberim-navy/20"
+                    : "text-rehberim-navy/70 hover:bg-rehberim-accent/15 hover:text-rehberim-navy"
+              } disabled:opacity-100`}
+            >
+              {harf}
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Arama eşleşmedi uyarısı (mevcut sayfa yine görünür) */}
       {notFound && (
@@ -325,7 +382,7 @@ function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
                     disabled={flipDir !== null}
                     className={`h-9 min-w-[2.25rem] rounded-lg px-2 text-xs font-bold transition ${
                       p === page
-                        ? "bg-rehberim-accent text-white"
+                        ? "bg-rehberim-accent text-rehberim-navy"
                         : "bg-rehberim-muted text-rehberim-navy hover:bg-rehberim-border"
                     } disabled:opacity-40`}
                   >
