@@ -179,7 +179,7 @@ export default async function RekabetPage() {
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Link
           href={signedIn ? "/rekabet/eslesme" : "/login"}
-          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-white shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
+          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-rehberim-navy shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
         >
           <span
             aria-hidden
@@ -267,7 +267,7 @@ export default async function RekabetPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/rekabet/eslesme"
-              className="rounded-xl border border-rehberim-accent/40 bg-rehberim-accent/10 px-3 py-2 text-xs font-bold text-rehberim-accent-dark transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-card"
+              className="rounded-xl border border-rehberim-accent/40 bg-rehberim-accent/10 px-3 py-2 text-xs font-bold text-rehberim-accent-deep transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-card"
             >
               Karma (tüm dersler)
             </Link>
@@ -313,7 +313,7 @@ export default async function RekabetPage() {
                   {league.name}
                 </p>
                 {isCurrent && (
-                  <span className="rounded-full bg-rehberim-accent/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-accent-dark">
+                  <span className="rounded-full bg-rehberim-accent/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-accent-deep">
                     Şu an buradasın
                   </span>
                 )}

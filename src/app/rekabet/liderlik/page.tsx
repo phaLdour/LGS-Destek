@@ -130,7 +130,7 @@ export default async function LiderlikPage({
             {isCurrent && (
               <Link
                 href="/rekabet/eslesme"
-                className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2 text-sm font-extrabold text-white shadow-card"
+                className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2 text-sm font-extrabold text-rehberim-navy shadow-card"
               >
                 Maç ara
               </Link>
@@ -214,7 +214,7 @@ function LeaderboardItem({ row }: { row: LeaderboardRow }) {
               {row.name}
             </span>
             {row.isMe && (
-              <span className="rounded-full bg-rehberim-accent/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-accent-dark">
+              <span className="rounded-full bg-rehberim-accent/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-accent-deep">
                 Sen
               </span>
             )}

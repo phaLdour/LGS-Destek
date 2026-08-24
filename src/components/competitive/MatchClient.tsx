@@ -345,7 +345,7 @@ export function MatchClient({
       {phase === "playing" && currentQ && (
         <div className="ring-hairline rounded-2xl border border-rehberim-border bg-white p-5 shadow-card">
           <div className="mb-3 flex items-center justify-between text-xs">
-            <span className="rounded-full bg-rehberim-accent/12 px-2.5 py-1 font-bold uppercase tracking-wider text-rehberim-accent-dark">
+            <span className="rounded-full bg-rehberim-accent/12 px-2.5 py-1 font-bold uppercase tracking-wider text-rehberim-accent-deep">
               Soru {currentQ.qIndex + 1}/{match.questionCount}
             </span>
             <span className="text-rehberim-navy/55">
@@ -395,7 +395,7 @@ export function MatchClient({
           <button
             onClick={handleConfirm}
             disabled={selected === null || sending}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-3 text-sm font-extrabold text-white shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-card"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-card"
           >
             {sending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

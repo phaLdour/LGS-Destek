@@ -12,6 +12,7 @@ const config: Config = {
           "navy-light": "#243A6E",
           accent: "#F59E0B",
           "accent-dark": "#D97706",
+          "accent-deep": "#B45309",
           "accent-light": "#FBBF24",
           surface: "#FFFFFF",
           muted: "#F4F6FB",

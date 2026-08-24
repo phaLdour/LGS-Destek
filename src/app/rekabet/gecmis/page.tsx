@@ -101,7 +101,7 @@ export default async function GecmisPage() {
           </p>
           <Link
             href="/rekabet/eslesme"
-            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2 text-sm font-extrabold text-white shadow-card"
+            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2 text-sm font-extrabold text-rehberim-navy shadow-card"
           >
             Maç ara
           </Link>
@@ -163,7 +163,7 @@ function HistoryItem({ m }: { m: MatchHistoryRow }) {
               {o.label}
             </span>
             {m.isFriendly && (
-              <span className="rounded-full bg-rehberim-accent/12 px-1.5 py-0.5 text-[10px] font-bold text-rehberim-accent-dark ring-1 ring-rehberim-accent/20">
+              <span className="rounded-full bg-rehberim-accent/12 px-1.5 py-0.5 text-[10px] font-bold text-rehberim-accent-deep ring-1 ring-rehberim-accent/20">
                 arkadaş maçı
               </span>
             )}

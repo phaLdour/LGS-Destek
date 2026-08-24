@@ -117,7 +117,7 @@ function Stat({
     >
       <p
         className={`text-base font-extrabold tabular-nums ${
-          highlight ? "text-rehberim-accent-dark" : "text-rehberim-navy"
+          highlight ? "text-rehberim-accent-deep" : "text-rehberim-navy"
         }`}
       >
         {value}

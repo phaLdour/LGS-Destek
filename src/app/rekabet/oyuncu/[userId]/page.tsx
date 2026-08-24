@@ -185,7 +185,7 @@ export default async function OyuncuPage({
           <div className="mt-3 grid grid-cols-3 gap-2">
             <Stat label="Galibiyet" value={allTime.wins} tone="text-emerald-600" />
             <Stat label="Mağlubiyet" value={allTime.losses} tone="text-red-600" />
-            <Stat label="Kazanma %" value={`%${winRate}`} tone="text-rehberim-accent-dark" />
+            <Stat label="Kazanma %" value={`%${winRate}`} tone="text-rehberim-accent-deep" />
           </div>
         </section>
       </div>

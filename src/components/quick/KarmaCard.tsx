@@ -16,7 +16,7 @@ export function KarmaCard({
   return (
     <Link
       href={href}
-      className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-amber-500 p-4 text-white shadow-card transition hover:scale-[1.02] hover:shadow-soft"
+      className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-amber-500 p-4 text-rehberim-navy shadow-card transition hover:scale-[1.02] hover:shadow-soft"
     >
       <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
         <Shuffle className="h-8 w-8" />

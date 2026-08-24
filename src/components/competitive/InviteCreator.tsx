@@ -157,7 +157,7 @@ export function InviteCreator() {
                   aria-pressed={secili}
                   className={
                     secili
-                      ? "rounded-xl border border-rehberim-accent/40 bg-rehberim-accent/10 px-3 py-2 text-xs font-bold text-rehberim-accent-dark"
+                      ? "rounded-xl border border-rehberim-accent/40 bg-rehberim-accent/10 px-3 py-2 text-xs font-bold text-rehberim-accent-deep"
                       : "rounded-xl border border-rehberim-border bg-white px-3 py-2 text-xs font-bold text-rehberim-navy/75 transition hover:border-rehberim-accent/40 hover:text-rehberim-navy"
                   }
                 >
@@ -171,7 +171,7 @@ export function InviteCreator() {
             type="button"
             onClick={uret}
             disabled={uretiliyor}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-5 py-3 text-sm font-extrabold text-white shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:opacity-60"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-5 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:opacity-60"
           >
             {uretiliyor ? (
               <Loader2 className="h-4 w-4 animate-spin" />
