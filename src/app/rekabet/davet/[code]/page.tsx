@@ -1,16 +1,23 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
-import { InviteCreator } from "@/components/competitive/InviteCreator";
+import { InviteAccepter } from "@/components/competitive/InviteAccepter";
 import { getShellUser } from "@/lib/user";
 
 export const metadata = {
-  title: "Arkadaşına meydan oku — Rekabet",
-  description:
-    "Bir link paylaş, arkadaşınla 10 soruluk özel düello yap. Arkadaş maçı lig puanını etkilemez.",
+  title: "Düello daveti — Rehberim",
 };
 
-export default async function DavetPage() {
+/**
+ * Davet linkinin açıldığı sayfa. Kodun geçerliliği kabul anında
+ * sunucuda denetlenir; burada yalnız kabul ekranı gösterilir.
+ */
+export default async function DavetKabulPage({
+  params,
+}: {
+  params: Promise<{ code: string }>;
+}) {
+  const { code } = await params;
   const user = await getShellUser();
   return (
     <AppShell user={user}>
@@ -21,7 +28,7 @@ export default async function DavetPage() {
         <ArrowLeft className="h-4 w-4" />
         Rekabet lobisine dön
       </Link>
-      <InviteCreator />
+      <InviteAccepter code={code.toUpperCase()} />
     </AppShell>
   );
 }

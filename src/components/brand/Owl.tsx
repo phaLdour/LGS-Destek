@@ -19,19 +19,28 @@ type Props = {
 export function OwlSvg({
   className,
   title = "Rehberim baykuş maskotu",
+  decorative = false,
 }: {
   className?: string;
   title?: string;
+  /**
+   * Yanında zaten aynı şeyi anlatan bir metin varsa (tanıtım sayfasının
+   * kahraman bölümü gibi) maskot salt dekoratiftir; ekran okuyucunun
+   * gereksiz yere "Rehberim baykuş maskotu" demesini engeller.
+   */
+  decorative?: boolean;
 }) {
   return (
     <svg
       viewBox="0 0 200 200"
       className={className}
-      role="img"
-      aria-label={title}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : title}
+      aria-hidden={decorative || undefined}
+      focusable="false"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <title>{title}</title>
+      {!decorative && <title>{title}</title>}
       <defs>
         {/* Gövde derinliği: üstte canlı navy, altta hafif daha açık */}
         <linearGradient id="owl-body" x1="0" y1="0" x2="0" y2="1">
@@ -277,7 +286,16 @@ export function OwlPointing({
 }
 
 /** PNG varsa (/public/mascot.png) onu, yoksa SVG'yi gösterir. */
-export function Owl({ className, preferPng = true, title }: Props) {
+/**
+ * Varsayılan olarak yerleşik SVG maskotu çizer.
+ *
+ * `preferPng` yalnızca public/mascot.png gerçekten varsa açılmalıdır:
+ * img hatası sunucudan gelen HTML yüklenirken, React hidrasyonundan ÖNCE
+ * tetiklenir; o an onError bağlı olmadığı için SVG yedeği devreye giremez
+ * ve kullanıcı kırık görsel simgesi görür (Logo bileşeninde aynı hata
+ * canlıda her sayfada görünüyordu).
+ */
+export function Owl({ className, preferPng = false, title }: Props) {
   const [pngFailed, setPngFailed] = useState(false);
 
   if (preferPng && !pngFailed) {

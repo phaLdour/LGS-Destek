@@ -677,6 +677,14 @@ begin
     end if;
   end if;
 
+  -- Faz 8: arkadaş düellosu ranklı değildir. Sonuç ekranı doğru rakamı
+  -- göstersin diye puan farkı burada sıfırlanır; comp_ranks güncellemeleri
+  -- de aşağıda atlanır (galibiyet/mağlubiyet sayacı ve seri de artmaz).
+  if coalesce(v_m.is_friendly, false) then
+    v_p1_delta := 0;
+    v_p2_delta := 0;
+  end if;
+
   -- comp_ranks güncellemesi — applyDelta SQL portu
   -- Beraberlikte streak sıfırlanmaz (kullanıcı kararı).
   -- p1
@@ -725,8 +733,13 @@ begin
     -- not-null ihlali (maç hiç sonuçlanmıyordu). coalesce ile false'a sabitlendi.
     challenge_next = coalesce(v_winner = v_m.player1_id and v_margin >= 0.7, false),
     updated_at = now()
-  where user_id = v_m.player1_id and season_id = v_m.season_id;
-  v_p1_after := v_new_tier;
+  where user_id = v_m.player1_id and season_id = v_m.season_id
+    and not coalesce(v_m.is_friendly, false);
+  -- Faz 8: arkadaş maçında comp_ranks güncellenmediği için v_new_tier
+  -- "bugünkü kademe"yi taşır; maç satırına yazılırsa sonuç ekranı sahte
+  -- terfi/düşüş kutlaması gösterir. Başlangıç kademesinde sabitle.
+  v_p1_after := case when coalesce(v_m.is_friendly, false)
+                     then v_m.p1_tier_at_start else v_new_tier end;
 
   -- p2 — aynı mantık
   select * into v_p2_rank from public.comp_ranks
@@ -768,8 +781,10 @@ begin
     ),
     challenge_next = coalesce(v_winner = v_m.player2_id and v_margin >= 0.7, false),
     updated_at = now()
-  where user_id = v_m.player2_id and season_id = v_m.season_id;
-  v_p2_after := v_new_tier;
+  where user_id = v_m.player2_id and season_id = v_m.season_id
+    and not coalesce(v_m.is_friendly, false);
+  v_p2_after := case when coalesce(v_m.is_friendly, false)
+                     then v_m.p2_tier_at_start else v_new_tier end;
 
   -- Maç finished olarak işaretle
   update public.comp_matches set
@@ -1184,6 +1199,24 @@ begin
     v_p1_delta := -30; v_p2_delta := 30;
   else
     v_p1_delta := 30;  v_p2_delta := -30;
+  end if;
+
+  -- Faz 8 güvenlik düzeltmesi: ARKADAŞ DÜELLOSU RANKLI DEĞİLDİR.
+  -- comp_finalize_match'te bu koruma vardı ama maçın bitmesinin üç yolu
+  -- var; terk (forfeit) ve hükmen kazanma yolları korumasızdı. Bu, davet
+  -- linkiyle rakip seçilebildiği için iki hesap arasında sınırsız puan
+  -- transferine açık bir kapı bırakıyordu (birinden terk et, diğerine +30).
+  if coalesce(v_m.is_friendly, false) then
+    update public.comp_matches set
+      status = 'finished',
+      winner_id = v_winner,
+      p1_delta = 0,
+      p2_delta = 0,
+      p1_tier_after = v_m.p1_tier_at_start,
+      p2_tier_after = v_m.p2_tier_at_start,
+      finished_at = now()
+    where id = p_match_id;
+    return;
   end if;
 
   -- Her iki oyuncunun comp_ranks satırını güncelle (tier traversal ortak)
@@ -1900,6 +1933,12 @@ begin
   if v_m.id is null then
     raise exception 'not_found' using errcode = '02000';
   end if;
+
+  -- Faz 8: arkadaş düellosunda puan işlemediği için hükmen galibiyet
+  -- talebi de anlamsızdır; istemcide de buton gizlenir.
+  if coalesce(v_m.is_friendly, false) then
+    return false;
+  end if;
   if v_caller <> v_m.player1_id and v_caller <> v_m.player2_id then
     raise exception 'forbidden' using errcode = '42501';
   end if;
@@ -1932,3 +1971,337 @@ end;
 $$;
 
 grant execute on function public.comp_claim_abandoned(uuid) to authenticated;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 8 — Arkadaş düellosu (davet linki)
+-- ════════════════════════════════════════════════════════════════════
+-- Lobideki "Arkadaşına meydan oku" artık gerçek: davet eden 6 karakterlik
+-- bir kod üretir, linki paylaşır, kabul eden tıklayınca maç açılır.
+--
+-- Arkadaş maçı RANKLI DEĞİLDİR: comp_finalize_match içinde is_friendly
+-- kontrolü var — puan değişmez, galibiyet/mağlubiyet sayacı ve seri artmaz.
+-- Yine de comp_matches'e yazılır; maç geçmişinde görünür.
+--
+-- Idempotenttir: SQL editöründe tekrar tekrar çalıştırılabilir.
+
+-- GÜVENLİK DÜZELTMESİ: eski "invite readable by code" politikası
+-- `using (true)` diyordu — yani kodu bilmek gerekmiyordu, giriş yapmış
+-- herkes TÜM davetleri (kod, davet eden, süre) tablodan okuyabiliyordu.
+-- Anon anahtar tarayıcıda açık olduğu için bu, davet gaspına ve rakip
+-- seçmeye açık bir kapıydı. Politika kaldırıldı; kabul akışının ihtiyaç
+-- duyduğu tek alan aşağıdaki dar kapsamlı fonksiyonla veriliyor.
+drop policy if exists "invite readable by code" on public.comp_invites;
+
+-- İmza değişirse `create or replace` hata verir (OUT parametreli ve
+-- `returns table` fonksiyonlarda dönüş tipi değiştirilemez); şema
+-- dosyasının tekrar çalıştırılabilir kalması için önce düşür.
+drop function if exists public.comp_accept_invite(text, text[]);
+drop function if exists public.comp_invite_status(text);
+drop function if exists public.comp_peek_invite(text);
+drop function if exists public.comp_my_invite();
+
+-- Karışması kolay harfler (0/O, 1/I/L) dışlanmış 6 karakterlik kod.
+create or replace function public.comp_generate_invite_code()
+returns text language plpgsql as $$
+declare
+  v_alfabe text := 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  v_kod text;
+  v_deneme int := 0;
+begin
+  loop
+    v_kod := '';
+    for i in 1..6 loop
+      v_kod := v_kod || substr(v_alfabe, 1 + floor(random() * length(v_alfabe))::int, 1);
+    end loop;
+    exit when not exists (select 1 from public.comp_invites where code = v_kod);
+    v_deneme := v_deneme + 1;
+    if v_deneme > 20 then
+      raise exception 'code_generation_failed' using errcode = 'P0001';
+    end if;
+  end loop;
+  return v_kod;
+end;
+$$;
+
+revoke execute on function public.comp_generate_invite_code() from public, anon;
+
+-- Davet oluşturur ve kodu döner. Kullanıcının önceki kullanılmamış
+-- davetleri temizlenir (aynı anda tek geçerli link).
+create or replace function public.comp_create_invite(
+  p_subject_filter text
+) returns text
+language plpgsql security definer
+as $$
+declare
+  v_kod text;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = 'P0001';
+  end if;
+
+  -- Süresi dolmuş davetleri genel olarak temizle (tablo şişmesin)
+  delete from public.comp_invites
+   where expires_at < now() - interval '1 day' and consumed_match_id is null;
+
+  -- Kullanıcının kullanılmamış eski davetlerini iptal et
+  delete from public.comp_invites
+   where inviter_id = auth.uid() and consumed_match_id is null;
+
+  v_kod := public.comp_generate_invite_code();
+
+  insert into public.comp_invites (code, inviter_id, subject_filter, expires_at)
+  values (v_kod, auth.uid(), p_subject_filter, now() + interval '30 minutes');
+
+  return v_kod;
+end;
+$$;
+
+grant execute on function public.comp_create_invite(text) to authenticated;
+
+-- Daveti kabul eder ve arkadaş maçını açar.
+-- Dönen değerler:
+--   out_match_id  → maç açıldıysa maçın kimliği
+--   out_error     → açılamadıysa sebep ('not_found' | 'expired' | 'consumed'
+--                   | 'self' | 'busy'); maç açıldıysa null
+create or replace function public.comp_accept_invite(
+  p_code text,
+  p_question_ids text[],
+  out out_match_id uuid,
+  out out_error text
+)
+language plpgsql security definer
+as $$
+declare
+  v_inv record;
+  v_season_id int;
+  v_davetci_tier int;
+  v_kabul_tier int;
+  v_aktif uuid;
+begin
+  out_match_id := null;
+  out_error := null;
+
+  if auth.uid() is null then
+    out_error := 'unauthorized';
+    return;
+  end if;
+
+  select * into v_inv from public.comp_invites
+   where code = upper(trim(p_code)) for update;
+
+  if v_inv.code is null then
+    out_error := 'not_found';
+    return;
+  end if;
+  if v_inv.consumed_match_id is not null then
+    out_error := 'consumed';
+    return;
+  end if;
+  if v_inv.expires_at < now() then
+    out_error := 'expired';
+    return;
+  end if;
+  if v_inv.inviter_id = auth.uid() then
+    out_error := 'self';
+    return;
+  end if;
+
+  -- İki taraftan biri başka bir maçtaysa açma
+  select id into v_aktif from public.comp_matches
+   where status = 'active' and deadline_at > now()
+     and (player1_id in (auth.uid(), v_inv.inviter_id)
+       or player2_id in (auth.uid(), v_inv.inviter_id))
+   limit 1;
+  if v_aktif is not null then
+    out_error := 'busy';
+    return;
+  end if;
+
+  -- Sezon ve rütbe kayıtlarını iki taraf için de garanti et (rütbe
+  -- değişmeyecek ama maç kaydı season_id ve tier alanlarını istiyor).
+  select s.out_season_id, s.out_tier into v_season_id, v_kabul_tier
+    from public.comp_ensure_season_and_rank(auth.uid()) s;
+  select s.out_tier into v_davetci_tier
+    from public.comp_ensure_season_and_rank(v_inv.inviter_id) s;
+
+  insert into public.comp_matches (
+    season_id, player1_id, player2_id,
+    p1_tier_at_start, p2_tier_at_start,
+    question_ids, subject_filter, is_friendly, deadline_at
+  ) values (
+    v_season_id, v_inv.inviter_id, auth.uid(),
+    v_davetci_tier, v_kabul_tier,
+    p_question_ids, v_inv.subject_filter, true, now() + interval '10 minutes'
+  ) returning id into out_match_id;
+
+  update public.comp_invites
+     set consumed_match_id = out_match_id
+   where code = v_inv.code;
+
+  -- İki taraftan biri sırada rakip arıyorsa kuyruktan çıkar. match_make
+  -- eşleşme kurar kurmaz aynısını yapıyor; burada yapılmazsa oyuncu hem
+  -- arkadaş maçında hem de kuyrukta kalır ve ikinci bir maça sokulur.
+  delete from public.comp_queue
+   where user_id in (auth.uid(), v_inv.inviter_id);
+end;
+$$;
+
+grant execute on function public.comp_accept_invite(text, text[]) to authenticated;
+
+-- Davet edenin "kabul edildi mi?" yoklaması için: kendi kodunun durumu.
+create or replace function public.comp_invite_status(p_code text)
+returns table (out_match_id uuid, out_expires_at timestamptz)
+language sql security definer
+as $$
+  select consumed_match_id, expires_at
+    from public.comp_invites
+   where code = upper(trim(p_code)) and inviter_id = auth.uid();
+$$;
+
+grant execute on function public.comp_invite_status(text) to authenticated;
+
+-- Kabul ekranının ihtiyaç duyduğu TEK alanı (soruların hangi dersten
+-- geleceği) yalnız geçerli bir kod için verir. Tablo artık dışarıya
+-- kapalı olduğu için kabul route'u bu fonksiyonu kullanır.
+create or replace function public.comp_peek_invite(
+  p_code text,
+  out out_subject_filter text,
+  out out_error text
+)
+language plpgsql security definer
+set search_path = public
+as $$
+declare
+  v_inv record;
+begin
+  out_subject_filter := null;
+  out_error := null;
+
+  if auth.uid() is null then
+    out_error := 'unauthorized';
+    return;
+  end if;
+
+  select * into v_inv from public.comp_invites
+   where code = upper(trim(p_code));
+
+  if v_inv.code is null then
+    out_error := 'not_found';
+    return;
+  end if;
+  if v_inv.consumed_match_id is not null then
+    out_error := 'consumed';
+    return;
+  end if;
+  if v_inv.expires_at < now() then
+    out_error := 'expired';
+    return;
+  end if;
+  if v_inv.inviter_id = auth.uid() then
+    out_error := 'self';
+    return;
+  end if;
+
+  out_subject_filter := v_inv.subject_filter;
+end;
+$$;
+
+revoke execute on function public.comp_peek_invite(text) from public, anon;
+grant execute on function public.comp_peek_invite(text) to authenticated;
+
+-- Davet eden sayfayı yenilerse kodunu kaybetmesin: açık davetini döner.
+-- Bu olmadan kullanıcı yeni kod üretiyor ve arkadaşının elindeki link
+-- sessizce ölüyordu.
+create or replace function public.comp_my_invite(
+  out out_code text,
+  out out_expires_at timestamptz
+)
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  select code, expires_at into out_code, out_expires_at
+    from public.comp_invites
+   where inviter_id = auth.uid()
+     and consumed_match_id is null
+     and expires_at > now()
+   order by created_at desc
+   limit 1;
+end;
+$$;
+
+revoke execute on function public.comp_my_invite() from public, anon;
+grant execute on function public.comp_my_invite() to authenticated;
+
+-- Davet eden vazgeçerse linki gerçekten iptal etsin (eskiden yalnız
+-- ekrandan siliniyordu, link 30 dakika daha canlı kalıyordu).
+create or replace function public.comp_cancel_invite()
+returns void
+language plpgsql security definer
+set search_path = public
+as $$
+begin
+  delete from public.comp_invites
+   where inviter_id = auth.uid() and consumed_match_id is null;
+end;
+$$;
+
+revoke execute on function public.comp_cancel_invite() from public, anon;
+grant execute on function public.comp_cancel_invite() to authenticated;
+
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 8 — Geri bildirim
+-- ════════════════════════════════════════════════════════════════════
+-- Öğrenci bir soruda hata görürse ya da bir şey çalışmazsa söyleyebilsin.
+-- İlk gerçek kullanıcılardan gelecek en değerli şey bu.
+--
+-- Gizlilik: kullanıcı yalnızca KENDİ gönderdiklerini okuyabilir; kimse
+-- başkasının geri bildirimini göremez. Yönetim tarafı Supabase panelinden
+-- (service-role) okunur.
+
+create table if not exists public.feedback (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references auth.users on delete cascade,
+  kind       text not null check (kind in ('soru-hatasi','calismiyor','oneri','diger')),
+  message    text not null check (char_length(trim(message)) between 5 and 2000),
+  page_path  text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists feedback_created_idx on public.feedback (created_at desc);
+
+-- page_path istemciden geliyor; sınırsız uzunlukta olmamalı.
+alter table public.feedback drop constraint if exists feedback_page_path_len;
+alter table public.feedback
+  add constraint feedback_page_path_len
+  check (page_path is null or char_length(page_path) <= 200);
+
+create index if not exists feedback_user_idx
+  on public.feedback (user_id, created_at desc);
+
+alter table public.feedback enable row level security;
+
+-- id ve created_at istemciden yazılamasın: aksi halde kullanıcı
+-- created_at'i ileri bir tarihe koyup kendi bildirimini triyaj
+-- listesinin başına sabitleyebilir.
+revoke insert (id, created_at) on public.feedback from authenticated;
+
+drop policy if exists "own feedback insert" on public.feedback;
+create policy "own feedback insert" on public.feedback
+  for insert to authenticated
+  with check (
+    auth.uid() = user_id
+    -- Basit hız sınırı: saatte en fazla 20 kayıt. Ücretsiz katmanda disk
+    -- kotasını tek kullanıcının doldurmasını engeller.
+    and (
+      select count(*) from public.feedback f
+       where f.user_id = auth.uid()
+         and f.created_at > now() - interval '1 hour'
+    ) < 20
+  );
+
+drop policy if exists "own feedback read" on public.feedback;
+create policy "own feedback read" on public.feedback
+  for select to authenticated
+  using (auth.uid() = user_id);

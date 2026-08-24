@@ -31,7 +31,7 @@ export default async function MatchPage({
   const { data: match } = await supabase
     .from("comp_matches")
     .select(
-      "id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, started_at, deadline_at, status",
+      "id, player1_id, player2_id, p1_tier_at_start, p2_tier_at_start, question_ids, started_at, deadline_at, status, is_friendly",
     )
     .eq("id", matchId)
     .maybeSingle();
@@ -87,6 +87,7 @@ export default async function MatchPage({
             questionCount: match.question_ids.length,
             deadlineAt: match.deadline_at,
             startedAt: match.started_at,
+            isFriendly: Boolean(match.is_friendly),
           }}
           initialQuestion={
             initialQuestion ?? {

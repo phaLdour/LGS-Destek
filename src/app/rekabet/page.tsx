@@ -208,11 +208,8 @@ export default async function RekabetPage() {
             <LinkIcon className="h-6 w-6" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="flex items-center gap-2 text-lg font-extrabold tracking-tight text-rehberim-navy">
+            <p className="text-lg font-extrabold tracking-tight text-rehberim-navy">
               Arkadaşına meydan oku
-              <span className="rounded-full bg-rehberim-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-rehberim-navy/55 ring-1 ring-rehberim-border">
-                Yakında
-              </span>
             </p>
             <p className="text-pretty text-sm text-rehberim-navy/55">
               Bir link paylaş, özel maç oyna (ranklı değil)

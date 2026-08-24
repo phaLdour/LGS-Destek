@@ -41,6 +41,14 @@ function rng(seed: number): () => number {
 }
 
 /**
+ * "Hepsi", "Hiçbiri", "Yukarıdakilerin tümü" gibi toplayıcı şıklar sınav
+ * geleneğinde her zaman en sonda durur. Karıştırma bunları araya
+ * atarsa hem tuhaf okunur hem de öğrencinin sınav alışkanlığını bozar,
+ * bu yüzden yerlerinde sabit tutulurlar.
+ */
+const CIPA = /^\s*(hepsi|tümü|tumu|hiçbiri|hicbiri|hiçbirinde|yukarıdakilerin)/i;
+
+/**
  * Tek bir sorunun şıklarını karıştırıp `correctIndex`i yeni konuma taşır.
  * Şık sayısı 2'den azsa soru olduğu gibi döner.
  */
@@ -49,11 +57,26 @@ export function shuffleQuestionOptions(q: QuizQuestion): QuizQuestion {
   if (n < 2) return q;
 
   const next = rng(hashSeed(q.question));
-  const order = q.options.map((_, i) => i);
-  for (let i = order.length - 1; i > 0; i--) {
+  // Çıpalı şıklar kendi konumlarında kalır; yalnız geri kalanlar karışır.
+  const cipaliIndeksler = q.options
+    .map((o, i) => (CIPA.test(o) ? i : -1))
+    .filter((i) => i >= 0);
+  const serbest = q.options
+    .map((_, i) => i)
+    .filter((i) => !cipaliIndeksler.includes(i));
+
+  if (serbest.length < 2) return q;
+
+  const karisik = serbest.slice();
+  for (let i = karisik.length - 1; i > 0; i--) {
     const j = Math.floor(next() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
+    [karisik[i], karisik[j]] = [karisik[j], karisik[i]];
   }
+
+  let k = 0;
+  const order = q.options.map((_, i) =>
+    cipaliIndeksler.includes(i) ? i : karisik[k++],
+  );
 
   const options = order.map((i) => q.options[i]);
   const correctIndex = order.indexOf(q.correctIndex);

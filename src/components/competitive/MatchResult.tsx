@@ -19,6 +19,27 @@ import { crestTitle } from "@/lib/competitive/rewards";
 
 const LETTERS = ["A", "B", "C", "D"];
 
+/**
+ * Kayıtlı şık indeksini yalnızca hâlâ anlamlıysa döner.
+ *
+ * Şıklar artık yüklenirken sabit bir sırayla karıştırılıyor (bkz.
+ * lib/shuffleOptions). Karıştırma öncesinde oynanmış maçların
+ * `choice` indeksleri eski sıraya göre kaydedildiği için yeni sırada
+ * başka bir şıkka denk gelir. Doğruluk bilgisi (`isCorrect`) ayrı
+ * saklandığından tutarsızlığı yakalayabiliyoruz: kayıt "doğru" diyorsa
+ * ama indeks doğru şıkka denk gelmiyorsa (veya tersi), işaret
+ * gösterilmez. Skor ve sonuç zaten `isCorrect`ten okunuyor.
+ */
+function gecerliSecim(
+  cevap: AnswerRow | undefined,
+  correctIndex: number,
+): number | null {
+  if (!cevap || cevap.choice === null) return null;
+  if (cevap.isCorrect === null) return cevap.choice;
+  if ((cevap.choice === correctIndex) !== cevap.isCorrect) return null;
+  return cevap.choice;
+}
+
 type ReplayQuestion = {
   questionId: string;
   qIndex: number;
@@ -64,6 +85,7 @@ export function MatchResult({
   opponentBestTier = null,
   myBestTier = null,
   myTierAfter = null,
+  isFriendly = false,
 }: {
   matchOutcome: "win" | "loss" | "draw";
   me: SideSummary;
@@ -78,6 +100,8 @@ export function MatchResult({
   opponentId?: string | null;
   opponentBestTier?: number | null;
   myBestTier?: number | null;
+  /** Arkadaş düellosu: lig puanı, seri ve rütbe etkilenmez. */
+  isFriendly?: boolean;
   /** Faz 6: maç sonundaki kademem — terfi/düşüş kutlaması için */
   myTierAfter?: number | null;
 }) {
@@ -161,8 +185,23 @@ export function MatchResult({
         </div>
       )}
 
-      {/* Forfeit (hükmen) bilgi kutusu */}
+      {/* Forfeit (hükmen) bilgi kutusu — arkadaş maçında puan işlemez,
+          bu yüzden "−30 puan kaybettin" metni orada gösterilmez. */}
+      {isForfeit && isFriendly && (
+        <div className="flex items-start gap-3 rounded-2xl border border-rehberim-border bg-rehberim-muted/50 p-4 text-sm text-rehberim-navy/75">
+          <X className="mt-0.5 h-5 w-5 shrink-0 text-rehberim-navy/40" />
+          <p>
+            <span className="font-extrabold">
+              {iForfeited
+                ? "Bu arkadaş maçından ayrıldın."
+                : "Rakibin arkadaş maçından ayrıldı."}
+            </span>{" "}
+            Arkadaş maçı olduğu için lig puanı işlemedi.
+          </p>
+        </div>
+      )}
       {isForfeit &&
+        !isFriendly &&
         (iForfeited ? (
           <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             <X className="mt-0.5 h-5 w-5 shrink-0" />
@@ -198,11 +237,17 @@ export function MatchResult({
             <h1 className="text-2xl font-extrabold tracking-tight">
               {Title.text}
             </h1>
-            <p className="text-sm text-white/85">
-              Lig puanın:{" "}
-              <DeltaAnimator to={me.delta} className="text-2xl text-white" />
-              <span className="ml-1 text-white/70">puan</span>
-            </p>
+            {isFriendly ? (
+              <p className="text-sm text-white/85">
+                Arkadaş maçı — lig puanın, serin ve rütben değişmedi.
+              </p>
+            ) : (
+              <p className="text-sm text-white/85">
+                Lig puanın:{" "}
+                <DeltaAnimator to={me.delta} className="text-2xl text-white" />
+                <span className="ml-1 text-white/70">puan</span>
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -269,12 +314,14 @@ export function MatchResult({
         {openIndex !== null && (
           <ReplayCard
             question={questions[openIndex]}
-            myChoice={
-              myAnswers.find((a) => a.qIndex === openIndex)?.choice ?? null
-            }
-            oppChoice={
-              opponentAnswers.find((a) => a.qIndex === openIndex)?.choice ?? null
-            }
+            myChoice={gecerliSecim(
+              myAnswers.find((a) => a.qIndex === openIndex),
+              questions[openIndex].correctIndex,
+            )}
+            oppChoice={gecerliSecim(
+              opponentAnswers.find((a) => a.qIndex === openIndex),
+              questions[openIndex].correctIndex,
+            )}
             onClose={() => setOpenIndex(null)}
           />
         )}

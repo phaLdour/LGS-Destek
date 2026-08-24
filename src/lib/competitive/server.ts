@@ -360,6 +360,8 @@ export type MatchHistoryRow = {
   myTierAfter: number | null;
   tierChange: "up" | "down" | null;
   subjectFilter: string | null;
+  /** Arkadaş düellosu: puan işlemez, listede ayrı etiketlenir. */
+  isFriendly: boolean;
   opponent: PublicProfile | null;
 };
 
@@ -376,7 +378,7 @@ export async function getMatchHistory(
   const { data } = await supabase
     .from("comp_matches")
     .select(
-      "id, player1_id, player2_id, winner_id, forfeited_by, p1_delta, p2_delta, p1_correct, p2_correct, p1_tier_at_start, p2_tier_at_start, p1_tier_after, p2_tier_after, subject_filter, finished_at",
+      "id, player1_id, player2_id, winner_id, forfeited_by, p1_delta, p2_delta, p1_correct, p2_correct, p1_tier_at_start, p2_tier_at_start, p1_tier_after, p2_tier_after, subject_filter, is_friendly, finished_at",
     )
     .or(`player1_id.eq.${userId},player2_id.eq.${userId}`)
     .eq("status", "finished")
@@ -398,6 +400,7 @@ export async function getMatchHistory(
     p1_tier_after: number | null;
     p2_tier_after: number | null;
     subject_filter: string | null;
+    is_friendly: boolean | null;
     finished_at: string | null;
   };
 
@@ -422,8 +425,10 @@ export async function getMatchHistory(
     if (r.winner_id === userId) outcome = "win";
     else if (r.winner_id) outcome = "loss";
 
+    // Arkadaş maçında kademe değişmez; sahte terfi/düşüş oku gösterme.
+    const isFriendly = Boolean(r.is_friendly);
     let tierChange: "up" | "down" | null = null;
-    if (typeof tierAfter === "number") {
+    if (!isFriendly && typeof tierAfter === "number") {
       if (tierAfter > tierStart) tierChange = "up";
       else if (tierAfter < tierStart) tierChange = "down";
     }
@@ -440,6 +445,7 @@ export async function getMatchHistory(
       myTierAfter: tierAfter,
       tierChange,
       subjectFilter: r.subject_filter,
+      isFriendly,
       opponent: profiles.get(opponentId) ?? null,
     };
   });

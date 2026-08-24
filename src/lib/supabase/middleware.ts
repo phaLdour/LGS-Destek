@@ -9,6 +9,14 @@ const PROTECTED_PREFIXES = [
   "/ders",
   "/hizli-sorular",
   "/rekabet",
+  // Aşağıdakiler girişsiz açıldığında boş/anlamsız görünüyordu ve
+  // kullanıcı bunu bir hata sanıyordu; doğrudan girişe yönlendirilirler.
+  // (Veri sızıntısı yoktu — RLS zaten boş döndürüyordu.)
+  "/geri-bildirim",
+  "/dersler",
+  "/hatalarim",
+  "/rozetlerim",
+  "/deneme",
 ];
 const AUTH_PAGES = ["/login", "/register"];
 

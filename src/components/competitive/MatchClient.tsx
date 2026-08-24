@@ -16,6 +16,8 @@ type MatchInfo = {
   questionCount: number;
   deadlineAt: string; // ISO
   startedAt: string;
+  /** Arkadaş düellosu: puan işlemez, hükmen kazanma teklifi gösterilmez. */
+  isFriendly?: boolean;
 };
 
 type MatchQuestionView = {
@@ -308,7 +310,10 @@ export function MatchClient({
       </div>
 
       {/* Faz 7: rakip bağlantısı koptu mu? */}
+      {/* Arkadaş maçında puan işlemediği için hükmen kazanma teklifi
+          gösterilmez (sunucu tarafı da bu talebi reddeder). */}
       {phase === "playing" &&
+        !match.isFriendly &&
         opponentIdle !== null &&
         opponentIdle >= 90 && (
           <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
@@ -328,6 +333,13 @@ export function MatchClient({
             </button>
           </div>
         )}
+
+      {match.isFriendly && (
+        <p className="rounded-2xl border border-rehberim-border bg-rehberim-muted/50 px-4 py-2.5 text-sm text-rehberim-navy/70">
+          <span className="font-extrabold text-rehberim-navy">Arkadaş maçı</span>{" "}
+          — lig puanını, serini ve rütbeni etkilemez.
+        </p>
+      )}
 
       {/* Soru kartı */}
       {phase === "playing" && currentQ && (

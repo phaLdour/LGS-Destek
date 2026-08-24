@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
+import { safeNext } from "@/lib/safeNext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -21,7 +22,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 function AuthFormInner({ mode }: { mode: Mode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const next = searchParams.get("next") || "/dashboard";
+  const next = safeNext(searchParams.get("next"));
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -177,6 +178,20 @@ function AuthFormInner({ mode }: { mode: Mode }) {
             </Link>
           </>
         )}
+      </p>
+
+      {/* Verisi işlenen kullanıcıların çoğu metni hiç görmüyordu: girişli
+          kullanıcı kök sayfaya bir daha uğramadığı için tanıtım sayfasının
+          alt bilgisi ona ulaşmıyor. Bağlantı buraya da kondu. */}
+      <p className="mt-3 text-center text-xs text-rehberim-navy/60">
+        Devam ederek{" "}
+        <Link
+          href="/gizlilik"
+          className="font-semibold text-rehberim-navy underline decoration-rehberim-accent decoration-2 underline-offset-2"
+        >
+          Gizlilik ve Kullanım
+        </Link>{" "}
+        metnini okuduğunu kabul etmiş olursun.
       </p>
     </div>
   );

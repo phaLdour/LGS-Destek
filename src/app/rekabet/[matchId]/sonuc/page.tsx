@@ -112,6 +112,7 @@ export default async function SonucPage({
     <AppShell user={shellUser}>
       <div className="mx-auto max-w-3xl">
         <MatchResult
+      isFriendly={Boolean(match.is_friendly)}
           matchOutcome={outcome}
           me={me}
           opponent={opponent}

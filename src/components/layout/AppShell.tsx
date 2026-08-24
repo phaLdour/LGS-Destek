@@ -18,7 +18,8 @@ import {
   User as UserIcon,
   X,
   Zap,
-} from "lucide-react";
+  MessageSquare,
+  Shield,} from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { crestTitle } from "@/lib/competitive/rewards";
@@ -84,7 +85,7 @@ export function AppShell({
             <LogoLockup />
           </Link>
         </div>
-        <nav className="flex-1 space-y-0.5 p-3">
+        <nav className="flex-1 space-y-0.5 p-3 min-h-0 overflow-y-auto">
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);
             return (
@@ -116,6 +117,20 @@ export function AppShell({
         <div className="border-t border-rehberim-border p-3">
           <UserCard user={user} />
           <ThemeToggle variant="menu" />
+          <Link
+            href={`/geri-bildirim?from=${encodeURIComponent(pathname)}`}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold text-rehberim-navy/70 transition-colors duration-200 ease-smooth hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <MessageSquare className="h-[18px] w-[18px]" />
+            Geri bildirim
+          </Link>
+          <Link
+            href="/gizlilik"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold text-rehberim-navy/70 transition-colors duration-200 ease-smooth hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <Shield className="h-[18px] w-[18px]" />
+            Gizlilik ve kullanım
+          </Link>
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold text-rehberim-navy/70 transition-colors duration-200 ease-smooth hover:bg-red-50 hover:text-red-600"
@@ -160,7 +175,7 @@ export function AppShell({
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="flex-1 space-y-0.5 p-3">
+            <nav className="flex-1 space-y-0.5 p-3 min-h-0 overflow-y-auto">
               {NAV.map(({ href, label, icon: Icon }) => {
                 const active = isActive(href);
                 return (
@@ -187,6 +202,14 @@ export function AppShell({
             <div className="border-t border-rehberim-border p-3">
               <UserCard user={user} />
               <ThemeToggle variant="menu" />
+              <Link
+                href={`/geri-bildirim?from=${encodeURIComponent(pathname)}`}
+                onClick={() => setDrawerOpen(false)}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-semibold text-rehberim-navy/70 transition-colors duration-200 ease-smooth hover:bg-rehberim-muted hover:text-rehberim-navy"
+              >
+                <MessageSquare className="h-[18px] w-[18px]" />
+                Geri bildirim
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition-colors hover:bg-red-50 hover:text-red-600"

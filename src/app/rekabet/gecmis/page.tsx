@@ -162,8 +162,13 @@ function HistoryItem({ m }: { m: MatchHistoryRow }) {
             >
               {o.label}
             </span>
+            {m.isFriendly && (
+              <span className="rounded-full bg-rehberim-accent/12 px-1.5 py-0.5 text-[10px] font-bold text-rehberim-accent-dark ring-1 ring-rehberim-accent/20">
+                arkadaş maçı
+              </span>
+            )}
             {m.isForfeit && (
-              <span className="rounded-full bg-rehberim-muted px-1.5 py-0.5 text-[10px] font-bold text-rehberim-navy/55 ring-1 ring-rehberim-border">
+              <span className="rounded-full bg-rehberim-muted px-1.5 py-0.5 text-[10px] font-bold text-rehberim-navy/60 ring-1 ring-rehberim-border">
                 {m.iForfeited ? "terk ettin" : "rakip terk etti"}
               </span>
             )}
@@ -197,7 +202,9 @@ function HistoryItem({ m }: { m: MatchHistoryRow }) {
                   : "text-rehberim-navy/45"
             }`}
           >
-            {m.delta === 0 ? (
+            {m.isFriendly ? (
+              <span className="text-rehberim-navy/45">puan yok</span>
+            ) : m.delta === 0 ? (
               <Minus className="h-3.5 w-3.5" />
             ) : m.delta > 0 ? (
               `+${m.delta}`
