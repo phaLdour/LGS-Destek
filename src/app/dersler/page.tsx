@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { SubjectHeatmap } from "@/components/stats/SubjectHeatmap";
@@ -43,8 +44,33 @@ export default async function DerslerPage() {
             Hangi konularda güçlüsün, hangilerine odaklanmalısın
           </p>
         </div>
-        <SubjectHeatmap />
+        {/* Isı haritası Supabase'ten okur; Suspense sayesinde sayfanın
+            geri kalanı onu BEKLEMEDEN gelir, harita hazır olunca dolar. */}
+        <Suspense fallback={<HeatmapIskeleti />}>
+          <SubjectHeatmap />
+        </Suspense>
       </section>
     </AppShell>
+  );
+}
+
+/** Isı haritası yüklenirken gösterilen sessiz iskelet. */
+function HeatmapIskeleti() {
+  return (
+    <div className="space-y-4">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="ring-hairline animate-pulse rounded-2xl border border-rehberim-border bg-white p-5 shadow-card"
+        >
+          <div className="mb-4 h-4 w-36 rounded bg-rehberim-muted" />
+          <div className="flex flex-wrap gap-1.5">
+            {Array.from({ length: 9 }, (_, j) => (
+              <span key={j} className="h-3 w-3 rounded-sm bg-rehberim-muted" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }

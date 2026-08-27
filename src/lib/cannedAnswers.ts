@@ -8,6 +8,7 @@
 import { SOZLUK } from "@/content/sozluk-veri";
 import {
   OKULLAR,
+  REFERANS_YIL,
   guncelYuzdelikYili,
   okulTamAd,
   okulYillari,
@@ -319,6 +320,86 @@ function okulYilCevabi(o: Okul, yil: string): string | null {
   if (p.yuzdelik != null) parcalar.push(`yüzdelik dilim %${sayiTR(p.yuzdelik)}`);
   if (p.kontenjan != null) parcalar.push(`kontenjan ${p.kontenjan}`);
   return parcalar.join(" · ");
+}
+
+/** Yazıyla sıra sayıları → rakam. */
+const SIRA_SOZLUGU: Record<string, number> = {
+  birinci: 1, ikinci: 2, ucuncu: 3, dorduncu: 4, besinci: 5,
+  altinci: 6, yedinci: 7, sekizinci: 8, dokuzuncu: 9, onuncu: 10,
+};
+
+/**
+ * "Türkiye'nin en yüksek puanlı 3. lisesi hangisi?" / "en iyi 5 lise" gibi
+ * SIRALAMA sorularını doğrudan yanıtlar. Sıralama, listedeki referans yılın
+ * (2025) taban puanına göredir — sayfadaki sırayla birebir aynı.
+ */
+function tryOkulSiralama(input: string, rawText: string): CannedResult | null {
+  const siralamaNiyeti =
+    (input.includes("en yuksek") || input.includes("en iyi") || input.includes("en zor")) &&
+    (input.includes("lise") || input.includes("okul"));
+  if (!siralamaNiyeti) return null;
+
+  const siraliOkullar = OKULLAR; // veri dosyası zaten referans yıla göre sıralı
+
+  const satir = (o: Okul, sira: number): string => {
+    const p = o.puanlar[REFERANS_YIL];
+    const puan = p?.taban != null ? ` — ${REFERANS_YIL} taban: **${sayiTR(p.taban)}**` : "";
+    return `${sira}. ${okulTamAd(o)} (${o.il})${puan}`;
+  };
+
+  // ÖNCE sıra sayısı ("3.", "3'üncü", "üçüncü") aranır. Normalize noktayı
+  // sildiği için ham metin kullanılır; yoksa "ilk 5" listesi denenir.
+  const hamSira = rawText.match(/(\d{1,2})\s*(?:\.|['’]?[uü]nc[uü]|['’]?[i̇i]nci|['’]?nci|['’]?[ıi]nc[ıi])/);
+  let sira: number | null = hamSira ? parseInt(hamSira[1], 10) : null;
+  if (sira === null) {
+    for (const [soz, deger] of Object.entries(SIRA_SOZLUGU)) {
+      if (input.includes(soz)) { sira = deger; break; }
+    }
+  }
+  if (sira !== null && sira >= 1 && sira <= siraliOkullar.length) {
+    const o = siraliOkullar[sira - 1];
+    const p = o.puanlar[REFERANS_YIL];
+    const yYil = guncelYuzdelikYili(o);
+    const yuzdelik = yYil ? o.puanlar[yYil]?.yuzdelik : null;
+    return {
+      reply:
+        `${REFERANS_YIL} taban puanına göre Türkiye'nin en yüksek puanlı ${sira}. lisesi ` +
+        `**${okulTamAd(o)}** (${o.ilce ? `${o.ilce}/` : ""}${o.il}).` +
+        (p?.taban != null ? ` Taban puanı **${sayiTR(p.taban)}**` : "") +
+        (yuzdelik != null ? `, yüzdelik dilim %${sayiTR(yuzdelik)}.` : ".") +
+        "\n\nDetayları ve diğer yılları okul sayfasında görebilirsin.",
+      topicRoute: `/okullar/${o.id}`,
+    };
+  }
+
+  // "ilk 5", "en iyi 10 lise" → liste
+  const coklu = input.match(/(?:ilk|en iyi|en yuksek puanli)\s+(\d{1,2})\s/);
+  if (coklu) {
+    const n = Math.min(10, Math.max(1, parseInt(coklu[1], 10)));
+    const liste = siraliOkullar.slice(0, n).map((o, i) => satir(o, i + 1));
+    return {
+      reply:
+        `${REFERANS_YIL} taban puanına göre Türkiye'nin en yüksek puanlı ${n} lisesi:\n\n` +
+        liste.join("\n") +
+        "\n\nTam listeyi ve yıl yıl puanları Okul Tarama'da görebilirsin.",
+      topicRoute: "/okullar",
+    };
+  }
+
+  // "en iyi lise hangisi" → 1 numara
+  if (input.includes("hangisi") || input.includes("hangi")) {
+    const o = siraliOkullar[0];
+    const p = o.puanlar[REFERANS_YIL];
+    return {
+      reply:
+        `${REFERANS_YIL} taban puanına göre Türkiye'nin en yüksek puanlı lisesi ` +
+        `**${okulTamAd(o)}** (${o.il})` +
+        (p?.taban != null ? ` — taban puanı **${sayiTR(p.taban)}**.` : ".") +
+        "\n\nİlk 99'un tamamı Okul Tarama'da.",
+      topicRoute: `/okullar/${o.id}`,
+    };
+  }
+  return null;
 }
 
 /**
@@ -1806,6 +1887,9 @@ export function matchCanned(text: string): CannedResult | null {
     // Sözlük "x kelimesinin anlamı" raw text üzerinden (Türkçe karakter
     // korunarak); tryNavigation'dan ÖNCE denenir.
     trySozlukLookup(text) ??
+    // Okul SIRALAMA soruları ("en yüksek puanlı 3. lise") önce — "puanlı"
+    // kelimesi veri sorusu katmanını da tetikleyebilir.
+    tryOkulSiralama(input, text) ??
     // Okul VERİ soruları ("... 2023 taban puanı") — yönlendirmeden önce,
     // çünkü "okul" kelimesi yoksa bile cevaplanabilmeli.
     tryOkulLookup(text, input) ??

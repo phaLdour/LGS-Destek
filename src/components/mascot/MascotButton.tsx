@@ -23,10 +23,39 @@ export function MascotButton() {
   const [ruhHali, setRuhHali] = useState<BaykusRuhHali>("normal");
   const [balon, setBalon] = useState<string | null>(null);
   const zamanlayici = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([FALLBACK_GREETING]);
+  const CHAT_CACHE_KEY = "rehberim:baykus-sohbet";
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    // Sayfa geçişlerinde bileşen yeniden kurulur (AppShell her sayfada ayrı
+    // render edilir); geçmiş sessionStorage'da tutulmazsa baykuş her
+    // yönlendirmede hafızasını kaybeder. Sekme kapanınca temizlenir.
+    if (typeof window !== "undefined") {
+      try {
+        const ham = sessionStorage.getItem(CHAT_CACHE_KEY);
+        if (ham) {
+          const gecmis = JSON.parse(ham) as ChatMessage[];
+          if (Array.isArray(gecmis) && gecmis.length > 0) return gecmis;
+        }
+      } catch {
+        /* bozuk veri — sıfırdan başla */
+      }
+    }
+    return [FALLBACK_GREETING];
+  });
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [greetingLoaded, setGreetingLoaded] = useState(false);
+
+  // Geçmişi kalıcılaştır (son 30 mesaj yeter; balon şişmesin).
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        CHAT_CACHE_KEY,
+        JSON.stringify(messages.slice(-30)),
+      );
+    } catch {
+      /* depolama yoksa geçmiş sadece bu sayfada yaşar */
+    }
+  }, [messages, CHAT_CACHE_KEY]);
 
   /** Balonu göster, süre sonunda ifadeyi normale döndür. */
   const konus = useCallback(
@@ -90,6 +119,12 @@ export function MascotButton() {
   const GREETING_CACHE_KEY = "rehberim:greeting";
   useEffect(() => {
     if (greetingLoaded) return;
+    // Devam eden bir sohbet varsa selamı yeniden yazma — kullanıcının
+    // gördüğü cevaplar kaybolmasın.
+    if (messages.length > 1) {
+      setGreetingLoaded(true);
+      return;
+    }
 
     try {
       const cached = sessionStorage.getItem(GREETING_CACHE_KEY);
@@ -144,20 +179,32 @@ export function MascotButton() {
         }),
       });
       const data = await res.json();
+      const yanit: string = data.reply ?? "Bir sorun oluştu.";
+      const rota =
+        typeof data.navigate === "string" ? (data.navigate as string) : null;
+      // "Götürüyorum" gibi KISA onay cümlelerinde otomatik yönlendirme
+      // doğru his; ama cevap gerçek bilgi içeriyorsa (sözlük anlamı, taban
+      // puanı...) sayfayı anında değiştirmek cevabı okutmadan siler.
+      // Uzun cevapta yönlendirme bir butona dönüşür, karar öğrencinin.
+      const kisaOnay = rota !== null && yanit.length <= 90;
       setMessages((prev) => [
         ...prev,
         {
           role: "model",
-          text: data.reply ?? "Bir sorun oluştu.",
+          text: yanit,
           topicRoute:
-            typeof data.topicRoute === "string" ? data.topicRoute : null,
+            typeof data.topicRoute === "string"
+              ? data.topicRoute
+              : !kisaOnay
+                ? rota
+                : null,
         },
       ]);
 
-      if (data.navigate && typeof data.navigate === "string") {
+      if (kisaOnay && rota) {
         setTimeout(() => {
           setOpen(false);
-          router.push(data.navigate);
+          router.push(rota);
         }, 700);
       }
     } catch {

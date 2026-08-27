@@ -161,8 +161,7 @@ export function Article({ text }: { text: string }) {
           return (
             <div
               key={i}
-              data-theme="light"
-              className={`flex gap-3 rounded-xl border px-4 py-3 ${c.box}`}
+              className={`lgs-callout flex gap-3 rounded-xl border px-4 py-3 ${c.box}`}
             >
               <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${c.iconColor}`} />
               <p className="text-sm leading-relaxed text-rehberim-navy/85">

@@ -80,7 +80,7 @@ export function ChatPanel({
                 className="flex items-center gap-1.5 rounded-xl bg-rehberim-accent px-3.5 py-2 text-sm font-bold text-white shadow-soft transition hover:bg-rehberim-accent-dark"
               >
                 <BookOpen className="h-4 w-4" />
-                Konuyu çöz
+                {m.topicRoute!.startsWith("/ders/") ? "Konuyu çöz" : "Sayfayı aç"}
               </button>
             )}
           </div>

@@ -668,3 +668,26 @@ html.dark .hover\:bg-rehberim-navy-dark:hover,
 html.dark .hover\:bg-rehberim-navy-light:hover {
   background-color: #3a4f88 !important;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   KONU ANLATIMI VURGU KUTULARI (Kural / Örnek / Tuzak / Soru Tarzı /
+   Formül / İpucu / Tanım) — dark modda BEYAZ yazı.
+   Kutu zeminleri dark modda koyulaştırılmış pastele dönerken içindeki
+   yazı eski data-theme="light" kapsamı yüzünden lacivert kalıyordu →
+   koyu üstünde koyu, okunmuyordu. lgs-article'ın turuncu kuralı da bu
+   kutuların içinde geçerli değildir; kutu içi her zaman beyaz yazılır.
+   ──────────────────────────────────────────────────────────────── */
+html.dark .lgs-callout,
+html.dark .lgs-article .lgs-callout .text-rehberim-navy,
+html.dark .lgs-article .lgs-callout .text-rehberim-navy\/85,
+html.dark .lgs-article .lgs-callout .text-rehberim-navy\/80,
+html.dark .lgs-article .lgs-callout .text-rehberim-navy\/70,
+html.dark .lgs-article .lgs-callout span,
+html.dark .lgs-article .lgs-callout strong {
+  color: #f1f4ff !important;
+}
+/* Tanım kutusunun nötr zemini dark yüzeye çevrilir (bg-rehberim-muted
+   zaten global override alıyor; kenarına da hafif çizgi verelim). */
+html.dark .lgs-callout.bg-rehberim-muted {
+  background-color: var(--rb-surface-2) !important;
+}
