@@ -58,10 +58,14 @@ export async function SubjectHeatmap() {
   if (!user) return null;
   const supabase = await createClient();
 
-  // Topic bazlı tüm test sonuçları (karma ve karma-subject kayıtları hariç bırakılır)
+  // Topic bazlı test sonuçları — son 180 gün. Sınırsız sorgu, kullanıcı
+  // büyüdükçe yavaşlıyordu; diğer istatistikler de aynı pencereyi kullanır.
+  const since = new Date();
+  since.setDate(since.getDate() - 180);
   const { data } = await supabase
     .from("quiz_results")
-    .select("subject_slug, topic_id, correct_count, wrong_count");
+    .select("subject_slug, topic_id, correct_count, wrong_count")
+    .gte("created_at", since.toISOString());
 
   const rows = (data ?? []) as RawRow[];
 

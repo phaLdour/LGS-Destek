@@ -35,7 +35,6 @@ const ANLAM_BADGE: Record<
 };
 
 type SozlukClientProps = {
-  kelimeler: Kelime[];
   pageSize: number;
 };
 
@@ -44,9 +43,38 @@ type SozlukClientProps = {
 export function SozlukClient(props: SozlukClientProps) {
   return (
     <Suspense fallback={null}>
-      <SozlukClientInner {...props} />
+      <SozlukYukleyici {...props} />
     </Suspense>
   );
+}
+
+/**
+ * 599 kelimelik veri (~300 KB) eskiden sayfayla birlikte iniyordu; telefonda
+ * ilk açılışı belirgin yavaşlatıyordu. Artık sayfa iskeleti anında gelir,
+ * veri ayrı bir parça (chunk) olarak boyadan SONRA yüklenir. Kullanıcı
+ * farkı yalnızca çok yavaş bağlantıda, kısa bir iskelet olarak görür.
+ */
+function SozlukYukleyici({ pageSize }: SozlukClientProps) {
+  const [kelimeler, setKelimeler] = useState<Kelime[] | null>(null);
+  useEffect(() => {
+    let iptal = false;
+    import("@/content/sozluk-veri").then((m) => {
+      if (!iptal) setKelimeler(m.SOZLUK);
+    });
+    return () => {
+      iptal = true;
+    };
+  }, []);
+
+  if (!kelimeler) {
+    return (
+      <div className="space-y-5">
+        <div className="ring-hairline h-32 animate-pulse rounded-3xl border border-rehberim-border bg-white shadow-card" />
+        <div className="ring-hairline h-72 animate-pulse rounded-2xl border border-rehberim-border bg-white shadow-card" />
+      </div>
+    );
+  }
+  return <SozlukClientInner kelimeler={kelimeler} pageSize={pageSize} />;
 }
 
 /** Türk alfabesi — harf çubuğunun sırası. */
@@ -55,7 +83,13 @@ const TURK_ALFABESI = [
   "M", "N", "O", "Ö", "P", "R", "S", "Ş", "T", "U", "Ü", "V", "Y", "Z",
 ];
 
-function SozlukClientInner({ kelimeler, pageSize }: SozlukClientProps) {
+function SozlukClientInner({
+  kelimeler,
+  pageSize,
+}: {
+  kelimeler: Kelime[];
+  pageSize: number;
+}) {
   const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");

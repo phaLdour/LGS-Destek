@@ -96,7 +96,7 @@ export default async function DashboardPage() {
         <div className="relative min-w-0 flex-1">
           <p className="text-lg font-extrabold tracking-tight">Hızlı Sorular</p>
           <p className="text-sm text-rehberim-navy/75">
-            10 saniyede bir soru — konularını hızlıca pekiştir
+            Kendi hızında art arda soru — konularını hızlıca pekiştir
           </p>
         </div>
         <span className="relative hidden rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider backdrop-blur-sm sm:block">

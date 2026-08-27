@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { OwlSvg, type BaykusRuhHali } from "@/components/brand/Owl";
-import { baykusuDinle, sayfaIpucu } from "@/lib/baykus";
+import {
+  baykusSahibiniDogrula,
+  baykusuDinle,
+  sayfaIpucu,
+} from "@/lib/baykus";
+import { createClient } from "@/lib/supabase/client";
 import { ChatPanel, type ChatMessage } from "./ChatPanel";
 
 const FALLBACK_GREETING: ChatMessage = {
@@ -44,6 +49,25 @@ export function MascotButton() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [greetingLoaded, setGreetingLoaded] = useState(false);
+
+  // Önbellek sahipliği: hesap değiştiyse eski sohbet/selam silinir.
+  useEffect(() => {
+    let iptal = false;
+    createClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (iptal) return;
+        // Hesap değiştiyse önbellek silindi; ekrandaki eski sohbet de gitsin.
+        if (baykusSahibiniDogrula(data.user?.id ?? null)) {
+          setMessages([FALLBACK_GREETING]);
+          setGreetingLoaded(false);
+        }
+      })
+      .catch(() => baykusSahibiniDogrula(null));
+    return () => {
+      iptal = true;
+    };
+  }, []);
 
   // Geçmişi kalıcılaştır (son 30 mesaj yeter; balon şişmesin).
   useEffect(() => {

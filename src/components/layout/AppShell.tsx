@@ -22,6 +22,7 @@ import {
   Shield,
   School,
 } from "lucide-react";
+import { baykusOnbellekleriniTemizle } from "@/lib/baykus";
 import { LogoLockup } from "@/components/brand/Logo";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { crestTitle } from "@/lib/competitive/rewards";
@@ -67,6 +68,8 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function handleLogout() {
+    // Başka hesapla girilirse önceki kullanıcının sohbeti/selamı görünmesin.
+    baykusOnbellekleriniTemizle();
     if (isSupabaseConfigured()) {
       await createClient().auth.signOut();
     }

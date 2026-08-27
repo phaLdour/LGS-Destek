@@ -30,9 +30,9 @@ export type UserContext = {
   dueWrongCount: number;
 };
 
-function dayKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
+// Gün sınırı Türkiye günü — tracking-core ile aynı gerekçe.
+import { trGunAnahtari, trGunGeri } from "@/lib/zaman";
+const dayKey = trGunAnahtari;
 
 /**
  * Kullanıcı bağlamını döndürür. Yapılandırma / giriş yoksa null.
@@ -110,15 +110,15 @@ export async function getUserContext(): Promise<UserContext | null> {
     }
   }
 
-  // Streak (bugünden veya dünden geriye doğru)
+  // Streak (bugünden veya dünden geriye doğru) — TR günleri
   let streakDays = 0;
-  const cursor = new Date();
+  let cursor = new Date();
   if ((perDay.get(dayKey(cursor)) ?? 0) === 0) {
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
   }
   while ((perDay.get(dayKey(cursor)) ?? 0) > 0) {
     streakDays += 1;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
   }
 
   // Zayıf konular: subject/topic agregatı doğru oranı < 75 ve total >= 4

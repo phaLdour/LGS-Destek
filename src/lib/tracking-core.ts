@@ -32,16 +32,23 @@ export type QuizRow = {
 export const DEFAULT_GOAL = 30;
 const DAY_LABELS = ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
 
-function dayKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
+// Gün sınırı HER ZAMAN Türkiye günü: sunucu (UTC) ile tarayıcı aynı
+// sonucu üretir; gece 00-03 arası çalışan öğrencinin serisi bozulmaz.
+import {
+  trBugunBaslangici,
+  trGunAnahtari,
+  trGunGeri,
+  trHaftaninGunu,
+} from "@/lib/zaman";
+
+const dayKey = trGunAnahtari;
 
 export function buildEmptyWeek() {
   const out: { label: string; minutes: number; isToday: boolean }[] = [];
+  const simdi = new Date();
   for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    out.push({ label: DAY_LABELS[d.getDay()], minutes: 0, isToday: i === 0 });
+    const d = trGunGeri(simdi, i);
+    out.push({ label: DAY_LABELS[trHaftaninGunu(d)], minutes: 0, isToday: i === 0 });
   }
   return out;
 }
@@ -63,16 +70,16 @@ export function emptyStats(configured: boolean): Stats {
 }
 
 function computeStreak(perDay: Map<string, number>): number {
-  const cursor = new Date();
+  let cursor = new Date();
   // Bugün çalışılmadıysa dünden başlat (seri kopmasın diye)
   if ((perDay.get(dayKey(cursor)) ?? 0) === 0) {
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
     if ((perDay.get(dayKey(cursor)) ?? 0) === 0) return 0;
   }
   let streak = 0;
   while ((perDay.get(dayKey(cursor)) ?? 0) > 0) {
     streak++;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
   }
   return streak;
 }
@@ -89,10 +96,8 @@ export function computeStats(
   const stats = emptyStats(true);
   stats.signedIn = true;
 
-  // Quiz toplamları (tek geçiş)
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayStartMs = todayStart.getTime();
+  // Quiz toplamları (tek geçiş) — "bugün" Türkiye günüdür
+  const todayStartMs = trBugunBaslangici().getTime();
 
   let totalCorrect = 0;
   let totalWrong = 0;
@@ -126,13 +131,13 @@ export function computeStats(
   const today = new Date();
   stats.todayMinutes = Math.round((perDay.get(dayKey(today)) ?? 0) / 60);
 
-  // Haftalık (son 7 gün, eskiden yeniye)
+  // Haftalık (son 7 gün, eskiden yeniye) — TR günleri
   stats.weekly = [];
+  const simdi = new Date();
   for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+    const d = trGunGeri(simdi, i);
     stats.weekly.push({
-      label: DAY_LABELS[d.getDay()],
+      label: DAY_LABELS[trHaftaninGunu(d)],
       minutes: Math.round((perDay.get(dayKey(d)) ?? 0) / 60),
       isToday: i === 0,
     });

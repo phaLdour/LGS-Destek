@@ -10,9 +10,30 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://lgs-destek.vercel.app",
+  ),
   title: "Rehberim — LGS Çalışma Platformu",
   description:
     "Türkiye LGS müfredatındaki tüm derslere ve konulara çalışabileceğin akıllı çalışma platformu.",
+  // Link paylaşıldığında (WhatsApp, Instagram, Discord...) görünen kart
+  openGraph: {
+    title: "Rehberim — LGS Çalışma Platformu",
+    description:
+      "2.500+ soru, 9 yılın çıkmış soruları, 1v1 düello ve akıllı çalışma planı.",
+    url: "/",
+    siteName: "Rehberim",
+    locale: "tr_TR",
+    type: "website",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Rehberim" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rehberim — LGS Çalışma Platformu",
+    description:
+      "2.500+ soru, 9 yılın çıkmış soruları, 1v1 düello ve akıllı çalışma planı.",
+    images: ["/og.png"],
+  },
   manifest: "/manifest.json",
   applicationName: "Rehberim",
   appleWebApp: {

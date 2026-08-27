@@ -43,7 +43,7 @@ const STEPS: Step[] = [
     emoji: "⚡",
     title: "Hızlı Sorular ve Hatalarım",
     body:
-      "Hızlı Sorular bir oturumda peş peşe soru çözmen için — 10 saniyede bir sıradaki. Yanlış cevapların otomatik 'Hatalarım' havuzuna düşer, dashboard'dan tekrar pekiştirirsin.",
+      "Hızlı Sorular bir oturumda peş peşe soru çözmen için — süre baskısı yok, kendi hızında. Yanlış cevapların otomatik 'Hatalarım' havuzuna düşer, dashboard'dan tekrar pekiştirirsin.",
     icon: Zap,
   },
   {

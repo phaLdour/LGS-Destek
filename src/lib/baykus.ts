@@ -71,3 +71,38 @@ export function sayfaIpucu(yol: string): { anahtar: string; metin: string } | nu
     };
   return null;
 }
+
+/**
+ * Baykuşun oturuma bağlı önbellekleri (kişisel selam + sohbet geçmişi).
+ * ÇIKIŞTA ve hesap değişiminde temizlenmek zorundadır: aynı tarayıcıda
+ * başka bir hesapla girildiğinde önceki kullanıcının sohbeti veya adı
+ * görünmemeli.
+ */
+export function baykusOnbellekleriniTemizle(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem("rehberim:greeting");
+    sessionStorage.removeItem("rehberim:baykus-sohbet");
+    sessionStorage.removeItem("rehberim:baykus-sahip");
+  } catch {
+    /* depolama yoksa temizlenecek şey de yok */
+  }
+}
+
+/**
+ * Önbelleklerin bu kullanıcıya ait olduğunu doğrular; başka bir hesabın
+ * kalıntısıysa siler. Girişten sonraki ilk render'da çağrılır.
+ */
+export function baykusSahibiniDogrula(userId: string | null): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const sahip = sessionStorage.getItem("rehberim:baykus-sahip");
+    const yeni = userId ?? "misafir";
+    const temizlendi = sahip !== null && sahip !== yeni;
+    if (temizlendi) baykusOnbellekleriniTemizle();
+    sessionStorage.setItem("rehberim:baykus-sahip", yeni);
+    return temizlendi;
+  } catch {
+    return false;
+  }
+}

@@ -29,7 +29,7 @@ export default async function HizliSorularPage() {
             Hızlı Sorular
           </h1>
           <p className="text-sm text-rehberim-navy/55">
-            10 saniyede bir soru — konularını hızlıca pekiştir
+            Kendi hızında art arda soru — konularını hızlıca pekiştir
           </p>
         </div>
       </header>

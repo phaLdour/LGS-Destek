@@ -98,11 +98,11 @@ export function markCorrect(id: string) {
 
 export type WrongFilter = "all" | "today" | "due";
 
-/** Yerel günün başlangıcı (00:00) — bugün filtresi için. */
+import { trBugunBaslangici } from "@/lib/zaman";
+
+/** Türkiye gününün başlangıcı — "bugün" filtresi sitede her yerde TR günüdür. */
 function todayStartMs(): number {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
+  return trBugunBaslangici().getTime();
 }
 
 /** Bir kaydın "vadesi gelmiş" sayılması için zaman damgası.

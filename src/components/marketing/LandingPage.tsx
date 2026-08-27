@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import { LogoLockup } from "@/components/brand/Logo";
 import { OwlSvg } from "@/components/brand/Owl";
-import { getVideoCoverage } from "@/content";
+import { getAllSubjects, getVideoCoverage } from "@/content";
+import { SOZLUK } from "@/content/sozluk-veri";
+import { OKULLAR } from "@/content/okullar";
 
 /**
  * Giriş yapmamış ziyaretçinin gördüğü tanıtım sayfası.
@@ -31,12 +33,32 @@ function videoCumlesi(): string {
   return ` ${videolu} konuda ayrıca kısa bir anlatım videosu var (${toplam} konudan).`;
 }
 
-const SAYILAR = [
-  { sayi: "49", alt: "konu · 6 ders" },
-  { sayi: "2.500+", alt: "alıştırma sorusu" },
-  { sayi: "9", alt: "yıllık çıkmış sınav" },
-  { sayi: "0 TL", alt: "her zaman" },
-] as const;
+/**
+ * Tanıtım sayıları İÇERİKTEN türetilir — içerik büyüdükçe sayfa
+ * kendiliğinden doğruyu söyler, elle güncelleme unutulmaz.
+ * (Aşağı yuvarlanır: "2.612 soru" yerine "2.600+" gibi.)
+ */
+function sayilariHesapla() {
+  const dersler = getAllSubjects();
+  const konu = dersler.reduce((a, s) => a + s.topics.length, 0);
+  const soru = dersler.reduce(
+    (a, s) =>
+      a +
+      s.topics.reduce(
+        (b, t) => b + (t.quiz?.length ?? 0) + (t.quickQuestions?.length ?? 0),
+        0,
+      ),
+    0,
+  );
+  const soruYuvarlak = Math.floor(soru / 100) * 100;
+  return [
+    { sayi: String(konu), alt: `konu · ${dersler.length} ders` },
+    { sayi: `${soruYuvarlak.toLocaleString("tr-TR")}+`, alt: "alıştırma sorusu" },
+    { sayi: String(SOZLUK.length), alt: "kelimelik sözlük" },
+    { sayi: String(OKULLAR.length), alt: "lisenin taban puanı" },
+  ] as const;
+}
+const SAYILAR = sayilariHesapla();
 
 const OZELLIKLER = [
   {
