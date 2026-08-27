@@ -216,6 +216,12 @@ function SozlukClientInner({
               {kelimeler.length} kelime · her sayfada bir kelime · toplam{" "}
               {Math.ceil(kelimeler.length / pageSize)} sayfa
             </p>
+            <a
+              href="/sozluk/test"
+              className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-rehberim-accent px-4 py-2 text-sm font-extrabold text-rehberim-navy transition hover:bg-rehberim-accent-light"
+            >
+              Kelime Testi&apos;ne başla →
+            </a>
           </div>
         </div>
       </header>

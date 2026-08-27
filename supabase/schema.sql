@@ -2330,3 +2330,148 @@ create policy "own push subs" on public.push_subscriptions
 
 create index if not exists push_subscriptions_user_idx
   on public.push_subscriptions (user_id);
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 10 — Haftalık görevler (rekabet)
+-- Her hafta 3 sabit görev; tamamlayan lig puanı ödülünü BİR kez alır.
+-- Hafta sınırı Türkiye saatiyle ISO haftasıdır. İlerleme ve ödül
+-- doğrulaması tamamen sunucudadır — istemciden sayı gelmez.
+-- ════════════════════════════════════════════════════════════════════
+create table if not exists public.comp_weekly_claims (
+  user_id    uuid not null references auth.users on delete cascade,
+  hafta      text not null,                 -- 'IYYY-IW' (TR)
+  gorev      text not null,
+  claimed_at timestamptz not null default now(),
+  primary key (user_id, hafta, gorev)
+);
+
+alter table public.comp_weekly_claims enable row level security;
+
+-- Yalnız kendi talepleri görünür; INSERT politikası bilerek YOK —
+-- satırlar yalnız aşağıdaki security definer fonksiyondan yazılır.
+drop policy if exists "own weekly claims" on public.comp_weekly_claims;
+create policy "own weekly claims" on public.comp_weekly_claims
+  for select to authenticated using (auth.uid() = user_id);
+
+-- Bu haftanın (TR) anahtarı
+create or replace function public.comp_hafta_anahtari()
+returns text language sql stable as $$
+  select to_char(now() at time zone 'Europe/Istanbul', 'IYYY-IW');
+$$;
+
+-- Görev ilerlemesi: quest / progress / target / reward / claimed
+create or replace function public.comp_weekly_progress()
+returns table(gorev text, ilerleme int, hedef int, odul int, alindi boolean)
+language plpgsql security definer
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_hafta text := public.comp_hafta_anahtari();
+  -- TR haftası başlangıcı (Pazartesi 00:00 TR) UTC cinsinden
+  v_bas timestamptz := (date_trunc('week', now() at time zone 'Europe/Istanbul'))
+                       at time zone 'Europe/Istanbul';
+  v_mac int; v_soru int; v_gun int;
+begin
+  if v_uid is null then
+    raise exception 'giris gerekli';
+  end if;
+
+  select count(*)::int into v_mac
+    from public.comp_matches m
+   where m.status = 'finished'
+     and m.is_friendly = false
+     and m.started_at >= v_bas
+     and (m.player1_id = v_uid or m.player2_id = v_uid);
+
+  select coalesce(sum(q.correct_count + q.wrong_count), 0)::int into v_soru
+    from public.quiz_results q
+   where q.user_id = v_uid and q.created_at >= v_bas;
+
+  select count(distinct (s.started_at at time zone 'Europe/Istanbul')::date)::int
+    into v_gun
+    from public.study_sessions s
+   where s.user_id = v_uid and s.started_at >= v_bas;
+
+  return query
+  select g.gorev, g.ilerleme, g.hedef, g.odul,
+         exists (
+           select 1 from public.comp_weekly_claims c
+            where c.user_id = v_uid and c.hafta = v_hafta and c.gorev = g.gorev
+         ) as alindi
+  from (values
+    ('uc-mac',   least(v_mac, 3),    3,   15),
+    ('yuz-soru', least(v_soru, 100), 100, 10),
+    ('bes-gun',  least(v_gun, 5),    5,   20)
+  ) as g(gorev, ilerleme, hedef, odul);
+end;
+$$;
+
+-- Ödül talebi: ilerleme SUNUCUDA yeniden doğrulanır, çifte talep PK ile
+-- engellenir, puan mevcut sezonun rütbesine terfi kurallarıyla işlenir.
+create or replace function public.comp_claim_weekly(p_gorev text)
+returns json language plpgsql security definer
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_hafta text := public.comp_hafta_anahtari();
+  v_satir record;
+  v_season int;
+  v_rank record;
+  v_yeni_tier int; v_yeni_puan int; v_yeni_zirve int;
+begin
+  if v_uid is null then
+    return json_build_object('ok', false, 'sebep', 'giris');
+  end if;
+
+  select * into v_satir
+    from public.comp_weekly_progress() p
+   where p.gorev = p_gorev;
+  if v_satir.gorev is null then
+    return json_build_object('ok', false, 'sebep', 'gecersiz-gorev');
+  end if;
+  if v_satir.alindi then
+    return json_build_object('ok', false, 'sebep', 'zaten-alindi');
+  end if;
+  if v_satir.ilerleme < v_satir.hedef then
+    return json_build_object('ok', false, 'sebep', 'tamamlanmadi');
+  end if;
+
+  -- Çifte talep yarışını PK çözer
+  begin
+    insert into public.comp_weekly_claims (user_id, hafta, gorev)
+    values (v_uid, v_hafta, p_gorev);
+  exception when unique_violation then
+    return json_build_object('ok', false, 'sebep', 'zaten-alindi');
+  end;
+
+  select out_season_id into v_season
+    from public.comp_ensure_season_and_rank(v_uid);
+
+  select * into v_rank from public.comp_ranks
+   where user_id = v_uid and season_id = v_season
+   for update;
+
+  v_yeni_tier := v_rank.tier;
+  v_yeni_puan := v_rank.points + v_satir.odul;
+  v_yeni_zirve := v_rank.highest_tier_reached;
+  -- Maç sonuçlarıyla aynı terfi kuralı
+  while v_yeni_puan >= 100 and v_yeni_tier < 9 loop
+    v_yeni_puan := v_yeni_puan - 100;
+    v_yeni_tier := v_yeni_tier + 1;
+    if v_yeni_tier > v_yeni_zirve then v_yeni_zirve := v_yeni_tier; end if;
+  end loop;
+  if v_yeni_tier < 9 and v_yeni_puan > 99 then v_yeni_puan := 99; end if;
+
+  update public.comp_ranks set
+    tier = v_yeni_tier,
+    points = v_yeni_puan,
+    highest_tier_reached = v_yeni_zirve,
+    updated_at = now()
+  where user_id = v_uid and season_id = v_season;
+
+  return json_build_object(
+    'ok', true, 'odul', v_satir.odul,
+    'tier', v_yeni_tier, 'points', v_yeni_puan
+  );
+end;
+$$;

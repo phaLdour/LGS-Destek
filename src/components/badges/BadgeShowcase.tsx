@@ -134,8 +134,12 @@ export async function BadgeShowcase() {
   let questionsAnswered = 0;
   let hasPerfectQuiz = false;
   let bestExamNet = 0;
+  let sozlukSoruSayisi = 0;
   for (const q of quizRows) {
     questionsAnswered += q.correct_count + q.wrong_count;
+    if (q.subject_slug === "__sozluk__") {
+      sozlukSoruSayisi += q.correct_count + q.wrong_count;
+    }
     if (q.total_questions >= 4 && q.correct_count === q.total_questions) {
       hasPerfectQuiz = true;
     }
@@ -176,6 +180,7 @@ export async function BadgeShowcase() {
     maxDailyMinutes,
     hasPerfectQuiz,
     bestExamNet,
+    sozlukSoruSayisi,
     topicsDonePerSubject,
     totalTopicsPerSubject,
     compMatches,

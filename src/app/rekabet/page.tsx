@@ -12,6 +12,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AvatarWithCrest } from "@/components/competitive/AvatarWithCrest";
 import { LeagueBadge } from "@/components/competitive/LeagueBadge";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
+import { HaftalikGorevler } from "@/components/competitive/HaftalikGorevler";
 import { RankCard } from "@/components/competitive/RankCard";
 import { SeasonSummary } from "@/components/competitive/SeasonSummary";
 import { SeasonResetCountdown } from "@/components/competitive/SeasonResetCountdown";
@@ -106,6 +107,9 @@ export default async function RekabetPage() {
         losses={rank.losses}
         winStreak={rank.winStreak}
       />
+
+      {/* Faz 10: haftalık görevler (giriş yapmışsa; SQL kurulana dek gizli) */}
+      {signedIn && <HaftalikGorevler />}
 
       {/* Faz 7: sezon kapanış özeti (bir kez) */}
       {unseenTrophy && <SeasonSummary trophy={unseenTrophy} />}

@@ -36,6 +36,13 @@ export const BADGES: Badge[] = [
     group: "soru",
   },
   {
+    key: "kelime-avcisi",
+    emoji: "📖",
+    name: "Kelime Avcısı",
+    description: "Kelime testinde 100 soru çözdün",
+    group: "soru",
+  },
+  {
     key: "calıskan-baykus",
     emoji: "🦉",
     name: "Çalışkan Baykuş",
@@ -200,6 +207,7 @@ export type BadgeEvalInput = {
   maxDailyMinutes: number; // son 60 günde bir günde maks
   hasPerfectQuiz: boolean; // total === correct ve total >= 4
   bestExamNet: number; // __deneme_*__ kayıtları arasında en yüksek net
+  sozlukSoruSayisi: number; // __sozluk__ kayıtlarındaki toplam soru
   topicsDonePerSubject: Record<string, number>; // {turkce: 8, ...}
   totalTopicsPerSubject: Record<string, number>; // {turkce: 15, ...}
   // Rekabet (tüm sezonların toplamı) — Faz 6
@@ -218,6 +226,7 @@ export function evaluateBadges(input: BadgeEvalInput): Set<string> {
   if (input.completedTopics >= 1) earned.add("ilk-adim");
   if (input.questionsAnswered >= 100) earned.add("yuzbasi");
   if (input.questionsAnswered >= 1000) earned.add("bin-soru");
+  if (input.sozlukSoruSayisi >= 100) earned.add("kelime-avcisi");
   if (input.totalMinutes >= 600) earned.add("calıskan-baykus");
   if (input.maxDailyMinutes >= 60) earned.add("yuksek-hiz");
 

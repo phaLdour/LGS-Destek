@@ -9,6 +9,7 @@ import {
   Users,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { HedefOkulButonu } from "@/components/okullar/HedefOkulButonu";
 import {
   OkulGorseli,
   okulGokRengi,
@@ -127,6 +128,7 @@ export default async function OkulPage({
           )}
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
+            <HedefOkulButonu okulId={okul.id} />
             <a
               href={okul.site}
               target="_blank"

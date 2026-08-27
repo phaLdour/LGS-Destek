@@ -7,7 +7,9 @@ import {
   Flame,
   Sparkles,
 } from "lucide-react";
+import { Suspense } from "react";
 import { AppShell } from "@/components/layout/AppShell";
+import { DenemeGelisimi } from "@/components/deneme/DenemeGelisimi";
 import { getExamConfig } from "@/lib/mockExam";
 import { getShellUser } from "@/lib/user";
 
@@ -151,6 +153,11 @@ export default async function DenemePage() {
           <li>Yanlış cevapların otomatik &quot;Hatalarım&quot; havuzuna düşer.</li>
         </ul>
       </div>
+
+      {/* Net eğilimi — 2+ denemesi olana görünür; sayfayı bekletmez */}
+      <Suspense fallback={null}>
+        <DenemeGelisimi />
+      </Suspense>
     </AppShell>
   );
 }

@@ -5,6 +5,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { OwlSvg } from "@/components/brand/Owl";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { BugununPlani } from "@/components/dashboard/BugununPlani";
+import { HedefOkulKarti } from "@/components/dashboard/HedefOkulKarti";
 import { GeriSayim } from "@/components/dashboard/GeriSayim";
 import { KaldiginYerCard } from "@/components/dashboard/KaldiginYerCard";
 import { StatsPanel } from "@/components/stats/StatsPanel";
@@ -76,6 +77,9 @@ export default async function DashboardPage() {
 
       {/* Kaldığın yer — yeni kullanıcıda hiç görünmez */}
       <KaldiginYerCard veri={plan.kaldiginYer} />
+
+      {/* Hedef okul — okul taramadan hedef seçilmişse görünür */}
+      <HedefOkulKarti />
 
       {/* PWA install daveti (yalnız uygun cihazlarda + kapatılmamışsa görünür) */}
       <InstallPrompt />
