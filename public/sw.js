@@ -84,3 +84,45 @@ self.addEventListener("fetch", (event) => {
 
   // Diğer her şey: dokunma (network).
 });
+
+/* ────────────────────────────────────────────────────────────────
+   WEB PUSH — telefon bildirimleri.
+   Sunucu (cron) push gönderir; burada bildirim olarak gösterilir.
+   Veri JSON'dur: { title, body, url }
+   ──────────────────────────────────────────────────────────────── */
+self.addEventListener("push", (event) => {
+  let veri = { title: "Rehberim", body: "Baykuş seni bekliyor 🦉", url: "/dashboard" };
+  try {
+    if (event.data) veri = { ...veri, ...event.data.json() };
+  } catch {
+    /* bozuk veri — varsayılan metinle göster */
+  }
+  event.waitUntil(
+    self.registration.showNotification(veri.title, {
+      body: veri.body,
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { url: veri.url },
+      tag: "rehberim-hatirlatma", // aynı gün ikinci bildirim üstüne yazar
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const hedef = event.notification.data?.url || "/dashboard";
+  event.waitUntil(
+    (async () => {
+      const pencereler = await clients.matchAll({ type: "window", includeUncontrolled: true });
+      // Açık bir sekme varsa ona odaklan, yoksa yeni aç
+      for (const w of pencereler) {
+        if ("focus" in w) {
+          await w.focus();
+          if ("navigate" in w) await w.navigate(hedef);
+          return;
+        }
+      }
+      await clients.openWindow(hedef);
+    })(),
+  );
+});

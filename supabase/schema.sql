@@ -2305,3 +2305,28 @@ drop policy if exists "own feedback read" on public.feedback;
 create policy "own feedback read" on public.feedback
   for select to authenticated
   using (auth.uid() = user_id);
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 9 — Telefon (Web Push) bildirim abonelikleri
+-- Uygulamayı telefonuna kuranların bildirim iznine karşılık gelen
+-- push abonelikleri. Her cihaz ayrı satırdır (bir kullanıcının hem
+-- telefonu hem tableti olabilir). endpoint benzersizdir.
+-- ════════════════════════════════════════════════════════════════════
+create table if not exists public.push_subscriptions (
+  endpoint   text primary key,
+  user_id    uuid not null references auth.users on delete cascade,
+  p256dh     text not null,
+  auth       text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+
+drop policy if exists "own push subs" on public.push_subscriptions;
+create policy "own push subs" on public.push_subscriptions
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create index if not exists push_subscriptions_user_idx
+  on public.push_subscriptions (user_id);
