@@ -210,8 +210,9 @@ export async function SubjectHeatmap() {
                   <Link
                     key={t.id}
                     href={`/ders/${s.slug}/${t.id}`}
-                    title={tip}
-                    className={`h-3 w-3 rounded-sm transition hover:scale-125 ${colorFor(t.pct)}`}
+                    data-tip={tip}
+                    aria-label={tip}
+                    className={`rb-tip h-3 w-3 rounded-sm transition hover:scale-125 ${colorFor(t.pct)}`}
                   />
                 );
               })}

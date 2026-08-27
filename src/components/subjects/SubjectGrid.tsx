@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   AbcIcon,
-  AtaturkProfileIcon,
+  TurkBayragiIcon,
   AtomIcon,
   HelloBubbleIcon,
   MosqueIcon,
@@ -48,8 +48,9 @@ export const SUBJECTS: Subject[] = [
     slug: "inkilap",
     name: "T.C. İnkılap Tarihi",
     short: "Atatürkçülük ve yakın tarih",
-    Icon: AtaturkProfileIcon,
-    badge: "from-[#1C2C5C] to-[#243A6E]",
+    Icon: TurkBayragiIcon,
+    // Türk bayrağı kırmızısı (resmî: #E30A17)
+    badge: "from-[#E30A17] to-[#B70812]",
     iconClass: "text-white",
   },
   {

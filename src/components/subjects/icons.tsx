@@ -57,51 +57,38 @@ export function AtomIcon({ className }: IconProps) {
   );
 }
 
-/** T.C. İnkılap Tarihi → kalpaklı Atatürk profili silüeti (sağa bakan) */
-export function AtaturkProfileIcon({ className }: IconProps) {
+/**
+ * T.C. İnkılap Tarihi → Türk bayrağı motifi (ay-yıldız).
+ *
+ * Fotoğraf değil, çizim. Oranlar resmî bayrak ölçülerinden alındı
+ * (bayrak 30x20 birim: dış daire r=5, iç daire r=4 ve 1,25 birim sağa
+ * kaydırılmış, yıldızın çevrel yarıçapı 1,875, merkezi x=14,9375) ve
+ * 48x48 kutuya 2,4 katsayısıyla ölçeklendi.
+ *
+ * Hilal, evenodd dolgu kuralıyla dış daireden iç dairenin çıkarılmasıyla
+ * elde edilir. Şekiller currentColor (beyaz) ile boyanır; kırmızı zemin
+ * ders kartındaki rozet gradyanından gelir. Tek renk olduğu için küçük
+ * boyutta da net okunur.
+ */
+export function TurkBayragiIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 48 48" className={className} xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      {/*
-        Sağa bakan profil silüeti.
-        Kalpak (kürk başlık) + alın → kaş → burun → dudak → çene hattı +
-        boyun ve yaka. Tek dolu path; küçük boyutta net okunur.
-      */}
-      <path
-        fill="currentColor"
-        d="M14 12
-           C 13 11, 13 9.5, 14.5 9
-           L 32 9
-           C 34 9, 35 10.5, 35 12.5
-           L 35 17
-           C 36.5 19, 37.5 21.5, 37.5 24
-           C 37.5 27, 36.5 29, 34.5 30.5
-           C 33 31.6, 31.5 32, 31.5 33.5
-           L 31.5 40
-           L 19 40
-           L 19 34
-           C 19 32.5, 18 31.8, 16.8 31
-           C 14 29, 12 25.8, 12 21.5
-           C 12 17.5, 12.8 14, 14 12
-           Z"
-      />
-      {/* burun-dudak girinti vurgusu (yüz hattını belirginleştirir) */}
-      <path
-        fill="none"
-        stroke="#fff"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        opacity="0.45"
-        d="M35.5 23 q 1.5 1.5 -0.5 3 M33 28 q -1.5 0.8 -3 0.4"
-      />
-      {/* kalpak alt kenarı (başlık ile alnı ayıran çizgi) */}
-      <path
-        fill="none"
-        stroke="#fff"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        opacity="0.5"
-        d="M14.5 15.5 L34 15.5"
-      />
+      {/* Motif kendi içinde sola yaslı; kutuya ortalamak için kaydırılır. */}
+      <g transform="translate(2.25 0)">
+        {/* Hilal: dış daire eksi sağa kaydırılmış iç daire */}
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M8 24 a12 12 0 1 0 24 0 a12 12 0 1 0 -24 0 Z
+             M13.4 24 a9.6 9.6 0 1 0 19.2 0 a9.6 9.6 0 1 0 -19.2 0 Z"
+        />
+        {/* Beş köşeli yıldız — bir ucu hilale dönük */}
+        <path
+          fill="currentColor"
+          d="M 27.35 24.00 L 30.46 22.99 L 30.46 19.72 L 32.38 22.37 L 35.49 21.35 L 33.57 24.00 L 35.49 26.65 L 32.38 25.63 L 30.46 28.28 L 30.46 25.01 Z"
+        />
+      </g>
     </svg>
   );
 }

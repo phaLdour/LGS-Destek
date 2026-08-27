@@ -396,7 +396,7 @@ function SideCard({
       <div className="flex items-center gap-2">
         <LeagueBadge tier={tier} size="sm" />
         {href ? (
-          <Link href={href} className="min-w-0 hover:underline" title="Oyuncu profili">
+          <Link href={href} className="rb-tip min-w-0 hover:underline" data-tip="Oyuncu profili">
             {heading}
           </Link>
         ) : (

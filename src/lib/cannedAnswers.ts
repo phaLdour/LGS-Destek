@@ -5,6 +5,16 @@
  * döner ve sistem Gemini'ye düşer.
  */
 
+import { SOZLUK } from "@/content/sozluk-veri";
+import {
+  OKULLAR,
+  guncelYuzdelikYili,
+  okulTamAd,
+  okulYillari,
+  type Okul,
+} from "@/content/okullar";
+import { SITE_HARITASI } from "@/lib/siteHaritasi";
+
 export type CannedResult = {
   reply: string;
   navigate?: string | null;
@@ -132,61 +142,286 @@ function tryArithmetic(raw: string): CannedResult | null {
 // ───────────────────────── Gezinme ─────────────────────────
 
 const NAV_VERBS = ["gir", "git", "ac", "gec", "goster", "gotur", "gidelim"];
-// Ekli hâlleri de yakalamak için kök (alt dize) eşleşmesi kullanılır.
-const NAV_SUBJECTS: { stems: string[]; route: string }[] = [
-  { stems: ["matemat"], route: "/ders/matematik" },
-  { stems: ["turkc"], route: "/ders/turkce" },
-  { stems: ["fen"], route: "/ders/fen-bilimleri" },
-  { stems: ["inkila", "tarih"], route: "/ders/inkilap" },
-  { stems: ["din "], route: "/ders/din" },
-  { stems: ["ingiliz"], route: "/ders/ingilizce" },
-];
+
+/** Sözlükte kelimeyi bul — Türkçe büyük/küçük harf duyarsız. */
+function sozlukteBul(kelime: string) {
+  const k = kelime.toLocaleLowerCase("tr");
+  return (
+    SOZLUK.find((x) => x.kelime.toLocaleLowerCase("tr") === k) ??
+    // "gözü" gibi ekli hâlleri de dene: kelimenin kökü olan maddeyi ara.
+    SOZLUK.find(
+      (x) =>
+        k.length >= 4 &&
+        k.startsWith(x.kelime.toLocaleLowerCase("tr")) &&
+        k.length - x.kelime.length <= 3,
+    ) ??
+    null
+  );
+}
+
+/** Sözlük maddesini okunur bir cevaba çevirir. */
+function sozlukCevabi(k: (typeof SOZLUK)[number]): string {
+  const satirlar = [`**${k.kelime}**${k.tur ? ` — ${k.tur}` : ""}`];
+  for (const a of k.anlamlar) {
+    satirlar.push(`\n${a.tur.toUpperCase()}: ${a.tanim}`);
+    satirlar.push(`Örnek: ${a.ornek}`);
+  }
+  const mecazVar = k.anlamlar.some((a) => a.tur !== "gerçek");
+  if (mecazVar) {
+    satirlar.push(
+      "\nLGS'de bu kelime çıkarsa hangi anlamda kullanıldığına dikkat et.",
+    );
+  }
+  return satirlar.join("\n");
+}
 
 /**
  * "x kelimesinin anlamı" / "x ne demek" gibi formlarda hedef sözcüğü
- * yakalar; bulduysa /sozluk?ara=X rotasını döner.
+ * yakalar ve anlamı DOĞRUDAN yanıtlar — kullanıcıyı sayfaya göndermez.
+ * Kelime sözlükte yoksa sözlük sayfasında aratılmak üzere yönlendirir.
+ *
  * RAW text üzerinde çalışır — Türkçe karakterler (ö, ü, ı, ş, ç, ğ)
- * korunur ki "kötü kelimesinin anlamı" sözlükte "kötü" olarak aratılsın.
+ * korunur ki "kötü kelimesinin anlamı" doğru maddeyi bulsun.
  */
 function trySozlukLookup(rawText: string): CannedResult | null {
-  // Türkçe lowercase (İ → i, I → ı vs.) ve fazla boşlukları temizle
-  const text = rawText
-    .toLocaleLowerCase("tr")
-    .replace(/\s+/g, " ")
-    .trim();
-  // Türkçe karakter set'i dâhil regex'ler. "anlamı" ve "anlami" her ikisini
-  // de yakalar (bazen kullanıcı şapkasız yazar).
+  const text = rawText.toLocaleLowerCase("tr").replace(/\s+/g, " ").trim();
   const W = "[a-zçğıiöşüâîû]+";
-  const patterns: RegExp[] = [
+  // İki küme: AÇIK sözlük isteği ("kelimesinin anlamı") sözlükte olmayan
+  // kelimede bile sözlük aramasına yönlendirir; BELİRSİZ formlar ("x nedir")
+  // yalnız kelime sözlükte varsa cevaplanır — "lig sistemi nedir" gibi site
+  // soruları yanlışlıkla sözlüğe gitmesin, AI katmanı cevaplasın.
+  const acikPatterns: RegExp[] = [
     new RegExp(`(${W})\\s+kelimesinin\\s+anlam[ıi]`, "i"),
     new RegExp(`(${W})\\s+sözcüğünün\\s+anlam[ıi]`, "i"),
     new RegExp(`(${W})\\s+sozcugunun\\s+anlam[ıi]`, "i"),
+    new RegExp(`(${W})\\s+kelimesi\\s+ne\\s+demek`, "i"),
+  ];
+  const belirsizPatterns: RegExp[] = [
     new RegExp(`(${W})\\s+ne\\s+demek`, "i"),
     new RegExp(`(${W})\\s+nedir\\s*\\?*$`, "i"),
     new RegExp(`(${W})\\s+anlam[ıi]\\s+nedir`, "i"),
+    new RegExp(`(${W})\\s+anlam[ıi]\\s+ne`, "i"),
   ];
   const skip = [
     "ne", "bu", "ben", "biz", "siz", "kim", "hangi", "şu",
     "ona", "ondan", "buna", "buradan", "niye", "neden", "niçin",
-    "şimdi", "şuna", "ona", "şunun", "bunun",
+    "şimdi", "şuna", "şunun", "bunun", "bunların", "senin", "benim",
   ];
-  for (const re of patterns) {
+  for (const re of acikPatterns) {
     const m = text.match(re);
-    if (m && m[1]) {
-      const w = m[1].trim();
-      if (w.length < 2) continue;
-      if (skip.includes(w)) continue;
-      return {
-        reply: `“${w}” kelimesini sözlükte aratıyorum.`,
-        navigate: `/sozluk?ara=${encodeURIComponent(w)}`,
-      };
-    }
+    if (!m || !m[1]) continue;
+    const w = m[1].trim();
+    if (w.length < 2 || skip.includes(w)) continue;
+    const madde = sozlukteBul(w);
+    if (madde) return { reply: sozlukCevabi(madde) };
+    return {
+      reply: `“${w}” sözlüğümde yok — sözlük sayfasında aratıyorum, orada benzerlerini bulabilirsin.`,
+      navigate: `/sozluk?ara=${encodeURIComponent(w)}`,
+    };
+  }
+  for (const re of belirsizPatterns) {
+    const m = text.match(re);
+    if (!m || !m[1]) continue;
+    const w = m[1].trim();
+    if (w.length < 2 || skip.includes(w)) continue;
+    const madde = sozlukteBul(w);
+    // Sözlükte yoksa karışmayız — soru muhtemelen kelime sorusu değil.
+    if (madde) return { reply: sozlukCevabi(madde) };
   }
   return null;
 }
 
+// ───────────────────────── Okul verisi ─────────────────────────
+
+/** Okul adını arama için sadeleştirir. */
+function okulNorm(s: string): string {
+  return s
+    .toLocaleLowerCase("tr")
+    .replace(/ı/g, "i").replace(/ç/g, "c").replace(/ğ/g, "g")
+    .replace(/ö/g, "o").replace(/ş/g, "s").replace(/ü/g, "u")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Okul adında hiç ayırt edici olmayan kelimeler — puanlamaya girmez. */
+const OKUL_DOLGU = new Set([
+  "lisesi", "lise", "okulu", "mesleki", "teknik", "ve", "prof", "dr",
+  "sehit", "borsa", "kurumu", "odasi", "ticaret", "universitesi",
+]);
+
+/** Okul TÜRÜNÜ belirten kelimeler — ayırt eder ama addan daha zayıftır. */
+const OKUL_TUR_KELIMESI = new Set(["fen", "anadolu", "imam", "hatip", "sosyal", "bilimler"]);
+
+/** Program/dil kelimeleri — en zayıf ayırt edici. */
+const OKUL_PROGRAM_KELIMESI = new Set([
+  "ingilizce", "almanca", "fransizca", "makine", "bilisim", "siber",
+  "guvenlik", "elektrik", "elektronik", "tasarim", "havacilik", "uzay",
+]);
+
+function kelimeAgirligi(w: string): number {
+  if (OKUL_PROGRAM_KELIMESI.has(w)) return 0.35;
+  if (OKUL_TUR_KELIMESI.has(w)) return 0.6;
+  return 1;
+}
+
+/**
+ * Metinde geçen okulu bulur.
+ *
+ * Ağırlıklı eşleşme kullanılır: okulun kendi adı (Adana, Kabataş, Galatasaray)
+ * tam ağırlıklı, türü (fen / anadolu) yarı ağırlıklı, program dili (Almanca)
+ * çok düşük ağırlıklıdır. Bu sayede:
+ *   "adana fen lisesi"  → Adana Fen Lisesi, Adana Anadolu Lisesi'ni geçer
+ *   "ankara fen lisesi" → Ankara Fen Lisesi, Ankara Pursaklar Fen'i geçer
+ *   "kabataş lisesi"    → iki program da eşit kalır, ikisi birden gösterilir
+ *
+ * Emin olunamıyorsa boş döner; yanlış okulun puanını söylemek, hiç
+ * söylememekten kötüdür.
+ */
+function okulEslestir(rawText: string): Okul[] {
+  const metin = okulNorm(rawText);
+  type Puan = { o: Okul; skor: number; adTuttu: boolean };
+  const puanlar: Puan[] = OKULLAR.map((o) => {
+    const kelimeler = okulNorm(`${o.ad} ${o.program ?? ""}`)
+      .split(" ")
+      .filter((w) => w.length >= 3 && !OKUL_DOLGU.has(w));
+    if (kelimeler.length === 0) return { o, skor: 0, adTuttu: false };
+
+    let toplam = 0;
+    let tutan = 0;
+    let adTuttu = false;
+    for (const w of kelimeler) {
+      const agirlik = kelimeAgirligi(w);
+      toplam += agirlik;
+      if (metin.includes(w)) {
+        tutan += agirlik;
+        if (agirlik === 1) adTuttu = true;
+      }
+    }
+    return { o, skor: toplam > 0 ? tutan / toplam : 0, adTuttu };
+  });
+
+  const enIyi = Math.max(...puanlar.map((p) => p.skor));
+  // Okulun kendi adından en az bir kelime tutmalı ve eşleşme %60'ı geçmeli.
+  if (enIyi < 0.6) return [];
+  const kazananlar = puanlar.filter((p) => p.skor === enIyi && p.adTuttu);
+  return kazananlar.map((p) => p.o);
+}
+
+const sayiTR = (v: number, basamak = 2) =>
+  v.toFixed(basamak).replace(".", ",");
+
+/** Bir okul + yıl için tek satırlık cevap. */
+function okulYilCevabi(o: Okul, yil: string): string | null {
+  const p = o.puanlar[yil];
+  if (!p || p.taban == null) return null;
+  const parcalar = [`${okulTamAd(o)} — ${yil} taban puanı: **${sayiTR(p.taban)}**`];
+  if (p.yuzdelik != null) parcalar.push(`yüzdelik dilim %${sayiTR(p.yuzdelik)}`);
+  if (p.kontenjan != null) parcalar.push(`kontenjan ${p.kontenjan}`);
+  return parcalar.join(" · ");
+}
+
+/**
+ * "Galatasaray Lisesi'nin 2023 taban puanı ne?" gibi VERİ sorularını
+ * doğrudan yanıtlar. Sadece yönlendirme isteniyorsa (nerede, nasıl giderim)
+ * buraya düşmez — tryNavigation devralır.
+ */
+function tryOkulLookup(rawText: string, input: string): CannedResult | null {
+  const veriSorusu =
+    input.includes("taban") ||
+    input.includes("puan") ||
+    input.includes("yuzdelik") ||
+    input.includes("dilim") ||
+    input.includes("kontenjan");
+  if (!veriSorusu) return null;
+
+  const adaylar = okulEslestir(rawText);
+  if (adaylar.length === 0) return null;
+
+  const yilEsleme = rawText.match(/\b(20(?:1[89]|2[0-9]))\b/);
+  const istenenYil = yilEsleme ? yilEsleme[1] : null;
+
+  // Birden çok program eşleştiyse (Kabataş Almanca / İngilizce) hepsini yaz.
+  if (adaylar.length > 1 && adaylar.length <= 4) {
+    const satirlar: string[] = [];
+    for (const o of adaylar) {
+      const yil = istenenYil ?? okulYillari(o).find((y) => o.puanlar[y]?.taban != null);
+      const c = yil ? okulYilCevabi(o, yil) : null;
+      if (c) satirlar.push(`• ${c}`);
+    }
+    if (satirlar.length === 0) return null;
+    return {
+      reply:
+        `Bu okulun birden çok programı var:\n${satirlar.join("\n")}\n\n` +
+        "Okul sayfasında bütün yılları yan yana görebilirsin.",
+      navigate: `/okullar/${adaylar[0].id}`,
+    };
+  }
+
+  const o = adaylar[0];
+  if (istenenYil) {
+    const cevap = okulYilCevabi(o, istenenYil);
+    if (cevap) {
+      return {
+        reply: `${cevap}\n\nDiğer yılları da görmek istersen okul sayfasına götürebilirim.`,
+        navigate: `/okullar/${o.id}`,
+      };
+    }
+    const varOlan = okulYillari(o).filter((y) => o.puanlar[y]?.taban != null);
+    return {
+      reply:
+        `${okulTamAd(o)} için ${istenenYil} verisi elimde yok — uydurmak yerine söylüyorum. ` +
+        (varOlan.length
+          ? `Elimde şu yıllar var: ${varOlan.join(", ")}. Okul sayfasına götürüyorum.`
+          : "Okul sayfasına götürüyorum."),
+      navigate: `/okullar/${o.id}`,
+    };
+  }
+
+  // Yıl belirtilmemiş → en güncel taban + en güncel yüzdelik
+  const sonYil = okulYillari(o).find((y) => o.puanlar[y]?.taban != null);
+  if (!sonYil) return null;
+  const p = o.puanlar[sonYil];
+  const yYil = guncelYuzdelikYili(o);
+  const yuzdelik = yYil ? o.puanlar[yYil]?.yuzdelik : null;
+  const ek =
+    yuzdelik != null
+      ? ` ${yYil} yılında bu, Türkiye genelinde ilk %${sayiTR(yuzdelik)}'lik dilim demekti.`
+      : "";
+  return {
+    reply:
+      `${okulTamAd(o)} (${o.ilce ? `${o.ilce}/` : ""}${o.il}) — en güncel veri ${sonYil}: ` +
+      `taban puanı **${sayiTR(p.taban!)}**${p.kontenjan != null ? `, kontenjan ${p.kontenjan}` : ""}.` +
+      ek +
+      "\n\nYıl yıl tabloyu görmek için okul sayfasına götürüyorum.",
+    navigate: `/okullar/${o.id}`,
+  };
+}
+
 function tryNavigation(input: string, tokens: string[]): CannedResult | null {
   const hasVerb = NAV_VERBS.some((v) => tokens.includes(v));
+
+  // Kullanıcı bir BİLGİ soruyor ("rekabet nasıl çalışıyor", "lig nedir",
+  // "puan nasıl hesaplanıyor" gibi) — sayfaya ışınlamak sorusunu cevapsız
+  // bırakır. Açık bir gitme isteği yoksa bu mesajları AI katmanına bırak;
+  // AI site haritasını bildiği için burada anlatır.
+  const bilgiSorusu =
+    input.includes("nasil calis") ||
+    input.includes("nasil isli") ||
+    input.includes("ne ise yarar") ||
+    input.includes("nedir") ||
+    input.includes("anlat") ||
+    input.includes("kurallar") ||
+    input.includes("ne demek");
+  const gitmeIstegi =
+    hasVerb ||
+    input.includes("nerede") ||
+    input.includes("nereden") ||
+    input.includes("nasil giderim") ||
+    input.includes("nasil gidilir") ||
+    input.includes("goturur") ||
+    input.includes("istiyorum");
+  if (bilgiSorusu && !gitmeIstegi) return null;
 
   // Profil / Anasayfa
   if (input.includes("profil")) {
@@ -261,13 +496,40 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
     return { reply: "Dersler sayfasına götürüyorum.", navigate: "/dersler" };
   }
 
-  if (!hasVerb) return null;
-  // "din" kökü kısa olduğu için sonuna boşluk ekleyip kelime sonunu da deneriz.
+  // ── Genel katman: site haritasındaki her bölüm ──────────────────
+  // Yukarıdaki özel durumlar (puan açıklaması, bugünün hataları gibi) elendi;
+  // geri kalan her sayfa tek bir yerden, site haritasından eşleştirilir.
+  // Böylece siteye yeni bir bölüm eklendiğinde burayı değiştirmek gerekmez.
   const padded = `${input} `;
-  for (const subj of NAV_SUBJECTS) {
-    if (subj.stems.some((s) => padded.includes(s))) {
-      return { reply: "Hemen o derse götürüyorum.", navigate: subj.route };
+  type Aday = { rota: string; ad: string; uzunluk: number; derinlik: number };
+  const adaylar: Aday[] = [];
+  for (const b of SITE_HARITASI) {
+    if (b.fiilGerekir && !hasVerb) continue;
+    for (const anahtar of b.anahtarlar) {
+      if (!padded.includes(anahtar)) continue;
+      adaylar.push({
+        rota: b.rota,
+        ad: b.ad,
+        uzunluk: anahtar.length,
+        derinlik: b.rota.split("/").length,
+      });
+      break;
     }
+  }
+  if (adaylar.length > 0) {
+    // En uzun anahtar en belirleyicidir; eşitlikte daha derin rota kazanır
+    // ("sezon sıralaması" → /rekabet/liderlik, "rekabet" → /rekabet).
+    adaylar.sort(
+      (a, b) => b.uzunluk - a.uzunluk || b.derinlik - a.derinlik,
+    );
+    const kazanan = adaylar[0];
+    if (kazanan.rota.startsWith("/ders/")) {
+      return { reply: "Hemen o derse götürüyorum.", navigate: kazanan.rota };
+    }
+    return {
+      reply: `${kazanan.ad} sayfasına götürüyorum.`,
+      navigate: kazanan.rota,
+    };
   }
   return null;
 }
@@ -1210,6 +1472,64 @@ const FORMULAS: Formula[] = [
     topicRoute: "/ders/matematik/geometrik-cisimler",
   },
   {
+    all: ["silindir", "yuzey"],
+    name: "Silindirin yüzey alanı",
+    formula: "A = 2 · π · r² + 2 · π · r · h",
+    vars: "r: taban yarıçapı; h: yükseklik (iki taban dairesi + yan yüzey)",
+    example: "r=3, h=10, π=3 → A = 2·3·9 + 2·3·3·10 = 54 + 180 = 234 cm²",
+    apply: "İki taban dairesinin alanına, açılımı dikdörtgen olan yan yüzeyin alanını (çevre × yükseklik) eklersin.",
+    topicRoute: "/ders/matematik/geometrik-cisimler",
+  },
+  {
+    all: ["yuzde", "hesap"],
+    name: "Yüzde hesabı",
+    formula: "Bir sayının %a'sı = sayı · a / 100",
+    vars: "a: yüzde oranı",
+    example: "240'ın %25'i = 240 · 25 / 100 = 60",
+    apply: "Sayıyı yüzde oranıyla çarpıp 100'e bölersin. Artış için sonucu ekler, indirim için çıkarırsın.",
+    compute: (_input, nums) => {
+      if (nums.length < 2) return null;
+      const [sayi, oran] = nums;
+      if (oran <= 0 || oran > 1000) return null;
+      const sonuc = (sayi * oran) / 100;
+      return `${fmtNum(sayi)} sayısının %${fmtNum(oran)}'i = ${fmtNum(sayi)} · ${fmtNum(oran)} / 100 = **${fmtNum(sonuc)}**`;
+    },
+  },
+  {
+    all: ["ebob"],
+    name: "EBOB (en büyük ortak bölen)",
+    formula: "Sayılar asal çarpanlarına ayrılır; ORTAK asalların KÜÇÜK üslüleri çarpılır",
+    vars: "EBOB: iki sayıyı da tam bölen en büyük sayı",
+    example: "EBOB(12, 18): 12 = 2²·3, 18 = 2·3² → ortaklar 2 ve 3 → 2·3 = 6",
+    apply: "Paylaştırma, eşit parçalara bölme, 'en büyük ... kaç olabilir' soruları EBOB'dur.",
+    topicRoute: "/ders/matematik/carpanlar-ve-katlar",
+    compute: (_input, nums) => {
+      if (nums.length < 2) return null;
+      const [a, b] = nums.map((n) => Math.abs(Math.round(n)));
+      if (a === 0 || b === 0 || a > 100000 || b > 100000) return null;
+      let x = a, y = b;
+      while (y) [x, y] = [y, x % y];
+      return `EBOB(${a}, ${b}) = **${x}**`;
+    },
+  },
+  {
+    all: ["ekok"],
+    name: "EKOK (en küçük ortak kat)",
+    formula: "Sayılar asal çarpanlarına ayrılır; TÜM asalların BÜYÜK üslüleri çarpılır",
+    vars: "EKOK: iki sayının da katı olan en küçük sayı",
+    example: "EKOK(12, 18): 12 = 2²·3, 18 = 2·3² → 2²·3² = 36",
+    apply: "'Kaç dakika sonra yine birlikte...', 'en az kaç' soruları EKOK'tur.",
+    topicRoute: "/ders/matematik/carpanlar-ve-katlar",
+    compute: (_input, nums) => {
+      if (nums.length < 2) return null;
+      const [a, b] = nums.map((n) => Math.abs(Math.round(n)));
+      if (a === 0 || b === 0 || a > 100000 || b > 100000) return null;
+      let x = a, y = b;
+      while (y) [x, y] = [y, x % y];
+      return `EKOK(${a}, ${b}) = ${a} · ${b} / EBOB = **${(a * b) / x}**`;
+    },
+  },
+  {
     all: ["silindir", "hacm"],
     name: "Silindirin hacmi",
     formula: "V = π · r² · h",
@@ -1486,6 +1806,9 @@ export function matchCanned(text: string): CannedResult | null {
     // Sözlük "x kelimesinin anlamı" raw text üzerinden (Türkçe karakter
     // korunarak); tryNavigation'dan ÖNCE denenir.
     trySozlukLookup(text) ??
+    // Okul VERİ soruları ("... 2023 taban puanı") — yönlendirmeden önce,
+    // çünkü "okul" kelimesi yoksa bile cevaplanabilmeli.
+    tryOkulLookup(text, input) ??
     tryNavigation(input, tokens) ??
     // Önce saf aritmetik (9 çarpı 5, 2+3 gibi sayısal işlemler).
     // Formül kavramı eşleşmeden önce çağrılır ki "9 çarpı 5" → 45 dönsün,

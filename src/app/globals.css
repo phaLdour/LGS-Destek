@@ -484,3 +484,187 @@ html.dark .lgs-article [data-theme="light"] strong,
 html.dark .lgs-article [data-theme="light"] strong.text-rehberim-navy {
   color: #16244c !important;
 }
+
+/* ────────────────────────────────────────────────────────────────
+   DARK MODE — EKSİK KALAN OPACITY VARYANTLARI
+   Bunlar açık zemin/koyu yazı varsayan sınıflar; override'ı olmadığı
+   için dark modda ya görünmez ya da okunamaz hâle geliyordu.
+   ──────────────────────────────────────────────────────────────── */
+html.dark .bg-rehberim-muted\/60 {
+  background-color: color-mix(in srgb, var(--rb-surface-2) 65%, transparent) !important;
+}
+html.dark .bg-rehberim-muted\/70 {
+  background-color: color-mix(in srgb, var(--rb-surface-2) 75%, transparent) !important;
+}
+html.dark .border-rehberim-border\/60 {
+  border-color: color-mix(in srgb, var(--rb-border) 70%, transparent) !important;
+}
+html.dark .border-rehberim-border\/70 {
+  border-color: color-mix(in srgb, var(--rb-border) 80%, transparent) !important;
+}
+html.dark .text-rehberim-navy\/35 {
+  color: rgba(241, 244, 255, 0.5) !important;
+}
+html.dark .text-rehberim-navy\/20 {
+  color: rgba(241, 244, 255, 0.35) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   MARKA TURUNCUSU ZEMİNLER — HER İKİ TEMADA DA MÜREKKEP LACİVERT
+   Turuncu zemin (accent → amber-500) tema değişince değişmiyor; ama
+   üstündeki "text-rehberim-navy" dark modda beyaza çevriliyordu →
+   turuncu üzerinde beyaz ≈ 2:1 kontrast, okunmuyordu.
+   Aşağıdaki kurallar, zemin sınıfıyla yazı sınıfının aynı elemanda ya
+   da ata-torun ilişkisinde bulunduğu tüm durumları kapsar; bileşenlere
+   dokunmadan çalışır.
+   ──────────────────────────────────────────────────────────────── */
+html.dark .bg-rehberim-accent.text-rehberim-navy,
+html.dark .bg-rehberim-accent-light.text-rehberim-navy,
+html.dark .to-amber-500.text-rehberim-navy,
+html.dark .bg-rehberim-accent .text-rehberim-navy,
+html.dark .bg-rehberim-accent-light .text-rehberim-navy,
+html.dark .to-amber-500 .text-rehberim-navy,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/85,
+html.dark .to-amber-500 .text-rehberim-navy\/85,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/80,
+html.dark .to-amber-500 .text-rehberim-navy\/80,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/75,
+html.dark .to-amber-500 .text-rehberim-navy\/75,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/70,
+html.dark .to-amber-500 .text-rehberim-navy\/70,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/65,
+html.dark .to-amber-500 .text-rehberim-navy\/65,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/60,
+html.dark .to-amber-500 .text-rehberim-navy\/60,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/55,
+html.dark .to-amber-500 .text-rehberim-navy\/55,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/50,
+html.dark .to-amber-500 .text-rehberim-navy\/50,
+html.dark .bg-rehberim-accent .text-rehberim-navy\/45,
+html.dark .to-amber-500 .text-rehberim-navy\/45 {
+  color: #16244c !important;
+}
+/* Turuncu zeminde marka SVG'leri de lacivert kalmalı (baykuş, logo). */
+html.dark .bg-rehberim-accent [data-rb="navy"],
+html.dark .to-amber-500 [data-rb="navy"] {
+  fill: #16244c !important;
+  stroke: #16244c !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   AÇIK GRADYAN PANELLER (Bugünün planı, haftalık özet, puan hesapla,
+   okul hedef kartı) — hepsi "from-rehberim-accent/10 via-white to-*"
+   kalıbını kullanıyor. Dark modda ortadaki beyaz durak olduğu gibi
+   kalıyor, yazı ise açık renge çevriliyordu → beyaz üstüne beyaz.
+   Panelin tamamını koyu yüzey + turuncu ışık olarak yeniden boyuyoruz.
+   ("via-white/0" farklı bir sınıftır, maskot ışıltısı etkilenmez.)
+   ──────────────────────────────────────────────────────────────── */
+html.dark .via-white {
+  background-image: linear-gradient(
+    to bottom right,
+    rgba(245, 158, 11, 0.20),
+    var(--rb-surface) 55%,
+    rgba(245, 158, 11, 0.10)
+  ) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   İPUCU BALONU (.rb-tip)
+   Tarayıcının kendi title= balonu işletim sisteminin temasını kullanır;
+   site koyu temadayken açık gri bir kutu çıkıp okunmuyordu. Bu sınıf
+   aynı işi sitenin kendi renkleriyle yapar — JS gerektirmez, sunucu
+   bileşenlerinde de çalışır.
+
+   Kullanım:  <a className="rb-tip" data-tip="metin" aria-label="metin">
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --rb-tip-bg: #16244c;
+  --rb-tip-text: #f1f4ff;
+  --rb-tip-border: rgba(255, 255, 255, 0.12);
+}
+html.dark {
+  --rb-tip-bg: #f1f4ff;
+  --rb-tip-text: #101a38;
+  --rb-tip-border: rgba(16, 26, 56, 0.15);
+}
+
+.rb-tip {
+  position: relative;
+}
+.rb-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  z-index: 50;
+  width: max-content;
+  max-width: min(17rem, 66vw);
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--rb-tip-border);
+  background: var(--rb-tip-bg);
+  color: var(--rb-tip-text);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  white-space: normal;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Ok ucu */
+.rb-tip::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  z-index: 51;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--rb-tip-bg);
+  border-right: 1px solid var(--rb-tip-border);
+  border-bottom: 1px solid var(--rb-tip-border);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+}
+.rb-tip:hover::after,
+.rb-tip:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+.rb-tip:hover::before,
+.rb-tip:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+}
+/* Dokunmatik cihazda hover yok; balon açılıp takılı kalmasın. */
+@media (hover: none) {
+  .rb-tip::after,
+  .rb-tip::before {
+    display: none;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   LACİVERT DOLGULU BUTONLAR — dark modda yüzeyle aynı renge düşüyordu.
+   Kart yüzeyi de #16244C olduğu için bg-rehberim-navy'li buton/rozet
+   görünmez oluyordu (ör. okul taramadaki aktif filtre). Bir ton açığa
+   çekilir; üstündeki beyaz yazı 7:1 üzeri kontrastta kalır.
+   ──────────────────────────────────────────────────────────────── */
+html.dark .bg-rehberim-navy {
+  background-color: #2f4170 !important;
+}
+html.dark .hover\:bg-rehberim-navy-dark:hover,
+html.dark .hover\:bg-rehberim-navy-light:hover {
+  background-color: #3a4f88 !important;
+}

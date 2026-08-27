@@ -91,8 +91,8 @@ export function GeriSayim({ hedefIso, yil, tarihMetni, resmi }: Props) {
         type="button"
         onClick={kapat}
         aria-label="Geri sayımı gizle"
-        title="Gizle — profil sayfasından geri açabilirsin"
-        className="ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-rehberim-navy/35 transition-colors hover:bg-rehberim-navy/5 hover:text-rehberim-navy/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rehberim-accent"
+        data-tip="Gizle — profil sayfasından geri açabilirsin"
+        className="rb-tip ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-rehberim-navy/35 transition-colors hover:bg-rehberim-navy/5 hover:text-rehberim-navy/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rehberim-accent"
       >
         <X className="h-4 w-4" />
       </button>

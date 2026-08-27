@@ -72,7 +72,7 @@ export function ChatPanel({
                   : "rounded-bl-md border border-rehberim-border bg-white text-rehberim-navy"
               }`}
             >
-              {m.text}
+              {kalinIsle(m.text)}
             </div>
             {m.role === "model" && m.topicRoute && (
               <button
@@ -128,5 +128,24 @@ function Dot({ delay = "0s" }: { delay?: string }) {
       className="h-2 w-2 animate-bounce rounded-full bg-rehberim-navy/40"
       style={{ animationDelay: delay }}
     />
+  );
+}
+
+/**
+ * Cevap metnindeki **kalın** işaretlerini <strong>'a çevirir.
+ * HTML enjeksiyonu riski yok: metin hiçbir yerde HTML olarak basılmaz,
+ * sadece React düğümlerine bölünür.
+ */
+function kalinIsle(text: string): React.ReactNode {
+  const parcalar = text.split(/\*\*([^*]+)\*\*/g);
+  if (parcalar.length === 1) return text;
+  return parcalar.map((p, i) =>
+    i % 2 === 1 ? (
+      <strong key={i} className="font-extrabold">
+        {p}
+      </strong>
+    ) : (
+      p
+    ),
   );
 }
