@@ -108,8 +108,9 @@ export function NotificationSettings({ configured }: { configured: boolean }) {
       )}
 
       <p className="rounded-xl bg-rehberim-muted px-3 py-2 text-[11px] text-rehberim-navy/55">
-        Not: Gerçek e-posta gönderimi sonraki turda etkinleştirilecek
-        (Supabase Edge Function + Resend). Şimdilik yalnız tercih kaydedilir.
+        Hatırlatma her akşam 19:30 civarı gönderilir ve yalnızca o günkü
+        hedefini henüz tamamlamadıysan gelir. Hedefini bitirdiysen seni
+        rahatsız etmeyiz.
       </p>
     </section>
   );
