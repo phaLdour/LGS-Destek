@@ -158,6 +158,9 @@ export function MascotButton() {
     return () => {
       cancelled = true;
     };
+    // messages.length bilerek bağımlılık dışında: bu etki yalnız İLK selam
+    // içindir; sohbet uzadıkça yeniden çalışmamalı.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [greetingLoaded]);
 
   async function handleSend() {

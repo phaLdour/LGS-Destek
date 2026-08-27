@@ -59,7 +59,10 @@ function Motif({ slug, color, edge }: { slug: League["slug"]; color: string; edg
         />
       );
     case "yukselme":
-      // Üst üste üç yükselen şerit
+      // Üst üste üç yükselen şerit.
+      // Eski geometri (y=52'ye inen alt şerit) kalkanın daralan alt
+      // kenarına taşıyor, mobilde arma "kesik" görünüyordu; şeritler
+      // içeri çekildi ve tamamı iç kenarın güvenli alanında kalıyor.
       return (
         <g
           fill="none"
@@ -68,9 +71,9 @@ function Motif({ slug, color, edge }: { slug: League["slug"]; color: string; edg
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M19 52 L32 41 L45 52" opacity={0.55} />
-          <path d="M19 40 L32 29 L45 40" opacity={0.8} />
-          <path d="M19 28 L32 17 L45 28" />
+          <path d="M20 48 L32 38 L44 48" opacity={0.55} />
+          <path d="M20 36 L32 26 L44 36" opacity={0.8} />
+          <path d="M20 24 L32 14 L44 24" />
         </g>
       );
     case "yildizlar":
@@ -135,6 +138,9 @@ export function LeagueCrest({
   const c = CREST_COLORS[league.slug];
   const gradId = `crest-g-${league.slug}`;
   const shineId = `crest-s-${league.slug}`;
+  // Motif ne olursa olsun kalkanın dışına taşamaz (küçük boyutta kesik
+  // görünme hatasına karşı kalıcı güvence).
+  const clipId = `crest-c-${league.slug}`;
   const label = title ?? `${league.name} ligi nişanı (${rankLabel(tier)})`;
   const height = Math.round((size * 72) / 64);
 
@@ -159,6 +165,9 @@ export function LeagueCrest({
           <stop offset="55%" stopColor="#FFFFFF" stopOpacity={0.04} />
           <stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
         </linearGradient>
+        <clipPath id={clipId}>
+          <path d={SHIELD} />
+        </clipPath>
       </defs>
       <path d={SHIELD} fill={`url(#${gradId})`} stroke={c.edge} strokeWidth={1.5} strokeLinejoin="round" />
       <path d={SHIELD} fill={`url(#${shineId})`} />
@@ -170,7 +179,9 @@ export function LeagueCrest({
         strokeWidth={1.4}
         strokeLinejoin="round"
       />
-      <Motif slug={league.slug} color={c.motif} edge={c.motifEdge} />
+      <g clipPath={`url(#${clipId})`}>
+        <Motif slug={league.slug} color={c.motif} edge={c.motifEdge} />
+      </g>
     </svg>
   );
 }
