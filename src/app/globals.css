@@ -774,3 +774,14 @@ html.dark .lgs-callout.bg-rehberim-muted {
 @media (prefers-reduced-motion: reduce) {
   .rb-owl-sway-x { animation: none; }
 }
+
+/* Baykuş butonunun konumu: mobilde alt gezinmenin + telefonun ana ekran
+   çizgisinin üstünde; masaüstünde köşede. env() inset'siz cihazda 0'dır. */
+.rb-mascot-konum {
+  bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .rb-mascot-konum {
+    bottom: 1.5rem;
+  }
+}

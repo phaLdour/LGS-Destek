@@ -152,7 +152,15 @@ export function AppShell({
       </aside>
 
       {/* ===== Mobil üst bar ===== */}
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-rehberim-border bg-white/95 px-4 backdrop-blur-md lg:hidden">
+      {/* pt-[env(...)]: telefonun durum çubuğu / çentiği başlığın üstünü
+          örtmesin — inset olmayan cihazlarda sıfırdır, hiçbir şey değişmez. */}
+      <header
+        className="sticky top-0 z-30 flex items-center justify-between border-b border-rehberim-border bg-white/95 px-4 backdrop-blur-md lg:hidden"
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          height: "calc(3.5rem + env(safe-area-inset-top))",
+        }}
+      >
         <button
           onClick={() => setDrawerOpen(true)}
           aria-label="Menüyü aç"
@@ -240,7 +248,13 @@ export function AppShell({
       </div>
 
       {/* ===== Mobil alt navigasyon (ilk 4 öğe; gerisi drawer'da) ===== */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-16 items-center justify-around border-t border-rehberim-border bg-white/95 backdrop-blur-md lg:hidden">
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 flex items-center justify-around border-t border-rehberim-border bg-white/95 backdrop-blur-md lg:hidden"
+        style={{
+          paddingBottom: "env(safe-area-inset-bottom)",
+          height: "calc(4rem + env(safe-area-inset-bottom))",
+        }}
+      >
         {NAV.slice(0, 4).map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (

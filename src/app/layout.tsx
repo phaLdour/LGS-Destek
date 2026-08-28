@@ -56,6 +56,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  // Telefonda içerik çentik/durum çubuğunun altına uzanabilsin;
+  // gerçek koruma aşağıdaki safe-area padding'leriyle sağlanır.
+  viewportFit: "cover",
 };
 
 // İlk paint'ten önce tema sınıfını uygula (FOUC önleme).

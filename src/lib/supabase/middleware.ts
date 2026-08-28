@@ -36,6 +36,34 @@ export async function updateSession(request: NextRequest) {
     return response;
   }
 
+  // ── ÖN-GETİRME (prefetch) istekleri kimlik denetimine girmez ──────
+  // app/loading.tsx eklendiğinden beri Next.js, ekrandaki HER menü
+  // bağlantısı için arka planda bir ön-getirme isteği atıyor (sayfa
+  // başına ~15 istek). Bunların her biri Supabase Auth'a gidince
+  // ücretsiz katmanın hız sınırı doluyor ve GERÇEK gezinmeler 20+
+  // saniye bekletiliyordu. Ön-getirme yalnız yükleme iskeletini getirir,
+  // korunan veri içermez — kimlik denetimi gerçek gezinmede yapılır.
+  if (
+    request.headers.get("next-router-prefetch") !== null ||
+    request.headers.get("purpose") === "prefetch" ||
+    request.headers.get("sec-purpose")?.includes("prefetch")
+  ) {
+    return response;
+  }
+
+  // ── Halka açık sayfalar da Auth'a gitmez ──────────────────────────
+  // Tanıtım, okul tarama, sözlük, gizlilik... girişsiz gezilebilir;
+  // her görüntülemede Auth sunucusuna gitmek yalnız kota yakıyordu.
+  // (Oturum çerezi tazeleme korumalı sayfalarda zaten yapılıyor.)
+  const { pathname: yol } = request.nextUrl;
+  const denetimGerekli =
+    PROTECTED_PREFIXES.some((p) => yol.startsWith(p)) ||
+    AUTH_PAGES.some((p) => yol.startsWith(p)) ||
+    yol.startsWith("/api/");
+  if (!denetimGerekli) {
+    return response;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import type { ShellUser } from "@/components/layout/AppShell";
 
@@ -5,7 +6,7 @@ import type { ShellUser } from "@/components/layout/AppShell";
  * Oturumdaki kullanıcıyı arayüz için normalize eder. Oturum yoksa misafir.
  * Faz 5: lig nişanı için comp_profiles.best_tier de okunur (tek, hafif sorgu).
  */
-export async function getShellUser(): Promise<ShellUser> {
+export const getShellUser = cache(async (): Promise<ShellUser> => {
   const user = await getCurrentUser();
   if (!user) {
     return { name: "Misafir", email: "", avatarUrl: null, bestTier: null };
@@ -35,4 +36,4 @@ export async function getShellUser(): Promise<ShellUser> {
     avatarUrl: meta.avatar_url || meta.picture || null,
     bestTier,
   };
-}
+});
