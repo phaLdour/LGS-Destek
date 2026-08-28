@@ -3,7 +3,7 @@ import type { OkulTuru } from "@/content/okullar";
 /**
  * Okul görseli.
  *
- * Neden fotoğraf değil: 99 okulun gerçek fotoğrafı telifli. Okulların kendi
+ * Neden fotoğraf değil: yüzlerce okulun gerçek fotoğrafı telifli. Okulların kendi
  * sitelerinden ya da haber sitelerinden fotoğraf çekip yayımlamak, izin
  * alınmadığı sürece telif ihlalidir. Bu yüzden her okula, kimliğinden
  * türetilen ve tamamen bize ait olan sade bir illüstrasyon üretiliyor.

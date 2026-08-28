@@ -37,6 +37,9 @@ export type SiteBolumu = {
   fiilGerekir?: boolean;
 };
 
+import { OKULLAR } from "@/content/okullar";
+import { SOZLUK } from "@/content/sozluk-veri";
+
 export const SITE_HARITASI: SiteBolumu[] = [
   {
     rota: "/dashboard",
@@ -163,7 +166,7 @@ export const SITE_HARITASI: SiteBolumu[] = [
   {
     rota: "/sozluk",
     ad: "Türkçe Sözlük",
-    ozet: "599 kelimelik LGS sözlüğü: gerçek, mecaz ve terim anlamlar, her anlam için örnek cümle.",
+    ozet: `${SOZLUK.length} kelimelik LGS sözlüğü: gerçek, mecaz ve terim anlamlar, her anlam için örnek cümle.`,
     yapabilecekleri: [
       "Kelime aratabilir ya da harf çubuğundan (A, B, C…) atlayabilirsin.",
       "Her kelimede anlamlar gerçek / mecaz / terim diye ayrılmıştır — LGS'nin sözcükte anlam soruları tam olarak bunu ölçer.",
@@ -188,7 +191,7 @@ export const SITE_HARITASI: SiteBolumu[] = [
   {
     rota: "/okullar",
     ad: "Okul Tarama",
-    ozet: "Türkiye'nin en yüksek taban puanlı 99 lisesi ve yıl yıl puanları.",
+    ozet: `Türkiye'nin en yüksek taban puanlı ${OKULLAR.length} lisesi ve yıl yıl puanları.`,
     yapabilecekleri: [
       "Okul veya şehir arayabilir, tür (fen, Anadolu, imam hatip, meslek) ve şehir filtresi uygulayabilirsin.",
       "Bir okula dokununca 2018'den bugüne taban puanı, yüzdelik dilimi ve kontenjanı yıl yıl görünür.",

@@ -1,5 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getTopicCatalog } from "@/content";
+import { OKULLAR } from "@/content/okullar";
+import { SOZLUK } from "@/content/sozluk-veri";
 import { GECERLI_ROTALAR, siteHaritasiMetni } from "@/lib/siteHaritasi";
 import type { UserContext } from "@/lib/userContext";
 
@@ -82,8 +84,8 @@ ${siteHaritasiMetni()}
 - Bugünün planı önerisini yanlış SAYISINA değil yanlış ORANINA göre yapar ve oranı 40 soruluk bir güven kotasıyla düzeltir; az soru çözülmüş bir konu bu yüzden haksız yere en kötü görünmez.
 - Bir konuda en az 8 soru çözülmeden konu performans yüzdesi gösterilmez.
 - Yanlış yapılan soru Hatalarım havuzuna düşer; iki kez üst üste doğru yapılınca çıkar.
-- Sözlükte 599 kelime var; anlamlar gerçek / mecaz / terim diye ayrılmıştır.
-- Okul taramada 99 lise var; puanlar 2018-2026 arası, doğrulanamayan değerler "—" gösterilir.
+- Sözlükte ${SOZLUK.length} kelime var; anlamlar gerçek / mecaz / terim diye ayrılmıştır.
+- Okul taramada ${OKULLAR.length} lise var; puanlar 2018-2026 arası, doğrulanamayan değerler "—" gösterilir.
 - Rekabet maçları 10 sorudur; arkadaş daveti ile yapılan özel maçlar lig puanına etki etmez.
 - Sezon her ayın 1'inde kapanır; yeni sezona iki kademe altından, 50 puanla başlanır. Lig nişanı ve kupalar kalıcıdır.
 
