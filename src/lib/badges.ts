@@ -9,7 +9,7 @@ export type Badge = {
   name: string;
   description: string;
   /** Kategori — sıralama ve grup başlığı için */
-  group: "baslangic" | "seri" | "soru" | "ders" | "sinav" | "rekabet";
+  group: "baslangic" | "seri" | "soru" | "ders" | "sinav" | "odak" | "rekabet";
 };
 
 export const BADGES: Badge[] = [
@@ -140,6 +140,36 @@ export const BADGES: Badge[] = [
     group: "sinav",
   },
 
+  // Odak Modu (sayaç + pomodoro)
+  {
+    key: "ilk-odak",
+    emoji: "🎯",
+    name: "İlk Odak",
+    description: "Odak Modu'nda ilk oturumunu tamamladın (10+ dk)",
+    group: "odak",
+  },
+  {
+    key: "derin-odak",
+    emoji: "🧘",
+    name: "Derin Odak",
+    description: "Tek oturuşta 50 dakika kesintisiz çalıştın",
+    group: "odak",
+  },
+  {
+    key: "pomodoro-cirak",
+    emoji: "🍅",
+    name: "Pomodoro Çırağı",
+    description: "İlk pomodoro turunu tamamladın (25 dk)",
+    group: "odak",
+  },
+  {
+    key: "odak-ustasi",
+    emoji: "⏳",
+    name: "Odak Ustası",
+    description: "Odak Modu'nda toplam 10 saat çalıştın",
+    group: "odak",
+  },
+
   // Rekabet (1v1 düello) — Faz 6
   {
     key: "ilk-duello",
@@ -210,6 +240,10 @@ export type BadgeEvalInput = {
   sozlukSoruSayisi: number; // __sozluk__ kayıtlarındaki toplam soru
   topicsDonePerSubject: Record<string, number>; // {turkce: 8, ...}
   totalTopicsPerSubject: Record<string, number>; // {turkce: 15, ...}
+  // Odak Modu — study_sessions'ta __odak__ / __odak_pomodoro__ kayıtları
+  odakToplamSn: number; // tüm odak oturumlarının toplamı
+  odakEnUzunSn: number; // en uzun tek odak oturumu
+  pomodoroToplamSn: number; // yalnız __odak_pomodoro__ toplamı
   // Rekabet (tüm sezonların toplamı) — Faz 6
   compMatches: number;
   compWins: number;
@@ -250,6 +284,12 @@ export function evaluateBadges(input: BadgeEvalInput): Set<string> {
 
   if (input.hasPerfectQuiz) earned.add("hassas-atis");
   if (input.bestExamNet >= 80) earned.add("deneme-fatihi");
+
+  // Odak Modu
+  if (input.odakEnUzunSn >= 10 * 60) earned.add("ilk-odak");
+  if (input.odakEnUzunSn >= 50 * 60) earned.add("derin-odak");
+  if (input.pomodoroToplamSn >= 25 * 60) earned.add("pomodoro-cirak");
+  if (input.odakToplamSn >= 10 * 3600) earned.add("odak-ustasi");
 
   // Rekabet — lig eşikleri ranks.ts ile aynı: 4 = Yıldızlar 2, 8 = Şampiyonlar 2
   if (input.compMatches >= 1) earned.add("ilk-duello");

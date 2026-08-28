@@ -140,6 +140,30 @@ export const SITE_HARITASI: SiteBolumu[] = [
     anahtarlar: ["deneme", "gelisim grafigi", "net grafigi"],
   },
   {
+    rota: "/odak",
+    ad: "Odak Modu",
+    ozet:
+      "Ders çalışırken arkada duran sayaç: saat, geri sayım, kronometre ve Pomodoro — tema ve ortam sesleriyle.",
+    yapabilecekleri: [
+      "Üç sayaç var: saat (o anki saati gösterir), geri sayım (15-90 dk hazır seçenekler veya kendi süren) ve kronometre.",
+      "8 canlı tema seçebilirsin: orman, tapınak, sınıf, kütüphane, yağmurlu cam, gece gökyüzü, şömine, gün batımı sahili.",
+      "8 ortam sesi var: yağmur, şelale, deniz, kuş sesleri, şömine, kütüphane, sınav ortamı (kalem-kâğıt sesi — gerçek sınava alışmak için) ve beyaz gürültü. Ses seviyesi ayarlanır.",
+      "Pomodoro bölümü ayrıdır: 25 dk çalışma + 5 dk mola, 4. turdan sonra 15 dk uzun mola. Süre hiç durmaz — molayı uzatma hilesi yapılamaz, fazlar zille bildirilir.",
+      "Sayaç veya pomodoro çalışırken başka sayfaya geçebilirsin: köşedeki mini sayaç seninle gelir, ses kesilmez, sekme başlığında süre yazar.",
+      "Geri sayım ve pomodoro'da çalıştığın dakikalar istatistiklerine, günlük serine ve odak rozetlerine işlenir (molalar sayılmaz).",
+    ],
+    anahtarlar: [
+      "odak",
+      "sayac",
+      "kronometre",
+      "pomodoro",
+      "zamanlayici",
+      "geri sayim",
+      "ortam sesi",
+      "sinav sesi",
+    ],
+  },
+  {
     rota: "/cikmis-sorular",
     ad: "Çıkmış Sorular",
     ozet: "2018-2026 arası MEB'in gerçek LGS sorularının tamamı.",

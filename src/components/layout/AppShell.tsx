@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   Swords,
+  Timer,
   User as UserIcon,
   X,
   Zap,
@@ -28,6 +29,7 @@ import { LeagueCrest } from "@/components/competitive/LeagueCrest";
 import { crestTitle } from "@/lib/competitive/rewards";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { MascotButton } from "@/components/mascot/MascotButton";
+import { MiniOdak } from "@/components/odak/MiniOdak";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export type ShellUser = {
@@ -46,6 +48,7 @@ const NAV = [
   { href: "/dersler", label: "Dersler", icon: BookOpen },
   { href: "/hizli-sorular", label: "Hızlı Sorular", icon: Zap },
   { href: "/deneme", label: "Deneme Sınavı", icon: FileText },
+  { href: "/odak", label: "Odak Modu", icon: Timer },
   { href: "/cikmis-sorular", label: "Çıkmış Sorular", icon: Archive },
   { href: "/hatalarim", label: "Hatalarım", icon: AlertCircle },
   { href: "/sozluk", label: "Türkçe Sözlük", icon: Languages },
@@ -281,6 +284,9 @@ export function AppShell({
 
       {/* ===== Maskot AI ===== */}
       <MascotButton />
+
+      {/* ===== Odak Modu mini sayacı (sayaç/ses açıkken her sayfada) ===== */}
+      <MiniOdak />
     </div>
   );
 }

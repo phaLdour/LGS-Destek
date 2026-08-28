@@ -13,6 +13,7 @@ const GROUP_LABELS: Record<Badge["group"], string> = {
   soru: "Soru",
   ders: "Ders Ustaları",
   sinav: "Sınav",
+  odak: "Odak",
   rekabet: "Rekabet",
 };
 
@@ -22,6 +23,7 @@ const GROUP_ORDER: Badge["group"][] = [
   "soru",
   "ders",
   "sinav",
+  "odak",
   "rekabet",
 ];
 
@@ -50,7 +52,7 @@ export async function BadgeShowcase() {
   ] = await Promise.all([
     supabase
       .from("study_sessions")
-      .select("duration_seconds, started_at")
+      .select("duration_seconds, started_at, subject_slug")
       .gte("started_at", since.toISOString()),
     supabase
       .from("topic_progress")
@@ -76,6 +78,7 @@ export async function BadgeShowcase() {
   const sessionRows = (sessions.data ?? []) as {
     duration_seconds: number;
     started_at: string;
+    subject_slug: string;
   }[];
   const topicRows = (topicProgress.data ?? []) as {
     subject_slug: string;
@@ -106,6 +109,17 @@ export async function BadgeShowcase() {
   const maxDailyMinutes = Math.round(
     Math.max(0, ...Array.from(perDay.values())) / 60,
   );
+
+  // Odak Modu metrikleri (__odak__ = serbest sayaç, __odak_pomodoro__ = pomodoro)
+  let odakToplamSn = 0;
+  let odakEnUzunSn = 0;
+  let pomodoroToplamSn = 0;
+  for (const r of sessionRows) {
+    if (!r.subject_slug?.startsWith("__odak")) continue;
+    odakToplamSn += r.duration_seconds;
+    if (r.duration_seconds > odakEnUzunSn) odakEnUzunSn = r.duration_seconds;
+    if (r.subject_slug === "__odak_pomodoro__") pomodoroToplamSn += r.duration_seconds;
+  }
 
   // Streak (today'den başla, kesintiye uğrayana kadar say)
   let streakDays = 0;
@@ -183,6 +197,9 @@ export async function BadgeShowcase() {
     sozlukSoruSayisi,
     topicsDonePerSubject,
     totalTopicsPerSubject,
+    odakToplamSn,
+    odakEnUzunSn,
+    pomodoroToplamSn,
     compMatches,
     compWins,
     compBestStreak,

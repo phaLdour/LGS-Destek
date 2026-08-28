@@ -190,7 +190,9 @@ export async function getBugununPlani(): Promise<BugununPlani> {
       .from("study_sessions")
       .select("subject_slug, studied_topics, started_at")
       .order("started_at", { ascending: false })
-      .limit(1),
+      // Son 5 kayıt: en yenileri Odak Modu oturumu (__odak__) olabilir;
+      // "kaldığın yer" için konusu olan ilk gerçek ders oturumu aranır.
+      .limit(5),
   ]);
 
   const quizzes = (quizRes.data ?? []) as {
@@ -279,21 +281,22 @@ export async function getBugununPlani(): Promise<BugununPlani> {
     }
   }
   if (!kaldiginYer && sessions.length > 0) {
-    const s = sessions[0];
-    const topicId = s.studied_topics?.[0];
-    if (topicId) {
+    for (const s of sessions) {
+      if (s.subject_slug.startsWith("__")) continue; // odak/deneme gibi özel kayıtlar
+      const topicId = s.studied_topics?.[0];
+      if (!topicId) continue;
       const k = `${s.subject_slug}/${topicId}`;
       const ad = konuAdi.get(k);
-      if (ad) {
-        kaldiginYer = {
-          subjectSlug: s.subject_slug,
-          subjectName: dersAdi.get(s.subject_slug) ?? s.subject_slug,
-          topicId,
-          topicName: ad,
-          href: href(s.subject_slug, topicId),
-          gunOnce: gunFarki(s.started_at),
-        };
-      }
+      if (!ad) continue;
+      kaldiginYer = {
+        subjectSlug: s.subject_slug,
+        subjectName: dersAdi.get(s.subject_slug) ?? s.subject_slug,
+        topicId,
+        topicName: ad,
+        href: href(s.subject_slug, topicId),
+        gunOnce: gunFarki(s.started_at),
+      };
+      break;
     }
   }
 

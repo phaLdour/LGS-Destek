@@ -785,3 +785,83 @@ html.dark .lgs-callout.bg-rehberim-muted {
     bottom: 1.5rem;
   }
 }
+
+/* ===================== Odak Modu — tema animasyonları ===================== */
+/* Tümü yalnız transform/opacity kullanır (GPU dostu, pil dostu). */
+
+@keyframes rb-odak-yuz {
+  0% { transform: translateX(-8%) translateY(0); }
+  50% { transform: translateX(8%) translateY(-2%); }
+  100% { transform: translateX(-8%) translateY(0); }
+}
+@keyframes rb-odak-parilti {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.25); }
+}
+@keyframes rb-odak-yukari {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  12% { opacity: 0.85; }
+  85% { opacity: 0.45; }
+  100% { transform: translateY(-46vh) translateX(var(--rb-sapma, 8px)); opacity: 0; }
+}
+@keyframes rb-odak-dusme {
+  0% { transform: translateY(-12vh); opacity: 0; }
+  8% { opacity: 0.7; }
+  92% { opacity: 0.7; }
+  100% { transform: translateY(105vh); opacity: 0; }
+}
+@keyframes rb-odak-salinim {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+@keyframes rb-odak-dalga-kayma {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes rb-odak-alev {
+  0%, 100% { opacity: 0.75; transform: scaleY(1) scaleX(1); }
+  30% { opacity: 0.95; transform: scaleY(1.12) scaleX(0.96); }
+  60% { opacity: 0.65; transform: scaleY(0.9) scaleX(1.05); }
+  80% { opacity: 0.9; transform: scaleY(1.06) scaleX(0.98); }
+}
+@keyframes rb-odak-nabiz {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+@keyframes rb-odak-kayan-yildiz {
+  0% { transform: translate(0, 0) rotate(-35deg) scaleX(0); opacity: 0; }
+  5% { opacity: 1; transform: translate(-4vw, 2.8vw) rotate(-35deg) scaleX(1); }
+  12% { opacity: 0; transform: translate(-11vw, 7.7vw) rotate(-35deg) scaleX(0.2); }
+  100% { opacity: 0; transform: translate(-11vw, 7.7vw) rotate(-35deg) scaleX(0.2); }
+}
+@keyframes rb-odak-gunes-parilti {
+  0%, 100% { opacity: 0.5; transform: scaleX(1); }
+  50% { opacity: 0.85; transform: scaleX(1.06); }
+}
+@keyframes rb-odak-toz {
+  0% { transform: translate(0, 0); opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { transform: translate(var(--rb-sapma, 14px), -18vh); opacity: 0; }
+}
+
+.rb-odak-bulut { animation: rb-odak-yuz var(--rb-sure, 60s) ease-in-out infinite; }
+.rb-odak-yildiz { animation: rb-odak-parilti var(--rb-sure, 3s) ease-in-out var(--rb-gecikme, 0s) infinite; }
+.rb-odak-atesbocegi { animation: rb-odak-parilti var(--rb-sure, 4s) ease-in-out var(--rb-gecikme, 0s) infinite; }
+.rb-odak-kivilcim { animation: rb-odak-yukari var(--rb-sure, 5s) linear var(--rb-gecikme, 0s) infinite; }
+.rb-odak-damla { animation: rb-odak-dusme var(--rb-sure, 1.6s) linear var(--rb-gecikme, 0s) infinite; }
+.rb-odak-agac { transform-origin: 50% 100%; animation: rb-odak-salinim var(--rb-sure, 7s) ease-in-out infinite; }
+.rb-odak-dalga { animation: rb-odak-dalga-kayma var(--rb-sure, 14s) linear infinite; }
+.rb-odak-alev { transform-origin: 50% 100%; animation: rb-odak-alev 0.9s ease-in-out infinite; }
+.rb-odak-kor { animation: rb-odak-nabiz var(--rb-sure, 2.4s) ease-in-out var(--rb-gecikme, 0s) infinite; }
+.rb-odak-meteor { transform-origin: 0 50%; animation: rb-odak-kayan-yildiz 11s linear var(--rb-gecikme, 4s) infinite; }
+.rb-odak-yakamoz { transform-origin: 50% 50%; animation: rb-odak-gunes-parilti var(--rb-sure, 5s) ease-in-out var(--rb-gecikme, 0s) infinite; }
+.rb-odak-tozzerre { animation: rb-odak-toz var(--rb-sure, 9s) linear var(--rb-gecikme, 0s) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-odak-bulut, .rb-odak-yildiz, .rb-odak-atesbocegi, .rb-odak-kivilcim,
+  .rb-odak-damla, .rb-odak-agac, .rb-odak-dalga, .rb-odak-alev,
+  .rb-odak-kor, .rb-odak-meteor, .rb-odak-yakamoz, .rb-odak-tozzerre {
+    animation: none;
+  }
+}
