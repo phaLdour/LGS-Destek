@@ -58,8 +58,11 @@ const TEMA_KEY = "rehberim:odak-tema";
 const POMODORO_USTA_KEY = "rehberim:pomodoro-usta"; // ilk pomodoro tamamlandı mı
 const SAYAC_PRESETLER = [15, 25, 40, 60, 90];
 
-/** Büyük süre yazıları: stencil font (yüklenemezse kalın mono'ya düşer). */
-const SAAT_FONT = "var(--font-saat), ui-monospace, monospace";
+/**
+ * Büyük süre yazıları: Potra (Rainmeter tarzı kesik font). Potra'da olmayan
+ * harfler (Ç, Ş, İ...) yedek stencil fonttan gelir; ikisi de yoksa mono.
+ */
+const SAAT_FONT = "var(--font-saat), var(--font-saat-yedek), ui-monospace, monospace";
 
 type Sekme = "saat" | "sayac" | "kronometre" | "pomodoro";
 

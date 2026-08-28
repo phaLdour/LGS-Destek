@@ -1,14 +1,25 @@
+import localFont from "next/font/local";
 import { Saira_Stencil_One } from "next/font/google";
 import { Timer } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OdakClient } from "@/components/odak/OdakClient";
 import { getShellUser } from "@/lib/user";
 
-// Kilit ekranı tarzı "kesik" (stencil) rakam fontu — yalnız bu sayfada yüklenir.
-const saatFontu = Saira_Stencil_One({
+// Rainmeter/Wallpaper Engine saatlerindeki kesik fütüristik font: Potra
+// (Alejo Bergmann; kişisel + ticari kullanım serbest — bkz. fonts/Potra-LISANS.txt).
+// Yalnız bu sayfada yüklenir.
+const saatFontu = localFont({
+  src: "../fonts/Potra.ttf",
+  variable: "--font-saat",
+  display: "swap",
+});
+
+// Potra'da olmayan harfler (Ç, Ş, İ, Ğ, Ö gibi Türkçe karakterler) için
+// yedek: aynı havada bir stencil font — karışım göze batmaz.
+const saatFontuYedek = Saira_Stencil_One({
   weight: "400",
   subsets: ["latin", "latin-ext"],
-  variable: "--font-saat",
+  variable: "--font-saat-yedek",
   display: "swap",
 });
 
@@ -42,7 +53,7 @@ export default async function OdakPage() {
           </div>
         </div>
       </header>
-      <div className={saatFontu.variable}>
+      <div className={`${saatFontu.variable} ${saatFontuYedek.variable}`}>
         <OdakClient />
       </div>
     </AppShell>
