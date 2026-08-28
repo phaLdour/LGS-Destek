@@ -480,6 +480,75 @@ function tryOkulLookup(rawText: string, input: string): CannedResult | null {
 }
 
 /**
+ * ── Yazım hatası toleransı ──────────────────────────────────────────
+ * Öğrenciler telefonda hızlı yazar: "rekapet", "sözlk", "kelme testi".
+ * Kalıp katmanı bunları ıskalarsa soru AI'ya düşer (kota) ya da cevapsız
+ * kalır. Bu yardımcılar, anahtar kelimeleri küçük yazım hatalarına
+ * dayanıklı eşleştirir:
+ *   - kelime uzunluğu 5-7 harf → 1 harflik hata payı
+ *   - 8+ harf → 2 harflik hata payı
+ *   - 4 harf ve altı → tam eşleşme (kısa kelimede tolerans yanlış
+ *     pozitif üretir: "ders" ~ "dert" olmamalı)
+ * Ek yakalama için önek eşleşmesi de kabul edilir ("rekabet" → "rekabete").
+ */
+function duzenlemeMesafesi(a: string, b: string, sinir: number): number {
+  if (Math.abs(a.length - b.length) > sinir) return sinir + 1;
+  // Damerau-Levenshtein (kısıtlı): ekleme/silme/değiştirme 1, ve çok
+  // yaygın bir hata olan KOMŞU HARF TAKASI ("tesit" ↔ "testi") da 1 sayılır.
+  const m = a.length;
+  const n = b.length;
+  let onceki2: number[] = [];
+  let onceki: number[] = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const simdiki: number[] = [i];
+    let satirMin = i;
+    for (let j = 1; j <= n; j++) {
+      let v = Math.min(
+        onceki[j] + 1,
+        simdiki[j - 1] + 1,
+        onceki[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+      if (
+        i > 1 && j > 1 &&
+        a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]
+      ) {
+        v = Math.min(v, onceki2[j - 2] + 1);
+      }
+      simdiki[j] = v;
+      if (v < satirMin) satirMin = v;
+    }
+    if (satirMin > sinir) return sinir + 1; // erken çıkış
+    onceki2 = onceki;
+    onceki = simdiki;
+  }
+  return onceki[n];
+}
+
+function tokenUyar(token: string, hedef: string): boolean {
+  if (token === hedef) return true;
+  // Ekli hâller: "rekabete", "sozlugun" → önek eşleşmesi
+  if (hedef.length >= 4 && token.startsWith(hedef)) return true;
+  if (hedef.length < 5) return false;
+  const sinir = hedef.length >= 8 ? 2 : 1;
+  if (duzenlemeMesafesi(token, hedef, sinir) <= sinir) return true;
+  // Ek + yazım hatası birlikte: token'ın hedef uzunluğundaki öneki
+  if (token.length > hedef.length) {
+    const on = token.slice(0, hedef.length);
+    if (duzenlemeMesafesi(on, hedef, sinir) <= sinir) return true;
+  }
+  return false;
+}
+
+/**
+ * Çok kelimeli anahtar eşleşmesi, yazım hatasına dayanıklı:
+ * anahtarın HER kelimesi, girdinin bir token'ıyla uyuşmalı.
+ */
+function anahtarUyar(tokens: string[], anahtar: string): boolean {
+  const parcalar = anahtar.trim().split(/\s+/);
+  return parcalar.every((p) => tokens.some((t) => tokenUyar(t, p)));
+}
+
+/**
  * Site BİLGİ soruları — "rekabet nasıl çalışıyor", "kelime testi nedir",
  * "haftalık görevler ne" gibi sorular, site haritasındaki özet ve
  * maddelerle AI'YA HİÇ GİTMEDEN cevaplanır. (Önceden bunlar Gemini'ye
@@ -487,26 +556,28 @@ function tryOkulLookup(rawText: string, input: string): CannedResult | null {
  * gerek yok.) Cevabın altına ilgili sayfanın butonu eklenir.
  */
 function tryBolumBilgisi(input: string): CannedResult | null {
+  const tokens = input.split(" ");
+  // "nasil" tek başına yeterli değil ("nasıl giderim" gitme isteğidir);
+  // bir fiil/soru köküyle birlikte aranır. Kökler önek eşleşmeli, yani
+  // "calisiyo", "calisir", "isliyor" hepsi yakalanır; yazım hatası payı
+  // tokenUyar ile ("calsiyor", "nassil" gibi).
+  const nasilVar = tokens.some((t) => tokenUyar(t, "nasil"));
+  const bilgiKoku = ["calis", "isle", "isliyor", "kullan", "sec", "yap", "olur"];
   const bilgiSorusu =
-    input.includes("nasil calis") ||
-    input.includes("nasil isli") ||
+    (nasilVar && bilgiKoku.some((k) => tokens.some((t) => tokenUyar(t, k) || t.startsWith(k)))) ||
+    tokens.some((t) => tokenUyar(t, "nedir")) ||
+    input.includes("ne demek istiyor") ||
     input.includes("ne ise yarar") ||
-    input.includes("nedir") ||
     input.includes("ne oldugunu") ||
-    input.includes("anlat") ||
-    input.includes("kurallar") ||
-    input.includes("nasil kullan") ||
-    input.includes("nasil sec") ||
-    input.includes("nasil yap") ||
-    input.includes("nasil olur") ||
+    tokens.some((t) => tokenUyar(t, "anlat")) ||
+    tokens.some((t) => tokenUyar(t, "kurallar")) ||
     input.includes("nereden");
   if (!bilgiSorusu) return null;
 
-  const padded = `${input} `;
   let enIyi: { rota: string; ad: string; ozet: string; maddeler: string[]; uzunluk: number } | null = null;
   for (const b of SITE_HARITASI) {
     for (const anahtar of b.anahtarlar) {
-      if (!padded.includes(anahtar)) continue;
+      if (!anahtarUyar(tokens, anahtar)) continue;
       if (enIyi && anahtar.length <= enIyi.uzunluk) continue;
       enIyi = {
         rota: b.rota,
@@ -633,13 +704,13 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
   // Yukarıdaki özel durumlar (puan açıklaması, bugünün hataları gibi) elendi;
   // geri kalan her sayfa tek bir yerden, site haritasından eşleştirilir.
   // Böylece siteye yeni bir bölüm eklendiğinde burayı değiştirmek gerekmez.
-  const padded = `${input} `;
   type Aday = { rota: string; ad: string; uzunluk: number; derinlik: number };
   const adaylar: Aday[] = [];
   for (const b of SITE_HARITASI) {
     if (b.fiilGerekir && !hasVerb) continue;
     for (const anahtar of b.anahtarlar) {
-      if (!padded.includes(anahtar)) continue;
+      // Yazım hatasına dayanıklı eşleşme ("rekapet", "okullr", "sözlk")
+      if (!anahtarUyar(tokens, anahtar)) continue;
       adaylar.push({
         rota: b.rota,
         ad: b.ad,
