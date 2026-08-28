@@ -479,6 +479,54 @@ function tryOkulLookup(rawText: string, input: string): CannedResult | null {
   };
 }
 
+/**
+ * Site BİLGİ soruları — "rekabet nasıl çalışıyor", "kelime testi nedir",
+ * "haftalık görevler ne" gibi sorular, site haritasındaki özet ve
+ * maddelerle AI'YA HİÇ GİTMEDEN cevaplanır. (Önceden bunlar Gemini'ye
+ * düşüyordu; site haritası zaten tek doğru kaynak — token harcamaya
+ * gerek yok.) Cevabın altına ilgili sayfanın butonu eklenir.
+ */
+function tryBolumBilgisi(input: string): CannedResult | null {
+  const bilgiSorusu =
+    input.includes("nasil calis") ||
+    input.includes("nasil isli") ||
+    input.includes("ne ise yarar") ||
+    input.includes("nedir") ||
+    input.includes("ne oldugunu") ||
+    input.includes("anlat") ||
+    input.includes("kurallar") ||
+    input.includes("nasil kullan") ||
+    input.includes("nasil sec") ||
+    input.includes("nasil yap") ||
+    input.includes("nasil olur") ||
+    input.includes("nereden");
+  if (!bilgiSorusu) return null;
+
+  const padded = `${input} `;
+  let enIyi: { rota: string; ad: string; ozet: string; maddeler: string[]; uzunluk: number } | null = null;
+  for (const b of SITE_HARITASI) {
+    for (const anahtar of b.anahtarlar) {
+      if (!padded.includes(anahtar)) continue;
+      if (enIyi && anahtar.length <= enIyi.uzunluk) continue;
+      enIyi = {
+        rota: b.rota,
+        ad: b.ad,
+        ozet: b.ozet,
+        maddeler: b.yapabilecekleri,
+        uzunluk: anahtar.length,
+      };
+    }
+  }
+  if (!enIyi) return null;
+
+  const govde =
+    enIyi.maddeler.length > 0
+      ? `**${enIyi.ad}** — ${enIyi.ozet}\n\n` +
+        enIyi.maddeler.map((m) => `• ${m}`).join("\n")
+      : `**${enIyi.ad}** — ${enIyi.ozet}`;
+  return { reply: govde, topicRoute: enIyi.rota };
+}
+
 function tryNavigation(input: string, tokens: string[]): CannedResult | null {
   const hasVerb = NAV_VERBS.some((v) => tokens.includes(v));
 
@@ -514,7 +562,11 @@ function tryNavigation(input: string, tokens: string[]): CannedResult | null {
 
   // (Sözlük "x kelimesinin anlamı" formu matchCanned tarafından raw text
   //  ile önceden denenir — burada yalnız genel "sözlük" niyeti kalır.)
-  if (input.includes("sozluk") || (input.includes("kelime") && (input.includes("ara") || hasVerb))) {
+  if (
+    !input.includes("kelime testi") && // testi genel katman /sozluk/test'e götürür
+    (input.includes("sozluk") ||
+      (input.includes("kelime") && (input.includes("ara") || hasVerb)))
+  ) {
     return { reply: "Türkçe Sözlük'e götürüyorum.", navigate: "/sozluk" };
   }
 
@@ -1883,6 +1935,9 @@ export function matchCanned(text: string): CannedResult | null {
   const tokens = input.split(" ");
 
   return (
+    // Bölüm bilgi soruları en önce: "sözlük nasıl kullanılır" gibi sorular
+    // tryIntents'teki genel cevaba düşmeden doğru bölümün özetini alır.
+    tryBolumBilgisi(input) ??
     tryIntents(input, tokens) ??
     // Sözlük "x kelimesinin anlamı" raw text üzerinden (Türkçe karakter
     // korunarak); tryNavigation'dan ÖNCE denenir.

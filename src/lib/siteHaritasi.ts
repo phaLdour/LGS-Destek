@@ -132,8 +132,9 @@ export const SITE_HARITASI: SiteBolumu[] = [
       "Kolay ve zor seviye seçeneği var.",
       "Gerçek LGS süresi uygulanır (sözel 75 dk, sayısal 80 dk).",
       "Bitince net hesabın ve tahmini puanın çıkar.",
+      "Gelişim grafiği: sayfanın altında son 12 denemendeki net eğilimin çizilir (2+ denemeden sonra görünür).",
     ],
-    anahtarlar: ["deneme"],
+    anahtarlar: ["deneme", "gelisim grafigi", "net grafigi"],
   },
   {
     rota: "/cikmis-sorular",
@@ -167,9 +168,22 @@ export const SITE_HARITASI: SiteBolumu[] = [
       "Kelime aratabilir ya da harf çubuğundan (A, B, C…) atlayabilirsin.",
       "Her kelimede anlamlar gerçek / mecaz / terim diye ayrılmıştır — LGS'nin sözcükte anlam soruları tam olarak bunu ölçer.",
       "Bana doğrudan “falanca kelimenin anlamı ne” diye de sorabilirsin, sayfaya gitmene gerek kalmaz.",
+      "Kelime Testi: sözlükten üretilen 2.700+ LGS tarzı soru — “cümlede hangi anlamda?” ve “gerçek mi mecaz mı?”. 100 soru çözene Kelime Avcısı rozeti.",
     ],
     // "sozlu": Türkçe ekleme sırasında k → ğ yumuşar (sözlük → sözlüğe).
     anahtarlar: ["sozlu", "kelime anlam"],
+  },
+  {
+    rota: "/sozluk/test",
+    ad: "Kelime Testi",
+    ozet:
+      "Sözlükteki kelimelerden üretilen LGS tarzı sözcükte anlam testi: cümlede hangi anlamda, gerçek mi mecaz mı?",
+    yapabilecekleri: [
+      "Her tur 10 soru; her turda farklı kelimeler gelir.",
+      "Sorular sözlükteki gerçek tanım ve örnek cümlelerden üretilir — 2.700'den fazla soru vardır.",
+      "Sonuçların soru sayacına işlenir; 100 soru çözene Kelime Avcısı rozeti verilir.",
+    ],
+    anahtarlar: ["kelime testi", "kelime sorusu", "sozcukte anlam testi", "mecaz testi"],
   },
   {
     rota: "/okullar",
@@ -180,8 +194,9 @@ export const SITE_HARITASI: SiteBolumu[] = [
       "Bir okula dokununca 2018'den bugüne taban puanı, yüzdelik dilimi ve kontenjanı yıl yıl görünür.",
       "Her okulun kendi resmî sayfasına bağlantı vardır.",
       "Bana doğrudan “falanca lisenin 2023 taban puanı neydi” diye de sorabilirsin.",
+      "Hedef okul: bir okulun sayfasındaki “Hedefim yap” butonuna basarsan o okul anasayfanda hedef kartı olarak görünür (taban puanı + son tam deneme netinle yan yana). Aynı butondan hedefi kaldırabilirsin.",
     ],
-    anahtarlar: ["okul", "lise", "taban puan", "okul tarama", "hangi lise"],
+    anahtarlar: ["okul", "lise", "taban puan", "okul tarama", "hangi lise", "hedef okul", "hedefim"],
   },
   {
     rota: "/puan-hesapla",
@@ -205,8 +220,9 @@ export const SITE_HARITASI: SiteBolumu[] = [
       "Sezon kupası: her ayın 1'inde sezon kapanır, bitirdiğin lig ve sıralaman kupa olur (ilk 3 altın/gümüş/bronz).",
       "Yumuşak reset: yeni sezona bir önceki sezonun iki kademe altından, 50 puanla başlarsın.",
       "Sezon sıralaması (liderlik tablosu) ve maç geçmişin ayrı sayfalarda.",
+      "Haftalık görevler: 3 ranklı maç (+15 puan), 100 soru (+10) ve 5 farklı gün çalışma (+20). Pazartesi sıfırlanır; ödülü görevin kartından kendin alırsın.",
     ],
-    anahtarlar: ["rekabet", "duello", "dello", "1v1", "mac ara", "lig", "yaris"],
+    anahtarlar: ["rekabet", "duello", "dello", "1v1", "mac ara", "lig", "yaris", "haftalik gorev"],
     girisGerekir: true,
   },
   {
