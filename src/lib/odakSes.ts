@@ -93,6 +93,12 @@ function motoruHazirla(): { ctx: AudioContext; master: GainNode } | null {
     master = ctx.createGain();
     master.gain.value = sesSeviyesi();
     master.connect(ctx.destination);
+    // Ölçüm/kalibrasyon kancası (ses dengeleme testleri master'a analizör bağlar)
+    try {
+      (window as Window & { __odakSesMotor?: unknown }).__odakSesMotor = { ctx, master };
+    } catch {
+      /* yut */
+    }
   }
   if (ctx.state === "suspended") void ctx.resume();
   return { ctx, master: master! };
@@ -119,10 +125,12 @@ export function sesiCal(id: string) {
   const kur = SES_KURUCULAR[id];
   if (!kur) return;
 
-  // Ses başına yumuşak giriş/çıkış sarmalayıcısı
+  // Ses başına yumuşak giriş/çıkış sarmalayıcısı.
+  // SES_TRIM: her sesin RMS ölçümüyle bulunan denge katsayısı — aynı ses
+  // seviyesi ayarında bütün sesler aynı algılanan yükseklikte çalar.
   const cikis = motor.ctx.createGain();
   cikis.gain.setValueAtTime(0, motor.ctx.currentTime);
-  cikis.gain.linearRampToValueAtTime(1, motor.ctx.currentTime + 0.6);
+  cikis.gain.linearRampToValueAtTime(SES_TRIM[id] ?? 1, motor.ctx.currentTime + 0.6);
   cikis.connect(motor.master);
 
   const durdur = kur(motor.ctx, cikis);
@@ -141,6 +149,22 @@ export function sesiCal(id: string) {
 }
 
 /* --------------------------- Ortak yapı taşları --------------------------- */
+
+/**
+ * Desibel dengesi: her sesin 8 sn'lik RMS ölçümünden türetilen katsayılar
+ * (hedef: hepsinde aynı algılanan yükseklik). Ölçüm headless Chrome'da
+ * AnalyserNode ile yapıldı; yeni ses eklenirse yeniden ölçülmeli.
+ */
+const SES_TRIM: Record<string, number> = {
+  yagmur: 1.09,
+  selale: 0.48,
+  dalga: 0.96,
+  kus: 2.6, // seyrek cıvıltı: tam RMS düzeltmesi tiz kaçar, kısmi uygulanır
+  somine: 0.75,
+  kutuphane: 1.64, // seyrek olaylı: kısmi düzeltme
+  sinav: 1.39, // seyrek olaylı: kısmi düzeltme
+  beyaz: 0.71,
+};
 
 type Kurucu = (ctx: AudioContext, out: GainNode) => () => void;
 
@@ -605,74 +629,142 @@ const SES_KURUCULAR: Record<string, Kurucu> = {
   },
 
   /**
-   * Sınav ortamı: gerçek sınava alışmak için — sessiz salon, birçok
-   * öğrencinin kalem cızırtısı, sayfa sesleri, arada öksürük/burun çekme.
+   * Sınav ortamı v2 — YouTube'daki "sınav ambiyansı" videolarının hissi:
+   * derin bir salon sessizliği, onlarca öğrencinin uzaktan gelen yumuşak
+   * kalem sesi, ara sıra sayfa çevirme, seyrek uzak öksürük ve sandalye
+   * gıcırtısı. Her şey yumuşak atak ve alçak seviyelerle — irkiltmez,
+   * sınav gerginliğine alıştırır.
    */
   sinav(ctx, out) {
+    // Salon tonu: çift katman — çok derin oda + hafif havalandırma vınlaması
     const salon = gurultuKaynagi(ctx, "kahve");
-    const salonF = filtre(ctx, "lowpass", 200, 0.4);
+    const salonF = filtre(ctx, "lowpass", 140, 0.3);
     salon.src.disconnect();
     salon.src.connect(salonF);
     salonF.connect(salon.kazanc);
-    salon.kazanc.gain.value = 0.12;
+    salon.kazanc.gain.value = 0.22;
     salon.kazanc.connect(out);
 
-    // Kalem cızırtısı: 2-6 kısa vuruşluk "yazma" demetleri (bir öğrenci yazar)
-    const yazmalar = olayDongusu(350, 1600, () => {
+    const hava = gurultuKaynagi(ctx, "pembe");
+    const havaF = filtre(ctx, "bandpass", 420, 0.6);
+    hava.src.disconnect();
+    hava.src.connect(havaF);
+    havaF.connect(hava.kazanc);
+    hava.kazanc.gain.value = 0.045;
+    hava.kazanc.connect(out);
+
+    // Tek kalem vuruşu: yumuşak atak, hafif aşağı süzülen bant — "grafit
+    // kâğıda sürtünüyor" hissi. Sert tıkırtı yok.
+    const kalemVurusu = (pan: number, tepe: number) => {
+      const sure = rastgele(0.12, 0.34);
+      gurultuPatlamasi(ctx, out, {
+        tip: "pembe",
+        filtreTip: "bandpass",
+        frekans: rastgele(1600, 2600),
+        q: 0.9,
+        sureSn: sure,
+        tepe,
+        atakSn: sure * 0.35, // yumuşak giriş: cızırtı "belirir", patlamaz
+        pan,
+      });
+      // İnce üst katman: grafit tanelerinin tiz sürtünmesi, çok kısık
+      gurultuPatlamasi(ctx, out, {
+        frekans: rastgele(3800, 5200),
+        q: 1.4,
+        sureSn: sure * 0.8,
+        tepe: tepe * 0.35,
+        atakSn: sure * 0.3,
+        pan,
+      });
+    };
+
+    // Yazan öğrenciler: aynı köşeden 3-8 vuruşluk bir yazma cümlesi gelir,
+    // sonra o öğrenci durur; başka köşeden bir başkası başlar.
+    const yazmalar = olayDongusu(900, 3200, () => {
       const pan = rastgele(-0.9, 0.9);
-      const vurus = Math.floor(rastgele(2, 7));
-      const tepe = rastgele(0.02, 0.06);
+      const vurus = Math.floor(rastgele(3, 9));
+      const tepe = rastgele(0.02, 0.05); // uzak ve kibar
       let gecikme = 0;
       for (let i = 0; i < vurus; i++) {
-        window.setTimeout(() => {
-          gurultuPatlamasi(ctx, out, {
-            frekans: rastgele(2500, 4500),
-            q: 1.5,
-            sureSn: rastgele(0.05, 0.16),
-            tepe: tepe * rastgele(0.6, 1),
-            atakSn: 0.015,
-            pan,
-          });
-        }, gecikme);
-        gecikme += rastgele(90, 260);
+        window.setTimeout(() => kalemVurusu(pan, tepe * rastgele(0.6, 1)), gecikme);
+        gecikme += rastgele(160, 420);
       }
     });
 
-    // Sayfa çevirme: sınavda sık duyulur
-    const sayfalar = olayDongusu(6000, 18000, () => {
-      gurultuPatlamasi(ctx, out, {
-        frekans: rastgele(1200, 2400),
-        q: 0.8,
-        sureSn: rastgele(0.15, 0.28),
-        tepe: rastgele(0.05, 0.11),
-        atakSn: 0.035,
-        pan: rastgele(-0.8, 0.8),
-      });
+    // Yakın masadan tek tük vuruş (kendi kalemin hissi) — biraz daha belirgin
+    const yakinKalem = olayDongusu(4000, 12000, () => {
+      const pan = rastgele(-0.25, 0.25);
+      const vurus = Math.floor(rastgele(2, 5));
+      let gecikme = 0;
+      for (let i = 0; i < vurus; i++) {
+        window.setTimeout(() => kalemVurusu(pan, rastgele(0.05, 0.08)), gecikme);
+        gecikme += rastgele(200, 500);
+      }
     });
 
-    // Öksürük / burun çekme: nadir, uzak
-    const oksuruk = olayDongusu(25000, 70000, () => {
+    // Sayfa çevirme: iki aşamalı yumuşak hışırtı (kaldır + bırak)
+    const sayfalar = olayDongusu(9000, 22000, () => {
       const pan = rastgele(-0.8, 0.8);
-      const t = () =>
+      gurultuPatlamasi(ctx, out, {
+        frekans: rastgele(1100, 1900),
+        q: 0.7,
+        sureSn: rastgele(0.2, 0.35),
+        tepe: rastgele(0.04, 0.08),
+        atakSn: 0.08,
+        pan,
+      });
+      window.setTimeout(() => {
         gurultuPatlamasi(ctx, out, {
-          tip: "pembe",
-          filtreTip: "bandpass",
-          frekans: rastgele(350, 650),
-          q: 1.2,
-          sureSn: rastgele(0.12, 0.2),
-          tepe: rastgele(0.06, 0.13),
-          atakSn: 0.01,
+          frekans: rastgele(1400, 2400),
+          q: 0.7,
+          sureSn: rastgele(0.1, 0.18),
+          tepe: rastgele(0.025, 0.05),
+          atakSn: 0.04,
           pan,
         });
-      t();
-      if (Math.random() < 0.6) window.setTimeout(t, rastgele(220, 400));
+      }, rastgele(220, 420));
+    });
+
+    // Uzak öksürük: iyice boğuk (alçak geçiren), çift vuruş, nadir
+    const oksuruk = olayDongusu(35000, 90000, () => {
+      const pan = rastgele(-0.8, 0.8);
+      const vur = (tepe: number) =>
+        gurultuPatlamasi(ctx, out, {
+          tip: "pembe",
+          filtreTip: "lowpass",
+          frekans: rastgele(300, 480),
+          q: 0.8,
+          sureSn: rastgele(0.14, 0.22),
+          tepe,
+          atakSn: 0.015,
+          pan,
+        });
+      vur(rastgele(0.05, 0.1));
+      window.setTimeout(() => vur(rastgele(0.03, 0.06)), rastgele(240, 380));
+    });
+
+    // Sandalye kıpırdanması: çok nadir, alçak tok ses
+    const sandalye = olayDongusu(30000, 75000, () => {
+      gurultuPatlamasi(ctx, out, {
+        tip: "kahve",
+        filtreTip: "lowpass",
+        frekans: rastgele(120, 220),
+        q: 0.8,
+        sureSn: rastgele(0.2, 0.4),
+        tepe: rastgele(0.05, 0.1),
+        atakSn: 0.05,
+        pan: rastgele(-0.6, 0.6),
+      });
     });
 
     return () => {
       yazmalar();
+      yakinKalem();
       sayfalar();
       oksuruk();
+      sandalye();
       salon.src.stop();
+      hava.src.stop();
     };
   },
 

@@ -9,6 +9,7 @@
  */
 
 import type React from "react";
+import { useState } from "react";
 
 export type OdakTemasi = {
   id: string;
@@ -16,17 +17,25 @@ export type OdakTemasi = {
   emoji: string;
   /** Tema seçicideki küçük kutunun arka planı */
   onizleme: string;
+  /**
+   * Unsplash CDN fotoğrafı (ücretsiz lisans, hotlink destekli).
+   * Boyut/kalite parametreleri TemaSahnesi'nde eklenir. Fotoğraf yüklenmezse
+   * (çevrimdışı, engelli ağ...) altta duran çizim sahnesi görünür kalır.
+   */
+  fotograf: string;
+  /** Fotoğrafçı (Unsplash) — kaynak notu için */
+  kredi: string;
 };
 
 export const TEMALAR: OdakTemasi[] = [
-  { id: "orman", ad: "Orman", emoji: "🌲", onizleme: "linear-gradient(180deg,#0c2b1a,#1d5233)" },
-  { id: "tapinak", ad: "Tapınak", emoji: "⛩️", onizleme: "linear-gradient(180deg,#2a1a3e,#c96f4a)" },
-  { id: "okul", ad: "Sınıf", emoji: "🏫", onizleme: "linear-gradient(180deg,#1c3c31,#15302a)" },
-  { id: "kutuphane", ad: "Kütüphane", emoji: "📚", onizleme: "linear-gradient(180deg,#2e1d12,#4a2f1b)" },
-  { id: "yagmur", ad: "Yağmurlu Cam", emoji: "🌧️", onizleme: "linear-gradient(180deg,#232b3a,#3a4a63)" },
-  { id: "gece", ad: "Gece Gökyüzü", emoji: "🌙", onizleme: "linear-gradient(180deg,#070b1d,#1b2a52)" },
-  { id: "somine", ad: "Şömine", emoji: "🔥", onizleme: "linear-gradient(180deg,#1c0f08,#4a2410)" },
-  { id: "sahil", ad: "Gün Batımı Sahili", emoji: "🌅", onizleme: "linear-gradient(180deg,#35507a,#f7b267)" },
+  { id: "orman", ad: "Orman", emoji: "🌲", onizleme: "linear-gradient(180deg,#0c2b1a,#1d5233)", fotograf: "https://images.unsplash.com/photo-1764622737791-5d1d914a366c", kredi: "noelle" },
+  { id: "tapinak", ad: "Tapınak", emoji: "⛩️", onizleme: "linear-gradient(180deg,#2a1a3e,#c96f4a)", fotograf: "https://images.unsplash.com/photo-1778846802392-c7cf7ae38458", kredi: "Julen Rey Azcona" },
+  { id: "okul", ad: "Sınıf", emoji: "🏫", onizleme: "linear-gradient(180deg,#1c3c31,#15302a)", fotograf: "https://images.unsplash.com/photo-1644997933069-f5ede7b207ac", kredi: "Nguyen Phan Nam Anh" },
+  { id: "kutuphane", ad: "Kütüphane", emoji: "📚", onizleme: "linear-gradient(180deg,#2e1d12,#4a2f1b)", fotograf: "https://images.unsplash.com/photo-1770131748972-b1a08d57efbc", kredi: "Ahmet Yüksek" },
+  { id: "yagmur", ad: "Yağmurlu Cam", emoji: "🌧️", onizleme: "linear-gradient(180deg,#232b3a,#3a4a63)", fotograf: "https://images.unsplash.com/photo-1643287146701-93c795880dda", kredi: "Max van den Oetelaar" },
+  { id: "gece", ad: "Gece Gökyüzü", emoji: "🌙", onizleme: "linear-gradient(180deg,#070b1d,#1b2a52)", fotograf: "https://images.unsplash.com/photo-1765825365130-52e276bca060", kredi: "Filip Kvasnak" },
+  { id: "somine", ad: "Şömine", emoji: "🔥", onizleme: "linear-gradient(180deg,#1c0f08,#4a2410)", fotograf: "https://images.unsplash.com/photo-1554332208-9dfebcc48334", kredi: "Hayden Scott" },
+  { id: "sahil", ad: "Gün Batımı Sahili", emoji: "🌅", onizleme: "linear-gradient(180deg,#35507a,#f7b267)", fotograf: "https://images.unsplash.com/photo-1733508244270-1155719f22d3", kredi: "Joshua Woroniecki" },
 ];
 
 export const VARSAYILAN_TEMA = "orman";
@@ -608,7 +617,17 @@ function Sahil() {
 
 /* ------------------------------ Dışa açılan ------------------------------ */
 
+/**
+ * Önce çizim sahnesi çizilir (anında görünür), üstüne yüksek kaliteli
+ * fotoğraf yüklenir ve yumuşakça belirir. Fotoğraf yüklenemezse (ağ yok,
+ * CDN engelli) çizim sahne fallback olarak kalır — ekran asla boş olmaz.
+ */
 export function TemaSahnesi({ tema }: { tema: string }) {
+  const [yuklendi, setYuklendi] = useState<Record<string, boolean>>({});
+  const [hatali, setHatali] = useState<Record<string, boolean>>({});
+  const bilgi = TEMALAR.find((t) => t.id === tema);
+  const fotoUrl = bilgi && !hatali[tema] ? `${bilgi.fotograf}?auto=format&fit=crop&w=1920&q=78` : null;
+
   return (
     <div className="absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden>
       {tema === "orman" && <Orman />}
@@ -619,10 +638,21 @@ export function TemaSahnesi({ tema }: { tema: string }) {
       {tema === "gece" && <Gece />}
       {tema === "somine" && <Somine />}
       {tema === "sahil" && <Sahil />}
+      {fotoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={fotoUrl}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+          style={{ opacity: yuklendi[tema] ? 1 : 0 }}
+          onLoad={() => setYuklendi((y) => ({ ...y, [tema]: true }))}
+          onError={() => setHatali((h) => ({ ...h, [tema]: true }))}
+        />
+      )}
       {/* Yazı okunurluğu için ortak, hafif karartma */}
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: "radial-gradient(ellipse at 50% 42%,rgba(0,0,0,0.28) 0%,rgba(0,0,0,0.12) 45%,rgba(0,0,0,0.3) 100%)" }}
+        style={{ background: "radial-gradient(ellipse at 50% 42%,rgba(0,0,0,0.34) 0%,rgba(0,0,0,0.16) 45%,rgba(0,0,0,0.38) 100%)" }}
       />
     </div>
   );

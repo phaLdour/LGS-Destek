@@ -145,10 +145,11 @@ export const SITE_HARITASI: SiteBolumu[] = [
     ozet:
       "Ders çalışırken arkada duran sayaç: saat, geri sayım, kronometre ve Pomodoro — tema ve ortam sesleriyle.",
     yapabilecekleri: [
-      "Üç sayaç var: saat (o anki saati gösterir), geri sayım (15-90 dk hazır seçenekler veya kendi süren) ve kronometre.",
-      "8 canlı tema seçebilirsin: orman, tapınak, sınıf, kütüphane, yağmurlu cam, gece gökyüzü, şömine, gün batımı sahili.",
-      "8 ortam sesi var: yağmur, şelale, deniz, kuş sesleri, şömine, kütüphane, sınav ortamı (kalem-kâğıt sesi — gerçek sınava alışmak için) ve beyaz gürültü. Ses seviyesi ayarlanır.",
-      "Pomodoro bölümü ayrıdır: 25 dk çalışma + 5 dk mola, 4. turdan sonra 15 dk uzun mola. Süre hiç durmaz — molayı uzatma hilesi yapılamaz, fazlar zille bildirilir.",
+      "Dört sekme var: saat (kilit ekranı tarzı büyük saat), geri sayım (15-90 dk hazır seçenekler veya kendi süren), kronometre ve POMODORO.",
+      "Sağ alttaki Tema butonundan 8 gerçek fotoğraflı tema seçilir: orman, tapınak, sınıf, kütüphane, yağmurlu cam, gece gökyüzü, şömine, gün batımı sahili.",
+      "Sağ alttaki Ses butonundan 8 ortam sesi seçilir: yağmur, şelale, deniz, kuş sesleri, şömine, kütüphane, sınav ortamı (kalem-kâğıt sesi — gerçek sınava alışmak için) ve beyaz gürültü. Hepsi aynı ses düzeyine dengelidir; seviye ayarlanır.",
+      "Tam ekran butonu her şeyi gizler, yalnız süre kalır — seçimleri tam ekrana geçmeden yapmalısın.",
+      "Pomodoro özel bir moddur: 25 dk çalışma + 5 dk mola, 4. turdan sonra 15 dk uzun mola; fazlar zille bildirilir. Süre hiç durmaz ve başlatınca diğer sekmeler kilitlenir. İlk kullanımda istediğin an çıkabilirsin; sonraki kullanımlarda çıkış yalnız molalarda açılır.",
       "Sayaç veya pomodoro çalışırken başka sayfaya geçebilirsin: köşedeki mini sayaç seninle gelir, ses kesilmez, sekme başlığında süre yazar.",
       "Geri sayım ve pomodoro'da çalıştığın dakikalar istatistiklerine, günlük serine ve odak rozetlerine işlenir (molalar sayılmaz).",
     ],

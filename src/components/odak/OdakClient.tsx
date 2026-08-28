@@ -1,19 +1,24 @@
 "use client";
 
 /**
- * Odak Modu — ana ekran.
+ * Odak Modu — ana ekran (revizyon 2).
  *
- * Üç sayaç (saat / geri sayım / kronometre) + ayrı Pomodoro bölümü.
- * Sayaç durumu src/lib/odak.ts singleton'ında yaşar: öğrenci başka sayfaya
- * geçse de sayaç ve ses devam eder (MiniOdak her sayfada görünür).
- * Tamamı tarayıcıda çalışır — AI yok, sunucu maliyeti yok.
+ * - 4 sekme: Saat / Sayaç / Kronometre / POMODORO (görsel olarak ayrıcalıklı)
+ * - Süreler ortada, çok büyük, stencil (kilit ekranı tarzı) fontla
+ * - Tema ve ses seçimi köşedeki iki küçük butonun paneline taşındı;
+ *   tam ekranda hiçbir seçici görünmez, yalnız süre kalır
+ * - Pomodoro başlatınca sekmeler kilitlenir; ilk kullanımda uyarı + çıkış
+ *   hakkı vardır, sonraki kullanımlarda çıkış yalnız molada açılır
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Clock3,
   Expand,
   Hourglass,
+  Minimize,
+  Music,
+  Palette,
   Pause,
   Play,
   Square,
@@ -50,9 +55,13 @@ import {
 import { TEMALAR, TemaSahnesi, VARSAYILAN_TEMA } from "@/components/odak/OdakTema";
 
 const TEMA_KEY = "rehberim:odak-tema";
+const POMODORO_USTA_KEY = "rehberim:pomodoro-usta"; // ilk pomodoro tamamlandı mı
 const SAYAC_PRESETLER = [15, 25, 40, 60, 90];
 
-type Sekme = "saat" | "sayac" | "kronometre";
+/** Büyük süre yazıları: stencil font (yüklenemezse kalın mono'ya düşer). */
+const SAAT_FONT = "var(--font-saat), ui-monospace, monospace";
+
+type Sekme = "saat" | "sayac" | "kronometre" | "pomodoro";
 
 function kayitliTema(): string {
   try {
@@ -64,29 +73,40 @@ function kayitliTema(): string {
   return VARSAYILAN_TEMA;
 }
 
+function pomodoroUstasiMi(): boolean {
+  try {
+    return window.localStorage.getItem(POMODORO_USTA_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 export function OdakClient() {
-  const [hazir, setHazir] = useState(false); // localStorage sonrası render
+  const [hazir, setHazir] = useState(false);
   const [sekme, setSekme] = useState<Sekme>("sayac");
   const [tema, setTema] = useState(VARSAYILAN_TEMA);
   const [ozelDk, setOzelDk] = useState("");
+  const [panel, setPanel] = useState<"tema" | "ses" | null>(null);
+  const [tamEkranda, setTamEkranda] = useState(false);
   const [, setTik] = useState(0);
   const tamEkranRef = useRef<HTMLDivElement>(null);
 
-  // İlk yükleme: kayıtlı tema + aktif sayaç varsa ilgili sekmeye geç
   useEffect(() => {
     setTema(kayitliTema());
     const d = odakDurumu();
-    if (d && d.mod !== "pomodoro") setSekme(d.mod);
+    if (d) setSekme(d.mod);
     setHazir(true);
   }, []);
 
-  // Yarım saniyede bir yeniden çiz (saat + sayaç göstergeleri için)
   useEffect(() => {
     const id = window.setInterval(() => setTik((t) => t + 1), 500);
     const aboneler = [odakAboneOl(() => setTik((t) => t + 1)), sesAboneOl(() => setTik((t) => t + 1))];
+    const fs = () => setTamEkranda(Boolean(document.fullscreenElement));
+    document.addEventListener("fullscreenchange", fs);
     return () => {
       window.clearInterval(id);
       aboneler.forEach((a) => a());
+      document.removeEventListener("fullscreenchange", fs);
     };
   }, []);
 
@@ -124,8 +144,8 @@ export function OdakClient() {
   }, []);
 
   const durum = odakDurumu();
-  const pomodoroAktif = durum?.mod === "pomodoro";
-  const serbetAktif = durum !== null && durum.mod !== "pomodoro";
+  const pomodoroKilidi = durum?.mod === "pomodoro";
+  const gosterilen: Sekme = pomodoroKilidi ? "pomodoro" : sekme;
 
   function temaSec(id: string) {
     setTema(id);
@@ -144,37 +164,55 @@ export function OdakClient() {
   }
 
   async function bitirVeKaydet() {
+    const d = odakDurumu();
+    // Pomodoro'da en az 1 tam çalışma turu bittiyse "usta" say — uyarı kalkar
+    if (d?.mod === "pomodoro") {
+      const faz = pomodoroFazi(aktifGecenSn(d));
+      if (faz.calismaSn >= POMODORO_CALISMA_DK * 60) {
+        try {
+          window.localStorage.setItem(POMODORO_USTA_KEY, "1");
+        } catch {
+          /* yut */
+        }
+      }
+    }
     const ozet = odakBitir();
     if (ozet) await odakOturumunuKaydet(ozet);
   }
 
-  return (
-    <div className="space-y-5">
-      {/* ============ Serbest sayaçlar: saat / geri sayım / kronometre ============ */}
-      <section
-        ref={tamEkranRef}
-        className="relative isolate overflow-hidden rounded-3xl border border-rehberim-border shadow-card"
-      >
-        <TemaSahnesi tema={tema} />
+  const SEKMELER: { id: Sekme; ad: string; Ikon: typeof Clock3 }[] = [
+    { id: "saat", ad: "Saat", Ikon: Clock3 },
+    { id: "sayac", ad: "Sayaç", Ikon: Hourglass },
+    { id: "kronometre", ad: "Kronometre", Ikon: Timer },
+  ];
 
-        <div className="relative z-10 flex min-h-[430px] flex-col p-4 sm:p-6">
-          {/* Üst şerit: sekmeler + tam ekran */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex rounded-2xl bg-black/30 p-1 backdrop-blur-sm">
-              {(
-                [
-                  { id: "saat", ad: "Saat", Ikon: Clock3 },
-                  { id: "sayac", ad: "Sayaç", Ikon: Hourglass },
-                  { id: "kronometre", ad: "Kronometre", Ikon: Timer },
-                ] as { id: Sekme; ad: string; Ikon: typeof Clock3 }[]
-              ).map(({ id, ad, Ikon }) => {
-                const secili = sekme === id;
+  return (
+    <section
+      ref={tamEkranRef}
+      className={`relative isolate overflow-hidden rounded-3xl border border-rehberim-border bg-rehberim-navy shadow-card ${
+        tamEkranda ? "" : ""
+      }`}
+    >
+      <TemaSahnesi tema={tema} />
+
+      <div className={`relative z-10 flex flex-col p-4 sm:p-6 ${tamEkranda ? "h-screen" : "min-h-[500px] sm:min-h-[540px]"}`}>
+        {/* ===== Üst şerit: sekmeler (tam ekranda gizli) ===== */}
+        {!tamEkranda && (
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex rounded-2xl bg-black/35 p-1 backdrop-blur-md">
+              {SEKMELER.map(({ id, ad, Ikon }) => {
+                const secili = gosterilen === id;
                 return (
                   <button
                     key={id}
-                    onClick={() => setSekme(id)}
+                    onClick={() => !pomodoroKilidi && setSekme(id)}
+                    disabled={pomodoroKilidi}
                     className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition sm:text-sm ${
-                      secili ? "bg-white text-rehberim-navy" : "text-white/85 hover:bg-white/15"
+                      secili
+                        ? "bg-white text-rehberim-navy"
+                        : pomodoroKilidi
+                          ? "cursor-not-allowed text-white/35"
+                          : "text-white/85 hover:bg-white/15"
                     }`}
                   >
                     <Ikon className="h-4 w-4" />
@@ -183,70 +221,224 @@ export function OdakClient() {
                 );
               })}
             </div>
+            {/* Pomodoro — bilerek ayrı ve gösterişli: bu sıradan bir sayaç değil */}
             <button
-              onClick={tamEkran}
-              title="Tam ekran"
-              aria-label="Tam ekran"
-              className="rounded-xl bg-black/30 p-2.5 text-white/85 backdrop-blur-sm transition hover:bg-black/45"
+              onClick={() => !pomodoroKilidi && setSekme("pomodoro")}
+              className={`group relative flex items-center gap-1.5 overflow-hidden rounded-2xl px-4 py-2.5 text-xs font-extrabold tracking-wide transition sm:text-sm ${
+                gosterilen === "pomodoro"
+                  ? "bg-gradient-to-r from-red-600 via-red-500 to-orange-500 text-white shadow-[0_0_22px_rgba(239,68,68,0.55)] ring-2 ring-red-300/60"
+                  : "bg-gradient-to-r from-red-700/80 to-orange-600/80 text-white/95 shadow-[0_0_12px_rgba(239,68,68,0.3)] hover:shadow-[0_0_20px_rgba(239,68,68,0.5)]"
+              }`}
             >
-              <Expand className="h-4 w-4" />
+              <span className="text-base leading-none">🍅</span> POMODORO
+              {pomodoroKilidi && <span className="ml-0.5">🔒</span>}
             </button>
           </div>
+        )}
 
-          {/* Gösterge */}
-          <div className="flex flex-1 flex-col items-center justify-center py-6 text-center">
-            {hazir && sekme === "saat" && <SaatGostergesi />}
-            {hazir && sekme === "sayac" && (
-              <SayacGostergesi durum={serbetAktif && durum!.mod === "sayac" ? durum : null} ozelDk={ozelDk} setOzelDk={setOzelDk} bitir={bitirVeKaydet} />
-            )}
-            {hazir && sekme === "kronometre" && (
-              <KronometreGostergesi durum={serbetAktif && durum!.mod === "kronometre" ? durum : null} bitir={bitirVeKaydet} />
-            )}
-            {hazir && serbetAktif && durum!.mod !== sekme && durum!.mod !== "pomodoro" && (
-              <button
-                onClick={() => setSekme(durum!.mod as Sekme)}
-                className="mt-4 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm transition hover:bg-white/25"
-              >
-                {durum!.mod === "sayac" ? "⏳ Sayaç çalışıyor — göster" : "⏱️ Kronometre çalışıyor — göster"}
-              </button>
-            )}
-            {hazir && pomodoroAktif && (
-              <p className="mt-4 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm">
-                🍅 Pomodoro çalışıyor — aşağıdaki bölümden takip edebilirsin
-              </p>
-            )}
-          </div>
-
-          {/* Tema + ses seçimi */}
-          <div className="space-y-3">
-            <TemaSecici tema={tema} temaSec={temaSec} />
-            <SesSecici />
-          </div>
+        {/* ===== Orta: büyük gösterge ===== */}
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center py-4 text-center">
+          {hazir && gosterilen === "saat" && <SaatGostergesi tamEkranda={tamEkranda} />}
+          {hazir && gosterilen === "sayac" && (
+            <SayacGostergesi
+              durum={durum?.mod === "sayac" ? durum : null}
+              ozelDk={ozelDk}
+              setOzelDk={setOzelDk}
+              bitir={bitirVeKaydet}
+              tamEkranda={tamEkranda}
+            />
+          )}
+          {hazir && gosterilen === "kronometre" && (
+            <KronometreGostergesi
+              durum={durum?.mod === "kronometre" ? durum : null}
+              bitir={bitirVeKaydet}
+              tamEkranda={tamEkranda}
+            />
+          )}
+          {hazir && gosterilen === "pomodoro" && (
+            <PomodoroGostergesi
+              durum={durum?.mod === "pomodoro" ? durum : null}
+              bitir={bitirVeKaydet}
+              tamEkranda={tamEkranda}
+            />
+          )}
+          {/* Başka modda sayaç çalışıyorsa küçük hatırlatma */}
+          {hazir && durum && durum.mod !== gosterilen && (
+            <button
+              onClick={() => setSekme(durum.mod)}
+              className="mt-4 rounded-xl bg-white/15 px-3 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm transition hover:bg-white/25"
+            >
+              {durum.mod === "sayac" && "⏳ Sayaç çalışıyor — göster"}
+              {durum.mod === "kronometre" && "⏱️ Kronometre çalışıyor — göster"}
+              {durum.mod === "pomodoro" && "🍅 Pomodoro çalışıyor — göster"}
+            </button>
+          )}
         </div>
-      </section>
 
-      {/* ============ Pomodoro — ayrı, kendine has bölüm ============ */}
-      <PomodoroKarti durum={pomodoroAktif ? durum : null} bitir={bitirVeKaydet} hazir={hazir} />
-    </div>
+        {/* ===== Alt şerit: küçük tema/ses/tam ekran butonları (tam ekranda gizli) ===== */}
+        {!tamEkranda && (
+          <div className="relative flex items-center justify-between">
+            <p className="hidden text-[11px] font-medium text-white/45 sm:block">
+              {aktifSes() ? `🎧 ${SESLER.find((s) => s.id === aktifSes())?.ad}` : ""}
+            </p>
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={() => setPanel(panel === "tema" ? null : "tema")}
+                title="Tema seç"
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold backdrop-blur-md transition ${
+                  panel === "tema" ? "bg-white text-rehberim-navy" : "bg-black/35 text-white/85 hover:bg-black/50"
+                }`}
+              >
+                <Palette className="h-4 w-4" /> Tema
+              </button>
+              <button
+                onClick={() => setPanel(panel === "ses" ? null : "ses")}
+                title="Ortam sesi"
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold backdrop-blur-md transition ${
+                  panel === "ses" ? "bg-white text-rehberim-navy" : "bg-black/35 text-white/85 hover:bg-black/50"
+                }`}
+              >
+                <Music className="h-4 w-4" /> Ses
+                {aktifSes() && <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />}
+              </button>
+              <button
+                onClick={tamEkran}
+                title="Tam ekran"
+                aria-label="Tam ekran"
+                className="rounded-xl bg-black/35 p-2.5 text-white/85 backdrop-blur-md transition hover:bg-black/50"
+              >
+                <Expand className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Tema paneli */}
+            {panel === "tema" && (
+              <div className="absolute bottom-full right-0 z-20 mb-2 w-72 rounded-2xl border border-white/15 bg-black/70 p-3 backdrop-blur-xl">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {TEMALAR.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        temaSec(t.id);
+                        setPanel(null);
+                      }}
+                      className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs font-bold transition ${
+                        t.id === tema ? "bg-white text-rehberim-navy" : "text-white/85 hover:bg-white/15"
+                      }`}
+                    >
+                      <span className="inline-block h-5 w-5 shrink-0 rounded-md ring-1 ring-white/30" style={{ background: t.onizleme }} />
+                      {t.emoji} {t.ad}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-[10px] font-medium text-white/40">Fotoğraflar: Unsplash</p>
+              </div>
+            )}
+
+            {/* Ses paneli */}
+            {panel === "ses" && (
+              <div className="absolute bottom-full right-0 z-20 mb-2 w-72 rounded-2xl border border-white/15 bg-black/70 p-3 backdrop-blur-xl">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {SESLER.map((s) => {
+                    const secili = s.id === aktifSes();
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => (secili ? sesiDurdur() : sesiCal(s.id))}
+                        title={s.aciklama}
+                        className={`rounded-xl px-2.5 py-2 text-left text-xs font-bold transition ${
+                          secili ? "bg-rehberim-accent text-white" : "text-white/85 hover:bg-white/15"
+                        }`}
+                      >
+                        {s.emoji} {s.ad}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-2.5 flex items-center gap-2 border-t border-white/10 pt-2.5">
+                  {aktifSes() ? (
+                    <button onClick={sesiDurdur} aria-label="Sesi kapat">
+                      <Volume2 className="h-4 w-4 text-white/85" />
+                    </button>
+                  ) : (
+                    <VolumeX className="h-4 w-4 text-white/50" />
+                  )}
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    defaultValue={Math.round(sesSeviyesi() * 100)}
+                    onChange={(e) => sesSeviyesiAyarla(Number(e.target.value) / 100)}
+                    aria-label="Ses seviyesi"
+                    className="h-1 flex-1 accent-[#F97316]"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tam ekranda: sağ üstte küçük çıkış butonu */}
+        {tamEkranda && (
+          <button
+            onClick={tamEkran}
+            aria-label="Tam ekrandan çık"
+            className="absolute right-4 top-4 rounded-xl bg-black/30 p-2.5 text-white/60 backdrop-blur-md transition hover:bg-black/50 hover:text-white"
+          >
+            <Minimize className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* --------------------------- Büyük süre yazısı --------------------------- */
+
+function BuyukSure({ metin, tamEkranda, kucult }: { metin: string; tamEkranda: boolean; kucult?: boolean }) {
+  return (
+    <p
+      className="leading-none text-white [text-shadow:0_4px_28px_rgba(0,0,0,0.55)]"
+      style={{
+        fontFamily: SAAT_FONT,
+        fontSize: tamEkranda
+          ? kucult
+            ? "clamp(72px, 16vw, 220px)"
+            : "clamp(88px, 20vw, 280px)"
+          : kucult
+            ? "clamp(56px, 11vw, 108px)"
+            : "clamp(68px, 13vw, 132px)",
+        letterSpacing: "0.02em",
+      }}
+    >
+      {metin}
+    </p>
   );
 }
 
 /* ------------------------------ Saat ------------------------------ */
 
-function SaatGostergesi() {
+const GUNLER = ["PAZAR", "PAZARTESİ", "SALI", "ÇARŞAMBA", "PERŞEMBE", "CUMA", "CUMARTESİ"];
+const AYLAR = ["OCAK", "ŞUBAT", "MART", "NİSAN", "MAYIS", "HAZİRAN", "TEMMUZ", "AĞUSTOS", "EYLÜL", "EKİM", "KASIM", "ARALIK"];
+
+function SaatGostergesi({ tamEkranda }: { tamEkranda: boolean }) {
   const simdi = new Date();
-  const saat = simdi.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
-  const saniye = simdi.getSeconds();
-  const tarih = simdi.toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long" });
+  const iki = (n: number) => String(n).padStart(2, "0");
   return (
-    <div>
-      <p className="font-mono text-[64px] font-bold leading-none tracking-tight text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.45)] sm:text-[96px]">
-        {saat}
-        <span className="ml-2 align-top text-2xl text-white/60 sm:text-3xl">
-          {String(saniye).padStart(2, "0")}
-        </span>
+    <div className="flex flex-col items-center">
+      <p
+        className="leading-none tracking-widest text-white/75 [text-shadow:0_2px_14px_rgba(0,0,0,0.5)]"
+        style={{ fontFamily: SAAT_FONT, fontSize: tamEkranda ? "clamp(20px, 3vw, 40px)" : "clamp(15px, 2.6vw, 24px)" }}
+      >
+        {GUNLER[simdi.getDay()]}
       </p>
-      <p className="mt-3 text-sm font-semibold capitalize text-white/80">{tarih}</p>
+      <BuyukSure metin={`${iki(simdi.getHours())}:${iki(simdi.getMinutes())}`} tamEkranda={tamEkranda} />
+      <p
+        className="mt-1 leading-none tracking-[0.3em] text-white/55"
+        style={{ fontFamily: SAAT_FONT, fontSize: tamEkranda ? "clamp(14px, 2vw, 26px)" : "clamp(12px, 1.8vw, 17px)" }}
+      >
+        {simdi.getDate()} {AYLAR[simdi.getMonth()]} · {iki(simdi.getSeconds())}
+      </p>
     </div>
   );
 }
@@ -258,11 +450,13 @@ function SayacGostergesi({
   ozelDk,
   setOzelDk,
   bitir,
+  tamEkranda,
 }: {
   durum: OdakDurum | null;
   ozelDk: string;
   setOzelDk: (v: string) => void;
   bitir: () => Promise<void>;
+  tamEkranda: boolean;
 }) {
   if (!durum) {
     const ozel = Number(ozelDk);
@@ -302,34 +496,34 @@ function SayacGostergesi({
   }
 
   const kalan = sayacKalanSn(durum);
-  const oran = durum.sureSn > 0 ? kalan / durum.sureSn : 0;
+  const oran = durum.sureSn > 0 ? 1 - kalan / durum.sureSn : 1;
   const duraklatildi = durum.duraklatmaMs !== null;
 
   return (
-    <div className="flex flex-col items-center">
-      <Halka oran={oran} renk="#F97316">
-        {durum.bitti ? (
-          <div className="text-center">
-            <p className="text-4xl">🎉</p>
-            <p className="mt-1 text-lg font-extrabold text-white">Süre doldu!</p>
-            <p className="text-xs font-semibold text-white/75">{Math.round(durum.sureSn / 60)} dk çalıştın</p>
-          </div>
-        ) : (
-          <p className="font-mono text-5xl font-bold text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.4)] sm:text-6xl">
-            {sureBicimle(kalan)}
-          </p>
-        )}
-      </Halka>
-      <div className="mt-5 flex items-center gap-2">
-        {durum.bitti ? (
+    <div className="flex w-full flex-col items-center">
+      {durum.bitti ? (
+        <div className="text-center">
+          <p className="text-5xl">🎉</p>
+          <p className="mt-2 text-2xl font-extrabold text-white">Süre doldu!</p>
+          <p className="mt-1 text-sm font-semibold text-white/75">{Math.round(durum.sureSn / 60)} dk çalıştın — helal olsun</p>
           <button
             onClick={() => void bitir()}
-            className="rounded-2xl bg-white px-6 py-2.5 text-sm font-bold text-rehberim-navy transition hover:brightness-95"
+            className="mt-5 rounded-2xl bg-white px-7 py-2.5 text-sm font-bold text-rehberim-navy transition hover:brightness-95"
           >
             Tamam
           </button>
-        ) : (
-          <>
+        </div>
+      ) : (
+        <>
+          <BuyukSure metin={sureBicimle(kalan)} tamEkranda={tamEkranda} />
+          {/* İnce ilerleme çizgisi */}
+          <div className="mt-4 h-1 w-56 overflow-hidden rounded-full bg-white/20 sm:w-72">
+            <div
+              className="h-full rounded-full bg-rehberim-accent transition-[width] duration-500 ease-linear"
+              style={{ width: `${oran * 100}%` }}
+            />
+          </div>
+          <div className="mt-5 flex items-center gap-2">
             <button
               onClick={() => (duraklatildi ? odakDevamEt() : odakDuraklat())}
               className="flex items-center gap-1.5 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-rehberim-navy transition hover:brightness-95"
@@ -343,11 +537,9 @@ function SayacGostergesi({
             >
               <Square className="h-3.5 w-3.5" /> Bitir
             </button>
-          </>
-        )}
-      </div>
-      {duraklatildi && !durum.bitti && (
-        <p className="mt-2 text-xs font-semibold text-white/70">Duraklatıldı</p>
+          </div>
+          {duraklatildi && <p className="mt-2 text-xs font-semibold text-white/70">Duraklatıldı</p>}
+        </>
       )}
     </div>
   );
@@ -358,14 +550,18 @@ function SayacGostergesi({
 function KronometreGostergesi({
   durum,
   bitir,
+  tamEkranda,
 }: {
   durum: OdakDurum | null;
   bitir: () => Promise<void>;
+  tamEkranda: boolean;
 }) {
   if (!durum) {
     return (
-      <div className="text-center">
-        <p className="font-mono text-6xl font-bold text-white/40 sm:text-7xl">00:00</p>
+      <div className="flex flex-col items-center">
+        <p className="leading-none text-white/35" style={{ fontFamily: SAAT_FONT, fontSize: "clamp(56px, 11vw, 108px)" }}>
+          00:00
+        </p>
         <button
           onClick={() => odakBaslat("kronometre")}
           className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-rehberim-accent px-6 py-3 text-sm font-bold text-white transition hover:brightness-110"
@@ -379,9 +575,7 @@ function KronometreGostergesi({
   const duraklatildi = durum.duraklatmaMs !== null;
   return (
     <div className="flex flex-col items-center">
-      <p className="font-mono text-6xl font-bold text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.4)] sm:text-7xl">
-        {sureBicimle(gecen)}
-      </p>
+      <BuyukSure metin={sureBicimle(gecen)} tamEkranda={tamEkranda} />
       <div className="mt-6 flex items-center gap-2">
         <button
           onClick={() => (duraklatildi ? odakDevamEt() : odakDuraklat())}
@@ -402,254 +596,146 @@ function KronometreGostergesi({
   );
 }
 
-/* --------------------------- İlerleme halkası --------------------------- */
-
-function Halka({
-  oran,
-  renk,
-  children,
-}: {
-  oran: number; // 1 → dolu, 0 → boş
-  renk: string;
-  children: ReactNode;
-}) {
-  const r = 118;
-  const cevre = 2 * Math.PI * r;
-  return (
-    <div className="relative h-64 w-64 sm:h-72 sm:w-72">
-      <svg viewBox="0 0 260 260" className="h-full w-full -rotate-90">
-        <circle cx="130" cy="130" r={r} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="9" />
-        <circle
-          cx="130"
-          cy="130"
-          r={r}
-          fill="none"
-          stroke={renk}
-          strokeWidth="9"
-          strokeLinecap="round"
-          strokeDasharray={cevre}
-          strokeDashoffset={cevre * (1 - Math.min(1, Math.max(0, oran)))}
-          style={{ transition: "stroke-dashoffset 0.5s linear" }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">{children}</div>
-    </div>
-  );
-}
-
-/* --------------------------- Tema / ses seçiciler --------------------------- */
-
-function TemaSecici({ tema, temaSec }: { tema: string; temaSec: (id: string) => void }) {
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-      {TEMALAR.map((t) => {
-        const secili = t.id === tema;
-        return (
-          <button
-            key={t.id}
-            onClick={() => temaSec(t.id)}
-            title={t.ad}
-            className={`flex shrink-0 items-center gap-1.5 rounded-2xl px-3 py-2 text-xs font-bold backdrop-blur-sm transition ${
-              secili ? "bg-white text-rehberim-navy" : "bg-black/30 text-white/85 hover:bg-black/45"
-            }`}
-          >
-            <span
-              className="inline-block h-4 w-4 rounded-full ring-1 ring-white/40"
-              style={{ background: t.onizleme }}
-            />
-            {t.emoji} {t.ad}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function SesSecici() {
-  const aktif = aktifSes();
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex flex-1 gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-        {SESLER.map((s) => {
-          const secili = s.id === aktif;
-          return (
-            <button
-              key={s.id}
-              onClick={() => (secili ? sesiDurdur() : sesiCal(s.id))}
-              title={s.aciklama}
-              className={`shrink-0 rounded-2xl px-3 py-2 text-xs font-bold backdrop-blur-sm transition ${
-                secili ? "bg-rehberim-accent text-white" : "bg-black/30 text-white/85 hover:bg-black/45"
-              }`}
-            >
-              {s.emoji} {s.ad}
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex shrink-0 items-center gap-1.5 rounded-2xl bg-black/30 px-3 py-2 backdrop-blur-sm">
-        {aktif ? (
-          <button onClick={sesiDurdur} aria-label="Sesi kapat">
-            <Volume2 className="h-4 w-4 text-white/85" />
-          </button>
-        ) : (
-          <VolumeX className="h-4 w-4 text-white/50" />
-        )}
-        <input
-          type="range"
-          min={0}
-          max={100}
-          defaultValue={Math.round(sesSeviyesi() * 100)}
-          onChange={(e) => sesSeviyesiAyarla(Number(e.target.value) / 100)}
-          aria-label="Ses seviyesi"
-          className="h-1 w-20 accent-[#F97316]"
-        />
-      </div>
-    </div>
-  );
-}
-
 /* ------------------------------ Pomodoro ------------------------------ */
 
-function PomodoroKarti({
+function PomodoroGostergesi({
   durum,
   bitir,
-  hazir,
+  tamEkranda,
 }: {
   durum: OdakDurum | null;
   bitir: () => Promise<void>;
-  hazir: boolean;
+  tamEkranda: boolean;
 }) {
   const [onay, setOnay] = useState(false);
+  const [usta, setUsta] = useState(true); // ilk render'da uyarıyı yanlışlıkla gösterme
+  useEffect(() => {
+    setUsta(pomodoroUstasiMi());
+  }, []);
   useEffect(() => setOnay(false), [durum?.baslangicMs]);
 
-  const faz = durum ? pomodoroFazi(aktifGecenSn(durum)) : null;
-  const calismaFazi = faz?.tip === "calisma";
+  // ---- Başlamadan önce: teknik tanıtımı + (ilk kez ise) uyarı ----
+  if (!durum) {
+    return (
+      <div className="w-full max-w-lg">
+        <p className="text-3xl">🍅</p>
+        <h2
+          className="mt-1 text-xl font-extrabold tracking-widest text-white [text-shadow:0_2px_14px_rgba(0,0,0,0.5)]"
+          style={{ fontFamily: SAAT_FONT }}
+        >
+          POMODORO
+        </h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-white/85">
+          {POMODORO_CALISMA_DK} dk çalış · {POMODORO_MOLA_DK} dk mola · 4. turdan sonra{" "}
+          {POMODORO_UZUN_MOLA_DK} dk uzun mola. Fazları zil sesiyle haber veririm.
+        </p>
+        <div className="mx-auto mt-3 max-w-md rounded-2xl bg-black/35 px-4 py-3 text-xs font-semibold text-amber-200/95 backdrop-blur-sm">
+          ⚠️ Süre <b>hiç durmaz</b> — duraklatma ve molayı uzatma yok.
+          {usta
+            ? " Çıkış yalnız molalarda açılır."
+            : " İlk kullanımın olduğu için bu seferlik istediğin an çıkabilirsin; sonraki kullanımlarda çıkış yalnız molalarda açılır."}
+        </div>
+        <button
+          onClick={() => odakBaslat("pomodoro")}
+          className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-orange-500 px-8 py-3.5 text-sm font-extrabold text-white shadow-[0_0_24px_rgba(239,68,68,0.5)] transition hover:shadow-[0_0_34px_rgba(239,68,68,0.7)]"
+        >
+          <Play className="h-4 w-4" /> Pomodoro&apos;yu başlat
+        </button>
+      </div>
+    );
+  }
+
+  // ---- Çalışırken ----
+  const faz = pomodoroFazi(aktifGecenSn(durum));
+  const calismaFazi = faz.tip === "calisma";
+  const cikisAcik = !usta || !calismaFazi; // ilk kullanım: her an; usta: yalnız molada
 
   return (
-    <section
-      className={`relative overflow-hidden rounded-3xl border p-5 shadow-card transition-colors sm:p-6 ${
-        durum
-          ? calismaFazi
-            ? "border-red-300/60 bg-gradient-to-br from-[#7f1d1d] to-[#b91c1c] dark:border-red-900"
-            : "border-emerald-300/60 bg-gradient-to-br from-[#065f46] to-[#059669] dark:border-emerald-900"
-          : "border-rehberim-border bg-white"
-      }`}
-    >
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -right-8 -top-10 select-none text-[110px] opacity-10"
-      >
-        🍅
-      </span>
+    <div className="flex w-full flex-col items-center">
+      <div className="flex items-center gap-2">
+        <span
+          className={`rounded-full px-4 py-1.5 text-xs font-extrabold tracking-widest text-white ${
+            calismaFazi
+              ? "bg-gradient-to-r from-red-600 to-orange-500 shadow-[0_0_16px_rgba(239,68,68,0.5)]"
+              : "bg-gradient-to-r from-emerald-600 to-teal-500 shadow-[0_0_16px_rgba(16,185,129,0.5)]"
+          }`}
+          style={{ fontFamily: SAAT_FONT }}
+        >
+          {calismaFazi ? `ÇALIŞMA · ${faz.tur}. TUR` : faz.uzunMola ? "UZUN MOLA" : "MOLA"}
+        </span>
+      </div>
 
-      {!durum && (
-        <div className="relative">
-          <div className="flex items-start gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-2xl dark:bg-red-500/15">
-              🍅
-            </span>
-            <div className="min-w-0">
-              <h2 className="text-lg font-extrabold text-rehberim-navy">Pomodoro</h2>
-              <p className="mt-0.5 text-sm text-rehberim-navy/65">
-                {POMODORO_CALISMA_DK} dk çalış, {POMODORO_MOLA_DK} dk dinlen; 4. turdan
-                sonra {POMODORO_UZUN_MOLA_DK} dk uzun mola. Süre <b>hiç durmaz</b> — molayı
-                uzatmak yok, teknik böyle işliyor. Ben sana fazları zil sesiyle haber veririm.
-              </p>
-            </div>
-          </div>
-          {hazir && (
+      <BuyukSure metin={sureBicimle(faz.fazKalanSn)} tamEkranda={tamEkranda} kucult />
+
+      {/* Tur noktaları */}
+      <div className="mt-2 flex items-center gap-2" aria-label={`${faz.tur}. tur`}>
+        {[1, 2, 3, 4].map((t) => (
+          <span
+            key={t}
+            className={`h-2.5 w-2.5 rounded-full transition ${
+              t < faz.tur || (t === faz.tur && !calismaFazi)
+                ? "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.8)]"
+                : t === faz.tur
+                  ? "bg-white ring-2 ring-red-300/60"
+                  : "bg-white/30"
+            }`}
+          />
+        ))}
+        {faz.set > 1 && <span className="ml-1 text-[10px] font-bold text-white/60">{faz.set}. set</span>}
+      </div>
+
+      {/* Faz ilerlemesi */}
+      <div className="mt-3 h-1 w-56 overflow-hidden rounded-full bg-white/20 sm:w-72">
+        <div
+          className={`h-full rounded-full transition-[width] duration-500 ease-linear ${calismaFazi ? "bg-red-400" : "bg-emerald-400"}`}
+          style={{ width: `${(1 - faz.fazKalanSn / faz.fazToplamSn) * 100}%` }}
+        />
+      </div>
+
+      <p className="mt-2 text-xs font-semibold text-white/65">
+        Toplam çalışma: {Math.floor(faz.calismaSn / 60)} dk ·{" "}
+        {calismaFazi
+          ? `sonra ${faz.tur === 4 ? `${POMODORO_UZUN_MOLA_DK} dk uzun mola` : `${POMODORO_MOLA_DK} dk mola`}`
+          : `sonra ${POMODORO_CALISMA_DK} dk çalışma`}
+      </p>
+
+      <div className="mt-4 flex min-h-[42px] items-center gap-2">
+        {cikisAcik ? (
+          !onay ? (
             <button
-              onClick={() => odakBaslat("pomodoro")}
-              className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-red-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-red-700"
+              onClick={() => setOnay(true)}
+              className="flex items-center gap-1.5 rounded-2xl bg-black/35 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-black/50"
             >
-              <Play className="h-4 w-4" /> Pomodoro&apos;yu başlat
+              <Square className="h-3.5 w-3.5" /> Bitir
             </button>
-          )}
-        </div>
-      )}
-
-      {durum && faz && (
-        <div className="relative text-white">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-white/70">
-                Pomodoro · {faz.set > 1 ? `${faz.set}. set · ` : ""}
-                {faz.tur}. tur
-              </p>
-              <h2 className="mt-0.5 text-xl font-extrabold">
-                {calismaFazi ? "📖 Çalışma zamanı" : faz.uzunMola ? "🧘 Uzun mola" : "☕ Kısa mola"}
-              </h2>
-            </div>
-            {/* Tur noktaları */}
-            <div className="flex items-center gap-1.5" aria-label={`${faz.tur}. tur`}>
-              {[1, 2, 3, 4].map((t) => (
-                <span
-                  key={t}
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    t < faz.tur || (t === faz.tur && !calismaFazi)
-                      ? "bg-white"
-                      : t === faz.tur
-                        ? "bg-white/90 ring-2 ring-white/40"
-                        : "bg-white/30"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-            <p className="font-mono text-6xl font-bold leading-none sm:text-7xl">
-              {sureBicimle(faz.fazKalanSn)}
-            </p>
-            <div className="text-right text-xs font-semibold text-white/75">
-              <p>Toplam çalışma: {Math.floor(faz.calismaSn / 60)} dk</p>
-              <p className="mt-0.5">
-                {calismaFazi
-                  ? `Sonra: ${faz.tur === 4 ? `${POMODORO_UZUN_MOLA_DK} dk uzun mola` : `${POMODORO_MOLA_DK} dk mola`}`
-                  : "Sonra: 25 dk çalışma"}
-              </p>
-            </div>
-          </div>
-
-          {/* Faz ilerleme çubuğu */}
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/25">
-            <div
-              className="h-full rounded-full bg-white transition-[width] duration-500 ease-linear"
-              style={{ width: `${(1 - faz.fazKalanSn / faz.fazToplamSn) * 100}%` }}
-            />
-          </div>
-
-          <div className="mt-4 flex items-center gap-2">
-            {!onay ? (
+          ) : (
+            <>
+              <span className="text-sm font-semibold text-white/85">Emin misin?</span>
               <button
-                onClick={() => setOnay(true)}
-                className="flex items-center gap-1.5 rounded-2xl bg-black/25 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-black/40"
+                onClick={() => void bitir()}
+                className="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-rehberim-navy transition hover:brightness-95"
               >
-                <Square className="h-3.5 w-3.5" /> Bitir
+                Evet, bitir
               </button>
-            ) : (
-              <>
-                <span className="text-sm font-semibold text-white/85">Bitirmek istediğine emin misin?</span>
-                <button
-                  onClick={() => void bitir()}
-                  className="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-rehberim-navy transition hover:brightness-95"
-                >
-                  Evet, bitir
-                </button>
-                <button
-                  onClick={() => setOnay(false)}
-                  className="rounded-2xl bg-black/25 px-4 py-2 text-sm font-bold text-white transition hover:bg-black/40"
-                >
-                  Vazgeç
-                </button>
-              </>
-            )}
-          </div>
-          <p className="mt-2 text-[11px] font-medium text-white/60">
-            Yalnız çalışma fazları istatistiklerine işlenir — molalar sayılmaz. 😉
+              <button
+                onClick={() => setOnay(false)}
+                className="rounded-2xl bg-black/35 px-4 py-2 text-sm font-bold text-white transition hover:bg-black/50"
+              >
+                Vazgeç
+              </button>
+            </>
+          )
+        ) : (
+          <p className="rounded-xl bg-black/30 px-4 py-2 text-xs font-semibold text-white/70 backdrop-blur-sm">
+            🔒 Çalışma fazında çıkış yok — molada açılır
           </p>
-        </div>
+        )}
+      </div>
+      {!usta && durum && (
+        <p className="mt-1.5 text-[11px] font-medium text-amber-200/80">
+          İlk kullanım: bu seferlik istediğin an çıkabilirsin.
+        </p>
       )}
-    </section>
+    </div>
   );
 }

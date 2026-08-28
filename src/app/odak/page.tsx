@@ -1,7 +1,16 @@
+import { Saira_Stencil_One } from "next/font/google";
 import { Timer } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { OdakClient } from "@/components/odak/OdakClient";
 import { getShellUser } from "@/lib/user";
+
+// Kilit ekranı tarzı "kesik" (stencil) rakam fontu — yalnız bu sayfada yüklenir.
+const saatFontu = Saira_Stencil_One({
+  weight: "400",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-saat",
+  display: "swap",
+});
 
 export const metadata = {
   title: "Odak Modu — Rehberim",
@@ -33,7 +42,9 @@ export default async function OdakPage() {
           </div>
         </div>
       </header>
-      <OdakClient />
+      <div className={saatFontu.variable}>
+        <OdakClient />
+      </div>
     </AppShell>
   );
 }
