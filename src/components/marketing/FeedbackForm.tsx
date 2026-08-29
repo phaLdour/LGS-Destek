@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Check, Loader2, Send } from "lucide-react";
+import { uygunsuzMu } from "@/lib/moderasyon";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 const TURLER = [
@@ -33,6 +34,13 @@ export function FeedbackForm({ fromPath }: { fromPath?: string }) {
     }
     if (!isSupabaseConfigured()) {
       setHata("Şu an geri bildirim alınamıyor. Birazdan tekrar dene.");
+      return;
+    }
+    // SİTE KURALI: küfür/hakaret içeren metin gönderilemez.
+    if (uygunsuzMu(temiz)) {
+      setHata(
+        "Mesajında kırıcı ya da uygunsuz sözler var. Sorunu kibarca anlatırsan hemen ilgilenirim.",
+      );
       return;
     }
     setGonderiliyor(true);

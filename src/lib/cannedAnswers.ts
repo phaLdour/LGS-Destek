@@ -6,6 +6,7 @@
  */
 
 import { SOZLUK } from "@/content/sozluk-veri";
+import { siradakiSinav, tarihMetni } from "@/lib/sinavTarihi";
 import {
   OKULLAR,
   REFERANS_YIL,
@@ -562,7 +563,11 @@ function tryBolumBilgisi(input: string): CannedResult | null {
   // "calisiyo", "calisir", "isliyor" hepsi yakalanır; yazım hatası payı
   // tokenUyar ile ("calsiyor", "nassil" gibi).
   const nasilVar = tokens.some((t) => tokenUyar(t, "nasil"));
-  const bilgiKoku = ["calis", "isle", "isliyor", "kullan", "sec", "yap", "olur"];
+  const bilgiKoku = [
+    "calis", "isle", "isliyor", "kullan", "sec", "yap", "olur",
+    // "nasıl değiştirilir / ayarlanır / açılır / kapatılır" da bilgi sorusudur
+    "degis", "ayarla", "acilir", "kapat", "kurul",
+  ];
   const bilgiSorusu =
     (nasilVar && bilgiKoku.some((k) => tokens.some((t) => tokenUyar(t, k) || t.startsWith(k)))) ||
     tokens.some((t) => tokenUyar(t, "nedir")) ||
@@ -571,6 +576,12 @@ function tryBolumBilgisi(input: string): CannedResult | null {
     input.includes("ne oldugunu") ||
     tokens.some((t) => tokenUyar(t, "anlat")) ||
     tokens.some((t) => tokenUyar(t, "kurallar")) ||
+    // "var mı / neler var / hangileri var" → sayıp dökmesini isteyen sorular
+    input.includes("var mi") ||
+    input.includes("neler var") ||
+    input.includes("hangileri") ||
+    (input.includes("hangi") && / var\b/.test(input)) ||
+    input.includes("kac tane") ||
     input.includes("nereden");
   if (!bilgiSorusu) return null;
 
@@ -2000,12 +2011,62 @@ function tryFormulas(
 
 // ───────────────────────── Ana eşleştirici ─────────────────────────
 
+
+/**
+ * "LGS'ye kaç gün kaldı?" — sınava kalan süre. Cevap her gün değiştiği için
+ * ÖNBELLEĞE ALINMAZ; burada, çağrı anında hesaplanır (AI'ya da gitmez).
+ */
+function trySinavGeriSayim(input: string): CannedResult | null {
+  const sayacSorusu =
+    /(kac|kack|ne kadar)\s+(gun|hafta|ay)\s*(kaldi|var|kalmis)/.test(input) ||
+    /sinava\s+(kac|ne kadar)/.test(input) ||
+    /lgs\s*(ye|e|ya)?\s*(kac|ne kadar)/.test(input) ||
+    /geri sayim/.test(input);
+  if (!sayacSorusu) return null;
+  // "kaç gün" geçse de konusu sınav değilse karışmasın
+  const sinavdanBahsediyor =
+    /lgs|sinav|sinava|geri sayim/.test(input) || /gun kaldi/.test(input);
+  if (!sinavdanBahsediyor) return null;
+
+  const bilgi = siradakiSinav();
+  const tarih = tarihMetni(bilgi.tarih);
+  const kesinlik = bilgi.resmi
+    ? "MEB'in açıkladığı resmî tarih"
+    : "tahmini tarih (MEB henüz açıklamadı)";
+
+  let govde: string;
+  if (bilgi.kalanGun <= 0) {
+    govde = `**Bugün sınav günü!** ${tarih} — sakin ol, elinden geleni yaptın. Bol şans! 🍀`;
+  } else {
+    const hafta = Math.floor(bilgi.kalanGun / 7);
+    const ekHafta = hafta > 0 ? ` (yaklaşık ${hafta} hafta)` : "";
+    govde =
+      `**${bilgi.yil} LGS'ye ${bilgi.kalanGun} gün kaldı.**${ekHafta}\n\n` +
+      `• Sınav tarihi: ${tarih} — ${kesinlik}\n` +
+      `• Geri sayımı anasayfanın üstünde de görebilirsin; istemezsen oradaki × ile kapatabilirsin.`;
+  }
+  return { reply: govde, navigate: null, topicRoute: null };
+}
+
 export function matchCanned(text: string): CannedResult | null {
   const input = normalize(text);
   if (!input) return null;
   const tokens = input.split(" ");
 
+  // AÇIK kelime sorusu ("X kelimesinin anlamı", "X sözcüğü ne demek") bölüm
+  // bilgisinden ÖNCE gelir: yoksa "kanat kelimesinin anlamı ne" sorusuna
+  // sözlüğün tanıtımı dönüyordu. Kural: bilgi soruluyorsa bilgi verilir.
+  const acikKelimeSorusu =
+    /(kelimesinin|sozcugunun|kelimesi|sozcugu)\s+(anlami|anlamlari|ne demek)/.test(input) ||
+    /(anlami|anlamlari)\s+(ne|nedir)\b/.test(input);
+  if (acikKelimeSorusu) {
+    const sozluk = trySozlukLookup(text);
+    if (sozluk) return sozluk;
+  }
+
   return (
+    // Sınav geri sayımı: her gün değişen, kişiye özel olmayan dinamik cevap
+    trySinavGeriSayim(input) ??
     // Bölüm bilgi soruları en önce: "sözlük nasıl kullanılır" gibi sorular
     // tryIntents'teki genel cevaba düşmeden doğru bölümün özetini alır.
     tryBolumBilgisi(input) ??

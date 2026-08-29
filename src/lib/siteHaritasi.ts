@@ -140,6 +140,20 @@ export const SITE_HARITASI: SiteBolumu[] = [
     anahtarlar: ["deneme", "gelisim grafigi", "net grafigi"],
   },
   {
+    rota: "/profile",
+    ad: "Tema Seçimi",
+    ozet:
+      "Sitenin renklerini kendine göre değiştirebilirsin: 6 açık, 6 koyu olmak üzere 12 tema var.",
+    yapabilecekleri: [
+      "Menüdeki palet simgesine (🎨) ya da üstteki tema düğmesinin yanındaki palete dokunarak tema seçicisini açarsın.",
+      "Açık temalar: Klasik, Şeker Pembe, Lavanta, Nane, Deniz Kabuğu, Kâğıt.",
+      "Koyu temalar: Gece Lacivert, Gece Moru, Orman, Okyanus, Gün Batımı, Kömür.",
+      "Ay/güneş düğmesi açık ile koyu arasında hızlı geçiş yapar; seçtiğin tema bu cihazda hatırlanır.",
+      "Her temanın yazı-zemin uyumu ölçülerek hazırlandı; hangi temayı seçersen seç yazılar okunaklı kalır.",
+    ],
+    anahtarlar: ["tema", "renk", "gorunum", "koyu mod", "acik mod", "palet", "arkaplan rengi"],
+  },
+  {
     rota: "/odak",
     ad: "Odak Modu",
     ozet:

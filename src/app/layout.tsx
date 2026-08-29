@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { TEMA_ILK_BETIK } from "@/lib/tema";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -61,15 +62,9 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// İlk paint'ten önce tema sınıfını uygula (FOUC önleme).
-const themeInit = `
-(function(){try{
-  var k='rehberim:theme';
-  var v=localStorage.getItem(k);
-  var dark=v==='dark'||(!v && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  if(dark) document.documentElement.classList.add('dark');
-}catch(e){}})();
-`;
+// İlk paint'ten önce seçili temayı uygula (FOUC önleme).
+// Tek kaynak: src/lib/temalar.ts — betik oradan üretilir.
+const themeInit = TEMA_ILK_BETIK;
 
 export default function RootLayout({
   children,

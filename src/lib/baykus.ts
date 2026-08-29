@@ -84,6 +84,9 @@ export function baykusOnbellekleriniTemizle(): void {
     sessionStorage.removeItem("rehberim:greeting");
     sessionStorage.removeItem("rehberim:baykus-sohbet");
     sessionStorage.removeItem("rehberim:baykus-sahip");
+    // Cihaz önbelleği de gitsin: başka hesapla girildiğinde önceki
+    // kullanıcının soru-cevapları görünmemeli.
+    sessionStorage.removeItem("rehberim:baykus-yanit-onbellek");
   } catch {
     /* depolama yoksa temizlenecek şey de yok */
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { yerelYanitAra, yerelYanitYaz } from "@/lib/baykusYerelOnbellek";
 import { usePathname, useRouter } from "next/navigation";
 import { OwlSvg, type BaykusRuhHali } from "@/components/brand/Owl";
 import {
@@ -197,6 +198,31 @@ export function MascotButton() {
     setLoading(true);
     setRuhHali("dusunuyor");
 
+    // 0) CİHAZ ÖNBELLEĞİ: aynı soruyu bu cihazda daha önce sorduysa
+    //    ağa hiç çıkmadan anında cevapla.
+    const yerel = yerelYanitAra(text);
+    if (yerel) {
+      const kisaOnayYerel = yerel.navigate !== null && yerel.reply.length <= 90;
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "model",
+          text: yerel.reply,
+          topicRoute: yerel.topicRoute ?? (!kisaOnayYerel ? yerel.navigate : null),
+        },
+      ]);
+      setLoading(false);
+      setRuhHali("mutlu");
+      if (kisaOnayYerel && yerel.navigate) {
+        const hedef = yerel.navigate;
+        setTimeout(() => {
+          setOpen(false);
+          router.push(hedef);
+        }, 700);
+      }
+      return;
+    }
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -214,6 +240,12 @@ export function MascotButton() {
       // puanı...) sayfayı anında değiştirmek cevabı okutmadan siler.
       // Uzun cevapta yönlendirme bir butona dönüşür, karar öğrencinin.
       const kisaOnay = rota !== null && yanit.length <= 90;
+      // Cevabı bu cihaza da yaz — aynı soru tekrar sorulursa anında dönsün.
+      yerelYanitYaz(text, {
+        reply: yanit,
+        navigate: rota,
+        topicRoute: typeof data.topicRoute === "string" ? data.topicRoute : null,
+      });
       setMessages((prev) => [
         ...prev,
         {

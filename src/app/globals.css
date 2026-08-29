@@ -5,7 +5,11 @@
 :root {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
-  /* Light tema (varsayılan) */
+  /* ── TEMA DEĞİŞKENLERİ ────────────────────────────────────────────
+     Varsayılan tema: "Klasik" (açık). Öğrenci Tema Seçici'den başka bir
+     tema seçerse bu değerler JavaScript ile (src/lib/tema.ts) yeniden
+     yazılır — tek kaynak src/lib/temalar.ts'tir.
+     Kanal (R G B) biçimindeki değişkenler Tailwind renkleri içindir. */
   --rb-bg: #f4f6fb;
   --rb-surface: #ffffff;
   --rb-surface-2: #f4f6fb;
@@ -14,19 +18,47 @@
   --rb-text-soft: rgba(22, 36, 76, 0.55);
   --rb-scrollbar: #c7cee0;
   --rb-scrollbar-hover: #aab4d0;
+
+  --rb-navy-ch: 22 36 76;
+  --rb-navy-dark-ch: 14 24 56;
+  --rb-navy-light-ch: 36 58 110;
+  --rb-accent-ch: 245 158 11;
+  --rb-accent-dark-ch: 217 119 6;
+  --rb-accent-deep-ch: 180 83 9;
+  --rb-accent-light-ch: 251 191 36;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 244 246 251;
+  --rb-border-ch: 226 230 240;
+
+  /* Vurgu rengiyle DOLU zeminlerin üstüne gelecek yazı rengi.
+     KURAL: yazı, arkasındaki renge göre okunaklı olmak zorundadır —
+     turuncu zeminde beyaz yazı okunmuyordu, koyu mürekkep kullanılır. */
+  --rb-on-accent: #16244c;
   color-scheme: light;
 }
 
 html.dark {
-  /* Dark tema */
+  /* Koyu ailenin varsayılanı: "Gece Lacivert" */
   --rb-bg: #0b1228;
   --rb-surface: #16244c;
   --rb-surface-2: #1f3060;
   --rb-border: #2a3b66;
   --rb-text: #f1f4ff;
-  --rb-text-soft: rgba(241, 244, 255, 0.78);
+  --rb-text-soft: color-mix(in srgb, var(--rb-text) 78%, transparent);
   --rb-scrollbar: #2a3b66;
   --rb-scrollbar-hover: #3a4d80;
+
+  --rb-navy-ch: 22 36 76;
+  --rb-navy-dark-ch: 8 14 34;
+  --rb-navy-light-ch: 36 58 110;
+  --rb-accent-ch: 245 158 11;
+  --rb-accent-dark-ch: 217 119 6;
+  --rb-accent-deep-ch: 251 191 36;
+  --rb-accent-light-ch: 253 211 100;
+  --rb-surface-ch: 22 36 76;
+  --rb-muted-ch: 31 48 96;
+  --rb-border-ch: 42 59 102;
+  --rb-on-accent: #0e1838;
   color-scheme: dark;
 }
 
@@ -213,7 +245,7 @@ html.dark .bg-white\/80,
 html.dark .bg-white\/70,
 html.dark .bg-white\/60,
 html.dark .bg-white\/50 {
-  background-color: rgba(22, 36, 76, 0.95) !important;
+  background-color: color-mix(in srgb, var(--rb-surface) 95%, transparent) !important;
 }
 html.dark .bg-rehberim-muted {
   background-color: var(--rb-surface-2) !important;
@@ -239,27 +271,27 @@ html.dark .text-rehberim-navy {
 }
 html.dark .text-rehberim-navy\/85,
 html.dark .text-rehberim-navy\/80 {
-  color: rgba(241, 244, 255, 0.92) !important;
+  color: color-mix(in srgb, var(--rb-text) 92%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/75,
 html.dark .text-rehberim-navy\/70 {
-  color: rgba(241, 244, 255, 0.85) !important;
+  color: color-mix(in srgb, var(--rb-text) 85%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/65,
 html.dark .text-rehberim-navy\/60 {
-  color: rgba(241, 244, 255, 0.78) !important;
+  color: color-mix(in srgb, var(--rb-text) 78%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/55 {
-  color: rgba(241, 244, 255, 0.72) !important;
+  color: color-mix(in srgb, var(--rb-text) 72%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/50,
 html.dark .text-rehberim-navy\/45,
 html.dark .text-rehberim-navy\/40 {
-  color: rgba(241, 244, 255, 0.6) !important;
+  color: color-mix(in srgb, var(--rb-text) 60%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/30,
 html.dark .text-rehberim-navy\/25 {
-  color: rgba(241, 244, 255, 0.45) !important;
+  color: color-mix(in srgb, var(--rb-text) 45%, transparent) !important;
 }
 
 /* Light pastel uyarı / accent kutuları → koyulaştırılmış pastel */
@@ -503,10 +535,10 @@ html.dark .border-rehberim-border\/70 {
   border-color: color-mix(in srgb, var(--rb-border) 80%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/35 {
-  color: rgba(241, 244, 255, 0.5) !important;
+  color: color-mix(in srgb, var(--rb-text) 50%, transparent) !important;
 }
 html.dark .text-rehberim-navy\/20 {
-  color: rgba(241, 244, 255, 0.35) !important;
+  color: color-mix(in srgb, var(--rb-text) 35%, transparent) !important;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -865,3 +897,325 @@ html.dark .lgs-callout.bg-rehberim-muted {
     animation: none;
   }
 }
+
+/* ────────────────────────────────────────────────────────────────
+   OKUNAKLILIK KURALI (site geneli, tüm temalarda geçerli)
+   Yazı, arkasındaki renge göre okunaklı olmak ZORUNDA. Vurgu rengi
+   (turuncu/pembe/yeşil...) açık bir renk olduğu için üstüne beyaz yazı
+   yazılamaz; dolu vurgu zeminlerinde koyu mürekkep kullanılır.
+   Seçici özgüllüğü (0,2,0) .text-white'ı (0,1,0) yener.
+   ──────────────────────────────────────────────────────────────── */
+.bg-rehberim-accent {
+  color: var(--rb-on-accent);
+}
+.bg-rehberim-accent.text-white,
+.bg-rehberim-accent .text-white,
+.bg-rehberim-accent .text-white\/90,
+.bg-rehberim-accent .text-white\/80,
+.bg-rehberim-accent .text-white\/75,
+.bg-rehberim-accent .text-white\/70 {
+  color: var(--rb-on-accent);
+}
+.bg-rehberim-accent .text-rehberim-navy,
+.bg-rehberim-accent .text-rehberim-navy\/70,
+.bg-rehberim-accent .text-rehberim-navy\/60 {
+  color: var(--rb-on-accent);
+}
+
+/* Tema geçişi: renk değişimi ani değil, yumuşak olsun (hareket duyarlı
+   kullanıcılarda kapalı). */
+@media (prefers-reduced-motion: no-preference) {
+  html.rb-tema-gecis,
+  html.rb-tema-gecis body,
+  html.rb-tema-gecis * {
+    transition:
+      background-color 0.28s ease,
+      border-color 0.28s ease,
+      color 0.22s ease !important;
+  }
+}
+
+
+/* === TEMA BLOKLARI BAŞLANGIÇ (üretilmiştir, elle düzenleme) === */
+
+html[data-tema="klasik"] {
+  --rb-bg: #f4f6fb;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #f4f6fb;
+  --rb-border: #d7dbe4;
+  --rb-text: #16244c;
+  --rb-text-soft: #5b678a;
+  --rb-scrollbar: #c7cee0;
+  --rb-scrollbar-hover: #aab4d0;
+  --rb-on-accent: #16244c;
+  --rb-navy-ch: 22 36 76;
+  --rb-navy-dark-ch: 14 24 56;
+  --rb-navy-light-ch: 36 58 110;
+  --rb-accent-ch: 245 158 11;
+  --rb-accent-dark-ch: 246 172 45;
+  --rb-accent-deep-ch: 161 92 7;
+  --rb-accent-light-ch: 251 191 36;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 244 246 251;
+  --rb-border-ch: 215 219 228;
+  color-scheme: light;
+}
+
+html[data-tema="pembe"] {
+  --rb-bg: #fdf2f8;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #fce7f3;
+  --rb-border: #f3cfe4;
+  --rb-text: #4a1035;
+  --rb-text-soft: #7d3a63;
+  --rb-scrollbar: #efc3dd;
+  --rb-scrollbar-hover: #e39ec8;
+  --rb-on-accent: #3f0b29;
+  --rb-navy-ch: 109 35 80;
+  --rb-navy-dark-ch: 78 23 57;
+  --rb-navy-light-ch: 142 58 110;
+  --rb-accent-ch: 236 72 153;
+  --rb-accent-dark-ch: 239 98 167;
+  --rb-accent-deep-ch: 157 23 77;
+  --rb-accent-light-ch: 249 168 212;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 252 231 243;
+  --rb-border-ch: 243 207 228;
+  color-scheme: light;
+}
+
+html[data-tema="lavanta"] {
+  --rb-bg: #f5f3ff;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #ede9fe;
+  --rb-border: #dcd5fb;
+  --rb-text: #2e1065;
+  --rb-text-soft: #5b4499;
+  --rb-scrollbar: #d3c8f7;
+  --rb-scrollbar-hover: #b9a7f0;
+  --rb-on-accent: #ffffff;
+  --rb-navy-ch: 76 29 149;
+  --rb-navy-dark-ch: 52 16 104;
+  --rb-navy-light-ch: 109 40 217;
+  --rb-accent-ch: 132 87 234;
+  --rb-accent-dark-ch: 111 73 197;
+  --rb-accent-deep-ch: 91 33 182;
+  --rb-accent-light-ch: 196 181 253;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 237 233 254;
+  --rb-border-ch: 220 213 251;
+  color-scheme: light;
+}
+
+html[data-tema="nane"] {
+  --rb-bg: #f0fdf4;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #dcfce7;
+  --rb-border: #b2e4c3;
+  --rb-text: #0f3626;
+  --rb-text-soft: #3d6b55;
+  --rb-scrollbar: #b6e6c8;
+  --rb-scrollbar-hover: #8fd4ab;
+  --rb-on-accent: #04291b;
+  --rb-navy-ch: 20 83 45;
+  --rb-navy-dark-ch: 10 58 30;
+  --rb-navy-light-ch: 22 101 52;
+  --rb-accent-ch: 16 185 129;
+  --rb-accent-dark-ch: 49 195 147;
+  --rb-accent-deep-ch: 4 120 87;
+  --rb-accent-light-ch: 110 231 183;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 220 252 231;
+  --rb-border-ch: 178 228 195;
+  color-scheme: light;
+}
+
+html[data-tema="deniz"] {
+  --rb-bg: #ecfeff;
+  --rb-surface: #ffffff;
+  --rb-surface-2: #cffafe;
+  --rb-border: #a1dde6;
+  --rb-text: #0a3742;
+  --rb-text-soft: #356c7a;
+  --rb-scrollbar: #a8e4ee;
+  --rb-scrollbar-hover: #7fd3e2;
+  --rb-on-accent: #032c36;
+  --rb-navy-ch: 14 76 91;
+  --rb-navy-dark-ch: 8 52 64;
+  --rb-navy-light-ch: 20 98 119;
+  --rb-accent-ch: 6 182 212;
+  --rb-accent-dark-ch: 41 192 218;
+  --rb-accent-deep-ch: 14 116 144;
+  --rb-accent-light-ch: 103 232 249;
+  --rb-surface-ch: 255 255 255;
+  --rb-muted-ch: 207 250 254;
+  --rb-border-ch: 161 221 230;
+  color-scheme: light;
+}
+
+html[data-tema="kagit"] {
+  --rb-bg: #f6f1e7;
+  --rb-surface: #fffdf8;
+  --rb-surface-2: #f1e9da;
+  --rb-border: #e0d5bf;
+  --rb-text: #3b2e1e;
+  --rb-text-soft: #6d5a41;
+  --rb-scrollbar: #dcceb4;
+  --rb-scrollbar-hover: #c6b394;
+  --rb-on-accent: #2a1d0d;
+  --rb-navy-ch: 74 55 34;
+  --rb-navy-dark-ch: 51 36 15;
+  --rb-navy-light-ch: 107 83 52;
+  --rb-accent-ch: 201 123 44;
+  --rb-accent-dark-ch: 209 141 74;
+  --rb-accent-deep-ch: 138 79 21;
+  --rb-accent-light-ch: 227 169 95;
+  --rb-surface-ch: 255 253 248;
+  --rb-muted-ch: 241 233 218;
+  --rb-border-ch: 224 213 191;
+  color-scheme: light;
+}
+
+html[data-tema="kagit"] .bg-white {
+  background-color: #fffdf8;
+}
+
+html[data-tema="gece"] {
+  --rb-bg: #0b1228;
+  --rb-surface: #16244c;
+  --rb-surface-2: #1f3060;
+  --rb-border: #2a3b66;
+  --rb-text: #f1f4ff;
+  --rb-text-soft: #b8c2e0;
+  --rb-scrollbar: #2a3b66;
+  --rb-scrollbar-hover: #3a4d80;
+  --rb-on-accent: #0e1838;
+  --rb-navy-ch: 22 36 76;
+  --rb-navy-dark-ch: 8 14 34;
+  --rb-navy-light-ch: 36 58 110;
+  --rb-accent-ch: 245 158 11;
+  --rb-accent-dark-ch: 246 172 45;
+  --rb-accent-deep-ch: 251 191 36;
+  --rb-accent-light-ch: 253 212 100;
+  --rb-surface-ch: 22 36 76;
+  --rb-muted-ch: 31 48 96;
+  --rb-border-ch: 42 59 102;
+  color-scheme: dark;
+}
+
+html[data-tema="mor"] {
+  --rb-bg: #17091f;
+  --rb-surface: #2a1038;
+  --rb-surface-2: #3a1a4c;
+  --rb-border: #4c2464;
+  --rb-text: #f8ecff;
+  --rb-text-soft: #cbaede;
+  --rb-scrollbar: #4c2464;
+  --rb-scrollbar-hover: #6a3489;
+  --rb-on-accent: #2a0b33;
+  --rb-navy-ch: 42 16 56;
+  --rb-navy-dark-ch: 18 6 26;
+  --rb-navy-light-ch: 70 32 92;
+  --rb-accent-ch: 232 121 249;
+  --rb-accent-dark-ch: 235 140 250;
+  --rb-accent-deep-ch: 240 171 252;
+  --rb-accent-light-ch: 245 208 254;
+  --rb-surface-ch: 42 16 56;
+  --rb-muted-ch: 58 26 76;
+  --rb-border-ch: 76 36 100;
+  color-scheme: dark;
+}
+
+html[data-tema="orman"] {
+  --rb-bg: #071a12;
+  --rb-surface: #0f2c1f;
+  --rb-surface-2: #17402d;
+  --rb-border: #205038;
+  --rb-text: #e9fbf1;
+  --rb-text-soft: #a6cbb6;
+  --rb-scrollbar: #205038;
+  --rb-scrollbar-hover: #2d6b4b;
+  --rb-on-accent: #052015;
+  --rb-navy-ch: 15 44 31;
+  --rb-navy-dark-ch: 4 18 11;
+  --rb-navy-light-ch: 26 70 48;
+  --rb-accent-ch: 52 211 153;
+  --rb-accent-dark-ch: 80 217 167;
+  --rb-accent-deep-ch: 110 231 183;
+  --rb-accent-light-ch: 167 243 208;
+  --rb-surface-ch: 15 44 31;
+  --rb-muted-ch: 23 64 45;
+  --rb-border-ch: 32 80 56;
+  color-scheme: dark;
+}
+
+html[data-tema="okyanus"] {
+  --rb-bg: #04212b;
+  --rb-surface: #0a3341;
+  --rb-surface-2: #114757;
+  --rb-border: #1a5c6e;
+  --rb-text: #e8fbff;
+  --rb-text-soft: #9fcbd8;
+  --rb-scrollbar: #1a5c6e;
+  --rb-scrollbar-hover: #267a90;
+  --rb-on-accent: #052730;
+  --rb-navy-ch: 10 51 65;
+  --rb-navy-dark-ch: 2 21 28;
+  --rb-navy-light-ch: 18 81 102;
+  --rb-accent-ch: 34 211 238;
+  --rb-accent-dark-ch: 65 217 240;
+  --rb-accent-deep-ch: 103 232 249;
+  --rb-accent-light-ch: 165 243 252;
+  --rb-surface-ch: 10 51 65;
+  --rb-muted-ch: 17 71 87;
+  --rb-border-ch: 26 92 110;
+  color-scheme: dark;
+}
+
+html[data-tema="gunbatimi"] {
+  --rb-bg: #1c0b10;
+  --rb-surface: #2e1218;
+  --rb-surface-2: #431a22;
+  --rb-border: #5a252e;
+  --rb-text: #ffeee9;
+  --rb-text-soft: #d7ada4;
+  --rb-scrollbar: #5a252e;
+  --rb-scrollbar-hover: #7a3540;
+  --rb-on-accent: #2a0a10;
+  --rb-navy-ch: 46 18 24;
+  --rb-navy-dark-ch: 21 5 8;
+  --rb-navy-light-ch: 74 29 38;
+  --rb-accent-ch: 251 113 133;
+  --rb-accent-dark-ch: 252 133 150;
+  --rb-accent-deep-ch: 253 164 175;
+  --rb-accent-light-ch: 254 205 211;
+  --rb-surface-ch: 46 18 24;
+  --rb-muted-ch: 67 26 34;
+  --rb-border-ch: 90 37 46;
+  color-scheme: dark;
+}
+
+html[data-tema="komur"] {
+  --rb-bg: #0a0a0b;
+  --rb-surface: #16181d;
+  --rb-surface-2: #1f2229;
+  --rb-border: #373a42;
+  --rb-text: #f3f5f8;
+  --rb-text-soft: #b0b6c0;
+  --rb-scrollbar: #2c3038;
+  --rb-scrollbar-hover: #3e434d;
+  --rb-on-accent: #17120c;
+  --rb-navy-ch: 22 24 29;
+  --rb-navy-dark-ch: 5 5 6;
+  --rb-navy-light-ch: 36 39 47;
+  --rb-accent-ch: 251 146 60;
+  --rb-accent-dark-ch: 252 161 87;
+  --rb-accent-deep-ch: 253 186 116;
+  --rb-accent-light-ch: 254 215 170;
+  --rb-surface-ch: 22 24 29;
+  --rb-muted-ch: 31 34 41;
+  --rb-border-ch: 55 58 66;
+  color-scheme: dark;
+}
+
+/* === TEMA BLOKLARI BİTİŞ === */

@@ -3,7 +3,7 @@
  * her anlam için örnek cümle. Türkçe alfabetik sıralı.
  *
  * Kaynak: TDK Güncel Türkçe Sözlük tabanlı; tanımlar ve örnekler LGS
- * seviyesine sadeleştirildi. Şu an 599 kelime.
+ * seviyesine sadeleştirildi. Şu an 707 kelime. Son ekleme: LGS'de sözcükte anlam / cümlede anlam sorularında en sık geçen 108 çok anlamlı kelime.
  *
  * Anlam türü:
  *  - "gerçek": kelimenin temel/asıl anlamı
@@ -32,6 +32,15 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Bir şeyi olduğundan daha büyük veya daha çok göstermek.", ornek: "Yakaladığı balığın büyüklüğünü abartarak anlatınca kimse ona inanmadı." },
       { tur: "mecaz", tanim: "Bir durumu gereğinden fazla önemsemek, büyütmek.", ornek: "Küçük bir tartışmayı abartıp günlerce birbirleriyle küs kaldılar." },
+    ],
+  },
+  {
+    kelime: "aceleci",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Her işi çabucak bitirmek isteyen, beklemeye katlanamayan kimse.", ornek: "Aceleci kardeşim çorbanın soğumasını beklemeden içince dilini yaktı." },
+      { tur: "mecaz", tanim: "Yeterince düşünülmeden, çabuk davranarak verilmiş olan karar.", ornek: "Aceleci bir kararla takımdan ayrıldığına sonradan çok pişman oldu." },
+      { tur: "mecaz", tanim: "Telaş sezdiren, hızlı ve düzensiz yapılan hareket.", ornek: "Aceleci adımlarla merdivenleri çıkarken elindeki dosyaları yere düşürdü." },
     ],
   },
   {
@@ -105,6 +114,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "İp veya tel örülerek yapılan, balık avlamaya yarayan araç.", ornek: "Balıkçılar sabaha karşı ağlarını denize atıp güneşin doğmasını beklediler." },
       { tur: "terim", tanim: "Birbirine bağlanan bilgisayarların oluşturduğu iletişim sistemi.", ornek: "Okuldaki bütün bilgisayarlar aynı ağa bağlı olduğu için dosyaları paylaşabiliyoruz." },
       { tur: "mecaz", tanim: "Bir bölgeye yayılmış yollar, hatlar veya ilişkiler bütünü.", ornek: "Şehrin metro ağı her yıl yeni hatlarla biraz daha genişliyor." },
+    ],
+  },
+  {
+    kelime: "ağarmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Saç veya sakal beyaz renk almak.", ornek: "Dedemin bıyıkları yıllar içinde tamamen ağardı ama gülüşü hiç değişmedi." },
+      { tur: "gerçek", tanim: "Gün doğmaya başlayıp ortalık aydınlanmak.", ornek: "Horozlar ötmeye başladığında doğu tarafı yavaş yavaş ağarıyordu." },
+      { tur: "gerçek", tanim: "Bir kumaşın rengi solup beyaza yaklaşmak.", ornek: "Sık yıkanan lacivert gömleğin yakasıyla kolları iyice ağarmıştı." },
+      { tur: "mecaz", tanim: "Bir işte uzun yıllar çalışıp deneyim kazanmak.", ornek: "Marangozlukta saçını ağartan usta, tahtaya bakar bakmaz kusuru fark etti." },
     ],
   },
   {
@@ -185,6 +204,26 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Yerden yüksekliği az olan.", ornek: "Alçak duvarın üzerinden atlayarak bahçeye kolayca girdi ve topunu aldı." },
       { tur: "gerçek", tanim: "Sesi az duyulan, kısık olan.", ornek: "Ders sırasında alçak sesle konuştukları için öğretmen onları duymadı." },
       { tur: "mecaz", tanim: "Onursuzca davranan, aşağılık kimse.", ornek: "Yaşlı kadını kandırıp bütün parasını alan bu alçak sonunda yakalandı." },
+    ],
+  },
+  {
+    kelime: "alçakgönüllü",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Başarısıyla övünmeyen, kendini üstün görmeyen.", ornek: "Onca ödül kazanmasına rağmen alçakgönüllüydü, başarısıyla hiç böbürlenmezdi." },
+      { tur: "gerçek", tanim: "Herkesle eşit şartlarda, gösterişsiz davranan.", ornek: "Okul müdürü alçakgönüllü tavrıyla öğrencilerle aynı masada yemek yedi." },
+      { tur: "mecaz", tanim: "Süsten uzak, sade ve gösterişsiz olan.", ornek: "Dedemin evi alçakgönüllü bir taş yapıydı ama içi sımsıcaktı." },
+      { tur: "mecaz", tanim: "İddiası büyük olmayan, ölçülü tutulan.", ornek: "Alçakgönüllü bir bütçeyle çıktıkları yolculuk unutulmaz bir maceraya dönüştü." },
+    ],
+  },
+  {
+    kelime: "aldanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yalan bir söze inanıp zarara uğramak.", ornek: "Kolay kazanç sözü verenlere aldanıp bütün birikimini kaybetti." },
+      { tur: "gerçek", tanim: "Bir şeyin dış görünüşüne bakıp yanlış karar vermek.", ornek: "Kutunun süslü ambalajına aldandım, içindeki oyuncak bozuk çıktı." },
+      { tur: "mecaz", tanim: "Geçici bir belirtiye kapılıp gerçeği göremeyerek yanılmak.", ornek: "Sabahki güneşe aldanıp montsuz çıktık, akşam soğuktan titredik." },
+      { tur: "mecaz", tanim: "Kendi gücüne gereğinden çok güvendiği için yanlışa düşmek.", ornek: "Sınavı kolay sanıp az çalışmıştı; bu güvenine aldandığını sonuçlar gelince anladı." },
     ],
   },
   {
@@ -327,6 +366,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "aşınmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sürtünme etkisiyle yüzeyi eksilip incelmek.", ornek: "Yıllarca basıla basıla merdivenin taş basamakları ortasından aşınmış." },
+      { tur: "terim", tanim: "Toprak ya da kaya, su ve rüzgârın etkisiyle yerinden kopup taşınmak.", ornek: "Sık yağan sağanaklarla yamaçtaki verimli toprak aşındı, çıplak kaya kaldı." },
+      { tur: "mecaz", tanim: "Bir sözün ya da kavramın etkisi zamanla azalmak.", ornek: "Her cümlede tekrarlanınca o güzel övgünün anlamı aşındı." },
+      { tur: "mecaz", tanim: "Bir duygu ya da ilişki yavaş yavaş zayıflamak.", ornek: "Verilen sözler hep ertelenince iki arkadaş arasındaki güven aşındı." },
+    ],
+  },
+  {
     kelime: "aşmak",
     tur: "fiil",
     anlamlar: [
@@ -415,6 +464,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "ayıklamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin içindeki yabancı veya işe yaramaz parçaları seçip almak.", ornek: "Mercimeği pişirmeden önce içindeki küçük taşları tek tek ayıkladık." },
+      { tur: "gerçek", tanim: "Bir yiyeceğin kabuğunu, çekirdeğini veya kılçığını temizlemek.", ornek: "Nar tanelerini tek tek sabırla ayıklayıp büyük cam kâseye doldurdu." },
+      { tur: "mecaz", tanim: "Bir yazıdan gereksiz bölümleri çıkararak metni sadeleştirmek.", ornek: "Öğretmen, kompozisyonda tekrar eden gereksiz cümleleri ayıklamamızı bizden istedi." },
+      { tur: "mecaz", tanim: "Zihnindeki gereksiz düşüncelerden kurtulmak.", ornek: "Kafasındaki boş kaygıları ayıklayınca derse çok daha rahat odaklandı." },
+    ],
+  },
+  {
     kelime: "ayırmak",
     tur: "fiil",
     anlamlar: [
@@ -438,6 +497,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bulunduğu yerden uzaklaşmak, oradan gitmek.", ornek: "Toplantı bitmeden salondan sessizce ayrılıp doğruca evine döndü ve dinlendi." },
       { tur: "gerçek", tanim: "Bir bütün parçalara bölünmek.", ornek: "Yol ileride ikiye ayrılıyor, sağdaki patika köye çıkıyor." },
       { tur: "mecaz", tanim: "Başka türlü olmak, benzememek.", ornek: "Bu iki görüş yalnızca bir noktada birbirinden ayrılıyor." },
+    ],
+  },
+  {
+    kelime: "azimli",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir amaca ulaşmak için kararlılıkla ve yılmadan çabalayan kimse.", ornek: "Azimli yüzücü, her sabah beşte kalkıp antrenmanlara aksatmadan gidiyordu." },
+      { tur: "mecaz", tanim: "Uzun süre ara verilmeden sürdürülen kararlı çalışma.", ornek: "Azimli bir çalışmayla iki ayda bütün eksik konularını kapattı." },
+      { tur: "mecaz", tanim: "Elverişsiz koşullara boyun eğmeden büyümeyi sürdüren canlı.", ornek: "Betonun çatlağından uzanan azimli filiz, güneşe doğru boy veriyordu." },
     ],
   },
   {
@@ -561,6 +629,15 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "becerikli",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Elinden birçok iş gelen, yaptığı işi kolayca başaran kimse.", ornek: "Becerikli komşumuz zinciri çıkan bisikletimi yarım saatte tamir etti." },
+      { tur: "mecaz", tanim: "Zor durumlarda çabucak çözüm bulan, çevresine kolayca uyum sağlayan.", ornek: "Yeni okulunda o kadar becerikliydi ki bir haftada bütün sınıfla kaynaştı." },
+      { tur: "mecaz", tanim: "Ustalıkla iş gören, hünerli olan el.", ornek: "Anneannemin becerikli elleri hamuru göz açıp kapayıncaya kadar incecik açtı." },
+    ],
+  },
+  {
     kelime: "beden",
     tur: "isim",
     anlamlar: [
@@ -628,6 +705,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "biçmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Ekin, ot gibi bitkileri dibinden keserek toplamak.", ornek: "Çiftçiler, sıcak basmadan tarladaki buğdayı sabah erkenden biçti." },
+      { tur: "gerçek", tanim: "Kumaşı ölçüsüne göre keserek dikime hazırlamak.", ornek: "Terzi, perdelik kumaşı pencerenin ölçüsüne göre dikkatle biçti." },
+      { tur: "mecaz", tanim: "Bir şeye değer ya da fiyat belirlemek.", ornek: "Antikacı, sandıktan çıkan o eski saate oldukça yüksek bir fiyat biçti." },
+      { tur: "mecaz", tanim: "Bir kimseye bir görevi ya da rolü uygun görmek.", ornek: "Onu çalışkan ve düzenli bulduklarından sınıf başkanlığı görevini ona biçtiler." },
+    ],
+  },
+  {
     kelime: "bilim",
     tur: "isim",
     anlamlar: [
@@ -653,6 +740,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "binmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir taşıtın ya da hayvanın üzerine çıkıp yolculuk etmek.", ornek: "Çocuklar zilin çalmasıyla sıraya girip okul servisine bindi." },
+      { tur: "gerçek", tanim: "Bir şeyin kenarı başka bir şeyin üzerine gelip üst üste durmak.", ornek: "Halının kenarı kapının altına binince kapı bir türlü kapanmadı." },
+      { tur: "mecaz", tanim: "Bir tutarın üzerine eklenerek onu artırmak.", ornek: "Kargo ücreti de fiyata binince çanta düşündüğümüzden pahalıya geldi." },
+      { tur: "mecaz", tanim: "Bir işin bütün sorumluluğu bir kimsenin üzerine yüklenmek.", ornek: "Ağabeyi şehir dışına taşınınca evin bütün yükü onun omzuna bindi." },
+    ],
+  },
+  {
     kelime: "bitmek",
     tur: "fiil",
     anlamlar: [
@@ -671,12 +768,32 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "boğmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Boyun ya da göğüs çevresini sıkarak soluk almayı zorlaştırmak.", ornek: "Fazla sıkı bağladığı yün atkı boynunu boğunca gevşetmek zorunda kaldı." },
+      { tur: "gerçek", tanim: "Bir canlıyı ya da bitkiyi suyun altında bırakarak yaşamasını engellemek.", ornek: "Sürekli su verince saksıdaki minik fidanı farkında olmadan boğmuş." },
+      { tur: "mecaz", tanim: "Bir sesin ya da duygunun ortaya çıkmasını engelleyip bastırmak.", ornek: "Tribünlerden yükselen tezahürat, mikrofondan konuşan sunucunun sesini tamamen boğdu." },
+      { tur: "mecaz", tanim: "Bir kimseyi aşırı çoklukta bir şeye maruz bırakmak.", ornek: "Doğum gününde sınıf arkadaşları onu rengârenk paketler ve hediyelere boğdu." },
+    ],
+  },
+  {
     kelime: "boş",
     tur: "sıfat",
     anlamlar: [
       { tur: "gerçek", tanim: "İçinde bir şey bulunmayan.", ornek: "Boş bardağını doldurmak için sessizce mutfağa gidip geri döndü." },
       { tur: "gerçek", tanim: "Kimsenin oturmadığı, kullanılmayan.", ornek: "Otobüste boş yer kalmadığı için bütün yolculuğu ayakta yaptık." },
       { tur: "mecaz", tanim: "Yararsız, anlamsız olan.", ornek: "Boş sözlerle vakit kaybetmek yerine hemen işe başlayalım." },
+    ],
+  },
+  {
+    kelime: "boşalmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İçindeki sıvı akıp tükenmek.", ornek: "Musluk açık kalınca bahçedeki su deposu sabaha kadar yavaşça boşaldı." },
+      { tur: "gerçek", tanim: "Bir yerdeki kalabalık dağılıp orası ıssız duruma gelmek.", ornek: "Son zil çalar çalmaz koridorlar birkaç dakika içinde tamamen boşaldı." },
+      { tur: "mecaz", tanim: "İçinde biriken üzüntüyü anlatarak rahatlamak.", ornek: "Derdini ablasına anlatan çocuk uzun uzun ağladı ve iyice boşaldı." },
+      { tur: "mecaz", tanim: "Gücü kesilip gevşemek.", ornek: "Uzun tırmanışın ardından kolları boşaldı, çantasını yerden kaldıramadı bile." },
     ],
   },
   {
@@ -722,6 +839,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir bütünü parçalara ayırmak.", ornek: "Pastayı sekiz eşit parçaya bölüp masadaki herkese dağıttık." },
       { tur: "terim", tanim: "Bir sayının başka bir sayı içinde kaç kez bulunduğunu hesaplamak.", ornek: "Öğretmen kırk sayısını beşe bölmemizi ve sonucu yazmamızı istedi." },
       { tur: "mecaz", tanim: "Bir topluluğun birliğini bozmak, aralarını açmak.", ornek: "Küçük dedikodular kısa sürede koca sınıfı ikiye böldü." },
+    ],
+  },
+  {
+    kelime: "budamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir ağacın fazla ya da kurumuş dallarını keserek almak.", ornek: "Bahçıvan, ilkbahar gelmeden kayısı ağacının kuru dallarını budadı." },
+      { tur: "mecaz", tanim: "Bir yazıdan gereksiz bölümleri çıkararak kısaltmak.", ornek: "Yazar, romanı basılmadan önce uzayıp giden betimlemeleri budadı." },
+      { tur: "mecaz", tanim: "Bir bütçeden ya da harcamadan kesinti yapmak.", ornek: "Kulüp, gelirleri azalınca gereksiz gördüğü harcamaları tek tek budadı." },
+      { tur: "mecaz", tanim: "Bir listeyi ya da topluluğu eleyerek küçültmek.", ornek: "Başvuru sayısı çok olunca listeyi budayıp on kişiye indirdiler." },
     ],
   },
   {
@@ -776,6 +903,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Donarak katı duruma gelmiş su.", ornek: "Göletin üstünü kaplayan buz akşama kadar hiç erimedi." },
       { tur: "mecaz", tanim: "Çok soğuk olan.", ornek: "Elleri buz gibiydi, hemen eldivenlerini giymesini ve içeri girmesini söyledim." },
       { tur: "mecaz", tanim: "Duygusuz, sevecen olmayan.", ornek: "Bizi buz gibi bir yüzle karşılayınca hepimiz çok şaşırdık." },
+    ],
+  },
+  {
+    kelime: "bükmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi kıvırarak eğmek, düzlüğünü bozmak.", ornek: "Telin ucunu parmaklarıyla bükerek küçük bir halka yaptı." },
+      { tur: "gerçek", tanim: "Lif ya da yünü çevirerek iplik durumuna getirmek.", ornek: "Ninem, kırktığı yünü iğle çevirip sapasağlam bir iplik büktü." },
+      { tur: "mecaz", tanim: "Bir kimsenin direncini kırıp isteğine boyun eğdirmek.", ornek: "Yolda karşılaştığı hiçbir zorluk onun çalışma azmini ve inadını bükemedi." },
+      { tur: "mecaz", tanim: "Çaresizlik ya da üzüntü içinde sessizce boyun eğmek.", ornek: "Gezi izni çıkmayınca boynunu büküp bir köşeye oturdu." },
     ],
   },
   {
@@ -913,6 +1050,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "coşku",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sevinç ve heyecanın taşkın biçimde yaşanması.", ornek: "Son dakikada gol atılınca tribünlerdeki coşku dakikalarca dinmedi." },
+      { tur: "gerçek", tanim: "Bir işe duyulan güçlü istek ve şevk.", ornek: "Yeni projeye öyle bir coşkuyla başladı ki hiç yorulmadan çalıştı." },
+      { tur: "terim", tanim: "Edebiyatta duyguların yoğun ve içten biçimde dile getirilmesi.", ornek: "Öğretmen, lirik şiirin coşku üzerine kurulduğunu örneklerle anlattı." },
+      { tur: "mecaz", tanim: "Doğanın canlanıp hareketlenmesi.", ornek: "Baharla birlikte bahçedeki coşkuyu görmeliydiniz, her dal çiçek açmıştı." },
+    ],
+  },
+  {
     kelime: "coşmak",
     tur: "fiil",
     anlamlar: [
@@ -926,6 +1073,16 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Parasını ve malını esirgemeden veren, eli açık.", ornek: "Cömert komşumuz bahçesindeki meyveleri her yıl bize de dağıtır." },
       { tur: "mecaz", tanim: "Bol bol veren, verimli.", ornek: "Bu cömert topraklar her mevsim bereketli bir ürün veriyor." },
+    ],
+  },
+  {
+    kelime: "çabalamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir işi başarmak için emek harcayıp uğraşmak.", ornek: "Bisiklete binmeyi öğrenmek için haftalarca düşe kalka çabaladı, sonunda başardı." },
+      { tur: "gerçek", tanim: "Kurtulmak için çırpınıp debelenmek.", ornek: "Ağa takılan balık kurtulmak için boşuna çabaladı, sonunda denize bırakıldı." },
+      { tur: "mecaz", tanim: "Sonuç alınamayacak bir iş için boş yere uğraşmak.", ornek: "Ne kadar çabalasa da geçen yazın güzel günlerini geri getiremezdi." },
+      { tur: "mecaz", tanim: "Bir duyguya kapılmamak için kendini zorlamak.", ornek: "Ağlamamak için çabaladı ama veda ederken gözyaşlarını tutamadı." },
     ],
   },
   {
@@ -989,6 +1146,25 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "çatlamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin yüzeyinde ince yarıklar oluşmak.", ornek: "Susuz kalan tarlanın toprağı sıcaktan derin derin çatladı." },
+      { tur: "mecaz", tanim: "Bir gereksinim yüzünden dayanamayacak duruma gelmek.", ornek: "Maçtan sonra bir bardak su ver, susuzluktan çatlayacağım." },
+      { tur: "mecaz", tanim: "Kıskançlık ya da öfkeden aşırı derecede rahatsız olmak.", ornek: "Birincilik ödülünü sıra arkadaşı alınca kıskançlıktan çatladı, günlerce kimseyle konuşmadı." },
+      { tur: "mecaz", tanim: "İki kişi ya da topluluk arasındaki iyi ilişki bozulmaya başlamak.", ornek: "Küçük bir tartışmadan sonra iki komşunun yıllanmış dostluğu çatladı." },
+    ],
+  },
+  {
+    kelime: "çekingen",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Utangaç olan, öne çıkmaktan ve konuşmaktan kaçınan kimse.", ornek: "Çekingen öğrenci parmak kaldırmak istedi, sonra yine vazgeçip elini indirdi." },
+      { tur: "mecaz", tanim: "Ürkeklik ve kararsızlık sezdiren ses, hareket ya da bakış.", ornek: "Kapıyı çekingen bir vuruşla tıklatıp içeri girmek için izin istedi." },
+      { tur: "mecaz", tanim: "Risk almaktan kaçınan, temkinli ve isteksiz davranış.", ornek: "Takımımız ilk yarıda çekingen bir oyun tutturunca hiç pozisyon bulamadı." },
+    ],
+  },
+  {
     kelime: "çekirdek",
     tur: "isim",
     anlamlar: [
@@ -1005,6 +1181,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "mecaz", tanim: "İlgi uyandırmak, kendine yöneltmek.", ornek: "Vitrindeki kırmızı elbise herkesin dikkatini çekti." },
       { tur: "mecaz", tanim: "Bir sıkıntı veya acıya katlanmak.", ornek: "Bu yaşına kadar çok çile çekti." },
       { tur: "gerçek", tanim: "Fotoğrafını veya filmini almak.", ornek: "Manzaranın fotoğrafını çekmek istiyordu." },
+    ],
+  },
+  {
+    kelime: "çelişki",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kimsenin sözleri veya davranışları arasındaki uyuşmazlık.", ornek: "Anlattıklarındaki çelişki, olayın saatini her seferinde farklı söylemesinden anlaşıldı." },
+      { tur: "mecaz", tanim: "Kişinin duyguları ile yaptıkları arasındaki iç uyumsuzluk.", ornek: "Gitmek istemediğini söylerken valizini toplaması içindeki çelişkiyi açığa vuruyordu." },
+      { tur: "terim", tanim: "Aynı anda ikisi birden doğru olamayan iki yargı arasındaki ilişki.", ornek: "Mantık konusunda 'Bütün kuşlar uçar' ile 'Bazı kuşlar uçmaz' yargılarındaki çelişkiyi inceledik." },
     ],
   },
   {
@@ -1118,6 +1303,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "çözmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bağlanmış veya düğümlenmiş bir şeyi açmak.", ornek: "Ayakkabısının düğümlenen bağcığını açmak için birkaç dakika uğraştı, sonunda çözdü." },
+      { tur: "terim", tanim: "Bir matematik sorusunun sonucunu işlemler yaparak bulmak.", ornek: "Tahtaya kalkan öğrenci denklemi kısa yoldan çözünce bütün sınıf alkışladı." },
+      { tur: "mecaz", tanim: "Karışık bir sorunu ortadan kaldırmak.", ornek: "İki arkadaş arasındaki anlaşmazlığı sakin bir konuşmayla akşama kalmadan çözdüler." },
+      { tur: "mecaz", tanim: "Gizli kalmış bir durumu anlayıp keşfetmek.", ornek: "Kimseye söylemediği üzüntüsünü yalnızca bakışlarından çözdüm ve yanına oturdum." },
+    ],
+  },
+  {
     kelime: "çukur",
     tur: "isim / sıfat",
     anlamlar: [
@@ -1136,11 +1331,30 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "çürümek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Organik bir madde bozulup dağılarak kullanılmaz duruma gelmek.", ornek: "Kilerde unutulan elmalar birkaç hafta içinde çürüyüp yumuşadı." },
+      { tur: "gerçek", tanim: "Diş ya da kemik dokusu bozulup delinmek.", ornek: "Şekerli yiyecekleri fazla yiyince arka azı dişlerinden biri çürüdü." },
+      { tur: "mecaz", tanim: "Bir görüş ya da iddia dayanaksız kalıp geçersizleşmek.", ornek: "Sandıktan çıkan o eski mektupla bütün iddiaları bir anda çürüdü." },
+      { tur: "mecaz", tanim: "Değerlendirilmeden bir yerde uzun süre beklemek.", ornek: "Kütüphanenin en üst rafında kimse okumadan çürüyen kitaplar vardı." },
+    ],
+  },
+  {
     kelime: "dağ",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Çevresine göre yüksek, geniş ve sarp kara kütlesi.", ornek: "Karşıdaki dağın tepesinde kar vardı." },
       { tur: "mecaz", tanim: "Çok büyük, yığınlaşmış (mecaz: dağ gibi).", ornek: "Önümde dağ gibi ödevler birikti." },
+    ],
+  },
+  {
+    kelime: "dağınık",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Eşyaları yerli yerinde olmayan, düzeni bozulmuş olan.", ornek: "Dağınık odasında kalemliğini bulması neredeyse yarım saatini aldı." },
+      { tur: "gerçek", tanim: "Bir arada olmayıp geniş bir alana yayılmış bulunan.", ornek: "Sürüden ayrılan kuzular çayırın her yanına dağınık biçimde yayılmıştı." },
+      { tur: "mecaz", tanim: "Dikkatini toplayamayan, düşünceleri karışık olan kimse.", ornek: "Sınav sabahı öyle dağınıktı ki bildiği soruda bile şaşırıp kaldı." },
     ],
   },
   {
@@ -1157,6 +1371,15 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Ağacın gövdesinden ayrılan kollardan her biri.", ornek: "Kuşlar, bahçedeki kiraz ağacının dallarına küçük bir yuva yapmış." },
       { tur: "mecaz", tanim: "Bilim, sanat ya da iş alanı, kol.", ornek: "Ablam üniversitede tarih dalında yüksek lisans yapmaya karar verdi." },
+    ],
+  },
+  {
+    kelime: "dalgın",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Düşüncelere dalarak çevresinde olup biteni fark etmeyen.", ornek: "Pencereden dışarıyı seyrederken o kadar dalgındı ki zilin çaldığını duymadı." },
+      { tur: "gerçek", tanim: "Uyku ile uyanıklık arasında bulunan, sersemlemiş durumda olan.", ornek: "Ateşi yükselen küçük çocuk bütün gece dalgın dalgın yattı." },
+      { tur: "mecaz", tanim: "Kişinin uzaklara dalmışlığını yansıtan bakış veya yüz ifadesi.", ornek: "Dalgın bakışlarından aklının hâlâ yazı geçirdiği köyde olduğu anlaşılıyordu." },
     ],
   },
   {
@@ -1186,6 +1409,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "damlamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sıvı, küçük parçalar hâlinde teker teker düşmek.", ornek: "Onarılmayan musluktan bütün gece lavaboya su damladı, sesi uykumu kaçırdı." },
+      { tur: "gerçek", tanim: "Düşen sıvı, bir yüzeyin üstünde iz bırakmak.", ornek: "Fırçadan damlayan boya, yeni serdiğimiz halının ortasında iri bir leke bıraktı." },
+      { tur: "mecaz", tanim: "Beklenmedik bir anda çıkagelmek.", ornek: "Biz sofrayı kurarken teyzemler kapıya damladı, hepimiz çok sevindik." },
+      { tur: "mecaz", tanim: "Azar azar, aralıklarla gelmek.", ornek: "Yarışmanın sonuçları bütün hafta boyunca birer ikişer okula damladı." },
+    ],
+  },
+  {
     kelime: "dar",
     tur: "sıfat",
     anlamlar: [
@@ -1200,6 +1433,15 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Vuruş, çarpma.", ornek: "Kaza sırasında aldığı darbe yüzünden kolu birkaç hafta alçıda kaldı." },
       { tur: "mecaz", tanim: "Sarsıcı ve kötü etki bırakan olay.", ornek: "Sevdiği takımın küme düşmesi onun için büyük bir darbe oldu." },
+    ],
+  },
+  {
+    kelime: "dayanışma",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir topluluğun üyelerinin zor günde birbirine yardım etmesi, güç birliği.", ornek: "Selden sonra köyde öyle bir dayanışma başladı ki evler kısa sürede onarıldı." },
+      { tur: "mecaz", tanim: "Bir kimsenin yanında olduğunu davranışlarıyla gösterme, duygusal destek.", ornek: "Kaybeden takımı ayakta alkışlayan tribün, sessiz bir dayanışma örneği gösterdi." },
+      { tur: "terim", tanim: "Toplum bilimlerinde bireyleri bir arada tutan karşılıklı bağlılık ilişkisi.", ornek: "Sosyal bilgiler dersinde toplumu ayakta tutan dayanışma bağlarını inceledik." },
     ],
   },
   {
@@ -1218,6 +1460,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir şeyin önemi, kıymeti.", ornek: "Dedemin saatinin bizim için maddi değil manevi bir değeri var." },
       { tur: "terim", tanim: "Bir değişkenin aldığı sayısal karşılık.", ornek: "Denklemde x yerine üç yazınca ifadenin değeri on oldu." },
       { tur: "mecaz", tanim: "Üstün nitelikleriyle önem taşıyan kişi.", ornek: "Ünlü yazar, ülkemizin yetiştirdiği en önemli değerlerden biri sayılıyor." },
+    ],
+  },
+  {
+    kelime: "delmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin içine geçecek biçimde açıklık açmak.", ornek: "Usta, rafı takabilmek için salonun duvarını matkapla deldi." },
+      { tur: "mecaz", tanim: "Bir kurala ya da sıraya uymayıp onu çiğnemek.", ornek: "Sırasını beklemeyen çocuk kuyruğu delip kantinin önüne geçti." },
+      { tur: "mecaz", tanim: "Bir söz ya da olay, insanı derinden üzmek.", ornek: "Ağzından çıkan o soğuk cümle çocuğun yüreğini deldi." },
+      { tur: "mecaz", tanim: "Bir ses, çevredeki sessizliği aşarak duyulmak.", ornek: "Uzaktan gelen tren düdüğünün sesi gecenin derin sessizliğini birden deldi." },
     ],
   },
   {
@@ -1289,6 +1541,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "didinmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir işi başarmak için yorulana kadar sürekli uğraşmak.", ornek: "Yola devrilen ağacı kenara çekmek için akşama kadar didindik." },
+      { tur: "gerçek", tanim: "Geçimini sağlamak amacıyla ağır şartlarda çalışmak.", ornek: "Dedem, tarlada ekmeğini çıkarmak için ömrü boyunca didindi." },
+      { tur: "mecaz", tanim: "Sonuç vermeyecek bir iş için boşuna çaba göstermek.", ornek: "Dalgalar sildikçe kumdan kalesini onaran çocuk boş yere didiniyordu." },
+      { tur: "mecaz", tanim: "Bir konuyu kavramak için zihnini yorarak uzun süre uğraşmak.", ornek: "Son soruyu çözmek için yarım saat didindi ama sonuca ulaşamadı." },
+    ],
+  },
+  {
     kelime: "diken",
     tur: "isim",
     anlamlar: [
@@ -1316,6 +1578,15 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "dinç",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Gücü ve sağlığı yerinde olan, kolay kolay yorulmayan kimse.", ornek: "Seksen yaşındaki dedem hâlâ dinç; her sabah tepeye kadar yürüyor." },
+      { tur: "mecaz", tanim: "Dinlenmiş, kendini enerjik ve zinde hisseden.", ornek: "Uzun bir uykudan sonra kendimi çok dinç hissederek derse girdim." },
+      { tur: "mecaz", tanim: "Canlandırıcı etkisi olan, insana tazelik veren hava veya ortam.", ornek: "Sabahın dinç havası, otobüste kalan uykumuzu bir anda dağıttı." },
+    ],
+  },
+  {
     kelime: "dinlemek",
     tur: "fiil",
     anlamlar: [
@@ -1330,6 +1601,16 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Bir şeyin en alt bölümü.", ornek: "Denizin dibinden topladığımız renkli taşları büyük bir kavanoza doldurduk." },
       { tur: "mecaz", tanim: "En geride, en sonda bulunan yer.", ornek: "Takımımız puan tablosunun dibinden zorlu maçlar kazanarak yavaşça kurtuldu." },
+    ],
+  },
+  {
+    kelime: "direnmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kendisine uygulanan güce karşı koyup yerinden oynamamak.", ornek: "Şişmiş kapı bütün gücümüzle itmemize rağmen direndi, açılmadı." },
+      { tur: "gerçek", tanim: "Bir madde, dış etkilerden bozulmadan uzun süre dayanmak.", ornek: "Bu ağacın kerestesi neme direndiği için sandalda kullanılır." },
+      { tur: "mecaz", tanim: "Bir düşüncesinden ya da isteğinden hiçbir biçimde caymamak.", ornek: "Kardeşim mavi bisikleti almakta direndi, başka rengi beğenmedi." },
+      { tur: "mecaz", tanim: "Zor şartlar karşısında yılmadan dayanmayı sürdürmek.", ornek: "Ağır hastalığına rağmen sahneye çıkmak için yıllarca yılmadan direndi." },
     ],
   },
   {
@@ -1368,6 +1649,26 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "dolanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin çevresinde dönerek hareket etmek.", ornek: "Kedi yavrusu bütün akşam sıcak sobanın çevresinde sessizce dolandı." },
+      { tur: "gerçek", tanim: "Bir şeyin etrafına sarılıp takılı kalmak.", ornek: "Uçurtmanın ipi yüksek çınarın dalına dolandı, bir daha inmedi." },
+      { tur: "gerçek", tanim: "Belli bir amacı olmadan oralarda gezinmek.", ornek: "Otobüsü kaçırınca durağın çevresinde bir saat boyunca boş boş dolandı." },
+      { tur: "mecaz", tanim: "Bir düşünce akıldan çıkmayıp sürekli hatırlanmak.", ornek: "Öğretmenin söylediği o cümle bütün gün aklımda dolandı durdu." },
+    ],
+  },
+  {
+    kelime: "dolaşmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir yeri baştan başa gezmek, oralarda gezinmek.", ornek: "Tatilde bütün gün eski kalenin surları çevresinde dolaştık." },
+      { tur: "gerçek", tanim: "İp, tel gibi uzun şeyler birbirine geçip düğüm oluşturmak.", ornek: "Çantaya gelişigüzel attığım kulaklığın kablosu birbirine dolaşmış, ucunu zor buldum." },
+      { tur: "mecaz", tanim: "Bir haber ya da söylenti ağızdan ağıza yayılmak.", ornek: "Gezi düzenleneceği haberi teneffüste ağızdan ağıza bütün sınıflarda dolaştı." },
+      { tur: "mecaz", tanim: "Bir düşünce akıldan çıkmayıp sürekli hatırlanmak.", ornek: "Çözemediği o soru bütün gece aklında dolaştı, uykusu kaçtı." },
+    ],
+  },
+  {
     kelime: "dolmak",
     tur: "fiil",
     anlamlar: [
@@ -1386,11 +1687,30 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "donmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sıvı, soğuğun etkisiyle katı duruma geçmek.", ornek: "Gece sıcaklık sıfırın altına düşünce göletin yüzeyi buz tuttu, dondu." },
+      { tur: "gerçek", tanim: "Soğuktan çok üşüyüp uyuşmak.", ornek: "Kar altında yarım saat servis beklerken ellerimiz ayaklarımız dondu." },
+      { tur: "mecaz", tanim: "Şaşkınlıktan ya da korkudan olduğu yerde hareketsiz kalmak.", ornek: "Sahneye çıkıp o kalabalığı görünce olduğu yerde dondu, tek kelime edemedi." },
+      { tur: "mecaz", tanim: "Bir aygıt ya da ekran hiçbir işleme yanıt vermez duruma gelmek.", ornek: "Ödevi yazarken bilgisayarın ekranı dondu, hiçbir tuş işlemedi." },
+    ],
+  },
+  {
     kelime: "doruk",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Dağın en yüksek noktası, zirve.", ornek: "Dağcılar uzun bir tırmanıştan sonra doruğa sabaha karşı ulaştı." },
       { tur: "mecaz", tanim: "Bir şeyin en üst, en ileri noktası.", ornek: "Sanatçı, kariyerinin doruğundayken sahneye veda etme kararı aldı." },
+    ],
+  },
+  {
+    kelime: "dostluk",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İki kişi arasındaki sevgiye ve güvene dayanan yakın ilişki.", ornek: "Yirmi yıllık dostlukları, ilkokulda aynı sırayı paylaşmakla başlamıştı." },
+      { tur: "mecaz", tanim: "İki topluluk arasındaki iyi geçim ve karşılıklı iyi niyet.", ornek: "Komşu iki mahalle arasındaki dostluk, birlikte düzenlenen bahar şenliğiyle pekişti." },
+      { tur: "terim", tanim: "Sporda sonucu sıralamayı etkilemeyen, hazırlık amacı taşıyan karşılaşma niteliği.", ornek: "Takımlar sezon açılışından önce iki dostluk maçı yapmaya karar verdi." },
     ],
   },
   {
@@ -1400,6 +1720,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Sıvı ya da taneli bir şeyi bir yere akıtmak.", ornek: "Bardaktaki suyu yanlışlıkla masanın üzerine dökünce hemen bir bezle sildim." },
       { tur: "gerçek", tanim: "Üzerindekileri bırakmak, atmak.", ornek: "Sonbahar gelince ağaçlar yapraklarını döküp kışa hazırlanmaya yavaşça başlar." },
       { tur: "mecaz", tanim: "İçinde biriken duyguları anlatmak.", ornek: "Uzun zamandır sakladığı derdini sonunda arkadaşına içini dökerek anlattı." },
+    ],
+  },
+  {
+    kelime: "dökülmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sıvı, bulunduğu kaptan dışarı taşıp akmak.", ornek: "Masaya çarpınca bardaktaki süt salondaki halının üzerine bir anda döküldü." },
+      { tur: "gerçek", tanim: "Yaprak, saç, tüy gibi şeyler bağlı olduğu yerden ayrılıp düşmek.", ornek: "Sonbahar gelince bahçedeki çınarın yaprakları bir hafta içinde döküldü." },
+      { tur: "mecaz", tanim: "Kalabalık bir topluluk hep birlikte bir yere çıkmak.", ornek: "Zil çalar çalmaz bütün öğrenciler koşarak okulun bahçesine döküldü." },
+      { tur: "mecaz", tanim: "Bakımsızlıktan yıpranıp iyice kötü duruma gelmek.", ornek: "Yıllardır onarılmayan ahşap köprü artık iyice dökülüyor, tahtaları çıkıyordu." },
     ],
   },
   {
@@ -1419,11 +1749,30 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "durmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Hareket hâlindeki bir şey ilerlemesini kesip yerinde kalmak.", ornek: "Otobüs, köşedeki durağa yaklaşınca yavaşladı ve kapısını açmak için durdu." },
+      { tur: "gerçek", tanim: "Bir yerde bulunmak, o yerde kalmaya devam etmek.", ornek: "Aradığın anahtarlar sabahtan beri antredeki masanın üstünde duruyor." },
+      { tur: "mecaz", tanim: "Süregelen bir olay sona ermek, kesilmek.", ornek: "Sağanak öğleden sonra durdu, çocuklar hemen bahçeye koştu." },
+      { tur: "mecaz", tanim: "Belli bir biçimde görünmek, göze öyle çarpmak.", ornek: "Yeni aldığı ince çerçeveli gözlük onun yüzünde çok yakışıklı duruyor." },
+    ],
+  },
+  {
     kelime: "duvar",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Bir yapıyı çevirip ayıran, taş, tuğla veya betondan yapılmış dik bölme.", ornek: "Odamın duvarına bir tablo astım." },
       { tur: "mecaz", tanim: "Aşılmaz engel.", ornek: "İki ülke arasında siyasi bir duvar var." },
+    ],
+  },
+  {
+    kelime: "duyarlı",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Dış etkileri çabuk algılayıp hemen tepki veren, hassas.", ornek: "Duyarlı bir cildi olduğu için güneşte birkaç dakikada kızarıveriyor." },
+      { tur: "mecaz", tanim: "Çevresindeki sorunları önemseyen, başkalarının durumuna ilgi gösteren.", ornek: "Sokak kedilerine mama kabı koyacak kadar duyarlı bir çocuktu." },
+      { tur: "terim", tanim: "En küçük değişimi bile ölçebilen, ince ayarlı olan araç.", ornek: "Laboratuvardaki duyarlı terazi, bir kâğıt parçasının ağırlığını bile gösteriyor." },
     ],
   },
   {
@@ -1450,6 +1799,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Üzerinde yaşadığımız gezegen.", ornek: "Dünya, Güneş çevresindeki turunu tam bir yılda tamamlıyor." },
       { tur: "mecaz", tanim: "İnsanlar, herkes.", ornek: "Bu davranışını duyarsa dünya âlem sana güler diye korktu." },
       { tur: "mecaz", tanim: "Kişinin duygu ve düşünce evreni.", ornek: "Kitap okurken kendi iç dünyasında bambaşka yollara doğru yol alıyordu." },
+    ],
+  },
+  {
+    kelime: "dürüst",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Doğruyu söyleyen, yalana ve aldatmaya başvurmayan kimse.", ornek: "Camı kendisinin kırdığını saklamayıp anlatan dürüst bir öğrenciydi." },
+      { tur: "mecaz", tanim: "İçinde hile bulunmayan, kurallara uygun biçimde yapılan iş.", ornek: "İki takım da dürüst bir oyun çıkardığı için maç sonunda kimse itiraz etmedi." },
+      { tur: "mecaz", tanim: "Gizli bir yan taşımayan, içten ve açık olan söz.", ornek: "Sorularımıza dürüst bir yanıt verince aramızdaki gerginlik anında dağıldı." },
     ],
   },
   {
@@ -1605,6 +1963,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "erdem",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İyi ve doğru davranmayı huy edinme durumu, fazilet.", ornek: "Doğruyu söylemek, onun herkesçe bilinen en büyük erdemiydi." },
+      { tur: "terim", tanim: "Ahlak felsefesinde, insanı iyiye yönelten kalıcı huy.", ornek: "Düşünürler cesaret ve adaleti temel erdemler arasında sayar." },
+      { tur: "mecaz", tanim: "Bir şeyin başkalarında bulunmayan üstün, değerli yanı.", ornek: "Bu kitabın en büyük erdemi, zor konuları sade bir dille anlatmasıdır." },
+      { tur: "mecaz", tanim: "Kaybetme pahasına doğru olanı seçebilme gücü.", ornek: "Rakibinin sakatlandığını görünce topu dışarı atması takımın erdemini gösterdi." },
+    ],
+  },
+  {
     kelime: "erimek",
     tur: "fiil",
     anlamlar: [
@@ -1622,6 +1990,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "ertelemek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Planlanmış bir işi daha sonraki bir güne bırakmak.", ornek: "Sabahki sağanak yüzünden sınıfça gideceğimiz pikniği haftaya ertelediler." },
+      { tur: "gerçek", tanim: "Bir şeyin başlama saatini ileri alıp geciktirmek.", ornek: "Yoğun sis nedeniyle sabahki bütün uçuşlar akşam saatlerine ertelendi." },
+      { tur: "mecaz", tanim: "Bir isteği ya da hayali sürekli sonraya bırakıp yaşamamak.", ornek: "Resim yapma hayalini yıllarca erteledi, sonunda kursa yazılmaya karar verdi." },
+      { tur: "mecaz", tanim: "Bir sorunla yüzleşmekten kaçınıp çözümü geciktirmek.", ornek: "Zor konuşmayı ertelemek meseleyi çözmedi, aksine aradaki kırgınlığı büyüttü." },
+    ],
+  },
+  {
     kelime: "eser",
     tur: "isim",
     anlamlar: [
@@ -1635,6 +2013,16 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Savaşta düşmanın eline geçen kimse, tutsak.", ornek: "Savaş bitince esir düşen askerler törenle ülkelerine geri gönderildi." },
       { tur: "mecaz", tanim: "Bir şeye ya da kimseye aşırı bağımlı olan.", ornek: "Telefonunun esiri olmuş, eski arkadaşlarıyla artık hiç görüşmüyor." },
+    ],
+  },
+  {
+    kelime: "esirgemek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi birine vermekten kaçınmak, çok görmek.", ornek: "Boya kalemlerini isteyen hiçbir arkadaşından esirgemez, seve seve verirdi." },
+      { tur: "gerçek", tanim: "Kötü bir durumdan korumak, sakınmak.", ornek: "Çoban sürüsünü ayazdan esirgemek için hayvanları akşamdan ağıla kapattı." },
+      { tur: "mecaz", tanim: "Sevgi, emek gibi soyut şeyleri vermekten kaçınmak.", ornek: "Öğretmenimiz emeğini ve sabrını sınıftaki hiçbir öğrencisinden asla esirgemedi." },
+      { tur: "mecaz", tanim: "Kendini tehlikeye atmaktan çekinmek.", ornek: "Yangında canını esirgemeden içeri koşup mahsur kalan kediyi kurtardı." },
     ],
   },
   {
@@ -1959,6 +2347,25 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "gevşemek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sıkılığı azalıp bollaşmak, çözülecek duruma gelmek.", ornek: "Bahçede koşup oynarken ayakkabımın bağcıkları gevşedi ve iki kez çözüldü." },
+      { tur: "gerçek", tanim: "Kaslar yumuşayıp dinlenmiş bir duruma gelmek.", ornek: "Ilık suda on dakika oturunca sırtım ve omuzlarım gevşedi." },
+      { tur: "mecaz", tanim: "Bir işe verilen dikkat ya da çaba azalmak.", ornek: "Sınav bitince sınıfın günlerdir süren yoğun çalışma temposu iyice gevşedi." },
+      { tur: "mecaz", tanim: "Sertlik veya kızgınlık azalıp yumuşamak.", ornek: "Çocuk içtenlikle özür dileyince babasının sert bakışları ve sesi gevşedi." },
+    ],
+  },
+  {
+    kelime: "girişken",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İnsanlarla konuşmaya çekinmeden ilk adımı atan, sokulgan kimse.", ornek: "Girişken bir çocuk olduğu için yaz kampında hemen arkadaş edindi." },
+      { tur: "gerçek", tanim: "Yeni bir işi başlatmaktan korkmayan, fırsatları değerlendiren.", ornek: "Girişken teyzem, kendi yaptığı reçelleri semt pazarında satmaya başladı." },
+      { tur: "mecaz", tanim: "Atılganlık ve özgüven yansıtan davranış biçimi.", ornek: "Sahnedeki girişken tavrı sayesinde münazarada takımına birincilik kazandırdı." },
+    ],
+  },
+  {
     kelime: "girmek",
     tur: "fiil",
     anlamlar: [
@@ -2092,6 +2499,26 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "gözetmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kimseyle ilgilenip ona göz kulak olmak.", ornek: "Komşular yaz boyunca sokakta oynayan bütün çocukları sırayla gözetirdi." },
+      { tur: "gerçek", tanim: "Bir kimsenin gelişini bekleyip yolunu izlemek.", ornek: "Pencerenin kenarına oturmuş, babasının akşam gelişini sabırla gözetiyordu." },
+      { tur: "gerçek", tanim: "Bir kuralı veya ölçüyü dikkate alarak uygulamak.", ornek: "Yarışmayı düzenlerken bütün takımlar arasında eşitliği titizlikle gözettiler." },
+      { tur: "mecaz", tanim: "Bir amacı veya çıkarı akılda tutarak davranmak.", ornek: "Bu yardımı yaparken hiçbir karşılık gözetmedi, sadece iyilik yapmak istedi." },
+    ],
+  },
+  {
+    kelime: "gurur",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir başarı karşısında duyulan haklı sevinç ve kıvanç.", ornek: "Kızı kürsüye çıkıp konuşmasını yapınca babası gururla alkışladı." },
+      { tur: "gerçek", tanim: "Kendini başkalarından üstün görme, büyüklenme.", ornek: "Gururu yüzünden kimseden yardım istemedi, iş yarım kaldı." },
+      { tur: "mecaz", tanim: "Kişinin kendine duyduğu saygı, onuru.", ornek: "Özür dilemeyi gururuna yediremediği için arkadaşıyla günlerce hiç konuşmadı." },
+      { tur: "mecaz", tanim: "Bir topluluğa övünme sebebi olan kişi ya da şey.", ornek: "Öğrencilerin kendi elleriyle kurduğu bu küçük kütüphane mahallemizin gururudur." },
+    ],
+  },
+  {
     kelime: "güç",
     tur: "isim",
     anlamlar: [
@@ -2133,6 +2560,16 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Hoşa gitmeyen, düzensiz ve yüksek ses.", ornek: "İnşaattan gelen gürültü yüzünden bütün gece gözümüzü kırpmadık." },
       { tur: "mecaz", tanim: "Kavga, tartışma, karışıklık.", ornek: "Maç sonunda çıkan gürültü ancak polisin gelmesiyle yatıştırıldı." },
+    ],
+  },
+  {
+    kelime: "güvenmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kimsenin doğruluğuna inanıp içini ona rahatça açmak.", ornek: "Sırrını yalnızca yıllardır tanıdığı sınıf arkadaşına anlattı, ona çok güveniyordu." },
+      { tur: "gerçek", tanim: "Birinin bir işi başaracağına inanmak.", ornek: "Takım kaptanı son vuruşta ona güvendi ve topu ona uzattı." },
+      { tur: "mecaz", tanim: "Sahip olduğu bir özelliği dayanak sayıp cesaret bulmak.", ornek: "Kuvvetine güvenip un çuvalını tek başına sırtladı, merdivenleri soluksuz çıktı." },
+      { tur: "mecaz", tanim: "Bir şeyin olacağını sanıp önlem almamak.", ornek: "Havanın açık kalacağına güvendik, dönüşte sağanağa yakalanıp sırılsıklam olduk." },
     ],
   },
   {
@@ -2185,15 +2622,6 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir kişiye yasa veya gelenekçe tanınan yetki.", ornek: "Her vatandaşın oy verme hakkı vardır." },
       { tur: "mecaz", tanim: "Adalet, doğruluk.", ornek: "Sonunda hak yerini buldu." },
       { tur: "mecaz", tanim: "Pay, görev olarak verilen şey.", ornek: "Bu işteki hakkı sana ait." },
-    ],
-  },
-  {
-    kelime: "hâkim",
-    tur: "isim / sıfat",
-    anlamlar: [
-      { tur: "terim", tanim: "Mahkemede davaları inceleyip karara bağlayan görevli, yargıç.", ornek: "Hâkim, duruşmanın sonunda verdiği kararı yüksek sesle okudu." },
-      { tur: "gerçek", tanim: "Bir yeri yukarıdan gören, üstten bakan.", ornek: "Tepedeki kale, bütün vadiye hâkim bir noktaya kurulmuş." },
-      { tur: "mecaz", tanim: "Bir konuyu çok iyi bilen, konuya egemen olan.", ornek: "Öğretmen konusuna hâkim olduğu için soruları rahatça yanıtladı." },
     ],
   },
   {
@@ -2280,6 +2708,17 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "hava",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yeryüzünü saran, canlıların soluk aldığı gaz karışımı.", ornek: "Pencereyi açınca odaya temiz dağ havası doldu, derin bir nefes aldım." },
+      { tur: "gerçek", tanim: "Bir yerin belli bir zamandaki sıcaklık, yağış ve rüzgâr durumu.", ornek: "Yarın hava iyice soğuyacakmış, kalın montunu almayı sakın unutma." },
+      { tur: "terim", tanim: "Bir parçanın ezgisi, melodisi.", ornek: "Düğünde çalınan bu hava, yörenin en çok bilinen ezgisidir." },
+      { tur: "mecaz", tanim: "Gösteriş yapma, caka satma.", ornek: "Yeni bisikletiyle mahallenin sokaklarında hava atarak bir saat dolaştı." },
+      { tur: "mecaz", tanim: "Bir yerin veya topluluğun genel durumu, ortamı.", ornek: "Sonuçlar açıklanınca sınıfın havası bir anda neşeye döndü." },
+    ],
+  },
+  {
     kelime: "hayal",
     tur: "isim",
     anlamlar: [
@@ -2320,6 +2759,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Yenen yiyecekleri midede sindirmek.", ornek: "Akşam yediğimiz ağır yemeği hazmetmek epeyce zamanımızı aldı." },
       { tur: "mecaz", tanim: "Hoşa gitmeyen bir durumu kabullenip içine sindirmek.", ornek: "Takımımız sahasında aldığı bu ağır yenilgiyi bir türlü hazmedemedi." },
       { tur: "mecaz", tanim: "Öğrenilen bilgiyi iyice anlayıp özümsemek.", ornek: "Konuyu hazmetmeden yeni soru çözmeye geçmen sana zarar verir." },
+    ],
+  },
+  {
+    kelime: "hâkim",
+    tur: "isim / sıfat",
+    anlamlar: [
+      { tur: "terim", tanim: "Mahkemede davaları inceleyip karara bağlayan görevli, yargıç.", ornek: "Hâkim, duruşmanın sonunda verdiği kararı yüksek sesle okudu." },
+      { tur: "gerçek", tanim: "Bir yeri yukarıdan gören, üstten bakan.", ornek: "Tepedeki kale, bütün vadiye hâkim bir noktaya kurulmuş." },
+      { tur: "mecaz", tanim: "Bir konuyu çok iyi bilen, konuya egemen olan.", ornek: "Öğretmen konusuna hâkim olduğu için soruları rahatça yanıtladı." },
     ],
   },
   {
@@ -2385,6 +2833,15 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "hoşgörü",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kendinden farklı düşünce ve yaşayışları anlayışla karşılama tutumu.", ornek: "Farklı düşünenlere gösterdiği hoşgörü sayesinde sınıfta hiç tartışma çıkmıyordu." },
+      { tur: "mecaz", tanim: "Yapılan kusurları görmezden gelme, gereğinden çok göz yumma.", ornek: "Ödevini hiç yapmayan çocuğuna gösterdiği aşırı hoşgörü sorunu büsbütün büyüttü." },
+      { tur: "mecaz", tanim: "Bir kurumun ya da ortamın kurallar konusunda tanıdığı esneklik.", ornek: "Kütüphanenin gürültü konusunda en küçük bir hoşgörüsü bile bulunmuyor." },
+    ],
+  },
+  {
     kelime: "huy",
     tur: "isim",
     anlamlar: [
@@ -2427,6 +2884,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "terim", tanim: "Mahkemenin bir dava sonunda verdiği karar, yargı.", ornek: "Mahkeme, aylarca süren duruşmaların ardından hükmünü sonunda açıkladı." },
       { tur: "gerçek", tanim: "Bir konuda varılan sonuç, verilen değerlendirme.", ornek: "Bir insan hakkında onu tanımadan hüküm vermek çok yanlıştır." },
       { tur: "mecaz", tanim: "Etkisini sürdürme, egemen olma.", ornek: "Bu dağlık bölgede kış, nisan ayına kadar hükmünü sürdürür." },
+    ],
+  },
+  {
+    kelime: "hüzün",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İnsanın içine çöken, ağır olmayan ama derin bir üzüntü.", ornek: "Taşınan arkadaşının boş sırasına bakınca içini bir hüzün kapladı." },
+      { tur: "gerçek", tanim: "Sevinçli anların ardından gelen tatlı burukluk.", ornek: "Mezuniyet töreninde gülümsemelerle hüzün, salonun her köşesinde iç içe geçmişti." },
+      { tur: "mecaz", tanim: "Bir yerin ya da manzaranın insanda uyandırdığı dokunaklı hava.", ornek: "Yazlıkçılar gidince kasabanın boşalan sokakları eylülde ince bir hüzne bürünürdü." },
+      { tur: "mecaz", tanim: "Bir sanat eserinde sezilen içe işleyici duygu.", ornek: "Türkünün sözlerindeki hüzün, salonu dolduran dinleyicilerin gözlerini doldurdu." },
     ],
   },
   {
@@ -2587,6 +3054,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir konuda direnme, ayak direme.", ornek: "Yağmura rağmen dışarı çıkmakta inat etti, sonunda hasta oldu." },
       { tur: "gerçek", tanim: "Düşüncesinden kolay kolay vazgeçmeyen kimse.", ornek: "İnat çocuk, dediğinden akşama kadar bir türlü vazgeçmedi." },
       { tur: "mecaz", tanim: "Bir durumun bıkkınlık verecek biçimde sürüp gitmesi.", ornek: "Yağmurun inadı yüzünden piknik planımız üçüncü kez ertelendi." },
+    ],
+  },
+  {
+    kelime: "inatçı",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Düşüncesinden veya isteğinden kolay kolay vazgeçmeyen, ayak direyen kişi.", ornek: "Kardeşim öyle inatçı ki bir kez hayır dedi mi kararından dönmez." },
+      { tur: "mecaz", tanim: "Uğraşıldığı hâlde kolayca giderilemeyen, direnen şey.", ornek: "Gömleğimdeki inatçı leke iki kez yıkamama rağmen bir türlü çıkmadı." },
+      { tur: "mecaz", tanim: "Zor koşullara boyun eğmeden yaşamayı sürdüren canlı.", ornek: "Kayaların arasında açan inatçı çiçek, soğuk kışa bile dayanmayı başardı." },
     ],
   },
   {
@@ -2826,6 +3302,17 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kan",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Damarlarda dolaşan, vücuda oksijen ve besin taşıyan kırmızı sıvı.", ornek: "Dizini taşa çarpınca yaradan ince bir kan sızdı." },
+      { tur: "terim", tanim: "Alyuvar, akyuvar ve plazmadan oluşan, dolaşım sistemine ait doku.", ornek: "Fen dersinde kanın hangi hücrelerden oluştuğunu mikroskopla inceleyerek öğrendik." },
+      { tur: "mecaz", tanim: "Aynı soydan gelme, akrabalık bağı.", ornek: "Bu ailede müzik yeteneği kandan geliyor; dedesi de kemancıymış." },
+      { tur: "mecaz", tanim: "Bir topluluğa güç ve canlılık katan yeni katılım.", ornek: "Kadroya alınan genç oyuncular takıma taze kan getirdi." },
+      { tur: "mecaz", tanim: "İnsanın birine karşı duyduğu içten yakınlık.", ornek: "Sınıfa yeni gelen arkadaşa kanım hemen ısındı, iyi anlaştık." },
+    ],
+  },
+  {
     kelime: "kanal",
     tur: "isim",
     anlamlar: [
@@ -2841,6 +3328,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Kuşların, böceklerin uçmasına yarayan organ.", ornek: "Kuşun kırık kanadını sardı." },
       { tur: "mecaz", tanim: "Koruyuculuk, himaye (deyim: kanat germek).", ornek: "Yetimleri kanadının altına aldı." },
       { tur: "gerçek", tanim: "Kapı veya pencerenin açılır parçası.", ornek: "Dolabın bir kanadı bozuldu." },
+    ],
+  },
+  {
+    kelime: "kanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Su içerek susuzluğu giderilmek.", ornek: "Pınardan avuçlayarak içtiği buz gibi suyla susuzluğu sonunda kandı." },
+      { tur: "gerçek", tanim: "Uydurma bir söze inanıp aldanmak.", ornek: "Tilkinin anlattığı tatlı sözlere kanan karga ağzındaki peyniri düşürdü." },
+      { tur: "mecaz", tanim: "Bir şeye doyup yetinmek.", ornek: "Manzaraya saatlerce baktı ama gözü bir türlü kanmadı, ayrılmak istemedi." },
+      { tur: "mecaz", tanim: "Başkasının yönlendirmesiyle yanlış bir işe sürüklenmek.", ornek: "Arkadaşlarının ısrarına kanıp ödevini yarım bıraktı, ertesi gün pişman oldu." },
     ],
   },
   {
@@ -2898,6 +3395,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kararmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin rengi koyulaşıp siyaha yaklaşmak.", ornek: "Soyulmuş elma dilimleri tabakta beklerken kısa sürede kahverengiye dönüp karardı." },
+      { tur: "gerçek", tanim: "Güneşin batmasıyla ortalık karanlık duruma gelmek.", ornek: "Kışın hava erken karardığı için maçı yarıda bırakıp eve döndük." },
+      { tur: "mecaz", tanim: "Umutsuzluğa düşüp hiçbir güzellik göremez olmak.", ornek: "Üst üste gelen aksilikler yüzünden çocuğun dünyası bir anda karardı." },
+      { tur: "mecaz", tanim: "Sonunu düşünmeden bir işe atılmak.", ornek: "Gözü karardı, buz gibi göle arkadaşlarından önce atlayıverdi." },
+    ],
+  },
+  {
     kelime: "karışmak",
     tur: "fiil",
     anlamlar: [
@@ -2913,6 +3420,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Gelen bir kimseyi belli bir yerde beklemek, onu karşılayıcı olarak çıkmak.", ornek: "Dedemi otogarda karşılamak için sabah erkenden yola çıktık." },
       { tur: "mecaz", tanim: "Bir gereksinimi gidermek, yetmek.", ornek: "Bu maaş ailenin bütün masraflarını karşılamaya maalesef yetmiyor." },
       { tur: "mecaz", tanim: "Bir olayı belli bir tepkiyle almak.", ornek: "Öğrenciler yeni kararı alkışlarla karşılayıp öğretmenlerine teşekkür etti." },
+    ],
+  },
+  {
+    kelime: "kaşınmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Deride, sürtme isteği uyandıran rahatsız edici bir duyu olmak.", ornek: "Sivrisinek ısırdığı için bileği bütün gece kaşındı, hiç uyuyamadı." },
+      { tur: "gerçek", tanim: "Kişi kendi derisini tırnaklarıyla ovmak.", ornek: "Yeni kazağın yünü rahatsız edince omzunu bütün ders boyunca kaşındı." },
+      { tur: "mecaz", tanim: "Başına iş açacak davranışlarda ısrar etmek.", ornek: "Kırılacağını bildiği hâlde vazoyla oynamayı sürdüren çocuk resmen kaşınıyordu." },
+      { tur: "mecaz", tanim: "Bir işi yapmak için içinde büyük bir istek duymak.", ornek: "Top sesini duyunca çocuğun ayakları kaşındı, hemen sahaya doğru koştu." },
     ],
   },
   {
@@ -2932,6 +3449,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "terim", tanim: "Belirli bir biçimi ve hacmi olan madde durumu.", ornek: "Fen dersinde suyun katı, sıvı ve gaz hâllerini deneyle gördük." },
       { tur: "gerçek", tanim: "Sert, kolayca bükülmeyen ya da ezilmeyen.", ornek: "Bayatlayan ekmek o kadar katıydı ki bıçak zor kesti." },
       { tur: "mecaz", tanim: "Hoşgörüsüz, acımasız.", ornek: "Katı bir yöneticiydi, kimsenin en küçük hatasını bağışlamazdı." },
+    ],
+  },
+  {
+    kelime: "katmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeye başka bir madde ekleyip karıştırmak.", ornek: "Annem kek hamuruna güzel koksun diye rendelenmiş portakal kabuğu kattı." },
+      { tur: "gerçek", tanim: "Bir topluluğa veya gruba dâhil etmek.", ornek: "Çoban, geride kalan kuzuyu bulup akşam olmadan sürüye kattı." },
+      { tur: "mecaz", tanim: "Bir şeye yeni bir nitelik veya değer kazandırmak.", ornek: "Duvara astığımız renkli tablolar bu küçük odaya bambaşka bir sıcaklık kattı." },
+      { tur: "mecaz", tanim: "Bir varlığı önüne alıp sürükleyerek götürmek.", ornek: "Sert rüzgâr kuru yaprakları önüne katıp sokağın sonuna kadar sürükledi." },
     ],
   },
   {
@@ -2962,6 +3489,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kaygı",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kötü bir şey olacak diye duyulan tedirginlik, tasa.", ornek: "Sonuçları beklerken içinde tarif edemediği bir kaygı vardı." },
+      { tur: "terim", tanim: "Ruh biliminde, sebebi tam bilinmeyen sürekli gerginlik durumu.", ornek: "Uzman, sınav öncesi yaşanan bu gerginliğin kaygı olarak adlandırıldığını söyledi." },
+      { tur: "mecaz", tanim: "Bir iş yapılırken gözetilen temel amaç, öncelik.", ornek: "Onun tek kaygısı ödevini son güne bırakmadan zamanında bitirmekti." },
+      { tur: "mecaz", tanim: "Başkalarının ne düşüneceğini önemseme hâli.", ornek: "Kimse ne der kaygısı taşımadan sahneye çıkıp şiirini okudu." },
+    ],
+  },
+  {
     kelime: "kaymak",
     tur: "fiil / isim",
     anlamlar: [
@@ -2977,6 +3514,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Suyun çıktığı yer; pınar.", ornek: "Dağın eteğindeki kaynaktan içtikleri su buz gibiydi." },
       { tur: "mecaz", tanim: "Bir şeyin çıkış noktası, doğduğu yer.", ornek: "Türk dilinin kaynakları çok eskidir." },
       { tur: "terim", tanim: "Bilgi alınan eser, doküman.", ornek: "Ödevini hazırlarken üç kitabı kaynak gösterdi." },
+    ],
+  },
+  {
+    kelime: "kaynamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sıvı, ısınarak fokurdayıp buhara dönüşmeye başlamak.", ornek: "Tencerenin içindeki su kaynayınca makarnayı yavaşça içine attık ve karıştırdık." },
+      { tur: "gerçek", tanim: "Kırılan kemik ya da ayrı iki metal parçası birbirine yapışıp birleşmek.", ornek: "Doktor, koldaki kırığın altı hafta içinde kaynadığını söyledi." },
+      { tur: "mecaz", tanim: "Bir yer, çok sayıda canlıyla dolup hareketlenmek.", ornek: "Bayram sabahı pazar yeri alışveriş yapan insanlarla kaynıyordu." },
+      { tur: "mecaz", tanim: "Bir hak ya da alacak, hesabı sorulmadan yok olup gitmek.", ornek: "Ödünç verdiği para arkadaşında kaynadı, bir daha hiç konuşulmadı." },
     ],
   },
   {
@@ -3032,6 +3579,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kırılmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sert bir cisim, çarpma etkisiyle parçalara ayrılmak.", ornek: "Rafın kenarına çarpan cam vazo yere düşüp ikiye kırıldı." },
+      { tur: "mecaz", tanim: "Bir söz ya da davranıştan alınıp üzülmek.", ornek: "Doğum günü kutlamasına çağrılmayınca en yakın arkadaşına çok kırıldı." },
+      { tur: "mecaz", tanim: "Bir miktar ya da değer belirgin biçimde azalmak.", ornek: "Hasat bollaşınca semt pazarındaki sebze fiyatları epeyce kırıldı." },
+      { tur: "terim", tanim: "Işık, bir saydam ortamdan başkasına geçerken doğrultusunu değiştirmek.", ornek: "Bardaktaki suya batan kaşık, ışık kırıldığı için eğri görünür." },
+    ],
+  },
+  {
     kelime: "kırmak",
     tur: "fiil",
     anlamlar: [
@@ -3059,12 +3616,42 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kızarmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Isının etkisiyle bir şeyin rengi kırmızıya dönmek.", ornek: "Sobanın içindeki demir maşa, ateşte bekleye bekleye iyice kızarmıştı." },
+      { tur: "gerçek", tanim: "Yiyecek, pişerken üzeri esmerleşip gevrek duruma gelmek.", ornek: "Fırındaki böreklerin üstü kızarınca annem tepsiyi dikkatlice dışarı aldı." },
+      { tur: "gerçek", tanim: "Meyve olgunlaşarak kırmızı renk almak.", ornek: "Bahçedeki kirazlar temmuz güneşiyle birlikte salkım salkım kızardı." },
+      { tur: "mecaz", tanim: "Utanç veya heyecandan yüze kan hücum etmek.", ornek: "Adı ödül için okununca heyecandan kızardı ve başını öne eğdi." },
+    ],
+  },
+  {
+    kelime: "kibirli",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kendini başkalarından üstün gören, büyüklenen.", ornek: "Kibirli davrandığı için sınıfta kimseyle yakın arkadaş olamadı." },
+      { tur: "gerçek", tanim: "Büyüklenme belirten (bakış, gülüş, duruş).", ornek: "Kibirli bir gülümsemeyle başını çevirdi, selamımızı bile almadı." },
+      { tur: "mecaz", tanim: "Görünüşüyle ulaşılmaz ve soğuk bir izlenim veren.", ornek: "Tepedeki şatonun kibirli kuleleri vadiye kurulmuş küçük köye tepeden bakıyordu." },
+      { tur: "mecaz", tanim: "Kendine aşırı güvendiği için uyarı dinlemeyen.", ornek: "Kibirli çıkışlar yapıp antrenörün taktiğini uygulamayınca maçı kaybettiler." },
+    ],
+  },
+  {
     kelime: "kilit",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Kapı ve çekmeceleri kapalı tutmaya yarayan düzenek.", ornek: "Kapının kilidi bozulunca hemen çilingir çağırıp yenisini taktırmak zorunda kaldık." },
       { tur: "mecaz", tanim: "Bir işin sonucunu belirleyen en önemli nokta.", ornek: "Bu sorunun kilit noktası, tarafların birbirini gerçekten dinlemesidir." },
       { tur: "mecaz", tanim: "Bir işin ilerlemesini ya da çözülmesini engelleyen, kolay aşılamayan durum.", ornek: "Olayın kilidi, kaybolan mektubun sandıkta bulunmasıyla birlikte sonunda açıldı." },
+    ],
+  },
+  {
+    kelime: "kokmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Burun yoluyla duyulan hoş bir etki yaymak.", ornek: "Fırından yeni çıkan ekmekler bütün sokağı sardı, mis gibi kokuyordu." },
+      { tur: "gerçek", tanim: "Bozularak rahatsız edici bir hâl almak.", ornek: "Buzdolabı bozulunca içinde kalan bütün yiyecekler bir günde kokmuş." },
+      { tur: "mecaz", tanim: "Bir şeyin yaklaştığına dair belirti sezilmek.", ornek: "Sabahtan beri esen bu nemli rüzgâr yağmur kokuyor." },
+      { tur: "mecaz", tanim: "Bir dönemi ya da duyguyu güçlü biçimde çağrıştırmak.", ornek: "Ninemin sandığı, çocukluk günlerini kokan sararmış mektuplarla doluydu." },
     ],
   },
   {
@@ -3086,6 +3673,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "kollamak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kimseyi korumak, zarar görmesini önlemek.", ornek: "Ablam teneffüslerde küçük kardeşini kollar, yanından bir an ayrılmazdı." },
+      { tur: "gerçek", tanim: "Uygun anı sabırla beklemek.", ornek: "Kedi, serçe konsun diye pencerenin dibinde sessizce fırsat kolluyordu." },
+      { tur: "gerçek", tanim: "Birinin gelişini bekleyerek yolunu gözlemek.", ornek: "Akşamdan beri kapı önünde oturmuş, gelecek misafirlerin yolunu kolluyordu." },
+      { tur: "mecaz", tanim: "Yalnızca kendi çıkarını düşünüp ona göre davranmak.", ornek: "Herkes yalnız kendi çıkarını kollarsa ortak iş asla yürümez." },
+    ],
+  },
+  {
     kelime: "koltuk",
     tur: "isim",
     anlamlar: [
@@ -3095,12 +3692,31 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "koparmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi bağlı bulunduğu yerden çekerek ayırmak.", ornek: "Bahçedeki ağaçtan birkaç olgun kiraz koparıp tabağa koydu." },
+      { tur: "mecaz", tanim: "Bir kimseyi alıştığı ortamdan ya da yakınlarından ayırmak.", ornek: "Onu doğduğu köyden, çocukluk arkadaşlarından koparmak hiç kolay olmadı." },
+      { tur: "mecaz", tanim: "Israrla isteyerek bir şeyi elde etmek.", ornek: "Uzun uğraşlardan sonra babasından hafta sonu kamp izni kopardı." },
+      { tur: "mecaz", tanim: "Ansızın yüksek bir ses ya da gürültü ortaya çıkarmak.", ornek: "Sürpriz hediyeyi görünce öyle bir sevinç çığlığı kopardı ki herkes güldü." },
+    ],
+  },
+  {
     kelime: "kopmak",
     tur: "fiil",
     anlamlar: [
       { tur: "gerçek", tanim: "Bir bütünden ayrılmak, ikiye bölünmek.", ornek: "Salıncağın eski ipi kopunca çocuk çimenlerin üstüne yumuşak bir şekilde düştü." },
       { tur: "gerçek", tanim: "Şiddetli bir doğa olayı birdenbire başlamak.", ornek: "Akşama doğru şiddetli bir fırtına koptu, ağaçlar devrildi." },
       { tur: "mecaz", tanim: "Bir kimseyle ya da yerle ilişkisi kesilmek.", ornek: "Başka şehre taşındıktan sonra eski arkadaşlarından yavaş yavaş tamamen koptu." },
+    ],
+  },
+  {
+    kelime: "korkak",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Tehlike karşısında kolayca ürken, cesaret gösteremeyen kimse.", ornek: "Korkak arkadaşım karanlık koridora tek başına adım atmaya bir türlü cesaret edemedi." },
+      { tur: "gerçek", tanim: "En ufak sesten bile ürken, çekingen yapılı hayvan.", ornek: "Korkak tavşan, çıtırtıyı duyar duymaz çalıların arasına kaçıp saklandı." },
+      { tur: "mecaz", tanim: "Ürkekliği açıkça belli eden ses, bakış veya davranış.", ornek: "Korkak bir sesle söze başlayınca arka sıralar onu hiç duyamadı." },
     ],
   },
   {
@@ -3118,6 +3734,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Adımlarını hızlandırarak hızlı biçimde ilerlemek.", ornek: "Otobüsü kaçırmamak için durağa kadar var gücüyle koştu." },
       { tur: "mecaz", tanim: "Bir yere ya da birine hemen yetişmek, yardıma gitmek.", ornek: "Komşusunun bağırdığını duyar duymaz hiç düşünmeden onun yardımına koştu." },
       { tur: "mecaz", tanim: "Bir şeyi şart olarak ileri sürmek, eklemek.", ornek: "Ödünç verdiği kitabı bir hafta içinde geri istemeyi şart koştu." },
+    ],
+  },
+  {
+    kelime: "koyu",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Rengi karanlığa yakın olan, açık karşıtı.", ornek: "Duvarları koyu yeşile boyayınca oda olduğundan küçük göründü." },
+      { tur: "gerçek", tanim: "İçindeki su az olduğu için yoğun ve akıcılığı düşük olan.", ornek: "Muhallebi fazla kaynayıp koyu olmuş, biraz süt ekleyelim." },
+      { tur: "mecaz", tanim: "Bir düşünceye veya işe aşırı derecede bağlı olan.", ornek: "Dedem koyu bir satranç tutkunudur, bütün turnuvaları izler." },
+      { tur: "mecaz", tanim: "Derinleşmiş, uzayıp giden ve yoğun geçen.", ornek: "Akşam boyunca koyu bir sohbete daldık, saatin geçtiğini fark etmedik." },
     ],
   },
   {
@@ -3148,6 +3774,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "körelmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kesici bir aracın keskinliği azalıp iş görmez duruma gelmek.", ornek: "Her gün kullanılan bahçe makası zamanla köreldi, dalı zor kesiyor." },
+      { tur: "mecaz", tanim: "Bir yetenek, kullanılmadığı için zayıflayıp yitip gitmek.", ornek: "Yıllardır fırçaya hiç dokunmayınca dedemin gençliğindeki resim yeteneği köreldi." },
+      { tur: "mecaz", tanim: "Bir uğraş ya da alan canlılığını yitirip durgunlaşmak.", ornek: "Yeni çırak yetişmeyince kasabadaki eski bakırcılık zanaatı iyice köreldi." },
+      { tur: "terim", tanim: "Bir organ, görevini yitirerek küçülmek.", ornek: "Uzun süre hiç hareket ettirilmeyen kaslar zamanla körelir." },
+    ],
+  },
+  {
     kelime: "köşe",
     tur: "isim",
     anlamlar: [
@@ -3163,6 +3799,17 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Kollarını dolayarak birini sarmak.", ornek: "Uzun yoldan gelen ablasını kapıda görünce koşup sımsıkı kucakladı." },
       { tur: "gerçek", tanim: "Bir şeyi kollarıyla taşımak için almak.", ornek: "Yerdeki odunları kucaklayıp sobanın yanına birer birer özenle yığdı." },
       { tur: "mecaz", tanim: "Herkesi ya da her şeyi içine almak, benimsemek.", ornek: "Bu proje şehirdeki bütün gençleri kucaklamayı ve onlara ulaşmayı amaçlıyor." },
+    ],
+  },
+  {
+    kelime: "kulak",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sesleri duymayı sağlayan, başın iki yanındaki organ.", ornek: "Soğukta kulakları kızarmıştı, atkısını çıkarıp hemen başına doladı." },
+      { tur: "gerçek", tanim: "Bazı kapların tutmaya yarayan yan çıkıntısı.", ornek: "Tencerenin kulağından tutarken kalın bir bez kullanmayı unutma." },
+      { tur: "terim", tanim: "Telli çalgılarda telleri gerip akort etmeye yarayan burgu.", ornek: "Bağlamanın kulaklarını yavaşça çevirerek bütün tellerini yeniden akort etti." },
+      { tur: "mecaz", tanim: "Sesleri ve ezgileri birbirinden ayırt edebilme yeteneği.", ornek: "Kulağı çok kuvvetli; şarkıyı bir kez duyunca notalarını buluyor." },
+      { tur: "mecaz", tanim: "Söylenene gösterilen ilgi ve dikkat.", ornek: "Uyarılarımıza kimse kulak vermeyince çadırı yeniden kurmak zorunda kaldık." },
     ],
   },
   {
@@ -3217,6 +3864,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir yeri çepeçevre sarıp dışarıyla bağlantısını kesmek.", ornek: "Ordu, kaleyi günlerce kuşatıp içeriye yiyecek girmesini engelledi." },
       { tur: "gerçek", tanim: "Bir şeyin çevresini sarmak, etrafını çevirmek.", ornek: "Bahçeyi kuşatan yüksek çitler sokaktan içerinin görünmesini engelliyor." },
       { tur: "mecaz", tanim: "Bir duygu ya da düşünce insanı sarmak.", ornek: "Sınav yaklaştıkça hepimizi tarifsiz bir heyecan kuşatmaya başladı." },
+    ],
+  },
+  {
+    kelime: "kuşku",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyin doğruluğundan emin olamama durumu, şüphe.", ornek: "Haritadaki yol tarifinin doğruluğundan kuşku duyunca yönü bir kez daha sordu." },
+      { tur: "mecaz", tanim: "İnsanın içine düşen tedirginlik, işlerin ters gideceği duygusu.", ornek: "Yolculuk sabahı içine bir kuşku düştü, bavulunu üç kez açıp kapadı." },
+      { tur: "terim", tanim: "Felsefede, bilginin doğruluğunu sorgulamayı temel alan düşünme tutumu.", ornek: "Felsefeciye göre her sağlam bilgi, doğru sorulmuş bir kuşkuyla başlar." },
     ],
   },
   {
@@ -3370,6 +4026,16 @@ export const SOZLUK: Kelime[] = [
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Bir kimseden başkasına yazılı olarak gönderilen ileti.", ornek: "Askerdeki dayıma mektup yazdım." },
+    ],
+  },
+  {
+    kelime: "merak",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bilinmeyen bir şeyi öğrenme isteği.", ornek: "Yıldızların adını merak edince kütüphaneden gökyüzü atlası aldı." },
+      { tur: "gerçek", tanim: "Kişinin severek sürdürdüğü özel uğraş, düşkünlük.", ornek: "Pul biriktirmek onun çocukluğundan beri süren bir merakıdır." },
+      { tur: "mecaz", tanim: "Sevilen birinin başına bir şey gelecek diye duyulan endişe.", ornek: "Eve geç kaldığım için annem merak içinde kapıda bekliyordu." },
+      { tur: "mecaz", tanim: "Bir konuya duyulan ölçüsüz düşkünlük.", ornek: "Onun temizlik merakı yüzünden evde bir zerre toz bulamazsınız." },
     ],
   },
   {
@@ -3656,6 +4322,26 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "oyalanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Gereksiz şeylerle uğraşarak vakit geçirip gecikmek.", ornek: "Yolda vitrinlere baka baka oyalandı, derse tam on dakika geç kaldı." },
+      { tur: "gerçek", tanim: "Bir uğraşla kendine hoş vakit geçirmek.", ornek: "Kardeşim bütün öğleden sonra bin parçalık yapbozla keyifle oyalandı." },
+      { tur: "mecaz", tanim: "Asıl işi bırakıp önemsiz ayrıntılarla uğraşmak.", ornek: "Ödevine başlamayıp kalemlerini sıralamak gibi ayrıntılarla oyalandı, sonunda yetiştiremedi." },
+      { tur: "mecaz", tanim: "Kandırıcı sözlerle bekletilip avutulmak.", ornek: "Söz verilen cevabı bir türlü alamadı, günlerce belirsiz vaatlerle oyalandı." },
+    ],
+  },
+  {
+    kelime: "oymak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir yüzeyi kazıyarak çukurlaştırmak veya ona biçim vermek.", ornek: "Dedem, ceviz kütüğünü küçük bir bıçakla oyup kaşık yaptı." },
+      { tur: "gerçek", tanim: "Su ya da rüzgâr, aşındırarak bir yerde çukur açmak.", ornek: "Yüzyıllardır akıp giden dere, vadideki sert kayaların içini yavaşça oymuş." },
+      { tur: "mecaz", tanim: "Bir üzüntü ya da düşünce, insanın içini sürekli rahatsız etmek.", ornek: "Arkadaşına söylediği o kırıcı söz günlerce içini oydu." },
+      { tur: "mecaz", tanim: "Bir düzeni ya da yapıyı içeriden yavaş yavaş zayıflatmak.", ornek: "Görmezden gelinen küçük ihmaller zamanla kulübün düzenini oydu." },
+    ],
+  },
+  {
     kelime: "oynamak",
     tur: "fiil",
     anlamlar: [
@@ -3682,11 +4368,31 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "öfke",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Haksızlığa uğradığını düşünen kişide beliren güçlü kızgınlık.", ornek: "Emeğinin görmezden gelinmesi onda büyük bir öfke uyandırdı." },
+      { tur: "gerçek", tanim: "Kızgınlığın yüze ve davranışlara yansıyan sert görüntüsü.", ornek: "Yüzündeki öfke, tek kelime etmesine gerek kalmadan her şeyi anlatıyordu." },
+      { tur: "terim", tanim: "Ruh biliminde, tehdit karşısında ortaya çıkan temel duygulardan biri.", ornek: "Rehber öğretmen, korku ile öfkenin temel duygular sayıldığını anlattı." },
+      { tur: "mecaz", tanim: "Doğa olaylarının azgın ve yıkıcı hâli.", ornek: "Denizin öfkesi dinince balıkçılar teknelerini yeniden suya indirdi." },
+    ],
+  },
+  {
     kelime: "öğretmen",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Okulda öğrencilere ders veren kimse.", ornek: "Öğretmenim bana okumayı sevdirdi." },
       { tur: "mecaz", tanim: "Bir kişiye yol gösteren, ders veren kimse veya olay.", ornek: "Hayat en güzel öğretmendir." },
+    ],
+  },
+  {
+    kelime: "öğütmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Taneli bir şeyi ezerek un veya toz durumuna getirmek.", ornek: "Değirmenci, sabah getirdiğimiz buğdayı öğütüp temiz çuvallara doldurdu." },
+      { tur: "terim", tanim: "Dişler, alınan besini ezerek küçük parçalara ayırmak.", ornek: "Azı dişleri lokmayı iyice öğütünce mideye inen besin kolay sindirilir." },
+      { tur: "mecaz", tanim: "Bir bilgiyi uzun uzun düşünüp sindirerek kavramak.", ornek: "Okuduğu konuyu zihninde öğütmeden sınava girmeyi doğru bulmuyordu." },
+      { tur: "mecaz", tanim: "Uzun süren yorucu bir durum, kişiyi yıpratıp bitirmek.", ornek: "Yıllarca süren ağır iş temposu babamı öğütmüş, iyice yormuştu." },
     ],
   },
   {
@@ -3714,6 +4420,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Yaşamı sona ermek, hayatı bitmek.", ornek: "Komşumuzun yıllardır beslediği o yaşlı köpek geçen hafta öldü." },
       { tur: "gerçek", tanim: "Bitki kuruyup canlılığını yitirmek.", ornek: "Tatile giderken sulamayı unutunca balkondaki bütün çiçekler ölmüştü." },
       { tur: "mecaz", tanim: "Bir şeyi çok istemek, aşırı sevmek.", ornek: "Annemin yaz akşamlarında yaptığı o soğuk limonataya adeta ölürüm." },
+    ],
+  },
+  {
+    kelime: "önyargı",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kimseyi yeterince tanımadan onun hakkında edinilen olumsuz kanı.", ornek: "Yeni gelen öğrenciye karşı beslediği önyargı, aynı sırayı paylaştıkça yok oldu." },
+      { tur: "gerçek", tanim: "Bir şeyi denemeden, görmeden verilen peşin karar.", ornek: "Hiç tatmadığı mercimek çorbasına duyduğu önyargı, ilk kaşıkta dağılıp gitti." },
+      { tur: "mecaz", tanim: "Toplumda kalıplaşmış, sorgulanmadan yinelenen yanlış düşünce.", ornek: "Kızlar futbol oynayamaz önyargısı, mahalle turnuvasında atılan o golle yıkıldı." },
     ],
   },
   {
@@ -3751,11 +4466,29 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "özgün",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Başkasına benzemeyen, kendine ait belirgin nitelikleri olan.", ornek: "Özgün bir anlatımla yazdığı öykü, okul dergisinin ilk sayfasında yayımlandı." },
+      { tur: "terim", tanim: "Kopya veya taklit olmayan, sanatçının kendi elinden çıkmış asıl eser.", ornek: "Tablonun özgün hâli müzede duruyor, koridordaki ise bir kopyasıdır." },
+      { tur: "mecaz", tanim: "Daha önce kimsenin aklına gelmemiş, yaratıcı olan düşünce.", ornek: "Eski meyve kasalarından kitaplık yapma fikri gerçekten özgün bir çözümdü." },
+    ],
+  },
+  {
     kelime: "özgür",
     tur: "sıfat",
     anlamlar: [
       { tur: "gerçek", tanim: "Hiçbir baskı altında olmayan; bağımsız, hür.", ornek: "Tarih boyunca milletler özgür yaşamak için savaşmıştır." },
       { tur: "gerçek", tanim: "Kendi istediği gibi hareket etme, davranma, karar verme gücü olan.", ornek: "Hangi liseye gideceği konusunda tamamen özgürdü, ailesi hiç karışmadı." },
+    ],
+  },
+  {
+    kelime: "özlem",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Uzakta olan bir kimseyi veya yeri yeniden görme isteği, hasret.", ornek: "Bütün yazı köyde geçirince arkadaşlarına duyduğu özlem iyice arttı." },
+      { tur: "mecaz", tanim: "Henüz ulaşılamamış bir duruma kavuşma arzusu.", ornek: "Yıllardır küçük bir bahçe özlemiyle yaşayan teyzem sonunda balkonuna sebze ekti." },
+      { tur: "mecaz", tanim: "Geride kalan bir dönemi yeniden yaşama isteği.", ornek: "Çocukluk yıllarına duyduğu özlem, eski fotoğraflara bakarken yeniden depreşti." },
     ],
   },
   {
@@ -3891,6 +4624,16 @@ export const SOZLUK: Kelime[] = [
     anlamlar: [
       { tur: "gerçek", tanim: "Bir yiyeceği ateşte veya fırında yenecek duruma getirmek.", ornek: "Misafirler gelmeden önce mutfakta güzel bir mercimek çorbası pişirdi." },
       { tur: "mecaz", tanim: "Bir işi iyice hazırlayıp olgunlaştırmak.", ornek: "Sunumu sınıfın önünde anlatmadan önce evde günlerce pişirdi." },
+    ],
+  },
+  {
+    kelime: "pişman",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yaptığı davranışın yanlış olduğunu anlayıp üzülen.", ornek: "Kardeşine bağırdığı için pişmandı, hemen gidip özür diledi." },
+      { tur: "gerçek", tanim: "Kaçırdığı bir fırsat için sonradan üzüntü duyan.", ornek: "Bileti zamanında almadığı için pişman, salonun kapısında bekliyordu." },
+      { tur: "mecaz", tanim: "Verdiği karardan veya sözden cayan, vazgeçmiş olan.", ornek: "Kampa gitmeye karar vermişti ama son gün pişman oldu, kaydını sildirdi." },
+      { tur: "mecaz", tanim: "Yaptığından duyduğu üzüntüyü yüzünden belli eden.", ornek: "Kapının önünde pişman bir yüzle bekliyor, içeri girmeye çekiniyordu." },
     ],
   },
   {
@@ -4092,6 +4835,26 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "sancımak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Vücudun bir yerinde zonklayan bir ağrı duyulmak.", ornek: "Buz gibi suyu hızlı içince dişim akşama kadar sancıdı." },
+      { tur: "gerçek", tanim: "Karın bölgesinde kramp biçiminde ağrı oluşmak.", ornek: "Ham eriği çok yiyen kardeşimin karnı bütün gece sancıdı." },
+      { tur: "mecaz", tanim: "Derin bir üzüntü duymak.", ornek: "Küs ayrıldığı arkadaşını hatırladıkça içi sancıyor, geceleri uykusu kaçıyordu." },
+      { tur: "mecaz", tanim: "Yaptığı bir davranıştan pişmanlık duymak.", ornek: "Kırıcı sözünü hatırladıkça vicdanı sancıdı, ertesi gün gidip özür diledi." },
+    ],
+  },
+  {
+    kelime: "sararmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yaprak, sonbaharda yeşilliğini yitirip altın rengine dönmek.", ornek: "Sonbahar gelince bahçedeki çınarın bütün yaprakları birden sarardı." },
+      { tur: "gerçek", tanim: "Hastalık veya korkudan yüzün rengi solmak.", ornek: "Ateşi çıkan çocuğun yüzü sarardı, halsizce yatağına uzandı." },
+      { tur: "gerçek", tanim: "Kâğıt, eskiyerek rengini yitirmek.", ornek: "Sandıktan çıkan eski mektupların kâğıdı yıllar içinde iyice sarardı." },
+      { tur: "mecaz", tanim: "Üzüntüden gücünü ve canlılığını yitirmek.", ornek: "Sevdiği köpeğini kaybettikten sonra günlerce sarardı soldu, kimseyle konuşmadı." },
+    ],
+  },
+  {
     kelime: "sarılmak",
     tur: "fiil",
     anlamlar: [
@@ -4107,6 +4870,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir şeyin çevresini başka bir nesneyle dolayarak örtmek.", ornek: "Kırılmasın diye bardakları gazete kâğıdına sardıktan sonra kutuya yerleştirdi." },
       { tur: "gerçek", tanim: "Bir yeri her yandan kuşatmak, çevresini almak.", ornek: "Akşam saatlerinde yoğun bir sis bütün vadiyi sarmaya başladı." },
       { tur: "mecaz", tanim: "Bir duygu bir kimseyi tümüyle etkisi altına almak.", ornek: "Mektubu okurken içini tarif edemediği büyük bir özlem sardı." },
+    ],
+  },
+  {
+    kelime: "sarsmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi ileri geri hızlı hareketlerle sallamak.", ornek: "Çocuklar dutları düşürmek için ağacın kalın dallarını sarstı." },
+      { tur: "mecaz", tanim: "Bir haber ya da olay, bir topluluğu derinden etkileyip üzmek.", ornek: "Sevilen öğretmenin emekli olacağı haberi bütün okulu sarstı." },
+      { tur: "mecaz", tanim: "Bir duygunun ya da inancın sağlamlığını zayıflatmak.", ornek: "Söylediği o küçük yalan, aralarındaki yıllanmış güveni sarstı." },
+      { tur: "mecaz", tanim: "Bir kimsenin sağlığını bozup gücünü azaltmak.", ornek: "Uzun süren o grip, dedemin sağlığını epeyce sarstı." },
     ],
   },
   {
@@ -4127,12 +4900,51 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "savruk",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Eşyalarını yerli yerine koymayan, düzensiz davranan kimse.", ornek: "Savruk kardeşim çantasını her gün evin başka bir odasında unutuyor." },
+      { tur: "gerçek", tanim: "Parasını ölçüsüzce harcayan, tutumlu olmayan.", ornek: "O kadar savruk davrandı ki harçlığı daha ayın ortasında bitiverdi." },
+      { tur: "mecaz", tanim: "Özensiz, baştan savma yapılmış olan iş veya yazı.", ornek: "Savruk bir el yazısıyla doldurulan ödevi öğretmen baştan yazdırdı." },
+    ],
+  },
+  {
+    kelime: "savurmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi hızla ve güçlü bir biçimde uzağa fırlatmak.", ornek: "Kaleci topu yakalayınca ceza sahasının çok dışına savurdu." },
+      { tur: "gerçek", tanim: "Rüzgâr, hafif nesneleri sürükleyip dört bir yana dağıtmak.", ornek: "Lodos, balkonda biriken kuru yaprakları bahçenin ortasına savurdu." },
+      { tur: "terim", tanim: "Harmanda taneyi samandan ayırmak için havaya atmak.", ornek: "Çiftçiler eskiden harmanda buğdayı rüzgârda savurarak samanından ayırırdı." },
+      { tur: "mecaz", tanim: "Parayı gereksiz yere, düşünmeden harcayıp tüketmek.", ornek: "Bütün harçlığını iki günde savuran kardeşim ay sonunu zor getirdi." },
+    ],
+  },
+  {
     kelime: "sayfa",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Bir kâğıt yaprağının iki yüzünden her biri.", ornek: "Kitabın son sayfasını okuyunca hikâyenin bittiğine gerçekten çok üzüldü." },
       { tur: "gerçek", tanim: "İnternette bilgilerin sunulduğu bölüm.", ornek: "Okulun internet sayfasında sınav tarihleri sabah saatlerinde yayımlanmıştı." },
       { tur: "mecaz", tanim: "Bir hayatın veya dönemin belli bir bölümü.", ornek: "Taşındıktan sonra geçmişi kapatıp hayatında yepyeni bir sayfa açtı." },
+    ],
+  },
+  {
+    kelime: "saymak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir topluluktaki varlıkları birer birer geçerek kaç tane olduğunu bulmak.", ornek: "Kumbaradan çıkan bozuk paraları teker teker sayıp deftere yazdı." },
+      { tur: "gerçek", tanim: "Birden başlayarak rakamları sırayla söylemek.", ornek: "Saklambaçta ebe olan çocuk gözlerini kapatıp yirmiye kadar saydı." },
+      { tur: "mecaz", tanim: "Bir kimseye değer verip sözüne önem vermek.", ornek: "Mahallede herkes o yaşlı marangozu sever ve sözünü dinleyip sayar." },
+      { tur: "mecaz", tanim: "Bir şeyi olmuş ya da öyleymiş gibi kabul etmek.", ornek: "Sunumun taslağını bitirdiysen bu işin yarısını tamamlanmış say, gerisi kolay." },
+    ],
+  },
+  {
+    kelime: "serpmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Toz veya tanecik durumundaki bir şeyi elle etrafa dağıtmak.", ornek: "Aşçı, çorbanın üzerine bir tutam kuru nane serpti." },
+      { tur: "gerçek", tanim: "Bir sıvıyı damlalar hâlinde bir yüzeye atmak.", ornek: "Ütüye başlamadan önce gömleğin kırışan yakasına biraz su serpti." },
+      { tur: "gerçek", tanim: "Yağmur veya kar, seyrek ve hafif biçimde yağmak.", ornek: "Dışarıda ince ince kar serpiyor, yollar yavaşça beyazlanıyor." },
+      { tur: "mecaz", tanim: "Bir duyguyu ya da düşünceyi çevreye azar azar yaymak.", ornek: "Öğretmenin anlattığı hikâye, sınıftaki herkesin içine umut serpti." },
     ],
   },
   {
@@ -4199,6 +5011,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "sığ",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Dibi yüzeye yakın olan, derinliği az.", ornek: "Çocuklar havuzun sığ tarafında güvenle su oyunları oynuyordu." },
+      { tur: "gerçek", tanim: "Toprağın üst katmanında kalan, aşağıya inmeyen.", ornek: "Bu ağacın kökleri sığ olduğu için sert rüzgârda kolay devrilir." },
+      { tur: "mecaz", tanim: "Bilgi ve düşünce bakımından derinliği bulunmayan, yüzeysel.", ornek: "Konuyu sığ bir yaklaşımla ele aldığı için yazısı kimseyi ikna etmedi." },
+      { tur: "mecaz", tanim: "Kalıcı olmayan, çabuk geçen.", ornek: "Sığ bir merakla başladığı gitar dersini bir haftada bıraktı." },
+    ],
+  },
+  {
     kelime: "sığınmak",
     tur: "fiil",
     anlamlar: [
@@ -4217,6 +5039,36 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "sıkılmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Basınç altında ezilerek suyu çıkarılmak.", ornek: "Bağdan toplanan üzümler makinede sıkıldı, tatlı bir şıra oldu." },
+      { tur: "mecaz", tanim: "Bir durumdan bıkıp içi daralmak.", ornek: "Yağmur yüzünden bütün gün eve kapanan çocuklar akşama kadar sıkıldı." },
+      { tur: "mecaz", tanim: "Utanıp çekinmek, cesaret edememek.", ornek: "Yeni sınıfında söz almaya sıkıldı, parmağını bir türlü kaldıramadı." },
+      { tur: "mecaz", tanim: "Parasızlık yüzünden geçim darlığına düşmek.", ornek: "Beklenmedik masraflar çıkınca bu ay biraz sıkıldık ama idare ettik." },
+    ],
+  },
+  {
+    kelime: "sıkışmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İki şeyin arasına girip kıpırdayamaz duruma gelmek.", ornek: "Defterin sayfası çantanın fermuarına sıkıştı, çıkarmak için epey uğraştım." },
+      { tur: "gerçek", tanim: "Dar bir yere çok sayıda kimse toplanmak.", ornek: "Sağanak başlayınca yoldan geçen herkes küçük durağın altına sıkıştı." },
+      { tur: "mecaz", tanim: "Parasız kalıp maddi darlığa düşmek.", ornek: "Ay sonunda biraz sıkışınca sevdiği kitabı almayı gelecek aya bıraktı." },
+      { tur: "mecaz", tanim: "Beklenmedik bir durum karşısında ne yapacağını bilemez duruma düşmek.", ornek: "Sorular üst üste gelince sıkıştı, bir süre hiçbir cevap veremedi." },
+    ],
+  },
+  {
+    kelime: "sıkmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir şeyi kuvvetle bastırarak suyunu çıkarmak.", ornek: "Kahvaltıda üç portakalı sıkıp taze suyunu bardaklara paylaştırdık." },
+      { tur: "gerçek", tanim: "Dar gelerek bedene basınç yapmak.", ornek: "Yeni aldığım ayakkabı yürürken sağ ayağımın parmaklarını sıkıyor." },
+      { tur: "mecaz", tanim: "Bıkkınlık verip bunaltmak, iç daralmasına yol açmak.", ornek: "Aynı anıyı üçüncü kez anlatması masadaki herkesi sıktı." },
+      { tur: "mecaz", tanim: "Bir kimseyi bir işi yapması için üsteleyerek zorlamak.", ornek: "Öğretmen, sözünü tutması için onu fazla sıkmadan uyardı." },
+    ],
+  },
+  {
     kelime: "sınır",
     tur: "isim",
     anlamlar: [
@@ -4232,6 +5084,25 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Okullarda öğrencilerin oturduğu, üzerinde yazı yazılan mobilya.", ornek: "Yeni gelen öğrenci pencere kenarındaki boş sıraya sessizce oturdu." },
       { tur: "gerçek", tanim: "Bir şeyin art arda dizilmesiyle oluşan düzen.", ornek: "Kantinde uzun bir sıra oluştuğu için teneffüste hiçbir şey alamadık." },
       { tur: "mecaz", tanim: "Bir işin yapılması için uygun olan zaman.", ornek: "Şimdi tatili konuşmanın sırası değil, önce sınavı düşünmeliyiz." },
+    ],
+  },
+  {
+    kelime: "sıradan",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Alışılmışın dışına çıkmayan, her zamanki gibi olan.", ornek: "Sıradan bir salı sabahıydı; ne bir sürpriz ne de bir aksilik vardı." },
+      { tur: "mecaz", tanim: "Özel bir niteliği bulunmadığı düşünülen, önemsiz sayılan kimse.", ornek: "Kendini sıradan sanan çocuk, sergideki resimleriyle bütün mahalleyi şaşırttı." },
+      { tur: "mecaz", tanim: "Üzerinde emek harcanmamış, özensiz ve etkisiz olan.", ornek: "Sıradan birkaç cümleyle yazılan kutlama kartı kimsenin ilgisini çekmedi." },
+    ],
+  },
+  {
+    kelime: "sıyırmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir yüzeydeki ince tabakayı kazıyarak almak.", ornek: "Tencerenin dibine yapışan pilavı kaşıkla sıyırıp tabağa aldı." },
+      { tur: "gerçek", tanim: "Bir şeye hafifçe değip yanından geçmek.", ornek: "Sert vuruşta top kale direğini sıyırıp auta gitti." },
+      { tur: "mecaz", tanim: "Zor ya da tehlikeli bir durumdan son anda kurtulmak.", ornek: "Kapanan kapıya yetişip geç kalmaktan kıl payı sıyırdı." },
+      { tur: "mecaz", tanim: "Bir yerdeki her şeyi alıp geriye hiçbir şey bırakmamak.", ornek: "Antrenmandan aç dönen çocuklar tabaktaki bütün kurabiyeleri sıyırıp bitirmiş." },
     ],
   },
   {
@@ -4316,6 +5187,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "soymak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir yiyeceğin kabuğunu ya da dış örtüsünü çıkarmak.", ornek: "Annem çorba için patatesleri soyup küçük küpler hâlinde doğradı." },
+      { tur: "gerçek", tanim: "Bir kimsenin üzerindeki giysileri çıkarmak.", ornek: "Yağmurda ıslanan bebeğin montunu soyup kuru bir kazak giydirdi." },
+      { tur: "mecaz", tanim: "Bir yerdeki eşyaları izinsizce alıp götürmek.", ornek: "Gece dükkânı soyanlar rafta tek bir kutu bile bırakmamış." },
+      { tur: "mecaz", tanim: "Aşırı fiyat isteyerek birinin parasını gereğinden çok almak.", ornek: "Bir tabak çorbaya bu kadar para isteyen lokanta müşterisini adeta soyuyor." },
+    ],
+  },
+  {
     kelime: "sömürmek",
     tur: "fiil",
     anlamlar: [
@@ -4330,6 +5211,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Yanan veya ışık veren bir şeyi yanmaz duruma getirmek.", ornek: "Kamp ateşini söndürmeden çadıra girmenin çok tehlikeli olduğunu bize anlattı." },
       { tur: "gerçek", tanim: "İçindeki havayı boşaltarak inik duruma getirmek.", ornek: "Parti bitince balonları teker teker söndürüp özenle kutulara yerleştirdik." },
       { tur: "mecaz", tanim: "Bir duyguyu, isteği yok etmek.", ornek: "Sürekli yapılan olumsuz eleştiriler çocuğun okuma hevesini tamamen söndürdü." },
+    ],
+  },
+  {
+    kelime: "sönmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yanmakta olan bir şeyin alevi ya da ışığı kesilmek.", ornek: "Pencereden giren rüzgârla masadaki mumun alevi birden söndü." },
+      { tur: "gerçek", tanim: "Şişirilmiş bir şeyin havası boşalıp inmek.", ornek: "Çivi batan bisiklet lastiği yolun tam ortasında sönüverdi." },
+      { tur: "mecaz", tanim: "Bir istek ya da heves zamanla azalıp yok olmak.", ornek: "Kimse ilgilenmeyince çocuğun tiyatro kulübü kurma hevesi söndü." },
+      { tur: "mecaz", tanim: "Bir yer canlılığını, eski hareketliliğini yitirmek.", ornek: "Fabrika kapanıp gençler göç edince küçük kasaba tamamen söndü." },
     ],
   },
   {
@@ -4357,6 +5248,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Konuşmayı kesmek, sesini çıkarmaz olmak.", ornek: "Öğretmen sınıfa girince herkes bir anda susup yerine oturdu." },
       { tur: "mecaz", tanim: "Ses çıkarmaz duruma gelmek, dinmek.", ornek: "Gece boyunca uğuldayan rüzgâr sabaha karşı birden susuverdi." },
       { tur: "mecaz", tanim: "Haksızlık karşısında tepki göstermemek.", ornek: "Yanlış olduğunu bildiği hâlde susması yıllarca içini rahatsız etti." },
+    ],
+  },
+  {
+    kelime: "sürdürmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Başlanmış bir işe ara vermeden devam etmek.", ornek: "Kar yağmaya başlasa da işçiler yol çalışmasını sürdürdü." },
+      { tur: "gerçek", tanim: "Bir nesnenin bir yüzey üzerinde kaymasını sağlamak.", ornek: "Ağır sandığı kaldıramayınca zeminde ite ite kilere kadar sürdürdük." },
+      { tur: "mecaz", tanim: "Bir duyguyu veya ilişkiyi canlı tutup uzun yıllar yaşatmak.", ornek: "İki arkadaş farklı şehirlere taşınsalar da dostluklarını sürdürdüler." },
+      { tur: "mecaz", tanim: "Bir savı veya tartışmayı bırakmayıp uzatmak.", ornek: "Salonda kimseyi ikna edememişti ama iddiasını akşama kadar inatla sürdürdü." },
     ],
   },
   {
@@ -4553,12 +5454,33 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "taşmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir kabın içindeki sıvı, kenarından dışarı dökülmek.", ornek: "Ocakta unuttuğumuz süt kaynayıp köpürünce tencereden mutfağın zeminine taştı." },
+      { tur: "gerçek", tanim: "Bir yere sığmayıp dışına doğru yayılmak.", ornek: "Seyirciler salona sığmadı, kalabalık kapıdan bahçeye kadar taşmıştı." },
+      { tur: "mecaz", tanim: "Bir duygu, içine sığmayacak kadar çoğalmak.", ornek: "Kardeşinin doğduğunu duyunca sevinci taştı, bütün sınıfa müjdeyi verdi." },
+      { tur: "mecaz", tanim: "Sabrı tükenip öfkelenmek.", ornek: "Aynı şakayı defalarca duyunca sonunda taştı ve odadan çıkıp gitti." },
+    ],
+  },
+  {
     kelime: "tat",
     tur: "isim",
     anlamlar: [
       { tur: "gerçek", tanim: "Dilin aldığı tatlı, acı, ekşi gibi duyu.", ornek: "Çorbanın tadına baktı ve biraz tuz eklemeye karar verdi." },
       { tur: "gerçek", tanim: "Bir yiyeceğin ağızda bıraktığı lezzet.", ornek: "Annemin yaptığı elmalı kekin tadı damağımda günlerce kaldı." },
       { tur: "mecaz", tanim: "Bir şeyden alınan zevk, hoşa giden durum.", ornek: "Kar yağınca tatil günlerinin tadı bizim için bambaşka oluyordu." },
+    ],
+  },
+  {
+    kelime: "tatlı",
+    tur: "sıfat / isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Şekere benzer bir tadı olan.", ornek: "Bahçeden sepetlerle topladığımız kirazlar bal gibi tatlı ve sulu çıktı." },
+      { tur: "gerçek", tanim: "Yemekten sonra yenen, şekerli olarak hazırlanmış yiyecek.", ornek: "Annem misafirler için fırında sütlü bir tatlı yaptı." },
+      { tur: "terim", tanim: "Tuz oranı çok düşük olan, denizinkinden farklı su.", ornek: "Sazan, göl ve ırmak gibi tatlı sularda yaşayan bir balıktır." },
+      { tur: "mecaz", tanim: "Davranışıyla insanın hoşuna giden, cana yakın, sevimli.", ornek: "Yeni komşumuz çok tatlı bir insan, herkesle güler yüzle konuşuyor." },
+      { tur: "mecaz", tanim: "Sert ve yorucu olmayan, insanı rahatlatan.", ornek: "Akşamüstü sahilde tatlı bir rüzgâr esiyordu, saatlerce yürüdük." },
     ],
   },
   {
@@ -4631,12 +5553,31 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "tıkanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir boru ya da geçit dolarak akış durmak.", ornek: "Yağmur suyu gideri sonbaharda dökülen yapraklarla dolup tamamen tıkandı." },
+      { tur: "gerçek", tanim: "Soluk alıp verme güçleşmek.", ornek: "Tozlu odada biraz kalınca boğazı tıkandı, öksürmeye başladı." },
+      { tur: "mecaz", tanim: "Bir iş ilerleyemez duruma gelip olduğu yerde kalmak.", ornek: "Malzeme zamanında gelmeyince inşaattaki bütün işler günlerce olduğu yerde tıkandı." },
+      { tur: "mecaz", tanim: "Konuşurken söyleyecek söz bulamayıp duraklamak.", ornek: "Sunumun tam ortasında heyecanlanınca tıkandı, söyleyeceği cümlenin sırasını unuttu." },
+    ],
+  },
+  {
     kelime: "tırmanmak",
     tur: "fiil",
     anlamlar: [
       { tur: "gerçek", tanim: "Tutuna tutuna yukarı doğru çıkmak.", ornek: "Kedi bahçedeki dut ağacına hızla tırmanıp dalların arasında kayboldu." },
       { tur: "mecaz", tanim: "Sayı veya derece bakımından yükselmek, artmak.", ornek: "Yaz aylarında şehirdeki sıcaklık kırk dereceye kadar tırmandı." },
       { tur: "mecaz", tanim: "Bir gerginlik giderek şiddetlenmek.", ornek: "Küçük bir anlaşmazlıkla başlayan tartışma kısa sürede tırmandı." },
+    ],
+  },
+  {
+    kelime: "titiz",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "İşini en küçük ayrıntısına kadar dikkatle ve özenle yapan.", ornek: "Defterini o kadar titiz tutar ki içinde tek bir karalama bulamazsınız." },
+      { tur: "gerçek", tanim: "Temizlik ve düzen konusunda aşırı hassas olan, kolay memnun olmayan.", ornek: "Halam çok titizdir, eve ayakkabıyla adım atmamıza asla izin vermez." },
+      { tur: "mecaz", tanim: "Büyük dikkat, sabır ve incelik isteyen iş.", ornek: "Kırılan vazoyu parça parça yapıştırmak günler süren titiz bir uğraştı." },
     ],
   },
   {
@@ -4778,6 +5719,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "utanç",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yanlış bir davranış yüzünden duyulan sıkılma ve mahcubiyet.", ornek: "Yalanı ortaya çıkınca utançtan başını kaldırıp yüzümüze bakamadı." },
+      { tur: "gerçek", tanim: "Topluluk önünde konuşurken duyulan çekingenlik, sıkılganlık.", ornek: "Sahneye çıkarken duyduğu utancı ilk cümleden sonra üzerinden attı." },
+      { tur: "mecaz", tanim: "Bir toplum için yüz kızartıcı sayılan durum.", ornek: "Yürüyüş yolunu çöple doldurmak hepimiz için bir utançtır." },
+      { tur: "mecaz", tanim: "İnsanı yanlış yapmaktan alıkoyan iç ölçü.", ornek: "Onun için utanç, hatalı davranmasını engelleyen görünmez bir sınırdı." },
+    ],
+  },
+  {
     kelime: "uyanmak",
     tur: "fiil",
     anlamlar: [
@@ -4793,6 +5744,25 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir şeye uygun düşmek, yakışmak.", ornek: "Mavi ceket üstündeki sarı gömleğe hiç uymadığı için başka bir gömlek giydi." },
       { tur: "gerçek", tanim: "Kurallara veya söylenene bağlı kalmak.", ornek: "Trafik kurallarına uyan sürücüler kazaların önüne geçilmesini sağlar." },
       { tur: "mecaz", tanim: "Başkasının etkisiyle davranmak, sözünü dinlemek.", ornek: "Arkadaşlarının sözüne uyup dersi asması ona pahalıya mal oldu." },
+    ],
+  },
+  {
+    kelime: "uysal",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Söyleneni karşı çıkmadan yapan, yumuşak başlı kimse.", ornek: "Sınıfın en uysal öğrencisiydi; hiçbir uyarıya ters bir karşılık vermezdi." },
+      { tur: "gerçek", tanim: "Ürkmeden ve tepki göstermeden kolayca yönetilebilen hayvan.", ornek: "Çiftlikteki uysal at, sırtına binen çocuklara hiç huysuzluk çıkarmadı." },
+      { tur: "mecaz", tanim: "Sert ve zorlayıcı olmayan, insanı rahatsız etmeyen doğa olayı.", ornek: "Bahar akşamlarında uysal bir rüzgâr, perdeleri usulca havalandırıyordu." },
+    ],
+  },
+  {
+    kelime: "uyuşmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir organın duyusu geçici olarak yitip karıncalanmak.", ornek: "Bağdaş kurup uzun süre oturunca iki ayağım birden uyuştu." },
+      { tur: "mecaz", tanim: "Bir konuda anlaşmaya varmak.", ornek: "Uzun bir pazarlıktan sonra fiyatta uyuştular ve satıcıyla el sıkıştılar." },
+      { tur: "mecaz", tanim: "İki şey birbirine uygun düşüp güzel bir bütün oluşturmak.", ornek: "Perdenin rengiyle halının deseni birbiriyle şaşırtıcı biçimde uyuştu." },
+      { tur: "mecaz", tanim: "Canlılığını yitirip ağırlaşmak, tembelleşmek.", ornek: "Öğle sıcağında koşan çocuklar akşama doğru uyuşup sesleri kesildi." },
     ],
   },
   {
@@ -4858,6 +5828,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "üşenmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir işi yapmayı zahmetli bulup ondan kaçınmak.", ornek: "Akşam çok yorgun olduğu için bulaşıkları yıkamaya üşendi." },
+      { tur: "gerçek", tanim: "Bulunduğu yerden kalkmak istememek.", ornek: "Kış sabahında sıcak yorganın altından çıkmaya üşendi, on dakika daha yattı." },
+      { tur: "mecaz", tanim: "Bir konu üzerinde zihin yormaktan kaçınmak.", ornek: "Sorunun üzerinde düşünmeye üşendi, hemen kitabın arkasındaki cevaba baktı." },
+      { tur: "mecaz", tanim: "Cansız varlıklar için, harekete geçmekte gecikiyormuş gibi görünmek.", ornek: "O sisli sabah güneş, tepelerin ardından doğmaya üşenmiş gibiydi." },
+    ],
+  },
+  {
     kelime: "üzmek",
     tur: "fiil",
     anlamlar: [
@@ -4900,12 +5880,41 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "vazgeçmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Yapmayı düşündüğü bir işi son anda yapmamaya karar vermek.", ornek: "Yağmur bastırınca pikniğe gitmekten vazgeçtik, evde film izledik." },
+      { tur: "gerçek", tanim: "Bir haktan veya maldan kendi isteğiyle el çekmek.", ornek: "Ablam, kazandığı ödülün yarısını kardeşine bırakıp payından vazgeçti." },
+      { tur: "mecaz", tanim: "Birine olan bağlılığını yitirip onu yalnız bırakmak.", ornek: "En zor günümüzde bile bizden vazgeçmedi, hep yanımızda durdu." },
+      { tur: "mecaz", tanim: "Kökleşmiş bir huyu veya alışkanlığı büsbütün bırakmak.", ornek: "Doktorun uyarısından sonra dedem tuzlu yemeklerden tamamen vazgeçti." },
+    ],
+  },
+  {
+    kelime: "vefalı",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Sevgisini ve bağlılığını sürdüren, gördüğü iyiliği unutmayan kimse.", ornek: "Yıllar geçse de ilkokul öğretmenini her bayram arayan vefalı bir öğrenciydi." },
+      { tur: "mecaz", tanim: "Sahibine bağlılığını hiç yitirmeyen hayvan.", ornek: "Vefalı köpek, sahibi işten dönene kadar kapının önünden hiç ayrılmadı." },
+      { tur: "mecaz", tanim: "Uzun yıllar sorunsuz hizmet eden, kişiyi yarı yolda bırakmayan eşya.", ornek: "On yıllık vefalı bisikletim beni bugüne kadar bir kez bile yolda bırakmadı." },
+    ],
+  },
+  {
     kelime: "vermek",
     tur: "fiil",
     anlamlar: [
       { tur: "gerçek", tanim: "Bir şeyi birine ulaştırmak, sunmak.", ornek: "Çocuğa kalemi verdim." },
       { tur: "mecaz", tanim: "Karar veya öğüt sunmak.", ornek: "Bu konuda bana iyi bir öğüt verdi." },
       { tur: "mecaz", tanim: "Bir niteliği kazandırmak.", ornek: "Yağmur ovaya yeniden hayat verdi." },
+    ],
+  },
+  {
+    kelime: "vicdan",
+    tur: "isim",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Kişinin iyiyi kötüden ayırmasını sağlayan iç ses.", ornek: "Bulduğu cüzdanı sahibine ulaştırınca vicdanı rahatladı, gülümseyerek eve döndü." },
+      { tur: "terim", tanim: "Ahlak felsefesinde, davranışları yargılayan iç değerlendirme gücü.", ornek: "Filozofların vicdan üzerine ileri sürdüğü görüşleri derste tek tek karşılaştırdık." },
+      { tur: "mecaz", tanim: "Acıma ve merhamet duygusu.", ornek: "Yağmurda kalan yavru kediyi görünce vicdanı el vermedi, onu eve aldı." },
+      { tur: "mecaz", tanim: "İnsanın içini rahatsız eden suçluluk duygusu.", ornek: "Sınıfta söylediği küçük yalan günlerce vicdanını sızlattı, uykusunu kaçırdı." },
     ],
   },
   {
@@ -4967,6 +5976,16 @@ export const SOZLUK: Kelime[] = [
     ],
   },
   {
+    kelime: "yakınmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir durumdan duyduğu rahatsızlığı söyleyip şikâyet etmek.", ornek: "Otobüsün her sabah geç kalmasından yakınan yolcular durakta bekleşiyordu." },
+      { tur: "gerçek", tanim: "Hastalığını veya ağrısını hekime anlatmak.", ornek: "Muayenede iki gündür süren baş ağrısından yakındı, doktor dinlenmesini söyledi." },
+      { tur: "mecaz", tanim: "Kırgınlığını sitem ederek belli etmek.", ornek: "Mektubunda uzun süredir uğramadığımız için tatlı tatlı yakınmıştı." },
+      { tur: "mecaz", tanim: "Cansız varlıklar için, sızlanır gibi ses çıkarmak.", ornek: "Fırtınalı gecede eski ahşap kapı gıcırdayarak sanki yakınıyordu." },
+    ],
+  },
+  {
     kelime: "yakmak",
     tur: "fiil",
     anlamlar: [
@@ -4982,6 +6001,26 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir şeyin sağ veya sol bölgesi.", ornek: "Otururken yan tarafımda boş bir koltuk vardı." },
       { tur: "mecaz", tanim: "Bir konunun ek özelliği veya boyutu.", ornek: "Olayın bir de bizim bilmediğimiz yanı var." },
       { tur: "mecaz", tanim: "Taraf, görüş.", ornek: "Tartışmada babamın yanında yer aldı." },
+    ],
+  },
+  {
+    kelime: "yanılmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir konuda gerçeğe uymayan bir yargıya varmak.", ornek: "Adresi ezberlediğimi sanıyordum ama sokağın numarasında yanıldığımı kapıda anladım." },
+      { tur: "gerçek", tanim: "Bir işlem sırasında dikkatsizlik yüzünden hata yapmak.", ornek: "Bir basamağı eksik yazınca toplama işleminin sonucunda yanıldı." },
+      { tur: "mecaz", tanim: "Birini olduğundan başka biri sanıp hakkında yanlış düşünmek.", ornek: "Onu ilgisiz sanıyordum; herkesten önce yardıma koşunca yanıldığımı anladım." },
+      { tur: "mecaz", tanim: "Umduğu sonuç çıkmayınca beklentisinin boş olduğunu görmek.", ornek: "Rahat kazanırız diye düşündüğü maçta fena hâlde yanıldı." },
+    ],
+  },
+  {
+    kelime: "yanmak",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Ateş alıp alevlenerek ısı ve ışık vermek.", ornek: "Şöminedeki kuru çam odunları çıtırdayarak sabaha kadar yandı." },
+      { tur: "gerçek", tanim: "Aşırı sıcaktan veya güneş ışığından zarar görmek.", ornek: "Balkonda unuttuğumuz fesleğenin yaprakları öğle güneşinin altında sararıp yandı." },
+      { tur: "mecaz", tanim: "Bir üzüntüden dolayı içi acımak, derin acı duymak.", ornek: "Kaybolan kedisini sokaklarda ararken küçük kızın içi yanıyordu." },
+      { tur: "mecaz", tanim: "Bir hak ya da emek boşa gitmek, elden çıkmak.", ornek: "Başvurusunu son güne bırakınca bursu almak için bütün hakkı yandı." },
     ],
   },
   {
@@ -5044,6 +6083,16 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Bir besini ağızda çiğneyip yutmak.", ornek: "Akşam yemeğinde çorbasını yiyip odasına ders çalışmaya gitti." },
       { tur: "mecaz", tanim: "Parayı veya malı gereksiz yere harcayıp tüketmek.", ornek: "Babasından kalan mirası birkaç yıl içinde yiyip bitirdi." },
       { tur: "mecaz", tanim: "Kötü bir duruma uğramak, maruz kalmak.", ornek: "Kural dışı hareket eden oyuncu maçın başında sarı kart yedi." },
+    ],
+  },
+  {
+    kelime: "yenilmek",
+    tur: "fiil",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Bir yarışmada karşı tarafa üstünlük sağlayamayıp kaybetmek.", ornek: "Takımımız uzatma dakikalarında yediği golle kendi sahasında rakibine yenildi." },
+      { tur: "gerçek", tanim: "Yiyecek olarak tüketilmek.", ornek: "Bu mantar zehirlidir, kaynatılsa bile hiçbir biçimde yenilmez." },
+      { tur: "mecaz", tanim: "Bir duyguya karşı koyamayıp onun etkisi altına girmek.", ornek: "Uykusuna yenilen çocuk, kitabı elinde tutarken koltukta uyuyakalmıştı." },
+      { tur: "mecaz", tanim: "Karşılaştığı güçlük yüzünden umudunu yitirip çabayı bırakmak.", ornek: "Karşısına çıkan zorluklara yenilmeden çalıştı ve istediği okulu kazandı." },
     ],
   },
   {
@@ -5133,6 +6182,15 @@ export const SOZLUK: Kelime[] = [
       { tur: "gerçek", tanim: "Kalp.", ornek: "Koşudan sonra yüreğinin hızla çarptığını göğsünde açıkça hissediyordu." },
       { tur: "mecaz", tanim: "Cesaret, yiğitlik.", ornek: "Yangına giren itfaiyecinin yüreğine bütün mahalle hayran kalmıştı." },
       { tur: "mecaz", tanim: "Acıma ve sevgi duygularının kaynağı.", ornek: "Sokakta titreyen yavru köpeği görünce yüreği bir anda burkuldu." },
+    ],
+  },
+  {
+    kelime: "yürekli",
+    tur: "sıfat",
+    anlamlar: [
+      { tur: "gerçek", tanim: "Tehlike karşısında korkuya kapılmayan, cesur olan kimse.", ornek: "Yürekli itfaiyeci, dumanla dolan binadan yavru kediyi kucağında çıkardı." },
+      { tur: "mecaz", tanim: "Doğru bildiğini söylemekten ve haksızlığa karşı çıkmaktan çekinmeyen.", ornek: "Haksızlığı bütün sınıfın önünde dile getirecek kadar yürekli bir öğrenciydi." },
+      { tur: "mecaz", tanim: "Göze alınması cesaret isteyen, kolay olmayan karar veya davranış.", ornek: "Hiç tanımadığı bir şehirde okumaya gitmek onun için yürekli bir karardı." },
     ],
   },
   {

@@ -1,23 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+/**
+ * Tema düğmesi + TEMA SEÇİCİ.
+ *
+ * Tek tık: açık ↔ koyu aile arasında geçiş (eski davranış korunur).
+ * Palet düğmesi: 12 temanın tamamının göründüğü seçici paneli açar
+ * (satranç sitelerindeki tahta/taş teması seçicisi gibi).
+ */
 
-const STORAGE_KEY = "rehberim:theme";
+import { useEffect, useRef, useState } from "react";
+import { Check, Moon, Palette, Sun, X } from "lucide-react";
+import { TEMALAR, temaBul, type Tema } from "@/lib/temalar";
+import { temaAboneOl, temaOku, temaUygula } from "@/lib/tema";
 
-type Theme = "light" | "dark";
-
-function applyTheme(t: Theme) {
-  if (typeof document === "undefined") return;
-  const root = document.documentElement;
-  if (t === "dark") root.classList.add("dark");
-  else root.classList.remove("dark");
-}
-
-function readStored(): Theme | null {
-  if (typeof window === "undefined") return null;
-  const v = localStorage.getItem(STORAGE_KEY);
-  return v === "dark" || v === "light" ? v : null;
+function karsitTema(t: Tema): string {
+  // Aynı "ruhtaki" karşı aileye geç: klasik ↔ gece, pembe ↔ mor, ...
+  const es: Record<string, string> = {
+    klasik: "gece", gece: "klasik",
+    pembe: "mor", mor: "pembe",
+    lavanta: "mor",
+    nane: "orman", orman: "nane",
+    deniz: "okyanus", okyanus: "deniz",
+    kagit: "gunbatimi", gunbatimi: "kagit",
+    komur: "klasik",
+  };
+  return es[t.id] ?? (t.aile === "koyu" ? "klasik" : "gece");
 }
 
 export function ThemeToggle({
@@ -25,35 +32,18 @@ export function ThemeToggle({
 }: {
   variant?: "icon" | "menu";
 }) {
-  // mount edilene kadar bilinmiyor → hidrasyon uyumsuzluğunu önle
-  const [theme, setTheme] = useState<Theme | null>(null);
+  const [temaId, setTemaId] = useState<string | null>(null);
+  const [panelAcik, setPanelAcik] = useState(false);
 
   useEffect(() => {
-    const stored = readStored();
-    if (stored) {
-      setTheme(stored);
-      return;
-    }
-    // ilk kez: sistem tercihini al
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    setTheme(prefersDark ? "dark" : "light");
+    const mevcut = temaOku();
+    setTemaId(mevcut);
+    // İlk betik zaten uyguladı; yine de tutarlılık için bir kez uygula.
+    temaUygula(mevcut);
+    return temaAboneOl((t) => setTemaId(t.id));
   }, []);
 
-  // theme değişince html.classList ve localStorage güncellenir
-  useEffect(() => {
-    if (theme === null) return;
-    applyTheme(theme);
-    try {
-      localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      // sessiz
-    }
-  }, [theme]);
-
-  if (theme === null) {
-    // ilk render'da yer tutucu (görsel atlama önler)
+  if (temaId === null) {
     return (
       <div
         className={
@@ -66,30 +56,207 @@ export function ThemeToggle({
     );
   }
 
-  const next: Theme = theme === "dark" ? "light" : "dark";
-  const label = theme === "dark" ? "Açık tema" : "Koyu tema";
-  const Icon = theme === "dark" ? Sun : Moon;
+  const tema = temaBul(temaId);
+  const koyuMu = tema.aile === "koyu";
+  const Icon = koyuMu ? Sun : Moon;
+  const etiket = koyuMu ? "Açık tema" : "Koyu tema";
 
-  if (variant === "menu") {
-    return (
-      <button
-        onClick={() => setTheme(next)}
-        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-rehberim-muted"
-      >
-        <Icon className="h-5 w-5" />
-        {label}
-      </button>
-    );
-  }
+  const gecisYap = () => temaUygula(karsitTema(tema), true);
 
   return (
-    <button
-      onClick={() => setTheme(next)}
-      aria-label={label}
-      title={label}
-      className="flex h-9 w-9 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
+    <>
+      {variant === "menu" ? (
+        <div className="flex w-full items-center gap-1">
+          <button
+            onClick={gecisYap}
+            className="flex flex-1 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rehberim-navy/70 transition hover:bg-rehberim-muted"
+          >
+            <Icon className="h-5 w-5" />
+            {etiket}
+          </button>
+          <button
+            onClick={() => setPanelAcik(true)}
+            aria-label="Tema seç"
+            title="Tema seç"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <Palette className="h-5 w-5" />
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <button
+            onClick={gecisYap}
+            aria-label={etiket}
+            title={etiket}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <Icon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => setPanelAcik(true)}
+            aria-label="Tema seç"
+            title="Tema seç"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <Palette className="h-5 w-5" />
+          </button>
+        </div>
+      )}
+
+      {panelAcik && (
+        <TemaSecici
+          secili={tema.id}
+          kapat={() => setPanelAcik(false)}
+          sec={(id) => temaUygula(id, true)}
+        />
+      )}
+    </>
+  );
+}
+
+/** Tam ekran tema seçici — her tema kendi renkleriyle önizlenir. */
+function TemaSecici({
+  secili,
+  sec,
+  kapat,
+}: {
+  secili: string;
+  sec: (id: string) => void;
+  kapat: () => void;
+}) {
+  const kutuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") kapat();
+    };
+    document.addEventListener("keydown", esc);
+    return () => document.removeEventListener("keydown", esc);
+  }, [kapat]);
+
+  const gruplar: { baslik: string; aile: "acik" | "koyu" }[] = [
+    { baslik: "Açık temalar", aile: "acik" },
+    { baslik: "Koyu temalar", aile: "koyu" },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-rehberim-navy-dark/60 p-3 backdrop-blur-md sm:items-center sm:p-6"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) kapat();
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tema seç"
     >
-      <Icon className="h-5 w-5" />
+      <div
+        ref={kutuRef}
+        className="max-h-[86vh] w-full max-w-2xl animate-scale-in overflow-y-auto rounded-3xl border border-rehberim-border bg-rehberim-surface p-5 shadow-elevated sm:p-6"
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-extrabold text-rehberim-navy">Tema seç</h2>
+            <p className="mt-0.5 text-sm text-rehberim-navy/60">
+              Sevdiğin renklerle çalış — seçimin bu cihazda hatırlanır.
+            </p>
+          </div>
+          <button
+            onClick={kapat}
+            aria-label="Kapat"
+            className="rounded-lg p-2 text-rehberim-navy/60 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {gruplar.map((g) => (
+          <section key={g.aile} className="mb-5 last:mb-0">
+            <h3 className="mb-2 text-[11px] font-bold uppercase tracking-wider text-rehberim-navy/45">
+              {g.baslik}
+            </h3>
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              {TEMALAR.filter((t) => t.aile === g.aile).map((t) => (
+                <TemaKarti
+                  key={t.id}
+                  tema={t}
+                  seciliMi={t.id === secili}
+                  sec={() => sec(t.id)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Tek tema kartı: temanın kendi renkleriyle küçük bir sayfa önizlemesi. */
+function TemaKarti({
+  tema,
+  seciliMi,
+  sec,
+}: {
+  tema: Tema;
+  seciliMi: boolean;
+  sec: () => void;
+}) {
+  const r = tema.renkler;
+  return (
+    <button
+      onClick={sec}
+      aria-pressed={seciliMi}
+      className={`group overflow-hidden rounded-2xl border-2 text-left transition ${
+        seciliMi
+          ? "border-rehberim-accent shadow-ring-accent"
+          : "border-rehberim-border hover:border-rehberim-navy/30"
+      }`}
+    >
+      {/* Önizleme: küçük bir sayfa maketi, temanın gerçek renkleriyle */}
+      <span className="block p-2.5" style={{ background: r.bg }}>
+        <span
+          className="mb-1.5 flex items-center gap-1.5 rounded-lg px-2 py-1.5"
+          style={{ background: r.navy }}
+        >
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ background: r.accent }}
+          />
+          <span
+            className="inline-block h-1.5 w-10 rounded-full"
+            style={{ background: "rgba(255,255,255,0.75)" }}
+          />
+        </span>
+        <span
+          className="block rounded-lg p-2"
+          style={{ background: r.surface, border: `1px solid ${r.border}` }}
+        >
+          <span
+            className="mb-1 block h-1.5 w-3/4 rounded-full"
+            style={{ background: r.text }}
+          />
+          <span
+            className="mb-1.5 block h-1.5 w-1/2 rounded-full"
+            style={{ background: r.textSoft }}
+          />
+          <span
+            className="inline-block rounded-md px-2 py-0.5 text-[9px] font-bold"
+            style={{ background: r.accent, color: r.onAccent }}
+          >
+            Aa
+          </span>
+        </span>
+      </span>
+      <span className="flex items-center gap-1.5 bg-rehberim-surface px-2.5 py-2">
+        <span aria-hidden>{tema.emoji}</span>
+        <span className="truncate text-xs font-bold text-rehberim-navy">
+          {tema.ad}
+        </span>
+        {seciliMi && (
+          <Check className="ml-auto h-4 w-4 shrink-0 text-rehberim-accent-deep" />
+        )}
+      </span>
     </button>
   );
 }

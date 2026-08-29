@@ -2475,3 +2475,251 @@ begin
   );
 end;
 $$;
+
+-- ============================================================================
+-- FAZ 11 — ÖĞRENEN ÖNBELLEK (baykuşun AI cevaplarını kalıcı hâle getirmesi)
+-- ============================================================================
+-- Amaç: Kullanıcının sorduğu, bizim önceden kalıp yazmadığımız bir soruya AI
+-- bir kez cevap verdikten sonra o cevap önbelleğe alınır; aynı soru bir daha
+-- geldiğinde AI'ya gidilmez. Böylece kota kullanımı zamanla düşer.
+--
+-- Haftalık bakım: az kullanılan (alt %25) önbellek satırları pasife alınır,
+-- tablo şişmez ve güncelliğini yitirmiş cevaplar kendiliğinden elenir.
+-- ============================================================================
+
+create table if not exists public.ai_onbellek (
+  id            bigserial primary key,
+  -- Normalize edilmiş + kelimeleri sıralanmış parmak izi (arama anahtarı)
+  parmak_izi    text        not null unique,
+  -- Kullanıcının yazdığı ilk hâli (yönetim/denetim için)
+  soru_ornek    text        not null,
+  cevap         text        not null,
+  navigate      text,
+  topic_route   text,
+  kullanim      integer     not null default 1,
+  son_kullanim  timestamptz not null default now(),
+  created_at    timestamptz not null default now(),
+  aktif         boolean     not null default true,
+  -- 'ai' → modelden öğrenildi, 'elle' → biz yazdık (asla elenmez)
+  kaynak        text        not null default 'ai',
+  olusturan     uuid        references auth.users(id) on delete set null
+);
+
+create index if not exists ai_onbellek_aktif_idx
+  on public.ai_onbellek (aktif, parmak_izi);
+create index if not exists ai_onbellek_kullanim_idx
+  on public.ai_onbellek (kullanim desc, son_kullanim desc);
+
+alter table public.ai_onbellek enable row level security;
+
+-- Okuma: herkes (misafir öğrenci de baykuşa soru sorabiliyor).
+drop policy if exists "onbellek okunur" on public.ai_onbellek;
+create policy "onbellek okunur" on public.ai_onbellek
+  for select using (aktif);
+
+-- Yazma YOK: yalnız aşağıdaki security definer fonksiyonlarla yazılır.
+
+-- ── Arama + sayaç artırma (tek gidiş) ──────────────────────────────────────
+create or replace function public.ai_onbellek_ara(p_parmak_izi text)
+returns table (cevap text, navigate text, topic_route text)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return query
+  update public.ai_onbellek
+     set kullanim = kullanim + 1,
+         son_kullanim = now()
+   where parmak_izi = p_parmak_izi
+     and aktif
+  returning ai_onbellek.cevap, ai_onbellek.navigate, ai_onbellek.topic_route;
+end;
+$$;
+
+-- ── Yazma (AI cevabından öğrenme) ──────────────────────────────────────────
+-- Yalnız giriş yapmış kullanıcı adına çağrılabilir; saatte en fazla 30 yeni
+-- kayıt (kötüye kullanım/şişirme koruması). Aynı parmak izi varsa yalnız
+-- sayaç artar, cevap değişmez (ilk öğrenilen cevap kalıcıdır).
+create or replace function public.ai_onbellek_yaz(
+  p_parmak_izi  text,
+  p_soru_ornek  text,
+  p_cevap       text,
+  p_navigate    text default null,
+  p_topic_route text default null
+) returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_son_saat integer;
+begin
+  if v_uid is null then return false; end if;
+  if p_parmak_izi is null or length(p_parmak_izi) < 3 or length(p_parmak_izi) > 400 then
+    return false;
+  end if;
+  if p_cevap is null or length(p_cevap) < 15 or length(p_cevap) > 4000 then
+    return false;
+  end if;
+
+  -- Zaten varsa: sayaç artır, içeriği DEĞİŞTİRME
+  update public.ai_onbellek
+     set kullanim = kullanim + 1, son_kullanim = now(), aktif = true
+   where parmak_izi = p_parmak_izi;
+  if found then return true; end if;
+
+  select count(*) into v_son_saat
+    from public.ai_onbellek
+   where olusturan = v_uid and created_at > now() - interval '1 hour';
+  if v_son_saat >= 30 then return false; end if;
+
+  insert into public.ai_onbellek
+    (parmak_izi, soru_ornek, cevap, navigate, topic_route, olusturan)
+  values
+    (p_parmak_izi, left(p_soru_ornek, 500), p_cevap, p_navigate, p_topic_route, v_uid)
+  on conflict (parmak_izi) do nothing;
+  return true;
+end;
+$$;
+
+-- ── Haftalık bakım: az kullanılanları ele ──────────────────────────────────
+-- Kural: en az 7 gündür duran, kullanıcıların en AZ kullandığı %25'lik dilim
+-- pasife alınır. Elle yazılmış kayıtlara (kaynak='elle') dokunulmaz.
+-- 60 günden uzun süredir pasif olanlar tamamen silinir.
+create or replace function public.ai_onbellek_bakim()
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_aday integer;
+  v_pasif integer := 0;
+  v_silinen integer := 0;
+  v_esik integer;
+begin
+  select count(*) into v_aday
+    from public.ai_onbellek
+   where aktif and kaynak = 'ai' and created_at < now() - interval '7 days';
+
+  if v_aday >= 8 then
+    -- Alt %25'in kullanım eşiği (dahil)
+    select kullanim into v_esik
+      from public.ai_onbellek
+     where aktif and kaynak = 'ai' and created_at < now() - interval '7 days'
+     order by kullanim asc, son_kullanim asc
+     offset greatest(0, floor(v_aday * 0.25)::int - 1)
+     limit 1;
+
+    with elenen as (
+      select id from public.ai_onbellek
+       where aktif and kaynak = 'ai'
+         and created_at < now() - interval '7 days'
+       order by kullanim asc, son_kullanim asc
+       limit floor(v_aday * 0.25)::int
+    )
+    update public.ai_onbellek o
+       set aktif = false
+      from elenen e
+     where o.id = e.id;
+    get diagnostics v_pasif = row_count;
+  end if;
+
+  delete from public.ai_onbellek
+   where not aktif and kaynak = 'ai' and son_kullanim < now() - interval '60 days';
+  get diagnostics v_silinen = row_count;
+
+  return json_build_object(
+    'aday', v_aday, 'pasife_alinan', v_pasif,
+    'silinen', v_silinen, 'esik', v_esik
+  );
+end;
+$$;
+
+-- ── Küfür/hakaret süzgeci (takma adlar için sunucu tarafı) ─────────────────
+-- SİTE KURALI: takma adlar küfür/hakaret içeremez. İstemci tarafı denetimi
+-- atlanabileceği için aynı denetim burada da yapılır.
+create or replace function public.uygunsuz_metin(p_metin text)
+returns boolean
+language plpgsql
+immutable
+set search_path = public
+as $$
+declare
+  v text;
+  k text;
+  v_kokler text[] := array[
+    'amk','amcik','amina','sike','siker','sikim','sikik','siktir','sikeyim',
+    'yarrak','yarak','tasak','gotveren','gotlek','pezevenk','orospu','kahpe',
+    'kaltak','surtuk','fahise','piclik','oruspu','koyim','koyayim','yavsak',
+    'ibne','gavat','pust','gerizekali','aptal','salak','ahmak','embesil',
+    'beyinsiz','denyo','dangalak','serefsiz','namussuz','gerzek','budala',
+    'avanak','eroin','kokain','molotof','kumar','bahis'
+  ];
+begin
+  if p_metin is null then return false; end if;
+  -- Türkçe sadeleştirme + rakamla gizleme açma (4→a, 3→e, 1→i, 0→o, $→s ...)
+  -- İki dizinin uzunluğu birebir eşit olmalıdır (23 karakter).
+  v := lower(translate(p_metin,
+        'İIÇĞÖŞÜçğıöşü4@3!10$759',
+        'iicgosucgiosuaaeiiostsg'));
+  v := regexp_replace(v, '[^a-z]', '', 'g');
+  -- ardışık tekrarları teke indir (aaamk → amk)
+  v := regexp_replace(v, '(.)\1+', '\1', 'g');
+  if v = '' then return false; end if;
+  foreach k in array v_kokler loop
+    if position(k in v) > 0 then return true; end if;
+  end loop;
+  -- kısa kökler yalnız metnin tamamıysa
+  if v in ('mal','got','kic','bok','pic','aq') then return true; end if;
+  return false;
+end;
+$$;
+
+-- ── comp_set_nickname: küfür/hakaret süzgeci (SİTE KURALI) ────────────────
+-- Takma adlar uygunsuz söz içeremez. İstemci denetimi atlanabileceği için
+-- son söz burada verilir.
+create or replace function public.comp_set_nickname(p_nickname text)
+returns text
+language plpgsql security definer
+as $$
+declare
+  v_nick text;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  v_nick := nullif(regexp_replace(trim(coalesce(p_nickname, '')), '\s+', ' ', 'g'), '');
+  if v_nick is not null then
+    if char_length(v_nick) < 2 or char_length(v_nick) > 20 then
+      raise exception 'nickname_length' using errcode = '22023';
+    end if;
+    if v_nick !~ '^[A-Za-z0-9ÇĞİÖŞÜçğıöşü._ -]+$' then
+      raise exception 'nickname_chars' using errcode = '22023';
+    end if;
+    if public.uygunsuz_metin(v_nick) then
+      raise exception 'nickname_uygunsuz' using errcode = '22023';
+    end if;
+    if exists (
+      select 1 from public.comp_profiles
+       where lower(nickname) = lower(v_nick) and user_id <> auth.uid()
+    ) then
+      raise exception 'nickname_taken' using errcode = '23505';
+    end if;
+  end if;
+  perform public.comp_upsert_profile(auth.uid());
+  update public.comp_profiles
+     set nickname = v_nick, updated_at = now()
+   where user_id = auth.uid();
+  return v_nick;
+exception when unique_violation then
+  raise exception 'nickname_taken' using errcode = '23505';
+end;
+$$;
+
+grant execute on function public.comp_set_nickname(text) to authenticated;
+grant execute on function public.ai_onbellek_ara(text) to anon, authenticated;
+grant execute on function public.ai_onbellek_yaz(text, text, text, text, text) to authenticated;
+grant execute on function public.uygunsuz_metin(text) to anon, authenticated;

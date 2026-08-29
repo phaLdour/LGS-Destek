@@ -6,17 +6,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // TEMA SİSTEMİ: renkler artık sabit değil, CSS değişkeninden okunur.
+        // Böylece öğrencinin seçtiği tema (Şeker Pembe, Orman, Kömür...) tüm
+        // siteye tek noktadan uygulanır. Değişkenler "R G B" kanal biçiminde
+        // tutulur ki Tailwind'in /opacity kısayolları (bg-rehberim-navy/55)
+        // çalışmaya devam etsin. Palet: src/lib/temalar.ts
         rehberim: {
-          navy: "#16244C",
-          "navy-dark": "#0E1838",
-          "navy-light": "#243A6E",
-          accent: "#F59E0B",
-          "accent-dark": "#D97706",
-          "accent-deep": "#B45309",
-          "accent-light": "#FBBF24",
-          surface: "#FFFFFF",
-          muted: "#F4F6FB",
-          border: "#E2E6F0",
+          navy: "rgb(var(--rb-navy-ch) / <alpha-value>)",
+          "navy-dark": "rgb(var(--rb-navy-dark-ch) / <alpha-value>)",
+          "navy-light": "rgb(var(--rb-navy-light-ch) / <alpha-value>)",
+          accent: "rgb(var(--rb-accent-ch) / <alpha-value>)",
+          "accent-dark": "rgb(var(--rb-accent-dark-ch) / <alpha-value>)",
+          "accent-deep": "rgb(var(--rb-accent-deep-ch) / <alpha-value>)",
+          "accent-light": "rgb(var(--rb-accent-light-ch) / <alpha-value>)",
+          surface: "rgb(var(--rb-surface-ch) / <alpha-value>)",
+          muted: "rgb(var(--rb-muted-ch) / <alpha-value>)",
+          border: "rgb(var(--rb-border-ch) / <alpha-value>)",
         },
       },
       fontFamily: {

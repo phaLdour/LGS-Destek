@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Pencil } from "lucide-react";
+import { TAKMA_AD_RET, uygunsuzMu } from "@/lib/moderasyon";
 import { createClient } from "@/lib/supabase/client";
 
 /**
@@ -31,6 +32,13 @@ export function NicknameEditor({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!configured || saving) return;
+    // SİTE KURALI: takma adlar küfür/hakaret içeremez. Sunucu tarafında da
+    // (comp_set_nickname → uygunsuz_metin) aynı denetim var; buradaki denetim
+    // öğrenciye anında geri bildirim vermek için.
+    if (uygunsuzMu(value)) {
+      setMsg({ type: "err", text: TAKMA_AD_RET });
+      return;
+    }
     setSaving(true);
     setMsg(null);
     try {
@@ -47,6 +55,8 @@ export function NicknameEditor({
             type: "err",
             text: "Bu takma ad başka bir öğrenci tarafından alınmış. Başka bir ad dene.",
           });
+        } else if (m.includes("nickname_uygunsuz")) {
+          setMsg({ type: "err", text: TAKMA_AD_RET });
         } else if (m.includes("nickname_chars")) {
           setMsg({
             type: "err",
