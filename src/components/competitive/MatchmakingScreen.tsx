@@ -158,7 +158,18 @@ export function MatchmakingScreen({
     setResetting(true);
     setError(null);
     try {
-      await fetch("/api/comp/queue/reset", { method: "POST" });
+      // FAZ 12: sıfırlama artık devam eden maçı silmiyor (kaybedenin
+      // bedava kaçışıydı). Aktif maç varsa kullanıcıyı ona geri götür;
+      // çıkmak isterse "Maçı terk et" düğmesi var.
+      const rr = await fetch("/api/comp/queue/reset", { method: "POST" });
+      const rd = await rr.json().catch(() => null);
+      if (rd?.activeMatchId && typeof rd.activeMatchId === "string") {
+        setActiveMatchId(rd.activeMatchId);
+        setError(
+          "Devam eden bir maçın var. Ona dön ya da terk et — terk etmek hükmen mağlubiyet sayılır.",
+        );
+        return;
+      }
       setElapsed(0);
       setLastTick("—");
       matchedRef.current = false;
@@ -283,7 +294,7 @@ export function MatchmakingScreen({
         className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-rehberim-accent/15 blur-3xl"
       />
 
-      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-rehberim-accent to-amber-500 text-rehberim-navy shadow-card">
+      <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark text-rehberim-on-accent shadow-card">
         <Swords className="h-10 w-10" />
       </div>
 

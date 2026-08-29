@@ -8,12 +8,18 @@ import {
 /**
  * POST /api/comp/queue/reset
  *   body: yok
- *   → 200 { ok: true }
+ *   → 200 { ok: true, activeMatchId: string | null }
  *   → 401 unauthorized
  *
- * Kullanıcının kuyruk satırını siler ve arta kalmış aktif maçı varsa
- * abandoned'a çeker. "Baştan başla" butonu için: takılı kalmış kuyruk
- * + UI'da görünmeyen ama veritabanında duran active maç temizliği.
+ * Kullanıcının kuyruk satırını siler ve süresi dolmuş maçlarını normal
+ * kurallarla kapatır. "Baştan başla" butonu için: takılı kalmış kuyruk
+ * temizliği.
+ *
+ * FAZ 12: eskiden DEVAM EDEN maçı da cezasız 'abandoned' yapıyordu —
+ * kaybetmekte olan oyuncu için bedava kaçış kapısıydı. Artık aktif maça
+ * dokunulmuyor; varsa id'si döndürülüyor ki istemci lobiye değil maça
+ * yönlendirsin (eski davranış iki sayfa arasında döngü üretiyordu).
+ * Maçtan çıkmanın tek yolu /forfeit (hükmen mağlubiyet).
  */
 export async function POST() {
   if (!isSupabaseConfigured()) {
@@ -27,12 +33,15 @@ export async function POST() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const supabase = await createClient();
-  const { error } = await supabase.rpc("comp_queue_reset");
+  const { data, error } = await supabase.rpc("comp_queue_reset");
   if (error) {
     return NextResponse.json(
       { error: "rpc_failed", detail: error.message },
       { status: 500 },
     );
   }
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    activeMatchId: typeof data === "string" ? data : null,
+  });
 }

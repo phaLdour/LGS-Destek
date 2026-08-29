@@ -157,20 +157,29 @@ export function ProfileEditor({
           Hesap bilgileri
         </h2>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-rehberim-navy">
+          {/* Etiketler input'larla ilişkili değildi (htmlFor/id yoktu). */}
+          <label
+            htmlFor="profil-ad-soyad"
+            className="mb-1.5 block text-sm font-semibold text-rehberim-navy"
+          >
             Ad Soyad
           </label>
           <input
+            id="profil-ad-soyad"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="w-full rounded-xl border border-rehberim-border bg-white px-4 py-3 text-sm text-rehberim-navy outline-none transition focus:border-rehberim-accent focus:ring-2 focus:ring-rehberim-accent/30"
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-rehberim-navy">
+          <label
+            htmlFor="profil-eposta"
+            className="mb-1.5 block text-sm font-semibold text-rehberim-navy"
+          >
             E-posta
           </label>
           <input
+            id="profil-eposta"
             value={initial.email}
             disabled
             className="w-full cursor-not-allowed rounded-xl border border-rehberim-border bg-rehberim-muted px-4 py-3 text-sm text-rehberim-navy/60"

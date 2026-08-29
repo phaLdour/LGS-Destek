@@ -233,9 +233,62 @@ export function kanal(hex: string): string {
   return `${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255}`;
 }
 
+/** Bir rengi beyaza doğru açar. oran 0 = aynı renk, 1 = bembeyaz. */
+export function acTon(hex: string, oran: number): string {
+  const h = hex.replace("#", "");
+  const n = parseInt(
+    h.length === 3 ? h.split("").map((c) => c + c).join("") : h,
+    16,
+  );
+  const kanallar = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) =>
+    Math.round(v + (255 - v) * oran),
+  );
+  return `#${kanallar.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+/**
+ * TÜRETİLMİŞ RENKLER — paletten hesaplanır, elle yazılmaz.
+ *
+ * Neden hesaplanıyor? Bunlar "her temada aynı işi yapan" renkler:
+ * dolu lacivert butonun zemini, açık vurgu zemininin mürekkebi, marka
+ * SVG'sinin görünür tonu. 12 temada elle yazılsa biri unutulur; burada
+ * hepsi aynı kuralla üretilir ve `tools/tema-kontrast.mjs` ölçer.
+ */
+export type TuretilmisRenkler = {
+  /** Dolu lacivert buton/rozet zemini (bg-rehberim-navy). Koyu temalarda
+   *  kart yüzeyiyle aynı renge düşmesin diye bir ton açılır. */
+  navyFill: string;
+  /** Yukarıdakinin hover tonu. */
+  navyFillHover: string;
+  /** accent-light (soluk vurgu) zemininin üstündeki yazı mürekkebi.
+   *  Vurgu açık tonu her temada soluk olduğu için koyu mürekkep şart —
+   *  Lavanta'da beyaz yazı 1.85:1'e düşüyordu. */
+  onAccentLight: string;
+  /** Marka SVG'lerinin (logo, baykuş) ana / açık / koyu tonları.
+   *  Koyu temalarda lacivert zemine kaybolmasın diye açılır. */
+  markaNavy: string;
+  markaNavyAcik: string;
+  markaNavyKoyu: string;
+};
+
+export function temaTuretilmis(t: Tema): TuretilmisRenkler {
+  const r = t.renkler;
+  const koyu = t.aile === "koyu";
+  const navyFill = koyu ? acTon(r.navyLight, 0.18) : r.navy;
+  return {
+    navyFill,
+    navyFillHover: acTon(navyFill, koyu ? 0.09 : 0.1),
+    onAccentLight: r.navyDark,
+    markaNavy: koyu ? acTon(r.navyLight, 0.42) : r.navy,
+    markaNavyAcik: koyu ? acTon(r.navyLight, 0.58) : r.navyLight,
+    markaNavyKoyu: koyu ? acTon(r.navy, 0.28) : r.navyDark,
+  };
+}
+
 /** Bir temanın CSS değişken bloğunu üretir (globals.css için). */
 export function temaCssBlogu(t: Tema): string {
   const r = t.renkler;
+  const d = temaTuretilmis(t);
   return [
     `html[data-tema="${t.id}"] {`,
     `  --rb-bg: ${r.bg};`,
@@ -247,6 +300,14 @@ export function temaCssBlogu(t: Tema): string {
     `  --rb-scrollbar: ${r.scrollbar};`,
     `  --rb-scrollbar-hover: ${r.scrollbarHover};`,
     `  --rb-on-accent: ${r.onAccent};`,
+    `  --rb-on-accent-ch: ${kanal(r.onAccent)};`,
+    `  --rb-on-accent-light: ${d.onAccentLight};`,
+    `  --rb-on-accent-light-ch: ${kanal(d.onAccentLight)};`,
+    `  --rb-navy-fill: ${d.navyFill};`,
+    `  --rb-navy-fill-hover: ${d.navyFillHover};`,
+    `  --rb-marka-navy: ${d.markaNavy};`,
+    `  --rb-marka-navy-acik: ${d.markaNavyAcik};`,
+    `  --rb-marka-navy-koyu: ${d.markaNavyKoyu};`,
     `  --rb-navy-ch: ${kanal(r.navy)};`,
     `  --rb-navy-dark-ch: ${kanal(r.navyDark)};`,
     `  --rb-navy-light-ch: ${kanal(r.navyLight)};`,

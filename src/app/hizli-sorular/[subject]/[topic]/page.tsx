@@ -35,7 +35,7 @@ export default async function HizliSorularQuizPage({
           <ArrowLeft className="h-4 w-4" />
           {subjectContent.name} konularına dön
         </Link>
-        <header className="mb-5 flex items-center gap-4 rounded-3xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-rehberim-navy shadow-card">
+        <header className="mb-5 flex items-center gap-4 rounded-3xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark p-5 text-rehberim-on-accent shadow-card">
           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
             <Shuffle className="h-8 w-8" />
           </span>

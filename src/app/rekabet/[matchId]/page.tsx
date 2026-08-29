@@ -45,7 +45,7 @@ export default async function MatchPage({
   // Süre dolmuşsa sonuca yönlendir (Realtime/finalize gerçekleşmemiş olabilir)
   if (new Date(match.deadline_at).getTime() < Date.now()) {
     // Finalize tetikle ve sonuç sayfasına geç
-    await supabase.rpc("comp_finalize_match", { p_match_id: matchId });
+    await supabase.rpc("comp_finalize_guvenli", { p_match_id: matchId });
     redirect(`/rekabet/${matchId}/sonuc`);
   }
 

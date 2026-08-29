@@ -55,7 +55,7 @@ export default async function ExamDetailPage({
       {hasInteractive && (
         <Link
           href={`/cikmis-sorular/${year}/${bolum}/coz`}
-          className="group mb-3 flex items-center gap-4 rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-rehberim-navy shadow-card transition hover:scale-[1.01] hover:shadow-soft"
+          className="group mb-3 flex items-center gap-4 rounded-2xl border border-rehberim-accent/40 bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark p-5 text-rehberim-on-accent shadow-card transition hover:scale-[1.01] hover:shadow-soft"
         >
           <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
             <Play className="h-8 w-8" />

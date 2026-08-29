@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useId, useState } from "react";
 import { safeNext } from "@/lib/safeNext";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -116,11 +116,16 @@ function AuthFormInner({ mode }: { mode: Mode }) {
           required
         />
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-rehberim-navy">
+          {/* Etiket input ile ilişkili değildi (htmlFor/id yoktu). */}
+          <label
+            htmlFor="auth-sifre"
+            className="mb-1.5 block text-sm font-semibold text-rehberim-navy"
+          >
             Şifre
           </label>
           <div className="relative">
             <input
+              id="auth-sifre"
               type={showPw ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -214,12 +219,19 @@ function Field({
   autoComplete?: string;
   required?: boolean;
 }) {
+  // Etiket ile input arasında bağ yoktu; useId ile benzersiz id üretilip
+  // htmlFor/id eşleşmesi kuruldu (ekran okuyucu alanı adsız okuyordu).
+  const alanId = useId();
   return (
     <div>
-      <label className="mb-1.5 block text-sm font-semibold text-rehberim-navy">
+      <label
+        htmlFor={alanId}
+        className="mb-1.5 block text-sm font-semibold text-rehberim-navy"
+      >
         {label}
       </label>
       <input
+        id={alanId}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}

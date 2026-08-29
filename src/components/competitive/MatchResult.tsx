@@ -331,7 +331,7 @@ export function MatchResult({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Link
           href="/rekabet/eslesme"
-          className="group flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
+          className="group flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark px-4 py-3 text-sm font-extrabold text-rehberim-on-accent shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
         >
           <Swords className="h-4 w-4" />
           Yeni maç

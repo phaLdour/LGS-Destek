@@ -6,6 +6,8 @@ import {
   getCurrentUser,
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
+// Gün sınırı her yerde Türkiye günü olmalı (bkz. lib/zaman.ts).
+import { trGunAnahtari, trGunGeri, trPencereBaslangici } from "@/lib/zaman";
 
 const GROUP_LABELS: Record<Badge["group"], string> = {
   baslangic: "Başlangıç",
@@ -27,9 +29,17 @@ const GROUP_ORDER: Badge["group"][] = [
   "rekabet",
 ];
 
-function dayKey(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-}
+/**
+ * Gün anahtarı TÜRKİYE gününe göre üretilir.
+ *
+ * Eskiden `d.getFullYear()/getMonth()/getDate()` yani ÇALIŞTIĞI MAKİNENİN
+ * yerel günü kullanılıyordu. Bu bir server component; Vercel sunucuları UTC
+ * çalışır, dolayısıyla "gün" Türkiye'den 3 saat geriden başlıyordu: TR saatiyle
+ * 29 Ağustos 02:00'de çalışan öğrencinin oturumu UTC'de hâlâ 28 Ağustos'a
+ * yazılıyor, serisi yanlış güne düşüp kopabiliyordu. Artık tracking-core ile
+ * aynı yardımcı kullanılıyor.
+ */
+const dayKey = trGunAnahtari;
 
 export async function BadgeShowcase() {
   if (!isSupabaseConfigured()) return null;
@@ -38,8 +48,12 @@ export async function BadgeShowcase() {
   const supabase = await createClient();
 
   // Paralel veri
-  const since = new Date();
-  since.setDate(since.getDate() - 60);
+  // 60 GÜNLÜK PENCERE DÜZELTMESİ: eskiden `since.setDate(getDate() - 60)` ile
+  // "60 gün önce şu anki saat" alınıyordu. Bu hem en eski günü YARIM
+  // bırakıyordu (o günün erken saatleri sorguya girmiyor → "bir günde en çok
+  // dakika" ve seri eksik çıkıyor) hem de sınırı sunucunun UTC gününe
+  // kaydırıyordu. Artık bugün DAHİL 60 tam TÜRKİYE günü çekiliyor.
+  const since = trPencereBaslangici(60);
 
   const [
     sessions,
@@ -121,15 +135,17 @@ export async function BadgeShowcase() {
     if (r.subject_slug === "__odak_pomodoro__") pomodoroToplamSn += r.duration_seconds;
   }
 
-  // Streak (today'den başla, kesintiye uğrayana kadar say)
+  // Streak (bugünden başla, kesintiye uğrayana kadar say).
+  // `cursor.setDate(...)` YEREL gün aritmetiğiydi; TR gün anahtarıyla
+  // tutarsız kalıyordu. Artık geri sayım da TR günü üzerinden yapılır.
   let streakDays = 0;
-  const cursor = new Date();
+  let cursor = new Date();
   if ((perDay.get(dayKey(cursor)) ?? 0) === 0) {
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
   }
   while ((perDay.get(dayKey(cursor)) ?? 0) > 0) {
     streakDays += 1;
-    cursor.setDate(cursor.getDate() - 1);
+    cursor = trGunGeri(cursor, 1);
   }
 
   // Konu sayıları
@@ -186,7 +202,7 @@ export async function BadgeShowcase() {
       ? compProfile.data.best_tier
       : 0;
 
-  const earned = evaluateBadges({
+  const suAnKazanilan = evaluateBadges({
     totalMinutes: Math.round(totalSeconds / 60),
     completedTopics,
     streakDays,
@@ -208,17 +224,36 @@ export async function BadgeShowcase() {
     compSeasonWins: trophyRows.filter((t) => t.rank_position === 1).length,
   });
 
-  // Yeni kazanılanları kaydet (zaten sahip olunmayanlar)
-  const toInsert = Array.from(earned).filter((k) => !ownedKeys.has(k));
+  // Yeni kazanılanları KALICI olarak kaydet (zaten sahip olunmayanlar)
+  const toInsert = Array.from(suAnKazanilan).filter((k) => !ownedKeys.has(k));
   if (toInsert.length > 0) {
     await supabase.from("user_badges").upsert(
       toInsert.map((k) => ({ user_id: user.id, badge_key: k })),
       { onConflict: "user_id,badge_key" },
     );
+    // Aynı istekte gösterilebilsin diye yerel kümeye de ekle.
+    for (const k of toInsert) ownedKeys.add(k);
   }
 
-  const earnedCount = earned.size;
+  /**
+   * ROZETLER GERİ ALINMAZ.
+   *
+   * Eskiden ekranda doğrudan `evaluateBadges(...)` sonucu gösteriliyordu.
+   * O sonuç ANLIK metriklerden yeniden hesaplandığı için rozet geri
+   * alınabiliyordu: seri kırılınca "Haftalık Seri" sönüyor, 60 günlük
+   * pencerenin dışına düşen çalışma yüzünden "Çalışkan Baykuş" kayboluyor,
+   * içerikten konu çıkarılınca "Ders Ustası" geri gidiyordu. Öğrenci hak
+   * ettiği rozeti kaybediyordu.
+   *
+   * Doğrusu: `user_badges` tablosu KALICI kayıttır. Gösterilen küme, kalıcı
+   * kayıtlar ile şu an hak edilenlerin BİRLEŞİMİDİR — küme yalnızca büyür.
+   */
+  const earned = new Set<string>([...ownedKeys, ...suAnKazanilan]);
+
+  // Sayaç yalnız HÂLÂ TANIMLI rozetleri sayar: tabloda tanımdan kaldırılmış
+  // eski bir anahtar kalmışsa "31 / 30" gibi imkânsız bir sayı çıkmasın.
   const totalCount = BADGES.length;
+  const earnedCount = BADGES.filter((b) => earned.has(b.key)).length;
 
   return (
     <div className="space-y-4">

@@ -31,7 +31,10 @@ export type UserContext = {
 };
 
 // Gün sınırı Türkiye günü — tracking-core ile aynı gerekçe.
-import { trGunAnahtari, trGunGeri } from "@/lib/zaman";
+import { trGunAnahtari, trGunGeri, trPencereBaslangici } from "@/lib/zaman";
+// Bekleyen hata sayısı dashboard/hatalarim ile aynı kuraldan geçer.
+import { bekleyenHataSay, type HataSatiri } from "@/lib/hataSayaci";
+import { collectAllQuestions } from "@/lib/quickQuiz";
 const dayKey = trGunAnahtari;
 
 /**
@@ -51,18 +54,18 @@ export async function getUserContext(): Promise<UserContext | null> {
     (user.email ? user.email.split("@")[0] : null);
   const firstName = fullName ? fullName.split(" ")[0] : null;
 
-  // Son 7 günün başlangıcı
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - 7);
+  // Pencere sınırları TR gün başına çekildi: bu kod sunucuda (UTC) çalışır,
+  // eski `setDate(getDate() - N)` hesabı en eski günü yarım bırakıyor ve
+  // sınırı Türkiye gününden 3 saat kaydırıyordu (bkz. lib/zaman.ts).
+  // Son 7 TAM Türkiye günü (bugün dahil)
+  const weekStart = trPencereBaslangici(7);
 
-  // Streak için son 60 gün
-  const streakStart = new Date();
-  streakStart.setDate(streakStart.getDate() - 60);
+  // Streak için son 60 TAM Türkiye günü
+  const streakStart = trPencereBaslangici(60);
 
   // Quiz sonuçları için 180 günlük pencere (zayıf konu analizi + haftalık
   // soru sayısı için fazlasıyla yeterli; sorgu yükünü sabit tutar).
-  const quizSince = new Date();
-  quizSince.setDate(quizSince.getDate() - 180);
+  const quizSince = trPencereBaslangici(180);
 
   const [sessionsRes, quizzesRes, wrongRes] = await Promise.all([
     supabase
@@ -73,7 +76,11 @@ export async function getUserContext(): Promise<UserContext | null> {
       .from("quiz_results")
       .select("subject_slug, topic_id, correct_count, wrong_count, created_at")
       .gte("created_at", quizSince.toISOString()),
-    supabase.from("wrong_answers").select("next_due_at, last_wrong_at"),
+    // question_key + correct_streak de çekilir: sayaç, /hatalarim listesinde
+    // GERÇEKTEN gösterilebilen kayıtları saymak zorunda (bkz. lib/hataSayaci.ts).
+    supabase
+      .from("wrong_answers")
+      .select("question_key, correct_streak, next_due_at, last_wrong_at"),
   ]);
 
   const sessions = (sessionsRes.data ?? []) as {
@@ -87,10 +94,7 @@ export async function getUserContext(): Promise<UserContext | null> {
     wrong_count: number;
     created_at: string;
   }[];
-  const wrongs = (wrongRes.data ?? []) as {
-    next_due_at: string | null;
-    last_wrong_at: string;
-  }[];
+  const wrongs = (wrongRes.data ?? []) as HataSatiri[];
 
   // Bu hafta dakika
   const perDay = new Map<string, number>();
@@ -164,16 +168,14 @@ export async function getUserContext(): Promise<UserContext | null> {
   weakTopics.sort((a, b) => a.pct - b.pct);
   const topWeak = weakTopics.slice(0, 2);
 
-  // Vadesi gelmiş hata sayısı
-  const now = Date.now();
-  const ONE_DAY = 24 * 60 * 60 * 1000;
-  let dueWrongCount = 0;
-  for (const w of wrongs) {
-    const due = w.next_due_at
-      ? new Date(w.next_due_at).getTime()
-      : new Date(w.last_wrong_at).getTime() + ONE_DAY;
-    if (due <= now) dueWrongCount += 1;
-  }
+  // Vadesi gelmiş hata sayısı — /hatalarim listesiyle AYNI kaynaktan.
+  // Eskiden tablodaki her satır sayılıyordu; gösterilemeyen kayıtlar
+  // (çıkmış soru kimlikleri, içerikten kalkmış sorular, silinmesi gecikmiş
+  // ustalaşmış kayıtlar) sayacı şişiriyordu (hayalet sayaç).
+  const gosterilebilirIdler = new Set(
+    collectAllQuestions({ kind: "karma-all" }).map((q) => q.id),
+  );
+  const dueWrongCount = bekleyenHataSay(wrongs, gosterilebilirIdler);
 
   return {
     firstName,

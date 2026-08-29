@@ -64,22 +64,96 @@ export function ExamClient({
   const [reviewIndex, setReviewIndex] = useState<number | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const startMsRef = useRef(0);
+  const bitisMsRef = useRef(0);
   const savedRef = useRef(false);
+  /**
+   * answers/flagged'ın REF aynası. Geri sayım kapanışı (closure) kurulduğu
+   * andaki state'i yakalar; süre dolunca finishExam bayat, hepsi boş bir
+   * dizi görüyordu ve sonuç 0 kaydediliyordu. Ref her zaman günceldir.
+   */
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
 
-  // Geri sayım — yalnız active fazda
+  /** Sınav durumu — yenilenince kaybolmasın diye sekme belleğinde tutulur. */
+  const DEPO_ANAHTARI = `rehberim:deneme:${config.kind}`;
+
+  // ── Yarım kalmış sınavı geri yükle (sayfa yenilenmesi / kaza) ──────────
+  useEffect(() => {
+    try {
+      const ham = sessionStorage.getItem(DEPO_ANAHTARI);
+      if (!ham) return;
+      const d = JSON.parse(ham) as {
+        answers: (number | null)[];
+        flagged: number[];
+        bitisMs: number;
+        baslangicMs: number;
+        soruSayisi: number;
+      };
+      // Soru havuzu değiştiyse (içerik güncellemesi) eski kaydı kullanma
+      if (d.soruSayisi !== pool.length) {
+        sessionStorage.removeItem(DEPO_ANAHTARI);
+        return;
+      }
+      if (d.bitisMs <= Date.now()) {
+        sessionStorage.removeItem(DEPO_ANAHTARI);
+        return;
+      }
+      setAnswers(d.answers);
+      setFlagged(new Set(d.flagged));
+      startMsRef.current = d.baslangicMs;
+      bitisMsRef.current = d.bitisMs;
+      setRemaining(Math.round((d.bitisMs - Date.now()) / 1000));
+      setPhase("active");
+    } catch {
+      /* bozuk kayıt — yok say */
+    }
+    // yalnız ilk açılışta
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Durumu kaydet (her değişiklikte) ──────────────────────────────────
   useEffect(() => {
     if (phase !== "active") return;
+    try {
+      sessionStorage.setItem(
+        DEPO_ANAHTARI,
+        JSON.stringify({
+          answers,
+          flagged: Array.from(flagged),
+          bitisMs: bitisMsRef.current,
+          baslangicMs: startMsRef.current,
+          soruSayisi: pool.length,
+        }),
+      );
+    } catch {
+      /* depolama kapalı — sınav yine çalışır, yenilenince kaybolur */
+    }
+  }, [answers, flagged, phase, DEPO_ANAHTARI, pool.length]);
+
+  // ── Geri sayım: DUVAR SAATİNDEN türetilir ─────────────────────────────
+  // setInterval sayacı arka plan sekmesinde yavaşlatıldığı için "1 azalt"
+  // yöntemi öğrenciye fazladan süre kazandırıyordu; gerçek sınav provasında
+  // kabul edilemez. Kalan süre her tikte bitiş anından hesaplanır.
+  useEffect(() => {
+    if (phase !== "active") return;
+    const guncelle = () => {
+      const kalan = Math.round((bitisMsRef.current - Date.now()) / 1000);
+      setRemaining(kalan > 0 ? kalan : 0);
+      return kalan;
+    };
+    guncelle();
     const id = setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          clearInterval(id);
-          finishExam();
-          return 0;
-        }
-        return r - 1;
-      });
+      if (guncelle() <= 0) {
+        clearInterval(id);
+        finishExam();
+      }
     }, 1000);
-    return () => clearInterval(id);
+    const gorunum = () => guncelle();
+    document.addEventListener("visibilitychange", gorunum);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", gorunum);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
@@ -94,6 +168,8 @@ export function ExamClient({
 
   function startExam() {
     startMsRef.current = Date.now();
+    bitisMsRef.current = Date.now() + config.durationMinutes * 60 * 1000;
+    setRemaining(config.durationMinutes * 60);
     setPhase("active");
   }
 
@@ -123,10 +199,18 @@ export function ExamClient({
     if (savedRef.current) return;
     savedRef.current = true;
     const dur = (Date.now() - startMsRef.current) / 1000;
+    // DİKKAT: state değil ref okunur — süre dolunca çağrıldığında state
+    // kapanışı bayat olabilir (bkz. answersRef yorumu).
+    const cevaplar = answersRef.current;
+    try {
+      sessionStorage.removeItem(DEPO_ANAHTARI);
+    } catch {
+      /* yut */
+    }
     // Yanlışları "Hatalarım" havuzuna düşür, doğruları wrong havuzdan çıkar.
     // (Boş bırakılanlar etkilenmez.)
     pool.forEach((q, i) => {
-      const sel = answers[i];
+      const sel = cevaplar[i];
       if (sel === null) return;
       const ok = sel === q.question.correctIndex;
       markSolved(q.id);
@@ -134,19 +218,24 @@ export function ExamClient({
       else saveWrong(q.id);
     });
     const correct = pool.reduce(
-      (acc, q, i) => acc + (answers[i] === q.question.correctIndex ? 1 : 0),
+      (acc, q, i) => acc + (cevaplar[i] === q.question.correctIndex ? 1 : 0),
       0,
     );
-    const answered = answers.filter((a) => a !== null).length;
+    const answered = cevaplar.filter((a) => a !== null).length;
     const wrong = answered - correct;
-    void saveQuizResult({
-      subjectSlug: `__deneme_${config.kind}__`,
-      topicId: `deneme-${Date.now()}`,
-      correct,
-      wrong,
-      total: pool.length,
-      durationSeconds: dur,
-    });
+    // Hiç soru işaretlenmediyse istatistiğe kayıt DÜŞMEZ. finishExam() süre
+    // dolunca kendiliğinden de çağrılır; açılıp bırakılan deneme "çözülen
+    // test" sayılıp sayacı şişiriyordu. Öğrencinin gerçekten çözdüğü sayılır.
+    if (answered > 0) {
+      void saveQuizResult({
+        subjectSlug: `__deneme_${config.kind}__`,
+        topicId: `deneme-${Date.now()}`,
+        correct,
+        wrong,
+        total: pool.length,
+        durationSeconds: dur,
+      });
+    }
     setPhase("result");
   }
 
@@ -365,7 +454,10 @@ export function ExamClient({
               Ders içi sıra (1–{totalInSubject})
             </p>
           </div>
-          <div className="grid grid-cols-10 gap-1.5">
+          {/* Dokunma hedefi: sabit 10 sütunda kutucuklar telefonda ~27px kalıyor
+              ve yanlış soruya basılıyordu. Sütunlar artık en az 44px genişlikte
+              olacak şekilde otomatik sığdırılır (WCAG 2.5.5 — en az 44x44px). */}
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5">
             {(activeGroup?.indices ?? []).map((globalIdx, localIdx) => {
               const isActive = globalIdx === current;
               const answered = answers[globalIdx] !== null;
@@ -374,7 +466,8 @@ export function ExamClient({
                 <button
                   key={globalIdx}
                   onClick={() => goTo(globalIdx)}
-                  className={`relative flex h-9 items-center justify-center rounded-md text-xs font-bold transition ${
+                  // h-9 (36px) dokunma hedefi için küçüktü → h-11 (44px)
+                  className={`relative flex h-11 items-center justify-center rounded-md text-xs font-bold transition ${
                     isActive
                       ? "bg-rehberim-navy text-white"
                       : answered
@@ -623,7 +716,9 @@ export function ExamClient({
           <ClipboardList className="h-5 w-5" />
           Detaylı rapor
         </h4>
-        <div className="grid grid-cols-10 gap-1.5">
+        {/* Rapor ızgarası da aynı dokunma hedefi kuralına uyar: sütun genişliği
+            en az 44px, ekrana kaç sütun sığıyorsa o kadar. */}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5">
           {pool.map((q, i) => {
             const sel = answers[i];
             const status =
@@ -645,7 +740,8 @@ export function ExamClient({
                   setReviewIndex(i);
                   setPhase("review");
                 }}
-                className={`flex h-9 items-center justify-center rounded-md text-xs font-bold transition ${cls}`}
+                // h-9 (36px) yerine h-11 (44px): mobil dokunma hedefi
+                className={`flex h-11 items-center justify-center rounded-md text-xs font-bold transition ${cls}`}
                 title={`Soru ${i + 1} — ${
                   status === "correct" ? "doğru" : status === "wrong" ? "yanlış" : "boş"
                 }`}

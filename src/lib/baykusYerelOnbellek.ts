@@ -9,7 +9,7 @@
  * (baykusOnbellekleriniTemizle) silinir.
  */
 
-import { onbellegeUygunMu, parmakIzi } from "@/lib/aiOnbellek";
+import { bagimsizSoruMu, onbellegeUygunMu, parmakIzi } from "@/lib/aiOnbellek";
 
 const ANAHTAR = "rehberim:baykus-yanit-onbellek";
 const ENFAZLA = 60;
@@ -43,6 +43,10 @@ function tabloYaz(t: Record<string, Kayit>) {
 }
 
 export function yerelYanitAra(soru: string): YerelYanit | null {
+  // Sunucu önbelleğiyle AYNI kural: "peki ya bu?" gibi bir önceki mesaja
+  // yaslanan sorular önbellekten karşılanmaz — burada sohbet geçmişi
+  // bilinmediği için uzunluk ve bağlam öneki ölçütleri uygulanır.
+  if (!bagimsizSoruMu(soru)) return null;
   const iz = parmakIzi(soru);
   if (!iz) return null;
   const tablo = tabloOku();
@@ -53,6 +57,8 @@ export function yerelYanitAra(soru: string): YerelYanit | null {
 }
 
 export function yerelYanitYaz(soru: string, yanit: YerelYanit) {
+  // Aranmayacak bir soruyu yazmanın anlamı yok; aynı denetim burada da.
+  if (!bagimsizSoruMu(soru)) return;
   const iz = parmakIzi(soru);
   if (!iz || !yanit.reply) return;
   // Sunucu önbelleğiyle AYNI kural: kişiye özel ("bu hafta 4 saat çalıştın")

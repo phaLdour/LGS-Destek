@@ -101,7 +101,7 @@ export default async function GecmisPage() {
           </p>
           <Link
             href="/rekabet/eslesme"
-            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-2 text-sm font-extrabold text-rehberim-navy shadow-card"
+            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark px-4 py-2 text-sm font-extrabold text-rehberim-on-accent shadow-card"
           >
             Maç ara
           </Link>

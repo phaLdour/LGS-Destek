@@ -46,9 +46,8 @@ export function temaUygula(id: string, gecisAnimasyonu = false) {
   kok.setAttribute("data-tema", tema.id);
   kok.classList.toggle("dark", tema.aile === "koyu");
 
-  // Tarayıcı arayüzü (mobil adres çubuğu) da temayla uyumlu olsun
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", tema.renkler.navy);
+  // Tarayıcı arayüzü (mobil adres/durum çubuğu) da temayla uyumlu olsun
+  tarayiciCubuguRengiUygula(tema);
 
   try {
     window.localStorage.setItem(TEMA_ANAHTARI, tema.id);
@@ -58,6 +57,55 @@ export function temaUygula(id: string, gecisAnimasyonu = false) {
     /* gizli sekme — tema yine uygulanır, hatırlanmaz */
   }
   dinleyicilereHaberVer(tema);
+}
+
+/**
+ * MOBİL TARAYICI ÇUBUĞU RENGİ (<meta name="theme-color">)
+ *
+ * Neden tek satır yetmiyor:
+ *   1. Etiketi Next.js'in `viewport.themeColor`'ı basar; sayfa geçişinde
+ *      metadata yeniden işlenip SABİT varsayılana geri döner → tema
+ *      değişse bile çubuk eski renkte kalıyordu.
+ *   2. Birden fazla (media sorgulu) etiket olabilir; ilk eşleşen kazanır,
+ *      dolayısıyla hepsi aynı renge çekilmeli.
+ *   3. Etiket hiç yoksa (bazı rotalar) oluşturulmalı.
+ * Bu yüzden hem yazıyoruz hem de <head>'i izleyip geri dönmesini engelliyoruz.
+ *
+ * Renk olarak yüzey (kart/başlık) rengi kullanılır: telefonda çubuğun hemen
+ * altında duran yapışkan başlık da bu renktedir, ikisi birbirine karışır.
+ */
+let sonTemaRengi: string | null = null;
+let gozlemci: MutationObserver | null = null;
+
+function metalariYaz(renk: string) {
+  const metalar = document.querySelectorAll<HTMLMetaElement>(
+    'meta[name="theme-color"]',
+  );
+  if (metalar.length === 0) {
+    const m = document.createElement("meta");
+    m.name = "theme-color";
+    m.content = renk;
+    document.head.appendChild(m);
+    return;
+  }
+  metalar.forEach((m) => {
+    // media sorgusu bizim seçimimizle çakışmasın (kullanıcı temayı elle seçti)
+    if (m.hasAttribute("media")) m.removeAttribute("media");
+    if (m.getAttribute("content") !== renk) m.setAttribute("content", renk);
+  });
+}
+
+function tarayiciCubuguRengiUygula(tema: Tema) {
+  sonTemaRengi = tema.renkler.surface;
+  metalariYaz(sonTemaRengi);
+
+  // Next.js sayfa geçişinde etiketi yeniden basarsa rengi geri koy.
+  if (!gozlemci && typeof MutationObserver !== "undefined") {
+    gozlemci = new MutationObserver(() => {
+      if (sonTemaRengi) metalariYaz(sonTemaRengi);
+    });
+    gozlemci.observe(document.head, { childList: true, subtree: true });
+  }
 }
 
 const dinleyiciler = new Set<(t: Tema) => void>();

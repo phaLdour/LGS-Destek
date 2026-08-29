@@ -152,7 +152,7 @@ export function LandingPage() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/register"
-                  className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-6 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
+                  className="rounded-xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark px-6 py-3 text-sm font-extrabold text-rehberim-on-accent shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
                 >
                   Ücretsiz hesap oluştur
                 </Link>
@@ -209,7 +209,7 @@ export function LandingPage() {
           </p>
           <Link
             href="/register"
-            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-6 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
+            className="rounded-xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark px-6 py-3 text-sm font-extrabold text-rehberim-on-accent shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft"
           >
             Ücretsiz başla
           </Link>

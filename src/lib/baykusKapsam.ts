@@ -11,9 +11,13 @@
  *   2. İstem enjeksiyonu ("önceki talimatları unut") modele ulaşmaz,
  *   3. Ret cevabı her seferinde aynı ve öngörülebilir olur.
  *
- * Yaklaşım: kara liste + KALIP eşleme (tek kelime değil). "hava" kelimesi
- * fen dersinde de geçtiği için yalnız "hava durumu", "hava nasıl olacak"
- * gibi bütün kalıplar reddedilir; müfredat soruları serbest geçer.
+ * Yaklaşım: kara liste + KALIP eşleme (tek kelime değil). Kalıplar müfredat
+ * kelimelerini yakalamayacak kadar DAR tutulur: "hava durumu" bir Sosyal
+ * Bilgiler konusudur, o yüzden yalnız güncel hava sorgusu ("bugün hava",
+ * "hava durumu nasıl olacak") reddedilir; "hava durumu ile iklim farkı"
+ * gibi müfredat soruları serbest geçer. Aynı ilke "kaç TL" (matematik
+ * problemi), "hangi model" (soru tipi) ve "borsa" (okul adı) için de
+ * geçerlidir — bkz. aşağıdaki liste yorumları.
  */
 
 import { denetle, RET_METNI } from "@/lib/moderasyon";
@@ -34,35 +38,79 @@ function normalize(text: string): string {
     .trim();
 }
 
-/** Sitenin iç yapısını öğrenmeye çalışan sorular. */
+/**
+ * Sitenin iç yapısını öğrenmeye çalışan sorular.
+ *
+ * DÜZELTME — kalıplar daraltıldı. Eskiden meşru LGS soruları reddediliyordu:
+ *   - "hangi model"     → "LGS'de hangi model soru çıkıyor?", "Matematikte
+ *                         hangi model kullanılır?" reddediliyordu. Artık
+ *                         yalnız modelin KİMLİĞİNİ soran kalıplar yakalanır.
+ *   - "hangi dille yaz" → "Orhun Yazıtları hangi dille yazılmıştır?" (T.C.
+ *                         İnkılap / Türkçe) reddediliyordu; kalıp artık
+ *                         siteye/kendisine atıf istiyor.
+ *   - "hangi teknoloji" → "Fen'de hangi teknolojiler kullanılır?" meşrudur.
+ *   - "hangi kutuphane" → "kütüphane" gündelik bir kelimedir; kaldırıldı,
+ *                         "hangi framework" zaten kapsıyor.
+ *   - "react"           → İngilizce dersinde geçen bir fiildir; yalnız
+ *                         "react js / reactjs" biçimi kaldı.
+ */
 const KOD_KALIPLARI = [
   "kaynak kod", "kaynak kodu", "source code", "kodunu ver", "kodlarini ver",
-  "kodlari goster", "hangi dille yaz", "hangi teknoloji", "hangi framework",
-  "hangi kutuphane", "veri tabani", "veritabani", "database", "supabase",
-  "next js", "nextjs", "react", "typescript", "tailwind", "vercel",
+  "kodlari goster", "hangi framework", "hangi programlama dili",
+  "site hangi dille", "sitenin hangi dille", "hangi dille yazildin",
+  "hangi dilde yazildin", "hangi teknolojiyle yapildin",
+  "sitede hangi teknoloji", "hangi teknolojileri kullaniyorsun",
+  "veri tabani", "veritabani", "database", "supabase",
+  "next js", "nextjs", "react js", "reactjs", "typescript", "tailwind", "vercel",
   "api key", "api anahtar", "gizli anahtar", "env dosya", "ortam degisken",
   "sistem mesaj", "sistem istem", "system prompt", "promptun", "prompt un",
   "talimatlarini", "talimatlarin ne", "onceki talimatlari unut",
   "talimatlari unut", "kurallarini unut", "rolunu unut", "sen bir yapay zeka",
-  "hangi modelsin", "hangi model", "gemini mi", "chatgpt mi", "gpt misin",
+  // Modelin kimliğini soranlar — "hangi model" gibi genel kalıp DEĞİL.
+  "hangi modelsin", "senin modelin", "modelin ne", "modelin nedir",
+  "hangi yapay zeka model", "hangi ai model", "hangi dil modeli",
+  "hangi modeli kullan", "kullandigin model", "hangi surumsun",
+  "gemini mi", "chatgpt mi", "gpt misin",
   "nasil yapildin", "seni kim yapti kod", "admin panel", "yonetici sifre",
   "sunucu adresi", "repo linki", "github linki", "dosya yapisi", "klasor yapisi",
 ];
 
-/** Müfredat ve site dışı, açıkça alakasız konular. */
+/**
+ * Müfredat ve site dışı, açıkça alakasız konular.
+ *
+ * DÜZELTME — kalıplar daraltıldı. Eskiden reddedilen meşru sorular:
+ *   - "kac tl"          → DÜPEDÜZ MATEMATİK: "Bir kalem 5 TL ise 3 kalem
+ *                         kaç TL olur?" reddediliyordu. Kalıp kaldırıldı;
+ *                         para birimi sorgusu için "dolar kac" yeterli.
+ *   - "fiyati ne kadar" → "Bir malın fiyatı ne kadar artarsa..." yüzde
+ *                         problemidir; alışveriş niyeti isteyen kalıplarla
+ *                         değiştirildi.
+ *   - "hava durumu"     → Sosyal Bilgiler/Fen konusudur ("hava durumu ile
+ *                         iklim farkı"). Artık zaman/yer belirten güncel
+ *                         hava sorguları yakalanır.
+ *   - "hangi takim"     → "hangi takımı tutuyorsun" biçimine daraltıldı.
+ */
 const ALAKASIZ_KALIPLARI = [
-  // güncel/dünya
-  "hava durumu", "hava nasil olacak", "yagmur yagacak mi", "kar yagacak mi",
-  "dolar kac", "euro kac", "altin kac tl", "borsa", "kripto", "bitcoin",
-  "son dakika", "guncel haber", "haberlerde ne var",
+  // güncel/dünya  (konu olarak "hava durumu" değil, GÜNCEL hava sorgusu)
+  "bugun hava", "yarin hava", "hafta sonu hava", "hava durumu nasil olacak",
+  "hava durumu ne olacak", "hava nasil olacak", "hava kac derece olacak",
+  "yagmur yagacak mi", "kar yagacak mi",
+  "dolar kac", "euro kac", "altin kac tl", "kripto", "bitcoin",
+  // "borsa" tek başına OLAMAZ: "Borsa İstanbul Fen Lisesi" gerçek bir okul
+  // adıdır ve sitenin okul veritabanında geçer (src/content/okullar.ts).
+  "borsa endeks", "borsada para", "borsa yatirim", "hisse senedi", "bist 100",
+  // "son dakika" tek başına Türkçe okuma cümlelerinde geçiyor
+  // ("maçın son dakikasında"); haber niyeti aranıyor.
+  "son dakika haber", "guncel haber", "haberlerde ne var",
   // eğlence
-  "mac skoru", "mac kac kac", "hangi takim", "galatasaray mi fenerbahce",
+  "mac skoru", "mac kac kac", "hangi takimi tutuyorsun", "hangi takimlisin",
+  "galatasaray mi fenerbahce",
   "film oner", "dizi oner", "sarki oner", "muzik oner", "oyun oner",
   "valorant", "minecraft", "roblox", "fortnite", "pubg", "counter strike",
   "tiktok", "instagram takipci", "youtube kanal",
-  // ticaret
-  "kac tl", "fiyati ne kadar", "nereden alabilirim", "indirim var mi",
-  "hangi telefonu al", "hangi bilgisayari al",
+  // ticaret  (alışveriş niyeti belirten kalıplar; salt fiyat/TL geçmesi değil)
+  "nereden alabilirim", "nereden satin al", "indirim var mi", "kac paraya alirim",
+  "hangi telefonu al", "hangi bilgisayari al", "hangi marka alayim",
   // siyaset / hassas
   "hangi partiye oy", "secim sonuc", "cumhurbaskani kim olacak",
   "hangi partiyi destek",

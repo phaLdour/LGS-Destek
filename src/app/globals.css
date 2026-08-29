@@ -34,6 +34,17 @@
      KURAL: yazı, arkasındaki renge göre okunaklı olmak zorundadır —
      turuncu zeminde beyaz yazı okunmuyordu, koyu mürekkep kullanılır. */
   --rb-on-accent: #16244c;
+  --rb-on-accent-ch: 22 36 76;
+  /* Soluk vurgu (accent-light) zemininin mürekkebi — bkz. temaTuretilmis() */
+  --rb-on-accent-light: #0e1838;
+  --rb-on-accent-light-ch: 14 24 56;
+  /* Dolu lacivert buton/rozet zemini ve hover'ı */
+  --rb-navy-fill: #16244c;
+  --rb-navy-fill-hover: #2d3963;
+  /* Marka SVG'lerinin (logo, baykuş) tonları */
+  --rb-marka-navy: #16244c;
+  --rb-marka-navy-acik: #243a6e;
+  --rb-marka-navy-koyu: #0e1838;
   color-scheme: light;
 }
 
@@ -59,6 +70,14 @@ html.dark {
   --rb-muted-ch: 31 48 96;
   --rb-border-ch: 42 59 102;
   --rb-on-accent: #0e1838;
+  --rb-on-accent-ch: 14 24 56;
+  --rb-on-accent-light: #080e22;
+  --rb-on-accent-light-ch: 8 14 34;
+  --rb-navy-fill: #4b5d88;
+  --rb-navy-fill-hover: #5b6c93;
+  --rb-marka-navy: #808dab;
+  --rb-marka-navy-acik: #a3acc2;
+  --rb-marka-navy-koyu: #57617e;
   color-scheme: dark;
 }
 
@@ -400,7 +419,9 @@ html.dark .text-green-800 {
 html.dark .text-blue-700 {
   color: rgb(147, 197, 253) !important;
 }
-html.dark .text-emerald-700 {
+html.dark .text-emerald-600,
+html.dark .text-emerald-700,
+html.dark .text-emerald-800 {
   color: rgb(110, 231, 183) !important;
 }
 
@@ -429,23 +450,6 @@ html.dark .lgs-article .text-rehberim-navy\/45 {
 html.dark .lgs-article strong.text-rehberim-navy,
 html.dark .lgs-article strong {
   color: #fde68a !important; /* amber-200 */
-}
-
-/* ────────────────────────────────────────────────────────────────
-   MARKA SVG'LERİ — dark modda görünür açık navy tonlarına çevril.
-   Logo ve Owl içindeki #16244C, #243A6E, #1C2C5C navy ailesi
-   renkleri koyu zemine kaybolur. Aynı palette içinde daha açık
-   tonlar uygulanır (yeni renk değil; navy ailesinin açık tonu).
-   ──────────────────────────────────────────────────────────────── */
-html.dark [data-rb="navy"] {
-  fill: #5470b8 !important;
-  stroke: #5470b8 !important;
-}
-html.dark [data-rb="navy-mid"] {
-  fill: #6f8aca !important;
-}
-html.dark [data-rb="navy-deep"] {
-  fill: #3a4e88 !important;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -485,17 +489,8 @@ html.dark [data-theme="light"] .text-rehberim-navy\/50,
 html.dark [data-theme="light"] .text-rehberim-navy\/40 {
   color: rgba(22, 36, 76, 0.45) !important;
 }
-/* Light scope içindeki SVG markalarını yeniden light tonlara çevir */
-html.dark [data-theme="light"] [data-rb="navy"] {
-  fill: #16244c !important;
-  stroke: #16244c !important;
-}
-html.dark [data-theme="light"] [data-rb="navy-mid"] {
-  fill: #243a6e !important;
-}
-html.dark [data-theme="light"] [data-rb="navy-deep"] {
-  fill: #1c2c5c !important;
-}
+/* Light scope içindeki marka SVG'leri: renkler var(--rb-marka-*) üzerinden
+   gelir; değişkenler aşağıdaki "MARKA SVG'LERİ" bölümünde geri çevrilir. */
 /* Light scope: lgs-article'ın turuncu kuralını da geçersiz kıl (kart içi navy)
    Article kartları içine düşen yazıyı SİTENİN MAVİ TONUYLA yaz — kullanıcı isteği. */
 html.dark .lgs-article [data-theme="light"] .text-rehberim-navy,
@@ -542,45 +537,47 @@ html.dark .text-rehberim-navy\/20 {
 }
 
 /* ────────────────────────────────────────────────────────────────
-   MARKA TURUNCUSU ZEMİNLER — HER İKİ TEMADA DA MÜREKKEP LACİVERT
-   Turuncu zemin (accent → amber-500) tema değişince değişmiyor; ama
-   üstündeki "text-rehberim-navy" dark modda beyaza çevriliyordu →
-   turuncu üzerinde beyaz ≈ 2:1 kontrast, okunmuyordu.
-   Aşağıdaki kurallar, zemin sınıfıyla yazı sınıfının aynı elemanda ya
-   da ata-torun ilişkisinde bulunduğu tüm durumları kapsar; bileşenlere
-   dokunmadan çalışır.
+   VURGU ZEMİNLERİ — MÜREKKEP HER ZAMAN --rb-on-accent
+   Vurgu rengi (turuncu/pembe/yeşil/mor...) açık bir renktir; üstüne beyaz
+   yazı yazılamaz. Eskiden burada sabit #16244c vardı → Orman ya da Gece
+   Moru temasında yeşil/fuşya zeminin üstüne "klasik lacivert" basılıyordu.
+   Artık mürekkep temadan gelir ve tema-kontrast.mjs ile ölçülür.
    ──────────────────────────────────────────────────────────────── */
 html.dark .bg-rehberim-accent.text-rehberim-navy,
-html.dark .bg-rehberim-accent-light.text-rehberim-navy,
-html.dark .to-amber-500.text-rehberim-navy,
+html.dark .bg-rehberim-accent-dark.text-rehberim-navy,
+html.dark .to-rehberim-accent-dark.text-rehberim-navy,
 html.dark .bg-rehberim-accent .text-rehberim-navy,
-html.dark .bg-rehberim-accent-light .text-rehberim-navy,
-html.dark .to-amber-500 .text-rehberim-navy,
+html.dark .bg-rehberim-accent-dark .text-rehberim-navy,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/85,
-html.dark .to-amber-500 .text-rehberim-navy\/85,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/85,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/80,
-html.dark .to-amber-500 .text-rehberim-navy\/80,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/80,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/75,
-html.dark .to-amber-500 .text-rehberim-navy\/75,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/75,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/70,
-html.dark .to-amber-500 .text-rehberim-navy\/70,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/70,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/65,
-html.dark .to-amber-500 .text-rehberim-navy\/65,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/65,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/60,
-html.dark .to-amber-500 .text-rehberim-navy\/60,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/60,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/55,
-html.dark .to-amber-500 .text-rehberim-navy\/55,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/55,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/50,
-html.dark .to-amber-500 .text-rehberim-navy\/50,
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/50,
 html.dark .bg-rehberim-accent .text-rehberim-navy\/45,
-html.dark .to-amber-500 .text-rehberim-navy\/45 {
-  color: #16244c !important;
+html.dark .to-rehberim-accent-dark .text-rehberim-navy\/45 {
+  color: var(--rb-on-accent) !important;
 }
-/* Turuncu zeminde marka SVG'leri de lacivert kalmalı (baykuş, logo). */
-html.dark .bg-rehberim-accent [data-rb="navy"],
-html.dark .to-amber-500 [data-rb="navy"] {
-  fill: #16244c !important;
-  stroke: #16244c !important;
+/* (Soluk vurgu zemininin mürekkebi aşağıdaki "OKUNAKLILIK KURALI"
+    bölümünde her iki aile için birden tanımlanır.) */
+/* Vurgu zemininde marka SVG'leri de aynı mürekkebi kullanır (baykuş, logo). */
+/* (Tema ailesinden bağımsız: vurgu zemini her temada açıktır.) */
+.bg-rehberim-accent [data-rb^="navy"],
+.bg-rehberim-accent-dark [data-rb^="navy"],
+.to-rehberim-accent-dark [data-rb^="navy"] {
+  fill: var(--rb-on-accent) !important;
+  stroke: var(--rb-on-accent) !important;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -689,16 +686,32 @@ html.dark {
 
 /* ────────────────────────────────────────────────────────────────
    LACİVERT DOLGULU BUTONLAR — dark modda yüzeyle aynı renge düşüyordu.
-   Kart yüzeyi de #16244C olduğu için bg-rehberim-navy'li buton/rozet
-   görünmez oluyordu (ör. okul taramadaki aktif filtre). Bir ton açığa
-   çekilir; üstündeki beyaz yazı 7:1 üzeri kontrastta kalır.
+   Kart yüzeyi de temanın navy'siyle aynı olduğu için bg-rehberim-navy'li
+   buton/rozet görünmez oluyordu (ör. okul taramadaki aktif filtre,
+   MiniOdak rozeti, alt gezinme). Bir ton açığa çekilir.
+
+   Renk SABİT DEĞİLDİR: --rb-navy-fill her temada kendi lacivert/mor/yeşil
+   ailesinden üretilir (src/lib/temalar.ts → temaTuretilmis). Eskiden burada
+   sabit #2f4170 vardı; Orman ya da Kömür temasında bile mavi buton çıkıyordu.
+   Üstündeki beyaz yazı ≥4.5:1 kontrastta kalır (tema-kontrast.mjs ölçer).
    ──────────────────────────────────────────────────────────────── */
 html.dark .bg-rehberim-navy {
-  background-color: #2f4170 !important;
+  background-color: var(--rb-navy-fill) !important;
+}
+/* Opaklık varyantları (MiniOdak /95, okul kartı rozeti /85 ...) */
+html.dark .bg-rehberim-navy\/95 {
+  background-color: color-mix(in srgb, var(--rb-navy-fill) 95%, transparent) !important;
+}
+html.dark .bg-rehberim-navy\/90 {
+  background-color: color-mix(in srgb, var(--rb-navy-fill) 90%, transparent) !important;
+}
+html.dark .bg-rehberim-navy\/85 {
+  background-color: color-mix(in srgb, var(--rb-navy-fill) 85%, transparent) !important;
 }
 html.dark .hover\:bg-rehberim-navy-dark:hover,
-html.dark .hover\:bg-rehberim-navy-light:hover {
-  background-color: #3a4f88 !important;
+html.dark .hover\:bg-rehberim-navy-light:hover,
+html.dark .hover\:bg-rehberim-navy:hover {
+  background-color: var(--rb-navy-fill-hover) !important;
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -905,7 +918,10 @@ html.dark .lgs-callout.bg-rehberim-muted {
    yazılamaz; dolu vurgu zeminlerinde koyu mürekkep kullanılır.
    Seçici özgüllüğü (0,2,0) .text-white'ı (0,1,0) yener.
    ──────────────────────────────────────────────────────────────── */
-.bg-rehberim-accent {
+.bg-rehberim-accent,
+.bg-rehberim-accent-dark,
+.hover\:bg-rehberim-accent-dark:hover,
+.hover\:bg-rehberim-accent:hover {
   color: var(--rb-on-accent);
 }
 .bg-rehberim-accent.text-white,
@@ -913,13 +929,114 @@ html.dark .lgs-callout.bg-rehberim-muted {
 .bg-rehberim-accent .text-white\/90,
 .bg-rehberim-accent .text-white\/80,
 .bg-rehberim-accent .text-white\/75,
-.bg-rehberim-accent .text-white\/70 {
+.bg-rehberim-accent .text-white\/70,
+.bg-rehberim-accent-dark .text-white,
+.hover\:bg-rehberim-accent-dark:hover .text-white {
   color: var(--rb-on-accent);
 }
 .bg-rehberim-accent .text-rehberim-navy,
 .bg-rehberim-accent .text-rehberim-navy\/70,
 .bg-rehberim-accent .text-rehberim-navy\/60 {
   color: var(--rb-on-accent);
+}
+
+/* SOLUK VURGU ZEMİNİ (accent-light) — her temada açık bir tondur, bu yüzden
+   mürekkebi ayrıdır. Lavanta temasında --rb-on-accent BEYAZ olduğu için
+   "bg-rehberim-accent ... hover:bg-rehberim-accent-light" düğmesi hover'da
+   beyaz üstüne beyaza düşüyordu (1.85:1). Artık hover'da mürekkep de
+   koyuya döner. */
+.bg-rehberim-accent-light,
+.hover\:bg-rehberim-accent-light:hover,
+.bg-rehberim-accent-light.text-white,
+.hover\:bg-rehberim-accent-light:hover.text-white,
+.bg-rehberim-accent-light.text-rehberim-navy,
+.hover\:bg-rehberim-accent-light:hover.text-rehberim-navy,
+.bg-rehberim-accent-light .text-white,
+.hover\:bg-rehberim-accent-light:hover .text-white,
+.bg-rehberim-accent-light .text-rehberim-navy,
+.hover\:bg-rehberim-accent-light:hover .text-rehberim-navy {
+  /* !important: koyu ailedeki genel text-rehberim-navy kuralını da yener. */
+  color: var(--rb-on-accent-light) !important;
+}
+
+/* VURGU GRADYANLI CTA'LAR — "from-rehberim-accent to-rehberim-accent-dark".
+   İki durak da vurgu ailesinden geldiği için mürekkep yine --rb-on-accent.
+   (Eskiden ikinci durak sabit amber-500 idi: mor/yeşil temada turuncuya
+   dönüyor, üstündeki yazı AA altına düşüyordu.) */
+.from-rehberim-accent.to-rehberim-accent-dark,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/85,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/80,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/75,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/70,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/65,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/60,
+.from-rehberim-accent.to-rehberim-accent-dark .text-rehberim-navy\/55,
+.from-rehberim-accent.to-rehberim-accent-dark .text-white,
+.from-rehberim-accent.to-rehberim-accent-dark .text-white\/90,
+.from-rehberim-accent.to-rehberim-accent-dark .text-white\/80,
+.from-rehberim-accent.to-rehberim-accent-dark .text-white\/75,
+.from-rehberim-accent.to-rehberim-accent-dark .text-white\/70 {
+  /* !important: koyu ailedeki genel "text-rehberim-navy → açık yazı"
+     kuralını yener; vurgu gradyanının üstünde yazı her zaman mürekkeptir. */
+  color: var(--rb-on-accent) !important;
+}
+
+/* ────────────────────────────────────────────────────────────────
+   SEMANTİK DURUM RENKLERİ (başarı / uyarı / hata / bilgi)
+   "Doğru cevap", "uyarı notu" gibi kutular marka renginden bağımsızdır;
+   ama yine de TEMA AİLESİNE göre değişmek zorundadır:
+     · bg-emerald-50 koyu temada bembeyaz bir kutu gibi patlıyordu
+     · text-amber-900 (ve kardeşleri) koyu temada okunmuyordu — bu sınıfların
+       dark karşılığı hiç yazılmamıştı
+   Tailwind sınıflarının kendisini tema değişkenine bağlıyoruz: bileşenlerde
+   tek tek düzeltme gerekmez, sınıf nerede geçerse geçsin okunaklı olur.
+   (Kural: yazı arkasındaki renge göre okunaklı olacak.)
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --rb-basari-yuzey: #ecfdf5; /* emerald-50 */
+  --rb-basari-metin: #14532d; /* green-900 */
+  --rb-uyari-metin: #78350f;  /* amber-900 */
+  --rb-hata-metin: #7f1d1d;   /* red-900 */
+  --rb-bilgi-metin: #581c87;  /* purple-900 */
+}
+html.dark {
+  --rb-basari-yuzey: rgba(16, 185, 129, 0.16);
+  --rb-basari-metin: #bbf7d0; /* green-200 */
+  --rb-uyari-metin: #fde68a;  /* amber-200 */
+  --rb-hata-metin: #fecaca;   /* red-200 */
+  --rb-bilgi-metin: #e9d5ff;  /* purple-200 */
+}
+.bg-emerald-50 {
+  background-color: var(--rb-basari-yuzey);
+}
+.text-green-900,
+.text-emerald-900 {
+  color: var(--rb-basari-metin);
+}
+.text-amber-900 {
+  color: var(--rb-uyari-metin);
+}
+.text-red-900 {
+  color: var(--rb-hata-metin);
+}
+.text-purple-900 {
+  color: var(--rb-bilgi-metin);
+}
+
+/* ────────────────────────────────────────────────────────────────
+   MARKA SVG'LERİ (logo + baykuş) — renkleri artık TEMADAN gelir.
+   SVG'lerin içindeki fill/stroke değerleri var(--rb-marka-*) okur; bu
+   değişkenler her tema için src/lib/temalar.ts'te üretilir ve koyu
+   temalarda zemine kaybolmayacak kadar açılır (WCAG 1.4.11, ≥3:1).
+   Aşağıdaki data-rb kancaları yalnız istisnalar içindir.
+   ──────────────────────────────────────────────────────────────── */
+/* Baykuş sohbet paneli koyu temada bile açık kalır (data-theme="light");
+   marka tonlarını da klasik açık palete geri çevirir. */
+html.dark [data-theme="light"] {
+  --rb-marka-navy: #16244c;
+  --rb-marka-navy-acik: #243a6e;
+  --rb-marka-navy-koyu: #1c2c5c;
 }
 
 /* Tema geçişi: renk değişimi ani değil, yumuşak olsun (hareket duyarlı
@@ -948,6 +1065,14 @@ html[data-tema="klasik"] {
   --rb-scrollbar: #c7cee0;
   --rb-scrollbar-hover: #aab4d0;
   --rb-on-accent: #16244c;
+  --rb-on-accent-ch: 22 36 76;
+  --rb-on-accent-light: #0e1838;
+  --rb-on-accent-light-ch: 14 24 56;
+  --rb-navy-fill: #16244c;
+  --rb-navy-fill-hover: #2d3a5e;
+  --rb-marka-navy: #16244c;
+  --rb-marka-navy-acik: #243a6e;
+  --rb-marka-navy-koyu: #0e1838;
   --rb-navy-ch: 22 36 76;
   --rb-navy-dark-ch: 14 24 56;
   --rb-navy-light-ch: 36 58 110;
@@ -971,6 +1096,14 @@ html[data-tema="pembe"] {
   --rb-scrollbar: #efc3dd;
   --rb-scrollbar-hover: #e39ec8;
   --rb-on-accent: #3f0b29;
+  --rb-on-accent-ch: 63 11 41;
+  --rb-on-accent-light: #4e1739;
+  --rb-on-accent-light-ch: 78 23 57;
+  --rb-navy-fill: #6d2350;
+  --rb-navy-fill-hover: #7c3962;
+  --rb-marka-navy: #6d2350;
+  --rb-marka-navy-acik: #8e3a6e;
+  --rb-marka-navy-koyu: #4e1739;
   --rb-navy-ch: 109 35 80;
   --rb-navy-dark-ch: 78 23 57;
   --rb-navy-light-ch: 142 58 110;
@@ -994,6 +1127,14 @@ html[data-tema="lavanta"] {
   --rb-scrollbar: #d3c8f7;
   --rb-scrollbar-hover: #b9a7f0;
   --rb-on-accent: #ffffff;
+  --rb-on-accent-ch: 255 255 255;
+  --rb-on-accent-light: #341068;
+  --rb-on-accent-light-ch: 52 16 104;
+  --rb-navy-fill: #4c1d95;
+  --rb-navy-fill-hover: #5e34a0;
+  --rb-marka-navy: #4c1d95;
+  --rb-marka-navy-acik: #6d28d9;
+  --rb-marka-navy-koyu: #341068;
   --rb-navy-ch: 76 29 149;
   --rb-navy-dark-ch: 52 16 104;
   --rb-navy-light-ch: 109 40 217;
@@ -1017,6 +1158,14 @@ html[data-tema="nane"] {
   --rb-scrollbar: #b6e6c8;
   --rb-scrollbar-hover: #8fd4ab;
   --rb-on-accent: #04291b;
+  --rb-on-accent-ch: 4 41 27;
+  --rb-on-accent-light: #0a3a1e;
+  --rb-on-accent-light-ch: 10 58 30;
+  --rb-navy-fill: #14532d;
+  --rb-navy-fill-hover: #2c6442;
+  --rb-marka-navy: #14532d;
+  --rb-marka-navy-acik: #166534;
+  --rb-marka-navy-koyu: #0a3a1e;
   --rb-navy-ch: 20 83 45;
   --rb-navy-dark-ch: 10 58 30;
   --rb-navy-light-ch: 22 101 52;
@@ -1040,6 +1189,14 @@ html[data-tema="deniz"] {
   --rb-scrollbar: #a8e4ee;
   --rb-scrollbar-hover: #7fd3e2;
   --rb-on-accent: #032c36;
+  --rb-on-accent-ch: 3 44 54;
+  --rb-on-accent-light: #083440;
+  --rb-on-accent-light-ch: 8 52 64;
+  --rb-navy-fill: #0e4c5b;
+  --rb-navy-fill-hover: #265e6b;
+  --rb-marka-navy: #0e4c5b;
+  --rb-marka-navy-acik: #146277;
+  --rb-marka-navy-koyu: #083440;
   --rb-navy-ch: 14 76 91;
   --rb-navy-dark-ch: 8 52 64;
   --rb-navy-light-ch: 20 98 119;
@@ -1063,6 +1220,14 @@ html[data-tema="kagit"] {
   --rb-scrollbar: #dcceb4;
   --rb-scrollbar-hover: #c6b394;
   --rb-on-accent: #2a1d0d;
+  --rb-on-accent-ch: 42 29 13;
+  --rb-on-accent-light: #33240f;
+  --rb-on-accent-light-ch: 51 36 15;
+  --rb-navy-fill: #4a3722;
+  --rb-navy-fill-hover: #5c4b38;
+  --rb-marka-navy: #4a3722;
+  --rb-marka-navy-acik: #6b5334;
+  --rb-marka-navy-koyu: #33240f;
   --rb-navy-ch: 74 55 34;
   --rb-navy-dark-ch: 51 36 15;
   --rb-navy-light-ch: 107 83 52;
@@ -1090,6 +1255,14 @@ html[data-tema="gece"] {
   --rb-scrollbar: #2a3b66;
   --rb-scrollbar-hover: #3a4d80;
   --rb-on-accent: #0e1838;
+  --rb-on-accent-ch: 14 24 56;
+  --rb-on-accent-light: #080e22;
+  --rb-on-accent-light-ch: 8 14 34;
+  --rb-navy-fill: #4b5d88;
+  --rb-navy-fill-hover: #5b6c93;
+  --rb-marka-navy: #808dab;
+  --rb-marka-navy-acik: #a3acc2;
+  --rb-marka-navy-koyu: #57617e;
   --rb-navy-ch: 22 36 76;
   --rb-navy-dark-ch: 8 14 34;
   --rb-navy-light-ch: 36 58 110;
@@ -1113,6 +1286,14 @@ html[data-tema="mor"] {
   --rb-scrollbar: #4c2464;
   --rb-scrollbar-hover: #6a3489;
   --rb-on-accent: #2a0b33;
+  --rb-on-accent-ch: 42 11 51;
+  --rb-on-accent-light: #12061a;
+  --rb-on-accent-light-ch: 18 6 26;
+  --rb-navy-fill: #674879;
+  --rb-navy-fill-hover: #755885;
+  --rb-marka-navy: #947ea0;
+  --rb-marka-navy-acik: #b1a1bb;
+  --rb-marka-navy-koyu: #665370;
   --rb-navy-ch: 42 16 56;
   --rb-navy-dark-ch: 18 6 26;
   --rb-navy-light-ch: 70 32 92;
@@ -1136,6 +1317,14 @@ html[data-tema="orman"] {
   --rb-scrollbar: #205038;
   --rb-scrollbar-hover: #2d6b4b;
   --rb-on-accent: #052015;
+  --rb-on-accent-ch: 5 32 21;
+  --rb-on-accent-light: #04120b;
+  --rb-on-accent-light-ch: 4 18 11;
+  --rb-navy-fill: #436755;
+  --rb-navy-fill-hover: #547564;
+  --rb-marka-navy: #7a9487;
+  --rb-marka-navy-acik: #9fb1a8;
+  --rb-marka-navy-koyu: #52675e;
   --rb-navy-ch: 15 44 31;
   --rb-navy-dark-ch: 4 18 11;
   --rb-navy-light-ch: 26 70 48;
@@ -1159,6 +1348,14 @@ html[data-tema="okyanus"] {
   --rb-scrollbar: #1a5c6e;
   --rb-scrollbar-hover: #267a90;
   --rb-on-accent: #052730;
+  --rb-on-accent-ch: 5 39 48;
+  --rb-on-accent-light: #02151c;
+  --rb-on-accent-light-ch: 2 21 28;
+  --rb-navy-fill: #3d7082;
+  --rb-navy-fill-hover: #4e7d8d;
+  --rb-marka-navy: #769aa6;
+  --rb-marka-navy-acik: #9bb6bf;
+  --rb-marka-navy-koyu: #4f6c76;
   --rb-navy-ch: 10 51 65;
   --rb-navy-dark-ch: 2 21 28;
   --rb-navy-light-ch: 18 81 102;
@@ -1182,6 +1379,14 @@ html[data-tema="gunbatimi"] {
   --rb-scrollbar: #5a252e;
   --rb-scrollbar-hover: #7a3540;
   --rb-on-accent: #2a0a10;
+  --rb-on-accent-ch: 42 10 16;
+  --rb-on-accent-light: #150508;
+  --rb-on-accent-light-ch: 21 5 8;
+  --rb-navy-fill: #6b464d;
+  --rb-navy-fill-hover: #78575d;
+  --rb-marka-navy: #967c81;
+  --rb-marka-navy-acik: #b3a0a4;
+  --rb-marka-navy-koyu: #695459;
   --rb-navy-ch: 46 18 24;
   --rb-navy-dark-ch: 21 5 8;
   --rb-navy-light-ch: 74 29 38;
@@ -1205,6 +1410,14 @@ html[data-tema="komur"] {
   --rb-scrollbar: #2c3038;
   --rb-scrollbar-hover: #3e434d;
   --rb-on-accent: #17120c;
+  --rb-on-accent-ch: 23 18 12;
+  --rb-on-accent-light: #050506;
+  --rb-on-accent-light-ch: 5 5 6;
+  --rb-navy-fill: #4b4e54;
+  --rb-navy-fill-hover: #5b5e63;
+  --rb-marka-navy: #808286;
+  --rb-marka-navy-acik: #a3a4a8;
+  --rb-marka-navy-koyu: #57595c;
   --rb-navy-ch: 22 24 29;
   --rb-navy-dark-ch: 5 5 6;
   --rb-navy-light-ch: 36 39 47;

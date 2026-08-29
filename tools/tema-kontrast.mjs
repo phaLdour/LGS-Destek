@@ -18,7 +18,7 @@
 import { execSync } from "node:child_process";
 
 const cikti = execSync(
-  `npx tsx -e "console.log(JSON.stringify(require('${process.cwd()}/src/lib/temalar').TEMALAR))"`,
+  `npx tsx -e "const m=require('${process.cwd()}/src/lib/temalar');console.log(JSON.stringify(m.TEMALAR.map(t=>({...t,turetilmis:m.temaTuretilmis(t)}))))"`,
   { encoding: "utf8", maxBuffer: 10 * 1024 * 1024 },
 ).trim();
 const TEMALAR = JSON.parse(cikti.slice(cikti.indexOf("[")));
@@ -55,6 +55,18 @@ const KONTROLLER = [
   { ad: "mürekkep / koyu vurgu", on: (r) => r.onAccent, arka: (r) => r.accentDark, esik: 4.5 },
   { ad: "derin vurgu / kart", on: (r) => r.accentDeep, arka: (r) => r.surface, esik: 4.5 },
   { ad: "kenarlık / kart", on: (r) => r.border, arka: (r) => r.surface, esik: 1.35 },
+
+  /* Türetilmiş renkler — src/lib/temalar.ts → temaTuretilmis() */
+  // Dolu lacivert buton/rozet (bg-rehberim-navy): üstündeki beyaz yazı okunmalı
+  { ad: "beyaz / dolgu zemini", on: () => "#ffffff", arka: (_r, d) => d.navyFill, esik: 4.5 },
+  { ad: "beyaz / dolgu hover", on: () => "#ffffff", arka: (_r, d) => d.navyFillHover, esik: 4.5 },
+  // ...ve buton kartın üstünde görünür kalmalı (koyu temada yüzeye kaybolmasın)
+  { ad: "dolgu zemini / kart", on: (r) => r.surface, arka: (_r, d) => d.navyFill, esik: 1.35 },
+  // Soluk vurgu zemini (bg/hover:bg-rehberim-accent-light) üstündeki mürekkep
+  { ad: "mürekkep / açık vurgu", on: (_r, d) => d.onAccentLight, arka: (r) => r.accentLight, esik: 4.5 },
+  // Marka SVG'si (logo, baykuş) zemine kaybolmamalı — WCAG 1.4.11 grafik eşiği
+  { ad: "marka SVG / sayfa", on: (_r, d) => d.markaNavy, arka: (r) => r.bg, esik: 3 },
+  { ad: "marka SVG / kart", on: (_r, d) => d.markaNavy, arka: (r) => r.surface, esik: 3 },
 ];
 
 let hata = 0;
@@ -62,7 +74,7 @@ let uyari = 0;
 for (const t of TEMALAR) {
   const satirlar = [];
   for (const k of KONTROLLER) {
-    const o = oran(k.on(t.renkler), k.arka(t.renkler));
+    const o = oran(k.on(t.renkler, t.turetilmis), k.arka(t.renkler, t.turetilmis));
     if (o < k.esik) {
       hata++;
       satirlar.push(`   ✗ ${k.ad}: ${o.toFixed(2)} (gereken ${k.esik})`);

@@ -7,6 +7,8 @@ import {
   type QuizRow,
   type SessionRow,
 } from "@/lib/tracking-core";
+// İstatistik pencerelerinin sınırı da TR gün başıdır (bkz. lib/zaman.ts).
+import { trPencereBaslangici } from "@/lib/zaman";
 
 export type { Stats } from "@/lib/tracking-core";
 
@@ -128,15 +130,16 @@ export async function getStats(): Promise<Stats> {
   const ctx = await getClientAndUser();
   if (!ctx) return emptyStats(isSupabaseConfigured());
 
-  // Son 60 günün oturumları (streak + haftalık için yeterli)
-  const since = new Date();
-  since.setDate(since.getDate() - 60);
+  // Son 60 TAM Türkiye günü (bugün dahil) — streak + haftalık için yeterli.
+  // Eskiden `since.setDate(getDate() - 60)` kullanılıyordu; bu "60 gün önce
+  // şu anki saat" demekti, en eski günü yarım bırakıyor ve sınırı sunucunun
+  // UTC gününe kaydırıyordu (seri yanlış kopuyordu).
+  const since = trPencereBaslangici(60);
 
   // Quiz sonuçları için 180 günlük pencere: LGS hazırlığı tek akademik yıl
   // içinde olduğundan öğrencinin tüm geçmişini kapsar (gösterilen değerler
-  // pratikte değişmez) ama sorgu yükü zamanla büyümez.
-  const quizSince = new Date();
-  quizSince.setDate(quizSince.getDate() - 180);
+  // pratikte değişmez) ama sorgu yükü zamanla büyümez. Sınır yine TR gün başı.
+  const quizSince = trPencereBaslangici(180);
 
   const [{ data: sessions }, { count: doneCount }, { data: quizzes }] =
     await Promise.all([

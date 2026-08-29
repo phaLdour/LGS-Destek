@@ -31,7 +31,7 @@ export async function POST(
   }
   const { id } = await params;
   const supabase = await createClient();
-  const { error } = await supabase.rpc("comp_finalize_match", {
+  const { error } = await supabase.rpc("comp_finalize_guvenli", {
     p_match_id: id,
   });
   if (error) {

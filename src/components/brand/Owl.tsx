@@ -62,31 +62,31 @@ export function OwlSvg({
       <defs>
         {/* Gövde derinliği: üstte canlı navy, altta hafif daha açık */}
         <linearGradient id="owl-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1B2A5A" />
-          <stop offset="60%" stopColor="#16244C" />
-          <stop offset="100%" stopColor="#13204A" />
+          <stop offset="0%" stopColor="var(--rb-marka-navy-acik, #1B2A5A)" />
+          <stop offset="60%" stopColor="var(--rb-marka-navy, #16244C)" />
+          <stop offset="100%" stopColor="var(--rb-marka-navy-koyu, #13204A)" />
         </linearGradient>
         {/* Kanat tonu */}
         <linearGradient id="owl-wing" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2A4380" />
-          <stop offset="100%" stopColor="#1F3060" />
+          <stop offset="0%" stopColor="var(--rb-marka-navy-acik, #2A4380)" />
+          <stop offset="100%" stopColor="var(--rb-marka-navy, #1F3060)" />
         </linearGradient>
         {/* Gaga küçük dolgu — düz turuncu yerine 2 tonlu */}
         <linearGradient id="owl-beak" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="100%" stopColor="#F59E0B" />
+          <stop offset="0%" stopColor="rgb(var(--rb-accent-light-ch, 251 191 36))" />
+          <stop offset="100%" stopColor="rgb(var(--rb-accent-ch, 245 158 11))" />
         </linearGradient>
       </defs>
 
       {/* kulak püskülleri — yumuşatılmış üçgenler */}
       <path
         d="M52 50 Q52 30 56 18 Q72 30 84 44 Q72 48 52 50 Z"
-        fill="#16244C"
+        fill="var(--rb-marka-navy, #16244C)"
         data-rb="navy"
       />
       <path
         d="M148 50 Q148 30 144 18 Q128 30 116 44 Q128 48 148 50 Z"
-        fill="#16244C"
+        fill="var(--rb-marka-navy, #16244C)"
         data-rb="navy"
       />
 
@@ -120,7 +120,7 @@ export function OwlSvg({
       />
 
       {/* yüz diski — hafif oval, içeride gölge ile derinlik */}
-      <ellipse cx="100" cy="86" rx="50" ry="42" fill="#1C2C5C" data-rb="navy-deep" />
+      <ellipse cx="100" cy="86" rx="50" ry="42" fill="color-mix(in srgb, var(--rb-marka-navy, #16244C) 70%, var(--rb-marka-navy-acik, #243A6E))" data-rb="navy-deep" />
       <ellipse
         cx="100"
         cy="78"
@@ -141,19 +141,19 @@ export function OwlSvg({
       {/* gaga gölge çizgisi */}
       <path
         d="M100 108 L100 117"
-        stroke="#B45309"
+        stroke="rgb(var(--rb-accent-deep-ch, 180 83 9))"
         strokeWidth="0.9"
         strokeLinecap="round"
         opacity="0.5"
       />
 
       {/* karın şeritleri — incelmiş, daha ince yuvarlatma */}
-      <rect x="84.5" y="120" width="8" height="40" rx="4" fill="#F59E0B" />
-      <rect x="107.5" y="120" width="8" height="40" rx="4" fill="#F59E0B" />
+      <rect x="84.5" y="120" width="8" height="40" rx="4" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
+      <rect x="107.5" y="120" width="8" height="40" rx="4" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
 
       {/* ayaklar */}
-      <rect x="80" y="174" width="9" height="14" rx="3" fill="#F59E0B" />
-      <rect x="111" y="174" width="9" height="14" rx="3" fill="#F59E0B" />
+      <rect x="80" y="174" width="9" height="14" rx="3" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
+      <rect x="111" y="174" width="9" height="14" rx="3" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
     </svg>
   );
 }
@@ -193,8 +193,8 @@ function Gozler({
           strokeLinecap="round"
         />
         {/* yanak allığı — sadece bu modda */}
-        <ellipse cx="62" cy="103" rx="9" ry="5" fill="#F59E0B" opacity="0.35" />
-        <ellipse cx="138" cy="103" rx="9" ry="5" fill="#F59E0B" opacity="0.35" />
+        <ellipse cx="62" cy="103" rx="9" ry="5" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.35" />
+        <ellipse cx="138" cy="103" rx="9" ry="5" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.35" />
       </g>
     );
   }
@@ -211,8 +211,8 @@ function Gozler({
           transform="translate(0,0)"
         />
         <path d="M100 84 A22 22 0 0 1 144 84 Z" fill="url(#owl-body)" />
-        <circle cx="78" cy="90" r="8" fill="#16244C" data-rb="navy" />
-        <circle cx="122" cy="90" r="8" fill="#16244C" data-rb="navy" />
+        <circle cx="78" cy="90" r="8" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
+        <circle cx="122" cy="90" r="8" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
       </g>
     );
   }
@@ -232,11 +232,11 @@ function Gozler({
       <circle cx="78" cy="84" r="22" fill="#FBFCFF" />
       <circle cx="122" cy="84" r="22" fill="#FBFCFF" />
       {/* iris ışıltısı — turuncu halka (markanın aksenti) */}
-      <circle cx="78" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
-      <circle cx="122" cy="84" r="14" fill="#F59E0B" opacity="0.18" />
+      <circle cx="78" cy="84" r="14" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.18" />
+      <circle cx="122" cy="84" r="14" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.18" />
       {/* pupil */}
-      <circle cx={78 + dx} cy={84 + dy} r={pupilR} fill="#16244C" data-rb="navy" />
-      <circle cx={122 + dx} cy={84 + dy} r={pupilR} fill="#16244C" data-rb="navy" />
+      <circle cx={78 + dx} cy={84 + dy} r={pupilR} fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
+      <circle cx={122 + dx} cy={84 + dy} r={pupilR} fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
       {/* ana catchlight (büyük) */}
       <circle cx={82 + dx} cy={80 + dy} r="3.6" fill="#FFFFFF" />
       <circle cx={126 + dx} cy={80 + dy} r="3.6" fill="#FFFFFF" />
@@ -270,29 +270,29 @@ export function OwlPointing({
       <title>{title}</title>
       <defs>
         <linearGradient id="owl2-body" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1B2A5A" />
-          <stop offset="60%" stopColor="#16244C" />
-          <stop offset="100%" stopColor="#13204A" />
+          <stop offset="0%" stopColor="var(--rb-marka-navy-acik, #1B2A5A)" />
+          <stop offset="60%" stopColor="var(--rb-marka-navy, #16244C)" />
+          <stop offset="100%" stopColor="var(--rb-marka-navy-koyu, #13204A)" />
         </linearGradient>
         <linearGradient id="owl2-wing" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#2A4380" />
-          <stop offset="100%" stopColor="#1F3060" />
+          <stop offset="0%" stopColor="var(--rb-marka-navy-acik, #2A4380)" />
+          <stop offset="100%" stopColor="var(--rb-marka-navy, #1F3060)" />
         </linearGradient>
         <linearGradient id="owl2-beak" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FBBF24" />
-          <stop offset="100%" stopColor="#F59E0B" />
+          <stop offset="0%" stopColor="rgb(var(--rb-accent-light-ch, 251 191 36))" />
+          <stop offset="100%" stopColor="rgb(var(--rb-accent-ch, 245 158 11))" />
         </linearGradient>
       </defs>
 
       {/* kulak püskülleri (yumuşatılmış, hafif sağa dönük) */}
       <path
         d="M55 52 Q55 32 58 18 Q74 32 88 46 Q72 50 55 52 Z"
-        fill="#16244C"
+        fill="var(--rb-marka-navy, #16244C)"
         data-rb="navy"
       />
       <path
         d="M151 52 Q151 32 148 18 Q132 32 118 44 Q134 50 151 52 Z"
-        fill="#16244C"
+        fill="var(--rb-marka-navy, #16244C)"
         data-rb="navy"
       />
 
@@ -308,7 +308,7 @@ export function OwlPointing({
       {/* kanat ucu turuncu vurgu (yumuşatılmış) */}
       <path
         d="M204 122 C214 126 220 132 224 140 C216 138 209 136 202 132 Z"
-        fill="#F59E0B"
+        fill="rgb(var(--rb-accent-ch, 245 158 11))"
         opacity="0.95"
       />
 
@@ -336,18 +336,18 @@ export function OwlPointing({
       />
 
       {/* yüz diski */}
-      <ellipse cx="104" cy="88" rx="50" ry="42" fill="#1C2C5C" data-rb="navy-deep" />
+      <ellipse cx="104" cy="88" rx="50" ry="42" fill="color-mix(in srgb, var(--rb-marka-navy, #16244C) 70%, var(--rb-marka-navy-acik, #243A6E))" data-rb="navy-deep" />
       <ellipse cx="104" cy="80" rx="46" ry="32" fill="#ffffff" opacity="0.04" />
 
       {/* gözler — sağa bakıyor (sclera) */}
       <circle cx="82" cy="86" r="22" fill="#FBFCFF" />
       <circle cx="126" cy="86" r="22" fill="#FBFCFF" />
       {/* iris ışıltısı */}
-      <circle cx="89" cy="86" r="14" fill="#F59E0B" opacity="0.18" />
-      <circle cx="133" cy="86" r="14" fill="#F59E0B" opacity="0.18" />
+      <circle cx="89" cy="86" r="14" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.18" />
+      <circle cx="133" cy="86" r="14" fill="rgb(var(--rb-accent-ch, 245 158 11))" opacity="0.18" />
       {/* pupil */}
-      <circle cx="89" cy="86" r="11" fill="#16244C" data-rb="navy" />
-      <circle cx="133" cy="86" r="11" fill="#16244C" data-rb="navy" />
+      <circle cx="89" cy="86" r="11" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
+      <circle cx="133" cy="86" r="11" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
       {/* ana catchlight */}
       <circle cx="93" cy="82" r="3.6" fill="#FFFFFF" />
       <circle cx="137" cy="82" r="3.6" fill="#FFFFFF" />
@@ -362,19 +362,19 @@ export function OwlPointing({
       />
       <path
         d="M104 110 L104 119"
-        stroke="#B45309"
+        stroke="rgb(var(--rb-accent-deep-ch, 180 83 9))"
         strokeWidth="0.9"
         strokeLinecap="round"
         opacity="0.5"
       />
 
       {/* karın şeritleri */}
-      <rect x="88.5" y="122" width="8" height="40" rx="4" fill="#F59E0B" />
-      <rect x="111.5" y="122" width="8" height="40" rx="4" fill="#F59E0B" />
+      <rect x="88.5" y="122" width="8" height="40" rx="4" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
+      <rect x="111.5" y="122" width="8" height="40" rx="4" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
 
       {/* ayaklar */}
-      <rect x="84" y="176" width="9" height="14" rx="3" fill="#F59E0B" />
-      <rect x="115" y="176" width="9" height="14" rx="3" fill="#F59E0B" />
+      <rect x="84" y="176" width="9" height="14" rx="3" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
+      <rect x="115" y="176" width="9" height="14" rx="3" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
     </svg>
   );
 }

@@ -37,3 +37,29 @@ export function trBugunBaslangici(simdi: Date = new Date()): Date {
 export function trGunGeri(simdi: Date, gun: number): Date {
   return new Date(simdi.getTime() - gun * 24 * 60 * 60 * 1000);
 }
+
+/**
+ * `gun` gün önceki TR gününün BAŞLANGICI (TR gece yarısı) — UTC Date olarak.
+ * Türkiye 2016'dan beri yaz saati uygulamadığı için gün uzunluğu sabittir;
+ * bu yüzden tam gün çıkarmak güvenlidir.
+ */
+export function trGunBasiOnce(gun: number, simdi: Date = new Date()): Date {
+  return new Date(trBugunBaslangici(simdi).getTime() - gun * 24 * 60 * 60 * 1000);
+}
+
+/**
+ * `gunSayisi` günlük bir istatistik penceresinin başlangıcı.
+ *
+ * NEDEN: eskiden pencereler `new Date(); d.setDate(d.getDate() - 60)` ile
+ * kuruluyordu. Bu, "60 gün önce ŞU ANKİ saat" demektir — yani en eski gün
+ * yarım kalır (o günün erken saatlerindeki çalışma sorgudan düşer) ve sınır
+ * sunucunun UTC gününe kayar. Sonuç: 60 günlük seri hatalı kopar, "bir günde
+ * en çok dakika" eksik hesaplanır. Doğrusu, BUGÜN dahil `gunSayisi` tam TR
+ * gününü kapsamaktır: bugünün TR gece yarısından (gunSayisi - 1) gün geriye.
+ */
+export function trPencereBaslangici(
+  gunSayisi: number,
+  simdi: Date = new Date(),
+): Date {
+  return trGunBasiOnce(Math.max(0, gunSayisi - 1), simdi);
+}

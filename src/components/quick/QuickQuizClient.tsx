@@ -128,18 +128,31 @@ export function QuickQuizClient({
     baykusaTepki(ok, yeniGecmis);
 
     if (index + 1 >= pool.length) {
-      // havuz bitti → exhausted moduna geç (Yeniden başlat seçeneği)
-      finishSession(true);
+      // Havuz bitti → exhausted moduna geç (Yeniden başlat seçeneği).
+      // DİKKAT: az önceki setHistory henüz uygulanmadığı için güncel diziyi
+      // AÇIKÇA geçiyoruz; yoksa son cevaplanan soru istatistiğe hiç yazılmaz.
+      finishSession(true, yeniGecmis);
     } else {
       setIndex((i) => i + 1);
     }
   }
 
-  function finishSession(exhausted = false) {
+  function finishSession(
+    exhausted = false,
+    /** Güncel geçmiş — state henüz güncellenmemiş olabileceği için dışarıdan
+     *  verilebilir (havuz tükendiğinde son cevabı kaybetmemek için). */
+    gecmis: typeof history = history,
+  ) {
     if (saved.current) return;
     saved.current = true;
     const dur = (Date.now() - startMs) / 1000;
-    const total = history.length + (exhausted ? 0 : 0); // history zaten son cevabı içerir
+    const total = gecmis.length;
+    // Tek soru bile cevaplanmadıysa istatistiğe boş kayıt yazma —
+    // "çözülen test" yalnız gerçekten çözülenleri saymalı.
+    if (total === 0) {
+      setPhase(exhausted ? "exhausted" : "done");
+      return;
+    }
     void saveQuizResult({
       subjectSlug:
         scope.kind === "karma-all"
@@ -153,8 +166,8 @@ export function QuickQuizClient({
           : scope.kind === "karma-subject"
             ? "__karma__"
             : "__karma__",
-      correct: history.filter((h) => h.correct).length,
-      wrong: history.filter((h) => !h.correct).length,
+      correct: gecmis.filter((h) => h.correct).length,
+      wrong: gecmis.filter((h) => !h.correct).length,
       total,
       durationSeconds: dur,
     });
@@ -398,7 +411,12 @@ export function QuickQuizClient({
           {current.subjectName} · {current.topicName}
         </p>
         <span className="rounded-full bg-rehberim-muted px-2.5 py-1 text-xs font-semibold text-rehberim-navy/60">
-          Çözülen: {history.length}
+          {/* wrongMode'da sayaç, GÖSTERİLEN listenin uzunluğundan okunur
+              (pool.length). Böylece "N soru" ile ekrandaki kayıtlar tek
+              kaynaktan gelir; dashboard'daki hayalet sayaç tekrarlanmaz. */}
+          {wrongMode
+            ? `${index + 1} / ${pool.length}`
+            : `Çözülen: ${history.length}`}
         </span>
       </div>
 

@@ -104,6 +104,8 @@ export function ChatPanel({
         className="flex items-center gap-2 border-t border-rehberim-border bg-white p-3"
       >
         <input
+          // Placeholder etiket yerine geçmez → erişilebilir ad eklendi.
+          aria-label="Mesajın"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Bir şey sor ya da nereye gitmek istediğini yaz…"

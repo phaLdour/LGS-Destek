@@ -10,6 +10,26 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
  */
 
 const STORAGE_KEY = "rehberim:wrong-answers";
+/**
+ * "Ustalaşıldı" mezar taşları: {id: ustalasmaZamani(ms)}.
+ *
+ * NEDEN GEREKLİ (diriltme hatası): kayıt ustalaşınca hem yerelden hem
+ * Supabase'ten siliniyordu. Ama silme yalnız O CİHAZDA gerçekleşiyordu ve
+ * `hydrateWrongFromSupabase()` iki yönlü birleştirme yapıyordu:
+ *
+ *   - A cihazında ustalaşıp silindi → B cihazının localStorage'ında kayıt
+ *     duruyor → B'nin hydrate'i "uzakta yok, yerelde var" deyip kaydı
+ *     Supabase'e GERİ YAZIYORDU. Soru listeye geri geliyordu.
+ *   - Çevrimdışıyken/oturum düşmüşken `deleteWrongFromSupabase` sessizce
+ *     başarısız oluyor, bir sonraki hydrate satırı yerele geri taşıyordu.
+ *
+ * Mezar taşı, "bu kayıt bilerek silindi" bilgisini saklar; silme tarihinden
+ * ESKİ uzak kayıtlar diriltilmez. Soru gerçekten tekrar yanlış yapılırsa
+ * (saveWrong) mezar taşı kalkar ve kayıt normal şekilde geri döner.
+ */
+const MEZAR_KEY = "rehberim:wrong-mastered";
+/** Mezar taşları sonsuza kadar durmasın; 180 gün sonra temizlenir. */
+const MEZAR_OMRU_MS = 180 * 24 * 60 * 60 * 1000;
 let hydrated = false;
 
 export type WrongRecord = {
@@ -32,8 +52,10 @@ export type WrongRecord = {
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const THREE_DAYS_MS = 3 * ONE_DAY_MS;
+// Ustalaşma eşiği tek yerde tanımlıdır: istemci ve sunucu sayacı ayrışmasın.
+import { USTALASMA_ESIGI } from "@/lib/hataSayaci";
 
-type Store = Record<string, WrongRecord>;
+export type Store = Record<string, WrongRecord>;
 
 function read(): Store {
   if (typeof window === "undefined") return {};
@@ -55,6 +77,52 @@ function write(store: Store) {
   }
 }
 
+// ── Mezar taşları (silinmiş/ustalaşılmış kayıtlar) ───────────────────
+
+type Mezarlik = Record<string, number>;
+
+/** Mezar taşlarını okur; süresi dolanları ayıklar. */
+function mezarlikOku(): Mezarlik {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(MEZAR_KEY);
+    if (!raw) return {};
+    const ham = JSON.parse(raw) as Mezarlik;
+    const sinir = Date.now() - MEZAR_OMRU_MS;
+    const temiz: Mezarlik = {};
+    for (const [id, ts] of Object.entries(ham)) {
+      if (typeof ts === "number" && ts >= sinir) temiz[id] = ts;
+    }
+    return temiz;
+  } catch {
+    return {};
+  }
+}
+
+function mezarlikYaz(m: Mezarlik) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(MEZAR_KEY, JSON.stringify(m));
+  } catch {
+    // kota dolu vb.
+  }
+}
+
+/** Kaydı "bilerek silindi" diye işaretler (ustalaşma anıyla birlikte). */
+function mezaraKoy(id: string) {
+  const m = mezarlikOku();
+  m[id] = Date.now();
+  mezarlikYaz(m);
+}
+
+/** Soru yeniden yanlış yapıldı → mezar taşı kalkar, kayıt geçerli olur. */
+function mezardanCikar(id: string) {
+  const m = mezarlikOku();
+  if (m[id] === undefined) return;
+  delete m[id];
+  mezarlikYaz(m);
+}
+
 /** Yanlış cevap kaydı; varsa sayacı artırır, doğru serisini sıfırlar. */
 export function saveWrong(id: string) {
   const s = read();
@@ -68,6 +136,9 @@ export function saveWrong(id: string) {
   };
   s[id] = next;
   write(s);
+  // Soru yeniden yanlış yapıldı: eski "ustalaşıldı" mezar taşı geçersizdir,
+  // yoksa hydrate bu yeni kaydı diriltilmiş sanıp eleyebilirdi.
+  mezardanCikar(id);
   void pushWrongToSupabase(id, next);
 }
 
@@ -80,9 +151,12 @@ export function markCorrect(id: string) {
   const rec = s[id];
   if (!rec) return; // zaten havuzda değil
   const nextStreak = rec.correctStreak + 1;
-  if (nextStreak >= 2) {
+  if (nextStreak >= USTALASMA_ESIGI) {
     delete s[id];
-    void deleteWrongFromSupabase(id);
+    // Mezar taşı ÖNCE konur: uzaktaki işaretleme başarısız olsa bile
+    // (çevrimdışı, oturum düşmüş) bir sonraki hydrate kaydı geri getiremez.
+    mezaraKoy(id);
+    void markMasteredInSupabase(id, rec);
   } else {
     // 1. doğru cevap: 3 gün ileri it
     const next: WrongRecord = {
@@ -119,32 +193,29 @@ function dueTs(rec: WrongRecord): number {
  */
 export function getWrongIds(filter: WrongFilter = "all"): Set<string> {
   const s = read();
-  if (filter === "all") return new Set(Object.keys(s));
-  const out = new Set<string>();
-  if (filter === "today") {
-    const start = todayStartMs();
-    for (const [id, rec] of Object.entries(s)) {
-      if (rec.lastWrongAt >= start) out.add(id);
-    }
-    return out;
-  }
-  // "due"
   const now = Date.now();
+  const start = todayStartMs();
+  const out = new Set<string>();
   for (const [id, rec] of Object.entries(s)) {
-    if (dueTs(rec) <= now) out.add(id);
+    // Ustalaşmış kayıt hiçbir filtrede gösterilmez: silinmesi gecikmiş olsa
+    // bile (çevrimdışı vb.) öğrenciye "hâlâ yanlışın" denmemeli.
+    if (rec.correctStreak >= USTALASMA_ESIGI) continue;
+    if (filter === "today" && rec.lastWrongAt < start) continue;
+    if (filter === "due" && dueTs(rec) > now) continue;
+    out.add(id);
   }
   return out;
 }
 
 /** Havuzdaki yanlış soru sayısı (filtreli veya tümü). */
 export function getWrongCount(filter: WrongFilter = "all"): number {
-  if (filter === "all") return Object.keys(read()).length;
   return getWrongIds(filter).size;
 }
 
-/** Tüm havuzu temizle (debug/profil için). */
+/** Tüm havuzu temizle (debug/profil için). Mezar taşları da sıfırlanır. */
 export function clearWrongPool() {
   write({});
+  mezarlikYaz({});
 }
 
 // ── Supabase senkron (arka plan, fire & forget) ──────────────────────
@@ -175,7 +246,21 @@ async function pushWrongToSupabase(id: string, rec: WrongRecord) {
   }
 }
 
-async function deleteWrongFromSupabase(id: string) {
+/**
+ * Ustalaşan soruyu uzakta İŞARETLER (silmez) — sunucu tarafı mezar taşı.
+ *
+ * Eskiden satır Supabase'ten SİLİNİYORDU. Silmek, cihazlar arası senkronda
+ * diriltmeyi kaçınılmaz kılıyordu: B cihazının localStorage'ında kayıt hâlâ
+ * duruyorsa hydrate "uzakta yok, yerelde var" deyip satırı geri yazıyordu.
+ * "Yok" ile "bilerek kaldırıldı" ayırt edilemiyordu.
+ *
+ * Artık satır `correct_streak = 2` ile KALIR. Bu, tüm cihazların görebildiği
+ * kalıcı bir "ustalaşıldı" işaretidir: hiçbir cihaz onu listeye geri
+ * getiremez (bkz. `birlestir` → DİRİLTME ENGELİ 2) ve sayaçlar bu satırı
+ * saymaz (bkz. lib/hataSayaci.ts). Soru gerçekten yeniden yanlış yapılırsa
+ * `saveWrong` streak'i 0'a çeker ve kayıt normal şekilde geri döner.
+ */
+async function markMasteredInSupabase(id: string, rec: WrongRecord) {
   if (!isSupabaseConfigured()) return;
   try {
     const supabase = createClient();
@@ -183,19 +268,145 @@ async function deleteWrongFromSupabase(id: string) {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase
-      .from("wrong_answers")
-      .delete()
-      .eq("user_id", user.id)
-      .eq("question_key", id);
+    await supabase.from("wrong_answers").upsert(
+      {
+        user_id: user.id,
+        question_key: id,
+        wrong_count: rec.wrongCount,
+        correct_streak: USTALASMA_ESIGI,
+        last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+        next_due_at: null,
+      },
+      { onConflict: "user_id,question_key" },
+    );
   } catch {
     // sessiz
   }
 }
 
+/** Supabase'ten gelen ham satır. */
+export type UzakHataSatiri = {
+  question_key: string;
+  wrong_count: number;
+  correct_streak: number;
+  last_wrong_at: string;
+  next_due_at: string | null;
+};
+
+/**
+ * Birleştirme kararı — SAF fonksiyon (I/O yok), bu yüzden test edilebilir.
+ *
+ * Üç diriltme engeli burada uygulanır; ayrıntılı gerekçe için MEZAR_KEY
+ * yorumuna bakın.
+ */
+export function birlestir(
+  yerel: Store,
+  mezarlik: Record<string, number>,
+  uzak: UzakHataSatiri[],
+): {
+  birlesik: Store;
+  /** Uzakta "ustalaşıldı" diye işaretlenecek kayıtlar (silinmez). */
+  uzaktaUstalasacak: [string, WrongRecord][];
+  /** Yerelde olup uzakta olmayan, push edilecek kayıtlar. */
+  pushEdilecek: [string, WrongRecord][];
+  /** Artık gereksiz kalan (soru yeniden yanlış yapılmış) mezar taşları. */
+  kalkacakMezarlar: string[];
+  /** Uzakta ustalaşmış görünen, bu cihazda da mezara konacak kayıtlar. */
+  yeniMezarlar: string[];
+} {
+  const birlesik: Store = { ...yerel };
+  const uzaktaUstalasacak: [string, WrongRecord][] = [];
+  const kalkacakMezarlar: string[] = [];
+  const yeniMezarlar: string[] = [];
+  const aktifMezarlar = new Set(Object.keys(mezarlik));
+
+  for (const row of uzak) {
+    const remoteTs = new Date(row.last_wrong_at).getTime();
+
+    // DİRİLTME ENGELİ 1 — yerel mezar taşı.
+    // Kayıt bu cihazda ustalaşıldığı için kaldırılmışsa ve uzaktaki satır
+    // ustalaşmadan ESKİYSE, o satır bayattır: geri alınmaz ve uzakta da
+    // "ustalaşıldı" diye işaretlenir (işaretleme isteği daha önce düşmüş
+    // olabilir). Ustalaşmadan SONRA yeni bir yanlış yapılmışsa
+    // (remoteTs > mezarTs) kayıt gerçekten geçerlidir; mezar taşı kalkar.
+    const mezarTs = mezarlik[row.question_key];
+    if (mezarTs !== undefined) {
+      if (remoteTs <= mezarTs) {
+        delete birlesik[row.question_key];
+        if (row.correct_streak < USTALASMA_ESIGI) {
+          uzaktaUstalasacak.push([
+            row.question_key,
+            {
+              wrongCount: row.wrong_count,
+              correctStreak: USTALASMA_ESIGI,
+              lastWrongAt: remoteTs,
+            },
+          ]);
+        }
+        continue;
+      }
+      kalkacakMezarlar.push(row.question_key);
+      aktifMezarlar.delete(row.question_key);
+    }
+
+    // DİRİLTME ENGELİ 2 — uzak (sunucu) mezar taşı.
+    // correct_streak >= 2, "bu soru ustalaşıldı" demektir; hangi cihazda
+    // olursa olsun havuza geri alınmaz. Bu işaret cihazlar arasında
+    // paylaşıldığı için, başka bir cihazın bayat localStorage'ı da soruyu
+    // dirilteMEZ (aşağıdaki pushEdilecek filtresiyle birlikte).
+    if (row.correct_streak >= USTALASMA_ESIGI) {
+      delete birlesik[row.question_key];
+      yeniMezarlar.push(row.question_key);
+      aktifMezarlar.add(row.question_key);
+      continue;
+    }
+
+    const yerelKayit = yerel[row.question_key];
+    if (!yerelKayit || yerelKayit.lastWrongAt <= remoteTs) {
+      // Yerel kayıt daha ileri bir doğru serisindeyse onu koru: uzak satır,
+      // henüz senkron olmamış doğru cevabı geri almamalı (aksi hâlde doğru
+      // cevaplanan soru yanlışlar listesinden düşmüyordu).
+      const yereldenIleri =
+        yerelKayit !== undefined && yerelKayit.correctStreak > row.correct_streak;
+      birlesik[row.question_key] = {
+        wrongCount: row.wrong_count,
+        correctStreak: yereldenIleri
+          ? yerelKayit.correctStreak
+          : row.correct_streak,
+        lastWrongAt: remoteTs,
+        nextDueAt: yereldenIleri
+          ? (yerelKayit.nextDueAt ?? yerelKayit.lastWrongAt + ONE_DAY_MS)
+          : row.next_due_at
+            ? new Date(row.next_due_at).getTime()
+            : remoteTs + ONE_DAY_MS,
+      };
+    }
+  }
+
+  // DİRİLTME ENGELİ 3 — mezarlıktakiler ve ustalaşmışlar push EDİLMEZ.
+  // Eskiden bu adım, başka bir cihazda ustalaşılıp silinmiş kaydı "uzakta
+  // yok" diye Supabase'e geri yazıyor ve soruyu listeye diriltiyordu.
+  const uzakAnahtarlar = new Set(uzak.map((r) => r.question_key));
+  const pushEdilecek = Object.entries(yerel).filter(
+    ([k, rec]) =>
+      !uzakAnahtarlar.has(k) &&
+      !aktifMezarlar.has(k) &&
+      rec.correctStreak < USTALASMA_ESIGI,
+  );
+
+  return {
+    birlesik,
+    uzaktaUstalasacak,
+    pushEdilecek,
+    kalkacakMezarlar,
+    yeniMezarlar,
+  };
+}
+
 /**
  * Mount'ta çağrılır: uzaktaki kayıtları yerelle birleştirir.
- * Çatışma çözümü: hangi kayıt daha yeni (lastWrongAt) ise o kazanır.
+ * Çatışma çözümü: hangi kayıt daha yeni (lastWrongAt) ise o kazanır —
+ * ama bilerek silinmiş kayıtlar asla dirilmez (bkz. `birlestir`).
  */
 export async function hydrateWrongFromSupabase(): Promise<void> {
   if (hydrated) return;
@@ -212,37 +423,24 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
       .select(
         "question_key, wrong_count, correct_streak, last_wrong_at, next_due_at",
       );
-    const local = read();
-    const merged: Store = { ...local };
-    for (const row of (data ?? []) as {
-      question_key: string;
-      wrong_count: number;
-      correct_streak: number;
-      last_wrong_at: string;
-      next_due_at: string | null;
-    }[]) {
-      const remoteTs = new Date(row.last_wrong_at).getTime();
-      const localRec = local[row.question_key];
-      if (!localRec || localRec.lastWrongAt <= remoteTs) {
-        merged[row.question_key] = {
-          wrongCount: row.wrong_count,
-          correctStreak: row.correct_streak,
-          lastWrongAt: remoteTs,
-          nextDueAt: row.next_due_at
-            ? new Date(row.next_due_at).getTime()
-            : remoteTs + ONE_DAY_MS,
-        };
-      }
-    }
-    write(merged);
-    // yerelde olup uzakta olmayanları push et
-    const remoteKeys = new Set(
-      (data ?? []).map((r: { question_key: string }) => r.question_key),
-    );
-    const missing = Object.entries(local).filter(([k]) => !remoteKeys.has(k));
-    if (missing.length > 0) {
+
+    const {
+      birlesik,
+      uzaktaUstalasacak,
+      pushEdilecek,
+      kalkacakMezarlar,
+      yeniMezarlar,
+    } = birlestir(read(), mezarlikOku(), (data ?? []) as UzakHataSatiri[]);
+
+    write(birlesik);
+    for (const k of kalkacakMezarlar) mezardanCikar(k);
+    // Uzakta ustalaşmış görünen kayıtlar bu cihazda da mezara konur; böylece
+    // bu cihaz onları bir daha push etmeye çalışmaz.
+    for (const k of yeniMezarlar) mezaraKoy(k);
+
+    if (pushEdilecek.length > 0) {
       await supabase.from("wrong_answers").upsert(
-        missing.map(([k, rec]) => ({
+        pushEdilecek.map(([k, rec]) => ({
           user_id: user.id,
           question_key: k,
           wrong_count: rec.wrongCount,
@@ -251,6 +449,22 @@ export async function hydrateWrongFromSupabase(): Promise<void> {
           next_due_at: rec.nextDueAt
             ? new Date(rec.nextDueAt).toISOString()
             : null,
+        })),
+        { onConflict: "user_id,question_key" },
+      );
+    }
+
+    // Bayat uzak satırları "ustalaşıldı" diye işaretle (silmek yerine):
+    // işaret kalıcıdır ve tüm cihazlarda diriltmeyi engeller.
+    if (uzaktaUstalasacak.length > 0) {
+      await supabase.from("wrong_answers").upsert(
+        uzaktaUstalasacak.map(([k, rec]) => ({
+          user_id: user.id,
+          question_key: k,
+          wrong_count: rec.wrongCount,
+          correct_streak: USTALASMA_ESIGI,
+          last_wrong_at: new Date(rec.lastWrongAt).toISOString(),
+          next_due_at: null,
         })),
         { onConflict: "user_id,question_key" },
       );

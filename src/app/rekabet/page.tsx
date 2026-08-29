@@ -183,7 +183,7 @@ export default async function RekabetPage() {
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <Link
           href={signedIn ? "/rekabet/eslesme" : "/login"}
-          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-amber-500 p-5 text-rehberim-navy shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
+          className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-rehberim-accent/30 bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark p-5 text-rehberim-on-accent shadow-card transition-all duration-300 ease-smooth hover:-translate-y-[2px] hover:shadow-soft"
         >
           <span
             aria-hidden

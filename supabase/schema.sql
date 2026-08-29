@@ -1089,7 +1089,11 @@ grant execute on function public.comp_tick_queue(text[]) to authenticated;
 
 -- comp_queue_reset: kullanıcının kuyruk satırını siler, aktif maç varsa abandoned'a alır.
 -- "Baştan başla" butonu için: takılı kalmış kuyruk + arta kalan eski aktif maç temizliği.
-create or replace function public.comp_queue_reset()
+-- NOT: bu sürüm FAZ 12'de güvenlik gerekçesiyle değiştirildi (aktif maçtan
+-- cezasız kaçış açığı). Dönüş tipi void → uuid olduğu için dosya baştan
+-- çalıştırıldığında bu create'in de düşürmeye ihtiyacı var.
+drop function if exists public.comp_queue_reset();
+create function public.comp_queue_reset()
 returns void
 language plpgsql security definer
 as $$
@@ -2723,3 +2727,1019 @@ grant execute on function public.comp_set_nickname(text) to authenticated;
 grant execute on function public.ai_onbellek_ara(text) to anon, authenticated;
 grant execute on function public.ai_onbellek_yaz(text, text, text, text, text) to authenticated;
 grant execute on function public.uygunsuz_metin(text) to anon, authenticated;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 12 — REKABET GÜVENLİK DÜZELTMELERİ
+-- ════════════════════════════════════════════════════════════════════
+-- Denetimde bulunan ve yerel Postgres'te kanıtlanan açıklar:
+--   1. comp_finalize_match herkese açıktı ve çağıranı doğrulamıyordu →
+--      biri, rakibi henüz 2 soru cevaplamışken maçı bitirip onu 0'a
+--      düşürebiliyordu.
+--   2. comp_queue RLS'i `for all` idi → oyuncu kendi satırına tier 0
+--      yazıp acemilerle eşleşebiliyor, bir de fazla puan alıyordu.
+--   3. comp_queue_reset aktif maçı cezasız 'abandoned' yapıyordu →
+--      kaybeden "Baştan başla"ya basıp kaçabiliyordu (üstelik maç
+--      sayfası ile lobi arasında sonsuz yönlendirme döngüsü doğuyordu).
+--   4. match_make çağıranı doğrulamıyor ve kendi kuyruk satırını
+--      kilitlemiyordu → aynı oyuncu iki maça birden düşebiliyordu.
+--   5. comp_join_queue'daki "bayat satır" temizliği kullanıcı filtresiz
+--      idi → başkasının 5 dakikadan eski kuyruk satırını siliyor, o
+--      oyuncu sonsuza dek "rakip aranıyor"da kalıyordu.
+--   6. comp_claim_abandoned yalnız GET yoklamasından beslenen presence'a
+--      bakıyordu → soru cevaplayan aktif rakip "terk etmiş" sayılabiliyor;
+--      ayrıca set_config ile kimlik taklidi kırılgandı.
+--
+-- Idempotenttir: SQL editöründe tekrar tekrar çalıştırılabilir.
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.1  comp_queue RLS: yazma hakkı kalktı (tier sahteciliği kapandı)
+-- ────────────────────────────────────────────────────────────────────
+-- Kuyruğa yazma artık YALNIZ security definer comp_join_queue üzerinden.
+-- İstemciye kalan: kendi satırını okumak ve silmek (kuyruktan çıkma).
+drop policy if exists "own queue row" on public.comp_queue;
+drop policy if exists "own queue row select" on public.comp_queue;
+drop policy if exists "own queue row delete" on public.comp_queue;
+create policy "own queue row select" on public.comp_queue
+  for select to authenticated
+  using (auth.uid() = user_id);
+create policy "own queue row delete" on public.comp_queue
+  for delete to authenticated
+  using (auth.uid() = user_id);
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.2  match_make: yalnız dahili çağrı + kendi satırını kilitle
+-- ────────────────────────────────────────────────────────────────────
+revoke execute on function public.match_make(uuid, int, int, text, text[], int)
+  from public, anon, authenticated;
+
+create or replace function public.match_make(
+  p_user_id        uuid,
+  p_season_id      int,
+  p_tier           int,
+  p_subject_filter text,
+  p_question_ids   text[],
+  p_age_seconds    int default 0
+) returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_opponent uuid;
+  v_match_id uuid;
+  v_opp_tier int;
+  v_now      timestamptz := now();
+  v_band     int;
+  v_self     uuid;
+begin
+  -- FAZ 12: önce KENDİ kuyruk satırını kilitle. İki sekmeden aynı anda
+  -- tick atan oyuncu, kilitsizken iki ayrı maça birden düşebiliyordu.
+  -- Satır yoksa (başka bir istek bizi çoktan eşleştirmiş) sessizce çık.
+  select q.user_id into v_self
+    from public.comp_queue q
+   where q.user_id = p_user_id
+   for update;
+  if v_self is null then
+    return null;
+  end if;
+
+  -- Tier rampı (yaşa göre): kuyrukta uzun bekleyen için arama bandını genişlet
+  --   <=15s → 0 (sadece aynı tier) · <=45s → 1 · <=90s → 2 · >90s → 3
+  v_band := case
+    when p_age_seconds <= 15 then 0
+    when p_age_seconds <= 45 then 1
+    when p_age_seconds <= 90 then 2
+    else 3
+  end;
+
+  -- FAZ 12: tier'ı çağıranın iddiasından değil, kuyruk satırından
+  -- (comp_join_queue'nun comp_ranks'ten yazdığı değerden) okuyoruz.
+  select q.tier into p_tier from public.comp_queue q where q.user_id = p_user_id;
+
+  -- En yakın tier'dan başla, eşitlikte en eski beklemiş kazansın.
+  -- skip locked: kilitli rakip satırı atlanır → deadlock oluşmaz.
+  select q.user_id, q.tier into v_opponent, v_opp_tier
+    from public.comp_queue q
+   where q.user_id <> p_user_id
+     and q.season_id = p_season_id
+     and abs(q.tier - p_tier) <= v_band
+     and coalesce(q.subject_filter, '') = coalesce(p_subject_filter, '')
+   order by abs(q.tier - p_tier) asc, q.joined_at asc
+   for update skip locked
+   limit 1;
+
+  if v_opponent is null then
+    return null;
+  end if;
+
+  insert into public.comp_matches (
+    season_id, player1_id, player2_id,
+    p1_tier_at_start, p2_tier_at_start,
+    question_ids, subject_filter,
+    deadline_at
+  )
+  values (
+    p_season_id, p_user_id, v_opponent,
+    p_tier, v_opp_tier,
+    p_question_ids, p_subject_filter,
+    v_now + interval '10 minutes'
+  )
+  returning id into v_match_id;
+
+  delete from public.comp_queue
+   where user_id in (p_user_id, v_opponent);
+
+  return v_match_id;
+end;
+$$;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.3  comp_join_queue: bayat satır temizliği artık başkasını vurmuyor
+-- ────────────────────────────────────────────────────────────────────
+create or replace function public.comp_join_queue(
+  p_subject_filter text,
+  p_question_ids text[]
+) returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_season_id int;
+  v_tier int;
+  v_active_id uuid;
+  v_match_id uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+
+  -- FAZ 12: eski hâli `delete from comp_queue where joined_at < now() - 5min`
+  -- idi — kullanıcı filtresi YOKTU. Kuyrukta 5 dakikadır sabırla bekleyen
+  -- başka bir öğrencinin satırını siliyordu; o öğrencinin tick'i artık
+  -- kuyrukta satır bulamadığı için sonsuza dek "rakip aranıyor"da kalıyordu.
+  -- Artık yalnız KENDİ bayat satırımız (zaten hemen altında üzerine
+  -- yazılacak) ve gerçekten terk edilmiş (30dk+) satırlar temizlenir.
+  delete from public.comp_queue
+   where joined_at < now() - interval '30 minutes';
+
+  select s.out_season_id, s.out_tier into v_season_id, v_tier
+    from public.comp_ensure_season_and_rank(auth.uid()) s;
+
+  select id into v_active_id
+    from public.comp_matches
+   where (player1_id = auth.uid() or player2_id = auth.uid())
+     and status = 'active'
+     and deadline_at > now()
+   limit 1;
+  if v_active_id is not null then
+    return v_active_id;
+  end if;
+
+  insert into public.comp_queue
+    (user_id, season_id, tier, subject_filter, expand_at)
+  values
+    (auth.uid(), v_season_id, v_tier, p_subject_filter, now() + interval '15 seconds')
+  on conflict (user_id) do update set
+    season_id = excluded.season_id,
+    tier = excluded.tier,
+    subject_filter = excluded.subject_filter,
+    joined_at = now(),
+    expand_at = now() + interval '15 seconds';
+
+  v_match_id := public.match_make(
+    auth.uid(), v_season_id, v_tier,
+    p_subject_filter, p_question_ids,
+    0
+  );
+  return v_match_id;
+end;
+$$;
+
+grant execute on function public.comp_join_queue(text, text[]) to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.4  comp_queue_reset: aktif maçtan cezasız kaçış kapandı
+-- ────────────────────────────────────────────────────────────────────
+-- Eski hâli devam eden maçı 'abandoned' yapıyordu: kaybetmekte olan
+-- oyuncu lobiye dönüp "Baştan başla"ya basınca puan kaybetmeden
+-- kurtuluyordu. Artık reset yalnız kuyruğu temizler; süresi geçmiş
+-- maçları normal kurallarla kapatır; DEVAM EDEN maça dokunmaz.
+-- Maçtan çıkmanın tek yolu comp_forfeit_match (hükmen mağlubiyet).
+-- Dönüş tipi void → uuid olduğu için önce düşürülmeli.
+drop function if exists public.comp_queue_reset();
+create function public.comp_queue_reset()
+returns uuid
+language plpgsql security definer
+as $$
+declare
+  v_active_id uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+
+  delete from public.comp_queue where user_id = auth.uid();
+
+  -- Süresi dolmuş maçları düzgün kapat (puanlar normal kurallarla işler).
+  perform public.comp_finalize_expired_for_user(auth.uid());
+
+  -- Hâlâ devam eden bir maç varsa id'sini dön: istemci lobiye değil maça
+  -- yönlendirsin (eski davranış iki sayfa arasında döngü üretiyordu).
+  select id into v_active_id
+    from public.comp_matches
+   where (player1_id = auth.uid() or player2_id = auth.uid())
+     and status = 'active'
+     and deadline_at > now()
+   limit 1;
+
+  return v_active_id;
+end;
+$$;
+
+grant execute on function public.comp_queue_reset() to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.5  comp_record_answer: cevap = canlılık kanıtı
+-- ────────────────────────────────────────────────────────────────────
+-- Presence damgası yalnız GET yoklamasından geliyordu; sekmesi arka
+-- planda olup soru cevaplamaya devam eden oyuncu "terk etmiş"
+-- sayılabiliyordu. Cevap yazan oyuncu artık kendi damgasını da tazeler.
+create or replace function public.comp_record_answer(
+  p_match_id uuid,
+  p_q_index int,
+  p_choice int,
+  p_correct_index int
+) returns boolean
+language plpgsql security definer
+as $$
+declare
+  v_status text;
+  v_p1 uuid;
+  v_p2 uuid;
+  v_deadline timestamptz;
+  v_is_correct boolean;
+  v_returned boolean;
+  v_existing boolean;
+begin
+  select status, player1_id, player2_id, deadline_at
+    into v_status, v_p1, v_p2, v_deadline
+    from public.comp_matches
+   where id = p_match_id
+   for share;
+
+  if v_status is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if auth.uid() <> v_p1 and auth.uid() <> v_p2 then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if v_status <> 'active' then
+    raise exception 'not_active' using errcode = 'P0001';
+  end if;
+  if v_deadline < now() then
+    raise exception 'expired' using errcode = 'P0002';
+  end if;
+  if p_q_index < 0 or p_q_index > 9 then
+    raise exception 'invalid_index' using errcode = '22023';
+  end if;
+
+  v_is_correct := (p_choice is not null and p_choice = p_correct_index);
+
+  insert into public.comp_match_answers
+    (match_id, player_id, q_index, choice, is_correct, answered_at)
+  values
+    (p_match_id, auth.uid(), p_q_index, p_choice, v_is_correct, now())
+  on conflict (match_id, player_id, q_index) do nothing
+  returning is_correct into v_returned;
+
+  -- FAZ 12: cevap veren oyuncu canlıdır.
+  if auth.uid() = v_p1 then
+    update public.comp_matches set p1_seen_at = now() where id = p_match_id;
+  else
+    update public.comp_matches set p2_seen_at = now() where id = p_match_id;
+  end if;
+
+  if v_returned is null then
+    select is_correct into v_existing
+      from public.comp_match_answers
+     where match_id = p_match_id
+       and player_id = auth.uid()
+       and q_index = p_q_index;
+    return v_existing;
+  end if;
+
+  return v_returned;
+end;
+$$;
+
+grant execute on function public.comp_record_answer(uuid, int, int, int) to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.6  comp_forfeit_core: terk mantığı tek yerde, kimlik taklidi yok
+-- ────────────────────────────────────────────────────────────────────
+-- comp_claim_abandoned, rakip adına puan işlemek için
+-- `set_config('request.jwt.claim.sub', ...)` ile auth.uid()'i taklit
+-- ediyordu. Bu, Supabase'in JWT okuma biçimi değişirse sessizce yanlış
+-- oyuncuyu cezalandırabilecek kırılgan bir hileydi. Artık kaybeden
+-- açıkça parametre olarak geçiliyor.
+create or replace function public.comp_forfeit_core(
+  p_match_id uuid,
+  p_loser    uuid
+) returns void
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_winner uuid;
+  v_loser  uuid := p_loser;
+  v_p1_delta int;
+  v_p2_delta int;
+  v_rank record;
+  v_delta int;
+  v_new_tier int;
+  v_new_points int;
+  v_new_highest int;
+  v_floor_tier int;
+  v_uid uuid;
+  v_p1_after int;
+  v_p2_after int;
+begin
+  select * into v_m from public.comp_matches where id = p_match_id for update;
+  if v_m.id is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if v_loser <> v_m.player1_id and v_loser <> v_m.player2_id then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if v_m.status <> 'active' then
+    return;  -- zaten bitmiş; idempotent
+  end if;
+
+  v_winner := case when v_loser = v_m.player1_id
+                   then v_m.player2_id else v_m.player1_id end;
+
+  if v_loser = v_m.player1_id then
+    v_p1_delta := -30; v_p2_delta := 30;
+  else
+    v_p1_delta := 30;  v_p2_delta := -30;
+  end if;
+
+  -- Arkadaş düellosu ranklı değildir (iki hesap arası puan transferi kapalı).
+  if coalesce(v_m.is_friendly, false) then
+    update public.comp_matches set
+      status = 'finished',
+      winner_id = v_winner,
+      forfeited_by = v_loser,
+      p1_delta = 0,
+      p2_delta = 0,
+      p1_tier_after = v_m.p1_tier_at_start,
+      p2_tier_after = v_m.p2_tier_at_start,
+      finished_at = now()
+    where id = p_match_id;
+    return;
+  end if;
+
+  foreach v_uid in array array[v_m.player1_id, v_m.player2_id] loop
+    v_delta := case when v_uid = v_m.player1_id then v_p1_delta else v_p2_delta end;
+
+    select * into v_rank from public.comp_ranks
+     where user_id = v_uid and season_id = v_m.season_id
+     for update;
+    if v_rank.user_id is null then
+      continue;
+    end if;
+
+    v_new_tier := v_rank.tier;
+    v_new_points := v_rank.points + v_delta;
+    v_new_highest := v_rank.highest_tier_reached;
+
+    while v_new_points >= 100 and v_new_tier < 9 loop
+      v_new_points := v_new_points - 100;
+      v_new_tier := v_new_tier + 1;
+      if v_new_tier > v_new_highest then
+        v_new_highest := v_new_tier;
+      end if;
+    end loop;
+
+    v_floor_tier := (v_new_highest / 2) * 2;
+    while v_new_points < 0 and v_new_tier > v_floor_tier loop
+      v_new_tier := v_new_tier - 1;
+      v_new_points := v_new_points + 100;
+    end loop;
+    if v_new_points < 0 then v_new_points := 0; end if;
+    if v_new_tier < 9 and v_new_points > 99 then v_new_points := 99; end if;
+
+    update public.comp_ranks set
+      tier = v_new_tier,
+      points = v_new_points,
+      highest_tier_reached = v_new_highest,
+      win_streak = case when v_uid = v_winner then win_streak + 1 else 0 end,
+      best_win_streak = greatest(
+        best_win_streak,
+        case when v_uid = v_winner then win_streak + 1 else 0 end
+      ),
+      wins   = wins   + (case when v_uid = v_winner then 1 else 0 end),
+      losses = losses + (case when v_uid = v_loser  then 1 else 0 end),
+      updated_at = now()
+    where user_id = v_uid and season_id = v_m.season_id;
+
+    if v_uid = v_m.player1_id then
+      v_p1_after := v_new_tier;
+    else
+      v_p2_after := v_new_tier;
+    end if;
+  end loop;
+
+  update public.comp_matches set
+    status = 'finished',
+    p1_tier_after = v_p1_after,
+    p2_tier_after = v_p2_after,
+    winner_id = v_winner,
+    forfeited_by = v_loser,
+    p1_delta = v_p1_delta,
+    p2_delta = v_p2_delta,
+    finished_at = now()
+  where id = p_match_id;
+end;
+$$;
+
+-- Yalnız dahili çağrı: istemci comp_forfeit_match'i çağırır, o da
+-- kaybedeni auth.uid()'ten alır. Aksi hâlde herkes rakibini
+-- "terk etti" diye işaretleyebilirdi.
+revoke execute on function public.comp_forfeit_core(uuid, uuid)
+  from public, anon, authenticated;
+
+-- comp_forfeit_match artık ince bir sarmalayıcı: çağıran kaybeder.
+create or replace function public.comp_forfeit_match(p_match_id uuid)
+returns void
+language plpgsql security definer
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  perform public.comp_forfeit_core(p_match_id, auth.uid());
+end;
+$$;
+
+grant execute on function public.comp_forfeit_match(uuid) to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.7  comp_claim_abandoned: cevap veren rakip "terk etmiş" sayılmaz
+-- ────────────────────────────────────────────────────────────────────
+create or replace function public.comp_claim_abandoned(p_match_id uuid)
+returns boolean
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_caller uuid := auth.uid();
+  v_opponent uuid;
+  v_opp_seen timestamptz;
+  v_opp_answer timestamptz;
+  v_idle int := 90;    -- rakip bu kadar saniyedir sessizse kopmuş sayılır
+  v_min_age int := 60; -- maçın en az bu kadar sürmüş olması gerekir
+begin
+  if v_caller is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+
+  select * into v_m from public.comp_matches where id = p_match_id for update;
+  if v_m.id is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if v_caller <> v_m.player1_id and v_caller <> v_m.player2_id then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  -- Arkadaş düellosunda puan işlemez; hükmen galibiyet talebi anlamsız.
+  if coalesce(v_m.is_friendly, false) then
+    return false;
+  end if;
+  if v_m.status <> 'active' then
+    return false;
+  end if;
+  if v_m.started_at > now() - make_interval(secs => v_min_age) then
+    return false;
+  end if;
+
+  if v_caller = v_m.player1_id then
+    v_opponent := v_m.player2_id;
+    v_opp_seen := coalesce(v_m.p2_seen_at, v_m.started_at);
+  else
+    v_opponent := v_m.player1_id;
+    v_opp_seen := coalesce(v_m.p1_seen_at, v_m.started_at);
+  end if;
+
+  -- FAZ 12: presence damgası yalnız GET yoklamasından besleniyordu.
+  -- Sekmesi arka planda olup soru cevaplamayı sürdüren rakip, damgası
+  -- eskidiği için haksız yere "terk etti" sayılabiliyordu. Son cevap
+  -- zamanı da canlılık kanıtı sayılır.
+  select max(answered_at) into v_opp_answer
+    from public.comp_match_answers
+   where match_id = p_match_id and player_id = v_opponent;
+  if v_opp_answer is not null and v_opp_answer > v_opp_seen then
+    v_opp_seen := v_opp_answer;
+  end if;
+
+  if v_opp_seen > now() - make_interval(secs => v_idle) then
+    return false;  -- rakip hâlâ bağlı
+  end if;
+
+  -- FAZ 12: rakip 10 sorunun hepsini bitirmişse "terk etti" denemez —
+  -- sadece sonucu bekliyordur. Bu durumda maçı normal kurallarla kapat.
+  if (select count(*) from public.comp_match_answers
+       where match_id = p_match_id and player_id = v_opponent) >= 10 then
+    perform public.comp_finalize_match(p_match_id);
+    return false;
+  end if;
+
+  perform public.comp_forfeit_core(p_match_id, v_opponent);
+  return true;
+end;
+$$;
+
+grant execute on function public.comp_claim_abandoned(uuid) to authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.8  comp_finalize_guvenli: maçı erkenden bitirip rakibi 0'a
+--       düşürme açığı kapandı
+-- ────────────────────────────────────────────────────────────────────
+-- Eskiden comp_finalize_match doğrudan authenticated'a açıktı ve
+-- çağıranı hiç doğrulamıyordu. Anon anahtar tarayıcıda açık olduğu için
+-- giriş yapmış HERKES, herhangi bir maçın id'siyle RPC atıp maçı
+-- bitirebiliyordu: 3 soru cevaplamış bir oyuncu, kendisi 4/4 yapıp maçı
+-- kapatarak rakibini cevaplayamadığı 7 sorudan 0 alacak şekilde
+-- kaybettirebiliyordu.
+--
+-- Artık istemci yalnız bu sarmalayıcıyı çağırabilir. Sarmalayıcı iki
+-- şeyi doğrular:
+--   (a) çağıran maçın taraflarından biri,
+--   (b) maç gerçekten bitmiş: ya süre dolmuş, ya da İKİ taraf da
+--       tüm soruları cevaplamış.
+create or replace function public.comp_finalize_guvenli(p_match_id uuid)
+returns void
+language plpgsql security definer
+as $$
+declare
+  v_m record;
+  v_hedef int;
+  v_p1_cevap int;
+  v_p2_cevap int;
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+
+  select id, player1_id, player2_id, status, deadline_at, question_ids
+    into v_m
+    from public.comp_matches
+   where id = p_match_id;
+
+  if v_m.id is null then
+    raise exception 'not_found' using errcode = '02000';
+  end if;
+  if auth.uid() <> v_m.player1_id and auth.uid() <> v_m.player2_id then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if v_m.status <> 'active' then
+    return;  -- idempotent
+  end if;
+
+  -- Süre dolduysa herkes kapatabilir.
+  if v_m.deadline_at >= now() then
+    v_hedef := coalesce(array_length(v_m.question_ids, 1), 10);
+
+    select
+      count(*) filter (where player_id = v_m.player1_id),
+      count(*) filter (where player_id = v_m.player2_id)
+      into v_p1_cevap, v_p2_cevap
+      from public.comp_match_answers
+     where match_id = p_match_id;
+
+    if v_p1_cevap < v_hedef or v_p2_cevap < v_hedef then
+      raise exception 'not_complete' using errcode = 'P0003';
+    end if;
+  end if;
+
+  perform public.comp_finalize_match(p_match_id);
+end;
+$$;
+
+grant execute on function public.comp_finalize_guvenli(uuid) to authenticated;
+
+-- Ham fonksiyon artık istemciye kapalı (dahili çağrılar security
+-- definer olduğu için etkilenmez).
+revoke execute on function public.comp_finalize_match(uuid)
+  from public, anon, authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 12.9  comp_ensure_season_and_rank: başkasının uuid'siyle çağrılamaz
+-- ────────────────────────────────────────────────────────────────────
+-- Fonksiyonun kendisi dahili olarak başka kullanıcılar için de
+-- çağrılıyor (arkadaş düellosunda davet edenin rütbesi, sezon kapanışı),
+-- bu yüzden parametreyi kaldıramıyoruz. Bunun yerine istemciye yalnız
+-- parametresiz sarmalayıcı açılıyor.
+create or replace function public.comp_ensure_kendi_rutbem()
+returns table(out_season_id int, out_tier int, out_points int)
+language plpgsql security definer
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'unauthorized' using errcode = '42501';
+  end if;
+  return query select * from public.comp_ensure_season_and_rank(auth.uid());
+end;
+$$;
+
+grant execute on function public.comp_ensure_kendi_rutbem() to authenticated;
+revoke execute on function public.comp_ensure_season_and_rank(uuid)
+  from public, anon, authenticated;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 13 — ÖNBELLEK VE MODERASYON DÜZELTMELERİ
+-- ════════════════════════════════════════════════════════════════════
+-- Denetimde bulunan açıklar ve yanlış pozitifler:
+--   1. ai_onbellek_yaz `authenticated` rolüne AÇIKTI ve içeriği hiç
+--      doğrulamıyordu. Giriş yapmış herhangi bir öğrenci tarayıcı
+--      konsolundan RPC'yi çağırıp uydurma bir cevabı önbelleğe koyabilir,
+--      o cevap site genelinde HERKESE "baykuşun cevabı" olarak servis
+--      edilirdi. Artık yazma yalnız sunucudan (service role) yapılır ve
+--      girdi biçimsel olarak doğrulanır.
+--   2. ai_onbellek RLS'i okuma için doğruydu ama tabloda insert/update
+--      ayrıcalıkları açıkça geri alınmamıştı (yalnız politika yokluğuna
+--      güveniliyordu). Şimdi ayrıcalık düzeyinde de kapatıldı.
+--   3. ai_onbellek_bakim'ın HİÇBİR grant'i yoktu; PostgreSQL varsayılanı
+--      gereği EXECUTE hakkı PUBLIC'teydi — yani anon bir ziyaretçi bile
+--      haftalık budamayı tetikleyebiliyordu. Buna karşılık, fonksiyon
+--      ayrıcalıkları toptan kısıtlanmış bir kurulumda cron 403 alırdı.
+--      İki durumu da kapatmak için: PUBLIC'ten revoke + service_role'a
+--      açık grant. (Cron rotası SUPABASE_SERVICE_ROLE_KEY ile çağırıyor:
+--      src/app/api/cron/onbellek-bakim/route.ts)
+--   4. uygunsuz_metin süzgeci kökleri BOŞLUKSUZ metinde alt dize olarak
+--      arıyordu; "sikke" (tarih), "mal ve hizmet" (sosyal bilgiler),
+--      "0oC" (sıcaklık), "öç" (Türkçe) gibi meşru metinler engelleniyordu.
+--      Artık eşleme kelime sınırında ve ön ek mantığıyla yapılıyor.
+--
+-- Idempotenttir: SQL editöründe tekrar tekrar çalıştırılabilir.
+
+-- ────────────────────────────────────────────────────────────────────
+-- 13.1  uygunsuz_metin: kelime sınırı + bağlam istisnaları
+-- ────────────────────────────────────────────────────────────────────
+-- src/lib/moderasyon.ts ile aynı kuralları uygular. `\b` Türkçe harflerde
+-- güvenilmez olduğu için kullanılmaz: metin önce ASCII'ye indirgenip
+-- harf/rakam dışı her karakter sınır sayılarak kelimelere bölünür.
+create or replace function public.uygunsuz_metin(p_metin text)
+returns boolean
+language plpgsql
+immutable
+set search_path = public
+as $$
+declare
+  v_ham      text;   -- Türkçe→ASCII, rakamlar duruyor, tek boşluklu
+  v_bosluk   text;   -- gizlemesi açılmış (4→a, 0→o ...), boşluklar korunmuş
+  v_bitisik  text;   -- boşluksuz hâli (a.m.k gibi yazımlar için)
+  v_tekil    text;   -- ardışık tekrarları silinmiş boşluksuz hâl
+  v_paket    text;
+  k          text;
+  w          text;
+  b          text;
+  -- Tek kelimelik kökler: kelime bu kökle BAŞLIYORSA yakalanır.
+  v_kok_tek text[] := array[
+    'amcik','amina','aminakoy','sike','siker','sikim','sikik','siktir',
+    -- 'yarrağım' gibi ünsüz yumuşamalı biçimler için k→g varyantları
+    'sikeyim','sikiyim','yarrak','yarrag','yarak','yarag','tasak',
+    'gotveren','gotlek',
+    'pezevenk','orospu','kahpe','kaltak','surtuk','fahise','piclik',
+    'picik','oruspu','koyim','godumun','yavsak','ibne','gavat','kavat',
+    'pust','hayasiz','gerizekali','aptal','salak','ahmak','embesil',
+    'moron','beyinsiz','denyo','dangalak','serefsiz','namussuz','sarsak',
+    'budala','avanak','gerzek','eroin','kokain','molotof'
+  ];
+  -- Çok kelimeli kalıplar: kelime başından eşleşir.
+  v_kok_ifade text[] := array[
+    'geri zekali','hayvan herif','alcak herif','it oglu','kopek oglu',
+    'esek oglu','pislik herif','manyak herif','asagi irk',
+    'uyusturucu nasil','esrar nasil','bomba nasil yapilir',
+    'silah nasil alinir','kacak bahis','bahis sitesi','kumar oyna',
+    'amina koy','agzina koy','anani koy','avradini'
+  ];
+  -- Masum bir kelimenin İÇİNE gömülemeyecek kökler (bitişik yazım için).
+  -- NOT: 'siktir' bilerek YOKTUR — sınav metinlerinde çok geçen
+  -- 'eksiktir' kelimesinin içinde bulunuyor. Kelime başı eşlemesi
+  -- (v_kok_tek) 'siktir git' gibi kullanımları zaten yakalıyor.
+  v_kok_sert text[] := array[
+    'orospu','oruspu','pezevenk','gotveren','yarrak','amcik',
+    'sikeyim','sikiyim','fahise','kaltak','surtuk','gerizekali','yavsak'
+  ];
+  v_tam  text[] := array['got','kic','bok','pic','gic'];
+  v_kisa text[] := array['amk','aq'];
+  -- Tekrar sadeleştirmesinden sonra köke benzeyen MEŞRU kelimeler.
+  -- 'sikke' (tarih terimi) ve 'book' (İngilizce) tekrar sadeleştirmesinde
+  -- 'sike' / 'bok' hâline geliyordu.
+  v_istisna text[] := array['sikke','book'];
+begin
+  if p_metin is null then return false; end if;
+
+  v_ham := lower(translate(p_metin, 'İIÇĞÖŞÜçğıöşü', 'iicgosucgiosu'));
+  -- KELİME SINIRI: harf/rakam dışı her karakter ayırıcıdır.
+  v_ham := btrim(regexp_replace(regexp_replace(v_ham, '[^a-z0-9]+', ' ', 'g'),
+                                ' +', ' ', 'g'));
+  if v_ham = '' then return false; end if;
+
+  -- Rakamla gizlemeyi aç, harf dışını at.
+  v_bosluk := translate(v_ham, '4@3!|10$579', 'aaeiiiosstg');
+  v_bosluk := btrim(regexp_replace(regexp_replace(v_bosluk, '[^a-z ]', '', 'g'),
+                                   ' +', ' ', 'g'));
+  if v_bosluk = '' then return false; end if;
+  v_paket   := ' ' || v_bosluk || ' ';
+  v_bitisik := replace(v_bosluk, ' ', '');
+  v_tekil   := regexp_replace(v_bitisik, '(.)\1+', '\1', 'g');
+
+  -- (a) Çok kelimeli kalıplar
+  foreach k in array v_kok_ifade loop
+    if position(' ' || k in v_paket) > 0 then return true; end if;
+  end loop;
+
+  -- (b) "mal": yalnız hakaret bağlamında ("mal ve hizmet" serbest)
+  if v_paket ~ '(^| )mal (misin|misiniz|gibi|herif|kafa|kafali|mi)( |$)'
+     or v_paket ~ '(^| )(seni|sen|ne|koca|resmen|tam) mal( |$)'
+     or v_paket ~ '(^| )mals(in|iniz)( |$)' then
+    return true;
+  end if;
+
+  -- (c) Metnin TAMAMI o kelimeden ibaretse ("öç", "mal" tek başına).
+  --     Sıcaklık yazımı ("0oC", "0 °C") muaftır.
+  if v_tekil = 'oc' and v_ham !~ '[0-9] ?o ?[ckf]( |$)' then return true; end if;
+  if v_tekil = 'mal' then return true; end if;
+
+  -- (d) Bitişik/noktalı gizleme: "a.m.k", "s.i.k.t.i.r"
+  if v_tekil = any(v_kisa) then return true; end if;
+  foreach k in array v_kok_sert loop
+    if position(k in v_tekil) > 0 then return true; end if;
+  end loop;
+
+  -- (e) Kelime kelime kök eşlemesi (ön ek mantığı)
+  foreach w in array string_to_array(v_bosluk, ' ') loop
+    if w = '' then continue; end if;
+    foreach b in array array[w, regexp_replace(w, '(.)\1+', '\1', 'g')] loop
+      -- İstisna kelimede tekrar-silme adımı atlanır (sikke → sike olmasın)
+      if b <> w and exists (
+        select 1 from unnest(v_istisna) i where w like i || '%'
+      ) then continue; end if;
+      if b = any(v_kisa) then return true; end if;
+      if b = any(v_tam) then return true; end if;
+      foreach k in array v_kok_tek loop
+        if b like k || '%' then return true; end if;
+      end loop;
+      foreach k in array v_kok_sert loop
+        if position(k in b) > 0 then return true; end if;
+      end loop;
+    end loop;
+  end loop;
+
+  return false;
+end;
+$$;
+
+grant execute on function public.uygunsuz_metin(text) to anon, authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 13.2  ai_onbellek RLS: okuma açık, YAZMA kapalı
+-- ────────────────────────────────────────────────────────────────────
+-- Okuma anon + authenticated'a açıktır (misafir öğrenci de baykuşa soru
+-- sorabiliyor) ve yalnız aktif satırları verir. Yazma/güncelleme/silme
+-- hem politika hem de ayrıcalık düzeyinde kapalıdır: tabloya yalnız
+-- security definer fonksiyonlar (owner adına) dokunabilir.
+drop policy if exists "onbellek okunur" on public.ai_onbellek;
+create policy "onbellek okunur" on public.ai_onbellek
+  for select to anon, authenticated
+  using (aktif);
+
+revoke insert, update, delete, truncate on public.ai_onbellek
+  from anon, authenticated, public;
+grant select on public.ai_onbellek to anon, authenticated;
+grant all on public.ai_onbellek to service_role;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 13.3  ai_onbellek_yaz: yalnız sunucudan + içerik doğrulaması
+-- ────────────────────────────────────────────────────────────────────
+-- Artık auth.uid() ARAMAZ (servis rolünde oturum yoktur); bunun yerine
+--   • EXECUTE hakkı anon/authenticated'dan alınmıştır (aşağıda),
+--   • JWT'de bir rol geliyorsa service_role olmak zorundadır,
+--   • parmak izi, cevap ve yönlendirme alanları biçimsel olarak
+--     doğrulanır (uydurma/zararlı içerik yazımını zorlaştırır).
+-- Aynı parmak izi varsa yalnız sayaç artar, cevap DEĞİŞMEZ.
+create or replace function public.ai_onbellek_yaz(
+  p_parmak_izi  text,
+  p_soru_ornek  text,
+  p_cevap       text,
+  p_navigate    text default null,
+  p_topic_route text default null
+) returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_rol      text;
+  v_beklenen text;
+  v_son_saat integer;
+begin
+  -- (a) Çağıran: PostgREST üzerinden gelen bir JWT varsa service_role olmalı.
+  --     (Doğrudan sunucu bağlantısında claim bulunmaz.)
+  begin
+    v_rol := nullif(current_setting('request.jwt.claims', true), '')::json ->> 'role';
+  exception when others then
+    v_rol := null;
+  end;
+  if v_rol is not null and v_rol <> 'service_role' then
+    return false;
+  end if;
+
+  -- (b) Parmak izi: küçük harf/rakam + tek boşluk, kelimeleri TEKİL ve
+  --     SIRALI olmalı. Yani istemcinin uydurduğu rastgele bir anahtar
+  --     değil, parmakIzi() üretiminin birebir çıktısı kabul edilir.
+  if p_parmak_izi is null or length(p_parmak_izi) < 3 or length(p_parmak_izi) > 400 then
+    return false;
+  end if;
+  if p_parmak_izi !~ '^[a-z0-9]+( [a-z0-9]+)*$' then
+    return false;
+  end if;
+  select string_agg(t.w, ' ' order by t.w collate "C") into v_beklenen
+    from (select distinct unnest(string_to_array(p_parmak_izi, ' ')) as w) t;
+  if v_beklenen is distinct from p_parmak_izi then
+    return false;
+  end if;
+
+  -- (c) Cevap: uzunluk, en az 4 kelime, gömülü betik/etiket yok, küfür yok.
+  if p_cevap is null or length(p_cevap) < 25 or length(p_cevap) > 3500 then
+    return false;
+  end if;
+  if coalesce(array_length(regexp_split_to_array(btrim(p_cevap), '\s+'), 1), 0) < 4 then
+    return false;
+  end if;
+  if p_cevap ~* '<\s*/?\s*(script|iframe|style|img|svg|object|embed)' then
+    return false;
+  end if;
+  if public.uygunsuz_metin(p_cevap) then
+    return false;
+  end if;
+
+  -- (d) Soru örneği boş olamaz.
+  if p_soru_ornek is null or length(btrim(p_soru_ornek)) < 3 then
+    return false;
+  end if;
+
+  -- (e) Yönlendirme alanları SİTE İÇİ yol olmalı — önbellekten dönen
+  --     navigate istemcide doğrudan router.push'a verildiği için dış
+  --     bağlantı yazılması açık yönlendirme (open redirect) olurdu.
+  if p_navigate is not null
+     and (p_navigate !~ '^/[A-Za-z0-9._~/%?&=#-]*$' or p_navigate like '//%') then
+    return false;
+  end if;
+  if p_topic_route is not null
+     and (p_topic_route !~ '^/[A-Za-z0-9._~/%?&=#-]*$' or p_topic_route like '//%') then
+    return false;
+  end if;
+
+  -- Zaten varsa: sayaç artır, içeriği DEĞİŞTİRME
+  update public.ai_onbellek
+     set kullanim = kullanim + 1, son_kullanim = now(), aktif = true
+   where parmak_izi = p_parmak_izi;
+  if found then return true; end if;
+
+  -- Saatlik yeni kayıt tavanı (eskiden kullanıcı başınaydı; yazma artık
+  -- sunucudan geldiği için site geneli tavan uygulanır).
+  select count(*) into v_son_saat
+    from public.ai_onbellek
+   where kaynak = 'ai' and created_at > now() - interval '1 hour';
+  if v_son_saat >= 200 then return false; end if;
+
+  insert into public.ai_onbellek
+    (parmak_izi, soru_ornek, cevap, navigate, topic_route, olusturan)
+  values
+    (p_parmak_izi, left(p_soru_ornek, 500), p_cevap, p_navigate, p_topic_route, null)
+  on conflict (parmak_izi) do nothing;
+  return true;
+end;
+$$;
+
+-- Yazma artık istemciye TAMAMEN kapalı; yalnız sunucu (service role).
+revoke execute on function public.ai_onbellek_yaz(text, text, text, text, text)
+  from public, anon, authenticated;
+grant execute on function public.ai_onbellek_yaz(text, text, text, text, text)
+  to service_role;
+
+-- Okuma RPC'si eskisi gibi herkese açık kalır.
+grant execute on function public.ai_onbellek_ara(text) to anon, authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 13.4  ai_onbellek_bakim: yalnız cron (service role) çağırabilir
+-- ────────────────────────────────────────────────────────────────────
+-- Fonksiyonun hiç grant'i yoktu; PostgreSQL varsayılanı EXECUTE'u
+-- PUBLIC'e verdiği için anon bir ziyaretçi bile budamayı tetikleyebilirdi.
+-- Ayrıcalıkların toptan kısıtlandığı kurulumlarda ise cron 403 alırdı.
+revoke execute on function public.ai_onbellek_bakim() from public, anon, authenticated;
+grant execute on function public.ai_onbellek_bakim() to service_role;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 14 — İSTATİSTİK DÜZELTMELERİ
+-- ════════════════════════════════════════════════════════════════════
+-- Bu blok yalnız EKLER; yukarıdaki satırların hiçbiri değişmedi.
+-- Idempotenttir: tekrar tekrar çalıştırılabilir.
+
+-- ── 1) ROZETLER KALICIDIR ────────────────────────────────────────────
+-- Sorun: "own badges" politikası `for all` idi — istemci kendi rozetini
+-- SİLEBİLİYOR ve GÜNCELLEYEBİLİYORDU. Uygulama tarafında rozet ayrıca her
+-- sayfa yüklemesinde anlık metriklerden yeniden hesaplandığı için, seri
+-- kırılınca veya çalışma 60 günlük pencerenin dışına düşünce öğrenci hak
+-- ettiği rozeti kaybedebiliyordu.
+--
+-- Kural: bir rozet KAZANILDIYSA ASLA GERİ ALINMAZ. Satır yalnız eklenir ve
+-- okunur; güncelleme/silme istemciye kapalıdır.
+drop policy if exists "own badges" on public.user_badges;
+
+drop policy if exists "rozet oku" on public.user_badges;
+create policy "rozet oku" on public.user_badges
+  for select to authenticated
+  using (auth.uid() = user_id);
+
+drop policy if exists "rozet ekle" on public.user_badges;
+create policy "rozet ekle" on public.user_badges
+  for insert to authenticated
+  with check (auth.uid() = user_id);
+
+-- update ve delete için politika BİLEREK YOK: RLS altında politikası
+-- bulunmayan işlem tümüyle reddedilir. Hesap silinince `on delete cascade`
+-- yine çalışır (cascade RLS'e tabi değildir), yani hesap silme akışı bozulmaz.
+
+-- İkinci emniyet: rozetin kimliği ve kazanılma tarihi dondurulur. Bilerek
+-- yalnız UPDATE'i kısıtlıyoruz — DELETE'e dokunmuyoruz, çünkü auth.users
+-- cascade'i de DELETE'tir ve engellenirse hesap silinemez hâle gelirdi.
+create or replace function public.rozet_kalici()
+returns trigger
+language plpgsql
+as $$
+begin
+  if new.badge_key is distinct from old.badge_key
+     or new.earned_at is distinct from old.earned_at
+     or new.user_id  is distinct from old.user_id then
+    raise exception 'Rozetler kalicidir: kazanilmis rozet degistirilemez (%).', old.badge_key
+      using errcode = 'check_violation';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists user_badges_kalici on public.user_badges;
+create trigger user_badges_kalici
+  before update on public.user_badges
+  for each row execute function public.rozet_kalici();
+
+-- ── 2) YANLIŞ CEVAP DİRİLTMESİ ENGELLENİR ───────────────────────────
+-- Sorun: ustalaşılan (üst üste 2 doğru) soru `wrong_answers`'tan SİLİNİYORDU.
+-- Silmek, cihazlar arası senkronda diriltmeyi kaçınılmaz kılıyordu: ikinci
+-- cihazın localStorage'ında kayıt hâlâ durduğu için senkron "uzakta yok,
+-- yerelde var" deyip satırı geri yazıyordu. "Hiç olmamış" ile "bilerek
+-- kaldırılmış" ayırt edilemiyordu.
+--
+-- Çözüm: satır SİLİNMEZ, `correct_streak = 2` ile kalır — bu, tüm cihazların
+-- görebildiği kalıcı bir "ustalaşıldı" mezar taşıdır. Sayaçlar ve listeler
+-- bu satırları zaten elemektedir (src/lib/hataSayaci.ts, wrongAnswers.ts).
+--
+-- Veritabanı garantisi: bir kez ustalaşılan kayıt geri alınamaz. Doğru seri
+-- yalnız ARTABİLİR; ancak öğrenci soruyu GERÇEKTEN yeniden yanlış yaparsa
+-- (last_wrong_at ilerlerse) sıfırlanabilir.
+create or replace function public.yanlis_ustalasma_korumasi()
+returns trigger
+language plpgsql
+as $$
+begin
+  -- Yeni bir yanlış gerçekten yapıldıysa kayıt baştan başlar: serbest.
+  if new.last_wrong_at > old.last_wrong_at then
+    return new;
+  end if;
+  -- Aksi hâlde doğru serisi geri gidemez (bayat senkron paketi ezmesin).
+  if new.correct_streak < old.correct_streak then
+    new.correct_streak := old.correct_streak;
+  end if;
+  -- Ustalaşmış kayıt vadeye geri dönmez.
+  if new.correct_streak >= 2 then
+    new.next_due_at := null;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists wrong_answers_ustalasma on public.wrong_answers;
+create trigger wrong_answers_ustalasma
+  before update on public.wrong_answers
+  for each row execute function public.yanlis_ustalasma_korumasi();
+
+-- Bekleyen ("vadesi gelmiş") hata sayacı next_due_at üzerinden filtreler.
+create index if not exists wrong_answers_due_idx
+  on public.wrong_answers (user_id, next_due_at);
+
+-- ── 3) İSTATİSTİK PENCERELERİ İÇİN İNDEKS ───────────────────────────
+-- 60/180 günlük pencereler artık Türkiye gün başına hizalı
+-- (bkz. src/lib/zaman.ts → trPencereBaslangici). Sorgular hep
+-- (user_id, started_at >= sınır) biçiminde; indeks buna göre.
+create index if not exists study_sessions_user_started_idx
+  on public.study_sessions (user_id, started_at desc);

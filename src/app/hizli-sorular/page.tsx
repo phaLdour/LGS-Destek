@@ -21,7 +21,7 @@ export default async function HizliSorularPage() {
           aria-hidden
           className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-rehberim-accent/10 blur-3xl"
         />
-        <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rehberim-accent to-amber-500 text-rehberim-navy ring-1 ring-rehberim-accent/40 shadow-card">
+        <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark text-rehberim-on-accent ring-1 ring-rehberim-accent/40 shadow-card">
           <Zap className="h-8 w-8" />
         </span>
         <div className="relative">

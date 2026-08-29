@@ -27,6 +27,11 @@ import {
   getCurrentUser,
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
+// Bekleyen hata sayacı /hatalarim listesiyle aynı kuraldan geçer.
+import { bekleyenHataSay, type HataSatiri } from "@/lib/hataSayaci";
+import { collectAllQuestions } from "@/lib/quickQuiz";
+// Sorgu pencerelerinin sınırı TR gün başıdır (bkz. lib/zaman.ts).
+import { trPencereBaslangici } from "@/lib/zaman";
 
 /** Bir konudaki oranın "tam güvenilir" sayılması için gereken soru sayısı. */
 export const GUVEN_KOTASI = 40;
@@ -136,7 +141,14 @@ export function planiHesapla(
     (genelToplam + GUVEN_KOTASI);
 
   const siralanmis = [...agg.entries()]
-    .filter(([, v]) => v.toplam >= EN_AZ_SORU)
+    // "TEKRAR ET" ÖNERİSİ İÇİN YANLIŞ ŞART.
+    //
+    // Eskiden yalnız `v.toplam >= EN_AZ_SORU` bakılıyordu; yanlış sayısına
+    // hiç bakılmıyordu. Sonuç: hepsini doğru yapmış öğrenciye bile
+    // "En çok burada zorlanıyorsun — 12 sorunun %0'ını yanlış yaptın"
+    // deniyordu. Hiç yanlışı olmayan konu bir zayıflık değildir; plandan
+    // düşer ve kart aşağıdaki "yeni konu" önerisine geçer.
+    .filter(([, v]) => v.toplam >= EN_AZ_SORU && v.yanlis > 0)
     .map(([key, v]) => {
       const duzeltilmis =
         (v.yanlis + GUVEN_KOTASI * genelOran) / (v.toplam + GUVEN_KOTASI);
@@ -172,8 +184,9 @@ export async function getBugununPlani(): Promise<BugununPlani> {
   if (!user) return BOS_PLAN;
   const supabase = await createClient();
 
-  const since = new Date();
-  since.setDate(since.getDate() - 180);
+  // Pencere sınırı TR gün başı: bu kod sunucuda (UTC) çalışır, eski
+  // `setDate(getDate() - 180)` hesabı en eski günü yarım bırakıyordu.
+  const since = trPencereBaslangici(180);
 
   const [quizRes, progressRes, wrongRes, sessionRes] = await Promise.all([
     supabase
@@ -185,7 +198,11 @@ export async function getBugununPlani(): Promise<BugununPlani> {
       .select("subject_slug, topic_id, status, updated_at")
       .order("updated_at", { ascending: false })
       .limit(50),
-    supabase.from("wrong_answers").select("next_due_at, last_wrong_at"),
+    // question_key + correct_streak de çekilir: sayaç yalnız /hatalarim'da
+    // GERÇEKTEN gösterilebilen kayıtları saymalı (bkz. lib/hataSayaci.ts).
+    supabase
+      .from("wrong_answers")
+      .select("question_key, correct_streak, next_due_at, last_wrong_at"),
     supabase
       .from("study_sessions")
       .select("subject_slug, studied_topics, started_at")
@@ -207,10 +224,7 @@ export async function getBugununPlani(): Promise<BugununPlani> {
     status: string;
     updated_at: string;
   }[];
-  const wrongs = (wrongRes.data ?? []) as {
-    next_due_at: string | null;
-    last_wrong_at: string;
-  }[];
+  const wrongs = (wrongRes.data ?? []) as HataSatiri[];
   const sessions = (sessionRes.data ?? []) as {
     subject_slug: string;
     studied_topics: string[];
@@ -252,15 +266,15 @@ export async function getBugununPlani(): Promise<BugununPlani> {
   const adaylar = siralanmis.map(kutuya).filter((x): x is PlanKonusu => x !== null);
 
   // ── Bekleyen hata sayısı ───────────────────────────────────────────
-  const simdi = Date.now();
-  const BIR_GUN = 86_400_000;
-  let bekleyenHata = 0;
-  for (const w of wrongs) {
-    const vade = w.next_due_at
-      ? new Date(w.next_due_at).getTime()
-      : new Date(w.last_wrong_at).getTime() + BIR_GUN;
-    if (vade <= simdi) bekleyenHata += 1;
-  }
+  // HAYALET SAYAÇ DÜZELTMESİ: eskiden `wrong_answers` tablosundaki her satır
+  // sayılıyordu, oysa /hatalarim listesi yalnız hızlı soru havuzunda karşılığı
+  // olan kayıtları gösterir. Çıkmış soru yanlışları (cikmis/... kimlikli),
+  // içerikten kaldırılmış sorular ve silinmesi gecikmiş "ustalaşmış" kayıtlar
+  // sayaçta durup listede görünmüyordu. Artık ikisi de aynı kuraldan geçer.
+  const gosterilebilirIdler = new Set(
+    collectAllQuestions({ kind: "karma-all" }).map((q) => q.id),
+  );
+  const bekleyenHata = bekleyenHataSay(wrongs, gosterilebilirIdler);
 
   // ── Kaldığın yer ───────────────────────────────────────────────────
   // Öncelik: yarım kalan (in_progress) konu → yoksa son çalışma oturumu.
@@ -320,6 +334,39 @@ export async function getBugununPlani(): Promise<BugununPlani> {
       break;
     }
     if (yeniKonu) break;
+  }
+
+  // YEDEK ÖNERİ: hiç yanlışı olmayan öğrencide artık `onerilen` boş kalabilir
+  // (yukarıdaki "yanlış şart" düzeltmesi). Eğer her konuya dokunulmuşsa
+  // `yeniKonu` da boş kalır ve kart bomboş görünürdü. Bu durumda EN AZ soru
+  // çözülmüş ve HENÜZ BİTİRİLMEMİŞ konuyu öneriyoruz — "tekrar et" değil,
+  // dürüstçe "burada pratiğin az".
+  if (!yeniKonu) {
+    const bitenler = new Set(
+      progress.filter((p) => p.status === "done").map((p) => `${p.subject_slug}/${p.topic_id}`),
+    );
+    const cozulen = new Map<string, number>();
+    for (const q of quizzes) {
+      const k = `${q.subject_slug}/${q.topic_id}`;
+      cozulen.set(k, (cozulen.get(k) ?? 0) + q.correct_count + q.wrong_count);
+    }
+    let enAz = Number.POSITIVE_INFINITY;
+    for (const s of dersler) {
+      for (const t of s.topics) {
+        const k = `${s.slug}/${t.id}`;
+        if (bitenler.has(k)) continue;
+        const adet = cozulen.get(k) ?? 0;
+        if (adet >= enAz) continue;
+        enAz = adet;
+        yeniKonu = {
+          subjectSlug: s.slug,
+          subjectName: s.name,
+          topicId: t.id,
+          topicName: t.name,
+          href: href(s.slug, t.id),
+        };
+      }
+    }
   }
 
   const yeniKullanici =

@@ -3,7 +3,7 @@ import { generateReply, isGeminiConfigured } from "@/lib/gemini";
 import { matchCanned } from "@/lib/cannedAnswers";
 import { getUserContext } from "@/lib/userContext";
 import { kapsamDenetle } from "@/lib/baykusKapsam";
-import { onbellegeUygunMu, parmakIzi } from "@/lib/aiOnbellek";
+import { bagimsizSoruMu, onbellegeUygunMu, parmakIzi } from "@/lib/aiOnbellek";
 import { onbellegeYaz, onbellektenAra } from "@/lib/aiOnbellekSunucu";
 
 export const runtime = "nodejs";
@@ -77,8 +77,9 @@ export async function POST(request: Request) {
   //    saklanmışsa oradan dön (kota harcanmaz).
   const izi = parmakIzi(sonSoru);
   // Sohbetin ortasındaki "peki ya bu?" gibi bağlama bağlı sorular
-  // önbellekten karşılanmamalı; yalnız ilk soru veya bağımsız sorular.
-  const bagimsiz = history.length <= 2 || sonSoru.trim().length >= 12;
+  // önbellekten karşılanmamalı. DÜZELTME: buradaki `||` `&&` olmalıydı;
+  // kural tek yerde toplanıp cihaz önbelleğiyle ortaklaştırıldı.
+  const bagimsiz = bagimsizSoruMu(sonSoru, history.length);
   if (izi && bagimsiz) {
     const kayit = await onbellektenAra(izi);
     if (kayit) {

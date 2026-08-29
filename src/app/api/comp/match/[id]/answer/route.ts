@@ -81,7 +81,7 @@ export async function POST(
   }
   if (new Date(match.deadline_at).getTime() < Date.now()) {
     // Auto-finalize tetikle
-    await supabase.rpc("comp_finalize_match", { p_match_id: id });
+    await supabase.rpc("comp_finalize_guvenli", { p_match_id: id });
     return NextResponse.json({ error: "expired" }, { status: 409 });
   }
 
@@ -143,7 +143,7 @@ export async function POST(
       p_match_id: id,
     });
     if (typeof oppCount === "number" && oppCount >= match.question_ids.length) {
-      await supabase.rpc("comp_finalize_match", { p_match_id: id });
+      await supabase.rpc("comp_finalize_guvenli", { p_match_id: id });
       autoFinalized = true;
     }
   }

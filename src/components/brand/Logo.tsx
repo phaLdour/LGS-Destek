@@ -8,7 +8,14 @@ type Props = {
   title?: string;
 };
 
-/** Açık kitap + hedef + ok logosu (lacivert / turuncu). */
+/**
+ * Açık kitap + hedef + ok logosu.
+ *
+ * Renkler SABİT DEĞİLDİR: tema değişkenlerinden okunur
+ * (--rb-marka-* ve --rb-accent-*). Böylece logo koyu temalarda zemine
+ * kaybolmaz, Orman/Kömür gibi temalarda da "klasik mavi" kalmaz.
+ * Değişkenler src/lib/temalar.ts'te üretilir, tema-kontrast.mjs ölçer.
+ */
 export function LogoSvg({
   className,
   title = "Rehberim logosu",
@@ -28,25 +35,25 @@ export function LogoSvg({
       {/* kitap — açık sayfalar dolu navy, vurgu kontur ile */}
       <path
         d="M24 70 C48 58 76 58 100 70 L100 152 C76 140 48 140 24 152 Z"
-        fill="#16244C"
+        fill="var(--rb-marka-navy, #16244C)"
         data-rb="navy"
       />
       <path
         d="M176 70 C152 58 124 58 100 70 L100 152 C124 140 152 140 176 152 Z"
-        fill="#243A6E"
+        fill="var(--rb-marka-navy-acik, #243A6E)"
         data-rb="navy-mid"
       />
       {/* sayfa katları için ince çizgiler */}
       <path
         d="M44 80 L88 86 M44 100 L88 100 M44 118 L88 124"
-        stroke="#FBBF24"
+        stroke="rgb(var(--rb-accent-light-ch, 251 191 36))"
         strokeWidth="2.5"
         strokeLinecap="round"
         opacity="0.6"
       />
       <path
         d="M112 86 L156 80 M112 100 L156 100 M112 124 L156 118"
-        stroke="#FBBF24"
+        stroke="rgb(var(--rb-accent-light-ch, 251 191 36))"
         strokeWidth="2.5"
         strokeLinecap="round"
         opacity="0.6"
@@ -54,27 +61,28 @@ export function LogoSvg({
       {/* kitabın orta cildi */}
       <path
         d="M100 70 L100 152"
-        stroke="#0E1838"
+        stroke="var(--rb-marka-navy-koyu, #0E1838)"
+        data-rb="navy-deep"
         strokeWidth="4"
         strokeLinecap="round"
       />
       {/* hedef — dolu daire halkalı */}
-      <circle cx="112" cy="96" r="40" fill="#16244C" data-rb="navy" />
-      <circle cx="112" cy="96" r="30" fill="#FFFFFF" />
-      <circle cx="112" cy="96" r="22" fill="#F59E0B" />
-      <circle cx="112" cy="96" r="10" fill="#16244C" data-rb="navy" />
+      <circle cx="112" cy="96" r="40" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
+      <circle cx="112" cy="96" r="30" fill="var(--rb-surface, #FFFFFF)" />
+      <circle cx="112" cy="96" r="22" fill="rgb(var(--rb-accent-ch, 245 158 11))" />
+      <circle cx="112" cy="96" r="10" fill="var(--rb-marka-navy, #16244C)" data-rb="navy" />
       {/* ok */}
       <path
         d="M112 96 L168 40"
-        stroke="#16244C"
+        stroke="var(--rb-marka-navy, #16244C)"
         strokeWidth="11"
         strokeLinecap="round"
         data-rb="navy"
       />
       <path
         d="M150 36 L172 32 L168 54 Z"
-        fill="#F59E0B"
-        stroke="#16244C"
+        fill="rgb(var(--rb-accent-ch, 245 158 11))"
+        stroke="var(--rb-marka-navy, #16244C)"
         strokeWidth="4"
         strokeLinejoin="round"
         data-rb="navy"

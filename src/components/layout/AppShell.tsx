@@ -265,8 +265,11 @@ export function AppShell({
               key={label}
               href={href}
               aria-current={active ? "page" : undefined}
+              // Etkin öğenin yazısı "accent-deep" tonundadır: düz accent
+              // (turuncu/pembe/nane) açık zeminde 2:1'e düşüyor, 11px yazı
+              // okunmuyordu. accent-deep her temada ≥4.5:1 ölçülür.
               className={`group relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-semibold transition-colors duration-200 ease-smooth ${
-                active ? "text-rehberim-accent" : "text-rehberim-navy/55"
+                active ? "text-rehberim-accent-deep" : "text-rehberim-navy/55"
               }`}
             >
               {active && (

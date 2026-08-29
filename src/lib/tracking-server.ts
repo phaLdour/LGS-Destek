@@ -16,6 +16,8 @@ import {
   type QuizRow,
   type SessionRow,
 } from "@/lib/tracking-core";
+// İstatistik pencerelerinin sınırı da TR gün başıdır (bkz. lib/zaman.ts).
+import { trPencereBaslangici } from "@/lib/zaman";
 
 export type { Stats } from "@/lib/tracking-core";
 
@@ -27,10 +29,12 @@ export async function getStatsServer(): Promise<Stats> {
 
   const supabase = await createClient();
 
-  const since = new Date();
-  since.setDate(since.getDate() - 60);
-  const quizSince = new Date();
-  quizSince.setDate(quizSince.getDate() - 180);
+  // 60/180 günlük pencerelerin sınırı TR gün başına çekildi: bu kod SUNUCUDA
+  // (UTC) çalışır, eski `setDate(getDate() - N)` hesabı hem en eski günü yarım
+  // bırakıyor hem de sınırı Türkiye gününden 3 saat kaydırıyordu — client
+  // (tracking.ts) ile sunucu farklı sayı üretebiliyordu.
+  const since = trPencereBaslangici(60);
+  const quizSince = trPencereBaslangici(180);
 
   const [{ data: sessions }, { count: doneCount }, { data: quizzes }] =
     await Promise.all([

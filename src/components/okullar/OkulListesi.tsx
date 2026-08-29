@@ -65,6 +65,9 @@ export function OkulListesi({ okullar }: { okullar: Okul[] }) {
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rehberim-navy/45" />
           <input
             type="text"
+            // Arama kutusunun yalnız placeholder'ı vardı (placeholder etiket
+            // yerine geçmez) → ekran okuyucu için erişilebilir ad eklendi.
+            aria-label="Okul veya şehir ara"
             value={sorgu}
             onChange={(e) => setSorgu(e.target.value)}
             placeholder="Okul veya şehir ara (örn. Kabataş, İzmir)…"

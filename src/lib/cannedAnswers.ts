@@ -2064,12 +2064,25 @@ export function matchCanned(text: string): CannedResult | null {
     if (sozluk) return sozluk;
   }
 
+  // Bölüm bilgi soruları ("sözlük nasıl kullanılır") tryIntents'teki genel
+  // cevaptan ÖNCE gelmeli; ama MÜFREDAT kaynağı bölüm tanıtımını gölgeliyordu:
+  // "harf inkılabı nedir" / "inkılapçılık nedir" site haritasındaki "tarih"
+  // anahtarına, "Amasya görüşmeleri nedir" ise "görüş" anahtarına takılıp
+  // dersin ya da geri bildirim sayfasının tanıtımını döndürüyordu.
+  // Kural: aynı soruya müfredatta (formül/kavram) karşılık varsa müfredat
+  // cevabı kazanır; bölüm bilgisi yalnızca müfredatta karşılık yoksa devreye
+  // girer. (Sıralamanın geri kalanı değişmedi.)
+  const bolumBilgisi = tryBolumBilgisi(input);
+  const bolumVeyaMufredat = bolumBilgisi
+    ? (tryFormulas(input, tokens, text) ??
+      tryConcepts(input, tokens) ??
+      bolumBilgisi)
+    : null;
+
   return (
     // Sınav geri sayımı: her gün değişen, kişiye özel olmayan dinamik cevap
     trySinavGeriSayim(input) ??
-    // Bölüm bilgi soruları en önce: "sözlük nasıl kullanılır" gibi sorular
-    // tryIntents'teki genel cevaba düşmeden doğru bölümün özetini alır.
-    tryBolumBilgisi(input) ??
+    bolumVeyaMufredat ??
     tryIntents(input, tokens) ??
     // Sözlük "x kelimesinin anlamı" raw text üzerinden (Türkçe karakter
     // korunarak); tryNavigation'dan ÖNCE denenir.

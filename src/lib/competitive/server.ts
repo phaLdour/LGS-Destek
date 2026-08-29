@@ -94,9 +94,7 @@ export async function getCompetitiveOverview(): Promise<CompetitiveOverview> {
   // yumuşak reset + süresi dolmuş sezonların kapanışı/kupa dağıtımı).
   // Böylece lobi, kuyruğa girmeden önce de doğru ligi gösterir.
   if (!data) {
-    const { error } = await supabase.rpc("comp_ensure_season_and_rank", {
-      p_user_id: user.id,
-    });
+    const { error } = await supabase.rpc("comp_ensure_kendi_rutbem");
     if (!error) {
       ({ data } = await supabase
         .from("comp_ranks")

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { TEMA_ILK_BETIK } from "@/lib/tema";
+import { VARSAYILAN_TEMA_ID, temaBul } from "@/lib/temalar";
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -53,10 +54,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#16244C",
+  // Mobil tarayıcı çubuğu. Sunucudan gelen değer varsayılan temanın yüzey
+  // rengidir; öğrencinin seçtiği tema yüklenince src/lib/tema.ts bunu
+  // günceller (ve sayfa geçişlerinde geri dönmesini engeller).
+  themeColor: temaBul(VARSAYILAN_TEMA_ID).renkler.surface,
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // maximumScale/userScalable KALDIRILDI: yakınlaştırma kapalıyken görme
+  // güçlüğü olan kullanıcı sayfayı büyütemiyordu (WCAG 1.4.4 ihlali).
+  // Tarayıcı varsayılanı = kullanıcı serbestçe zoom yapabilir.
   // Telefonda içerik çentik/durum çubuğunun altına uzanabilsin;
   // gerçek koruma aşağıdaki safe-area padding'leriyle sağlanır.
   viewportFit: "cover",

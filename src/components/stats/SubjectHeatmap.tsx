@@ -6,6 +6,8 @@ import {
   getCurrentUser,
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
+// İstatistik penceresinin sınırı TR gün başıdır (bkz. lib/zaman.ts).
+import { trPencereBaslangici } from "@/lib/zaman";
 
 /**
  * Bir konunun performans yüzdesinin "anlamlı" sayılması için gereken
@@ -60,8 +62,10 @@ export async function SubjectHeatmap() {
 
   // Topic bazlı test sonuçları — son 180 gün. Sınırsız sorgu, kullanıcı
   // büyüdükçe yavaşlıyordu; diğer istatistikler de aynı pencereyi kullanır.
-  const since = new Date();
-  since.setDate(since.getDate() - 180);
+  // Sınır TR gün başına çekildi: bu kod sunucuda (UTC) çalışır, eski
+  // `setDate(getDate() - 180)` hesabı en eski günü yarım bırakıyor ve
+  // pencereyi Türkiye gününden 3 saat kaydırıyordu (bkz. lib/zaman.ts).
+  const since = trPencereBaslangici(180);
   const { data } = await supabase
     .from("quiz_results")
     .select("subject_slug, topic_id, correct_count, wrong_count")

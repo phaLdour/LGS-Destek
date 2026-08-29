@@ -102,9 +102,18 @@ export function pomodoroFazi(gecenSn: number): PomodoroFaz {
 
 let onbellek: OdakDurum | null | undefined; // undefined = henüz okunmadı
 
+/**
+ * Durumu HER ÇAĞRIDA depodan okur.
+ *
+ * Neden önbelleğe güvenmiyoruz: öğrenci siteyi iki sekmede açtığında her
+ * sekmenin kendi modül belleği vardı; A sekmesinde biten sayaç B sekmesinde
+ * hâlâ "çalışıyor" görünüyor ve süre İKİ KEZ kaydediliyordu. Ayrıca B'de
+ * başlatılan yeni sayaç A'nınkini sessizce eziyordu.
+ * localStorage okuması çok ucuz (senkron, mikro saniye); sayaç saniyede bir
+ * okunuyor, ölçülebilir bir maliyeti yok.
+ */
 function oku(): OdakDurum | null {
   if (typeof window === "undefined") return null;
-  if (onbellek !== undefined) return onbellek;
   try {
     const ham = window.localStorage.getItem(KEY);
     onbellek = ham ? (JSON.parse(ham) as OdakDurum) : null;
@@ -140,7 +149,20 @@ function dinleyicilereHaberVer() {
 /** Durum değişikliklerine abone ol (başlat/durdur/duraklat). Temizleyici döner. */
 export function odakAboneOl(fn: () => void): () => void {
   dinleyiciler.add(fn);
+  baskaSekmeyiDinle();
   return () => dinleyiciler.delete(fn);
+}
+
+/** Başka sekmede sayaç değiştiyse bu sekme de haberdar olsun. */
+let sekmeDinleyicisiKuruldu = false;
+function baskaSekmeyiDinle() {
+  if (sekmeDinleyicisiKuruldu || typeof window === "undefined") return;
+  sekmeDinleyicisiKuruldu = true;
+  window.addEventListener("storage", (e) => {
+    if (e.key !== null && e.key !== KEY) return;
+    onbellek = undefined;
+    dinleyicilereHaberVer();
+  });
 }
 
 export function odakDurumu(): OdakDurum | null {
@@ -149,7 +171,17 @@ export function odakDurumu(): OdakDurum | null {
 
 /* ------------------------------ Komutlar ------------------------------ */
 
+/**
+ * Yeni sayaç başlatır. Çalışan bir oturum varsa ÖNCE onu bitirip kaydeder —
+ * eskiden 47 dakikalık kronometre, "25 dk sayaç" düğmesine basılınca hiç
+ * kaydedilmeden siliniyordu.
+ */
 export function odakBaslat(mod: OdakMod, sureSn = 0) {
+  const onceki = oku();
+  if (onceki) {
+    const ozet = odakBitir();
+    if (ozet) void odakOturumunuKaydet(ozet);
+  }
   yaz({
     mod,
     baslangicMs: Date.now(),
@@ -187,6 +219,23 @@ export function sayacTamamla(): OdakOzet | null {
   const d = oku();
   if (!d || d.mod !== "sayac" || d.bitti) return null;
   if (sayacKalanSn(d) > 0) return null;
+  // Çoklu sekme koruması: yazmadan hemen önce depoyu bir kez daha oku;
+  // başka bir sekme aynı anda "bitti" yazdıysa ikinci kayıt oluşmasın.
+  const tazeHam = (() => {
+    try {
+      return window.localStorage.getItem(KEY);
+    } catch {
+      return null;
+    }
+  })();
+  if (tazeHam) {
+    try {
+      const taze = JSON.parse(tazeHam) as OdakDurum;
+      if (taze.bitti || taze.baslangicMs !== d.baslangicMs) return null;
+    } catch {
+      /* bozuk kayıt — devam */
+    }
+  }
   yaz({ ...d, bitti: true });
   return {
     mod: "sayac",
@@ -214,6 +263,8 @@ export function odakBitir(): OdakOzet | null {
   if (d.mod === "pomodoro") calismaSn = pomodoroFazi(gecen).calismaSn;
   // bitti=true ise süre sayacTamamla() anında zaten kaydedildi — çift sayma.
   if (d.mod === "sayac") calismaSn = d.bitti ? 0 : Math.min(gecen, d.sureSn);
+  // Terk edilmiş oturum (sekme günlerce açık kalmış) istatistiği bozmasın.
+  if (calismaSn > EN_UZUN_OTURUM_SN) calismaSn = 0;
   yaz(null);
   return {
     mod: d.mod,
@@ -224,10 +275,22 @@ export function odakBitir(): OdakOzet | null {
 
 /* ------------------------------ Okumalar ------------------------------ */
 
+/**
+ * Bir oturumun kaydedilebilecek en uzun süresi (saniye).
+ * Öğrenci sayacı açık bırakıp bilgisayarı kapatırsa ertesi gün "18 saat
+ * çalıştım" kaydı oluşuyordu; 6 saat makul bir üst sınır.
+ */
+export const EN_UZUN_OTURUM_SN = 6 * 3600;
+
 /** Duraklatmalar düşülmüş, fiilen akan süre (saniye). */
 export function aktifGecenSn(d: OdakDurum, simdiMs = Date.now()): number {
   if (d.duraklatmaMs !== null) return d.birikmisSn;
   return d.birikmisSn + Math.max(0, (simdiMs - d.baslangicMs) / 1000);
+}
+
+/** Terk edilmiş (çok uzun süredir açık) oturum mu? */
+export function terkEdilmisMi(d: OdakDurum, simdiMs = Date.now()): boolean {
+  return aktifGecenSn(d, simdiMs) > EN_UZUN_OTURUM_SN;
 }
 
 /** Sayaç modunda kalan süre (saniye, 0 tabanlı). */

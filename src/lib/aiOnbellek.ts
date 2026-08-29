@@ -37,10 +37,21 @@ function sadelestir(text: string): string {
  * (nedir, nasil, neden, kac, hangi, nerede, kim, ne zaman) BİLEREK burada
  * değildir — "üslü sayılar nedir" ile "üslü sayılar nasıl çözülür" aynı
  * anahtara düşerse yanlış cevap verilir.
+ *
+ * DÜZELTME: Listede anlam TAŞIYAN kelimeler vardı ve atıldıkları için farklı
+ * sorular aynı parmak izine düşüyordu:
+ *   - "su"  → FEN konusu ("su döngüsü", "suyun kaldırma kuvveti");
+ *             atılınca "su döngüsü nasıl olur" = "döngüsü nasıl olur".
+ *   - "bir" → aynı zamanda bir SAYIDIR ("bir basamaklı sayı").
+ *   - "cok" → matematikte niceliği belirler ("en çok" ≠ "en az").
+ *   - "o"   → zaten tek harflik olduğu için ayrıca elenirdi; listede
+ *             durması yanıltıcıydı.
+ * Bir dolgu kelimesini listeden çıkarmanın maliyeti yalnız "önbellek isabeti
+ * kaçırmak"tır; listede bırakmanın maliyeti ise YANLIŞ CEVAP vermektir.
  */
 const DOLGU = new Set([
-  "bir", "bu", "su", "o", "ve", "ile", "icin", "de", "da", "ki", "ya",
-  "mi", "mu", "acaba", "lutfen", "bana", "bize", "biraz", "cok", "peki",
+  "ve", "ile", "icin", "de", "da", "ki", "ya",
+  "mi", "mu", "acaba", "lutfen", "bana", "bize", "biraz", "peki",
   "hocam", "baykus", "merhaba", "selam", "rica", "ederim", "misin",
   "musun", "misiniz", "soyler", "soyle", "anlat", "aciklar", "yani",
 ]);
@@ -53,14 +64,57 @@ const DOLGU = new Set([
 export function parmakIzi(soru: string): string | null {
   const sade = sadelestir(soru ?? "");
   if (!sade) return null;
+  // DÜZELTME: Eskiden tek karakterli HER belirteç atılıyordu. "8. sınıf"
+  // sadeleştirilince "8 sinif" olur, "8" tek karakter diye düşer ve soru
+  // "7. sınıf" ile AYNI parmak izine ("sinif") çıkardı; öğrenci 7. sınıf
+  // sorusuna 8. sınıf cevabını alırdı. Sayı içeren belirteçler artık uzunluk
+  // ve dolgu denetiminden muaftır — sayı her zaman anlam taşır.
   const kelimeler = sade
     .split(" ")
-    .filter((k) => k.length > 1 && !DOLGU.has(k));
+    .filter((k) =>
+      k.length > 0 && (/[0-9]/.test(k) || (k.length > 1 && !DOLGU.has(k))),
+    );
   if (kelimeler.length === 0) return null;
   // Çok uzun sorular tekil olma eğilimindedir; önbelleğe uygun değildir.
   if (kelimeler.length > 25) return null;
   const anahtar = Array.from(new Set(kelimeler)).sort().join(" ");
   return anahtar.length >= 3 && anahtar.length <= 380 ? anahtar : null;
+}
+
+/**
+ * Sohbetin ortasında sorulan, önceki mesaja yaslanan sorular. Bunlar tek
+ * başına anlaşılmadığı için önbellekte ARANMAZ ve önbelleğe YAZILMAZ.
+ */
+const BAGLAM_ONEKLERI = [
+  "peki", "ya bu", "ya su", "ya o", "bunu", "bunlari", "bunlar", "sunu",
+  "onu", "bu konuyu", "ayni sekilde", "devam et", "daha fazla",
+  "baska ornek", "ornek ver", "tekrar anlat", "anlamadim", "neden oyle",
+  "nasil yani", "biraz daha",
+];
+
+/**
+ * Soru TEK BAŞINA anlaşılıyor mu? Yalnız "evet" ise önbellek devreye girer.
+ *
+ * DÜZELTME: bu karar eskiden sohbet rotasında `history.length <= 2 ||
+ * uzunluk >= 12` şeklinde, yani `||` ile veriliyordu. `||` iki koşulu da
+ * işlevsiz kılıyordu: 12 karakterden uzun her soru — sohbetin 8. adımında
+ * bile — "bağımsız" sayılıyor, "Peki bunu bir örnekle açıklar mısın?" gibi
+ * tamamen bağlama bağlı bir cümle hem önbellekten yanlış cevap alıyor hem de
+ * o yanlış eşleşme site geneline yazılıyordu. Doğrusu `&&`: soru ancak
+ * sohbetin BAŞINDA ise VE kendi başına yetecek kadar uzunsa bağımsızdır.
+ *
+ * @param gecmisUzunlugu Sohbet geçmişindeki mesaj sayısı (cihaz önbelleğinde
+ *   geçmiş bilinmediği için 0 geçilir; oradaki tek ölçüt uzunluk ve öneklerdir).
+ */
+export function bagimsizSoruMu(soru: string, gecmisUzunlugu = 0): boolean {
+  const s = (soru ?? "").trim();
+  if (s.length < 12) return false;
+  if (gecmisUzunlugu > 2) return false;
+  const sade = sadelestir(s);
+  for (const onek of BAGLAM_ONEKLERI) {
+    if (sade === onek || sade.startsWith(`${onek} `)) return false;
+  }
+  return true;
 }
 
 /**

@@ -7,6 +7,8 @@ import {
   Target,
 } from "lucide-react";
 import { GUVEN_KOTASI, type BugununPlani as Plan, type PlanKonusu } from "@/lib/bugununPlani";
+// Başlıktaki tarih de Türkiye gününü göstermeli (bkz. lib/zaman.ts).
+import { trBugunBaslangici, trHaftaninGunu } from "@/lib/zaman";
 
 const AYLAR = [
   "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -26,8 +28,14 @@ const GUNLER = [
  * yanlış" gibi yanıltıcı bir sayıyla karşılaşmaz.
  */
 export function BugununPlani({ plan }: { plan: Plan }) {
-  const bugun = new Date();
-  const tarih = `${GUNLER[bugun.getDay()]}, ${bugun.getDate()} ${AYLAR[bugun.getMonth()]}`;
+  // Bu bir server component; Vercel sunucusu UTC çalışır. `new Date()`in
+  // yerel gününü yazmak, TR saatiyle 00:00-03:00 arasında karta BİR ÖNCEKİ
+  // günü yazdırıyordu ("Bugünün planı — dün"). TR gün başını UTC alanlardan
+  // okuyunca tarih nerede çalışırsa çalışsın Türkiye günüdür.
+  const simdi = new Date();
+  const trGunBasi = trBugunBaslangici(simdi);
+  const trTakvim = new Date(trGunBasi.getTime() + 3 * 60 * 60 * 1000);
+  const tarih = `${GUNLER[trHaftaninGunu(simdi)]}, ${trTakvim.getUTCDate()} ${AYLAR[trTakvim.getUTCMonth()]}`;
 
   return (
     <section className="ring-hairline relative mt-4 overflow-hidden rounded-3xl border border-rehberim-border bg-white shadow-card">

@@ -232,6 +232,8 @@ function SozlukClientInner({
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rehberim-navy/45" />
           <input
             type="text"
+            // Placeholder etiket yerine geçmez → erişilebilir ad eklendi.
+            aria-label="Kelime ara"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Kelime ara (örn. açık, gözü, taş)…"
@@ -242,10 +244,16 @@ function SozlukClientInner({
           onSubmit={handleJumpSubmit}
           className="flex items-center gap-2"
         >
-          <label className="text-xs font-bold text-rehberim-navy/70">
+          {/* Etiket input ile ilişkili değildi (htmlFor/id yoktu); ekran
+              okuyucu alanı adsız okuyordu. */}
+          <label
+            htmlFor="sozluk-sayfa-atla"
+            className="text-xs font-bold text-rehberim-navy/70"
+          >
             Sayfa atla:
           </label>
           <input
+            id="sozluk-sayfa-atla"
             type="number"
             min={1}
             max={totalPages}

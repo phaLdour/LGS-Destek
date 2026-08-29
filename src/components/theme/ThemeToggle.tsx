@@ -8,7 +8,8 @@
  * (satranç sitelerindeki tahta/taş teması seçicisi gibi).
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Check, Moon, Palette, Sun, X } from "lucide-react";
 import { TEMALAR, temaBul, type Tema } from "@/lib/temalar";
 import { temaAboneOl, temaOku, temaUygula } from "@/lib/tema";
@@ -34,6 +35,16 @@ export function ThemeToggle({
 }) {
   const [temaId, setTemaId] = useState<string | null>(null);
   const [panelAcik, setPanelAcik] = useState(false);
+  /** Paneli açan düğme — kapanışta odak buraya geri döner (klavye kuralı). */
+  const tetikleyiciRef = useRef<HTMLButtonElement>(null);
+
+  // Kimliği sabit: panelin odak/kaydırma etkisi her boyamada yeniden kurulmasın.
+  const paneliKapat = useCallback(() => {
+    setPanelAcik(false);
+    // Odak, paneli açan düğmeye geri döner; klavye kullanıcısı listenin
+    // başına savrulmaz.
+    tetikleyiciRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const mevcut = temaOku();
@@ -75,8 +86,11 @@ export function ThemeToggle({
             {etiket}
           </button>
           <button
+            ref={tetikleyiciRef}
             onClick={() => setPanelAcik(true)}
             aria-label="Tema seç"
+            aria-haspopup="dialog"
+            aria-expanded={panelAcik}
             title="Tema seç"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
           >
@@ -94,8 +108,11 @@ export function ThemeToggle({
             <Icon className="h-5 w-5" />
           </button>
           <button
+            ref={tetikleyiciRef}
             onClick={() => setPanelAcik(true)}
             aria-label="Tema seç"
+            aria-haspopup="dialog"
+            aria-expanded={panelAcik}
             title="Tema seç"
             className="flex h-9 w-9 items-center justify-center rounded-lg text-rehberim-navy/70 transition hover:bg-rehberim-muted hover:text-rehberim-navy"
           >
@@ -107,7 +124,7 @@ export function ThemeToggle({
       {panelAcik && (
         <TemaSecici
           secili={tema.id}
-          kapat={() => setPanelAcik(false)}
+          kapat={paneliKapat}
           sec={(id) => temaUygula(id, true)}
         />
       )}
@@ -115,7 +132,20 @@ export function ThemeToggle({
   );
 }
 
-/** Tam ekran tema seçici — her tema kendi renkleriyle önizlenir. */
+/**
+ * Tam ekran tema seçici — her tema kendi renkleriyle önizlenir.
+ *
+ * PORTAL ŞART: bu bileşen mobil üst barın (backdrop-blur'lu <header>) ve
+ * mobil çekmecenin içinde çağrılıyor. `backdrop-filter` uygulanmış bir ata,
+ * altındaki `position: fixed` çocuklar için "içine hapseden kutu" olur —
+ * panel 56px'lik başlığın içine sıkışıyor ve kendi backdrop-blur'ü de sayfayı
+ * değil yalnız o kutuyu bulanıklaştırıyordu. document.body'ye taşıyarak
+ * hem tam ekran kaplar hem arkası gerçekten bulanıklaşır.
+ *
+ * KLAVYE (erişilebilirlik): Escape kapatır, açılınca odak panele girer,
+ * Tab odağı panelin içinde döndürür (focus trap), kapanınca odak paneli
+ * açan düğmeye geri döner.
+ */
 function TemaSecici({
   secili,
   sec,
@@ -126,23 +156,71 @@ function TemaSecici({
   kapat: () => void;
 }) {
   const kutuRef = useRef<HTMLDivElement>(null);
+  const [bagli, setBagli] = useState(false);
+
+  // Portal yalnız istemcide kurulur (SSR'de document yok).
+  useEffect(() => setBagli(true), []);
 
   useEffect(() => {
-    const esc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") kapat();
+    const kutu = kutuRef.current;
+    if (!kutu) return;
+
+    // Odaklanabilir öğeler — panel her açıldığında yeniden hesaplanır.
+    const odaklanabilirler = () =>
+      Array.from(
+        kutu.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((e) => !e.hasAttribute("disabled") && e.offsetParent !== null);
+
+    // Açılınca odak panele girsin (seçili tema varsa onun üstüne).
+    const ilk =
+      kutu.querySelector<HTMLElement>('[aria-pressed="true"]') ??
+      odaklanabilirler()[0];
+    ilk?.focus();
+
+    const tus = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        kapat();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const liste = odaklanabilirler();
+      if (liste.length === 0) return;
+      const ilkOge = liste[0];
+      const sonOge = liste[liste.length - 1];
+      const etkin = document.activeElement as HTMLElement | null;
+      // Odak paneli terk edemez: uçlarda başa/sona sarar.
+      if (e.shiftKey && (etkin === ilkOge || !kutu.contains(etkin))) {
+        e.preventDefault();
+        sonOge.focus();
+      } else if (!e.shiftKey && (etkin === sonOge || !kutu.contains(etkin))) {
+        e.preventDefault();
+        ilkOge.focus();
+      }
     };
-    document.addEventListener("keydown", esc);
-    return () => document.removeEventListener("keydown", esc);
-  }, [kapat]);
+
+    document.addEventListener("keydown", tus, true);
+    // Panel açıkken arka plan kaymasın.
+    const eskiTasma = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", tus, true);
+      document.body.style.overflow = eskiTasma;
+    };
+  }, [kapat, bagli]);
 
   const gruplar: { baslik: string; aile: "acik" | "koyu" }[] = [
     { baslik: "Açık temalar", aile: "acik" },
     { baslik: "Koyu temalar", aile: "koyu" },
   ];
 
-  return (
+  if (!bagli) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-rehberim-navy-dark/60 p-3 backdrop-blur-md sm:items-center sm:p-6"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-rehberim-navy-dark/60 p-3 backdrop-blur-md sm:items-center sm:p-6"
       onClick={(e) => {
         if (e.target === e.currentTarget) kapat();
       }}
@@ -152,7 +230,7 @@ function TemaSecici({
     >
       <div
         ref={kutuRef}
-        className="max-h-[86vh] w-full max-w-2xl animate-scale-in overflow-y-auto rounded-3xl border border-rehberim-border bg-rehberim-surface p-5 shadow-elevated sm:p-6"
+        className="max-h-[86vh] w-full max-w-2xl animate-scale-in overflow-y-auto rounded-3xl border border-rehberim-border bg-rehberim-surface p-5 text-rehberim-navy shadow-elevated sm:p-6"
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
@@ -188,7 +266,8 @@ function TemaSecici({
           </section>
         ))}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

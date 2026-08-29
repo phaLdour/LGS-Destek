@@ -40,6 +40,9 @@ export function DailyGoalCard({
           <div className="flex items-center gap-1.5">
             <input
               type="number"
+              // Bu alanın görünür bir etiketi yok; ekran okuyucu "dk" yazısını
+              // input ile ilişkilendiremiyordu → erişilebilir ad eklendi.
+              aria-label="Günlük hedef (dakika)"
               value={value}
               min={5}
               max={600}

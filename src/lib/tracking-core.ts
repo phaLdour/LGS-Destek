@@ -102,14 +102,29 @@ export function computeStats(
   let totalCorrect = 0;
   let totalWrong = 0;
   let questionsToday = 0;
+  /**
+   * "Çözülen test" sayacı: yalnız ÖĞRENCİNİN GERÇEKTEN ÇÖZDÜĞÜ testler.
+   *
+   * Eskiden `quizzesSolved = quizRows.length` idi — yani tabloya düşen HER
+   * satır sayılıyordu. Oysa sistem, öğrenci hiçbir soruyu işaretlemese bile
+   * kayıt üretebiliyor: deneme sınavında süre dolunca `finishExam()` otomatik
+   * çağrılır ve `total_questions` dolu ama `correct = wrong = 0` olan bir satır
+   * yazılır. Açılıp bırakılan her deneme "çözülen test" sayılıyordu.
+   *
+   * Kural: en az bir soru cevaplanmışsa test çözülmüştür. Üretilmiş ama
+   * çözülmemiş kayıtlar sayılmaz. (Soru sayısı ve doğru oranı zaten
+   * correct/wrong üzerinden hesaplandığı için bu satırlar onları bozmuyordu.)
+   */
+  let cozulenTest = 0;
   for (const r of quizRows) {
     totalCorrect += r.correct_count;
     totalWrong += r.wrong_count;
+    if (r.correct_count + r.wrong_count > 0) cozulenTest += 1;
     if (new Date(r.created_at).getTime() >= todayStartMs) {
       questionsToday += r.correct_count + r.wrong_count;
     }
   }
-  stats.quizzesSolved = quizRows.length;
+  stats.quizzesSolved = cozulenTest;
   stats.questionsAnswered = totalCorrect + totalWrong;
   stats.accuracyPct = stats.questionsAnswered
     ? Math.round((totalCorrect / stats.questionsAnswered) * 100)

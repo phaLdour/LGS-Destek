@@ -85,13 +85,18 @@ export function NicknameEditor({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
-      <label className="block text-sm font-semibold text-rehberim-navy">
+      {/* Etiket input ile ilişkili değildi (htmlFor/id yoktu). */}
+      <label
+        htmlFor="rekabet-takma-ad"
+        className="block text-sm font-semibold text-rehberim-navy"
+      >
         Takma ad
       </label>
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Pencil className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-rehberim-navy/35" />
           <input
+            id="rekabet-takma-ad"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder={derivedName}

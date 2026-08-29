@@ -113,10 +113,23 @@ export function OdakClient() {
     };
   }, []);
 
-  // Ekran uyumasın: sayaç akarken wake lock iste
+  // Ekran uyumasın: sayaç akarken wake lock iste.
+  // DİKKAT: her istekten önce eski kilit MUTLAKA bırakılır — yoksa duraklat/
+  // devam et döngüsünde sentinel'ler birikiyor ve sayaç durdurulduğunda bile
+  // ekran uyanık kalıp pili tüketiyordu.
   useEffect(() => {
     let kilit: { release: () => Promise<void> } | null = null;
     let iptal = false;
+    const birak = async () => {
+      if (!kilit) return;
+      const eski = kilit;
+      kilit = null;
+      try {
+        await eski.release();
+      } catch {
+        /* zaten bırakılmış olabilir */
+      }
+    };
     const iste = async () => {
       try {
         type WakeNav = Navigator & {
@@ -125,9 +138,14 @@ export function OdakClient() {
         const wl = (navigator as WakeNav).wakeLock;
         if (!wl) return;
         const d = odakDurumu();
-        if (!d || d.duraklatmaMs !== null) return;
+        // Sayaç yok ya da duraklatıldı → kilidi bırak, ekran normale dönsün.
+        if (!d || d.duraklatmaMs !== null) {
+          await birak();
+          return;
+        }
+        if (kilit) return; // zaten kilitli
         kilit = await wl.request("screen");
-        if (iptal) void kilit.release();
+        if (iptal) await birak();
       } catch {
         /* desteklenmiyorsa sessizce geç */
       }
@@ -142,7 +160,7 @@ export function OdakClient() {
       iptal = true;
       document.removeEventListener("visibilitychange", gorunum);
       abone();
-      if (kilit) void kilit.release();
+      void birak();
     };
   }, []);
 
@@ -481,6 +499,8 @@ function SayacGostergesi({
         <div className="mt-3 flex items-center justify-center gap-2">
           <input
             inputMode="numeric"
+            // Placeholder etiket yerine geçmez → erişilebilir ad eklendi.
+            aria-label="Özel süre (dakika)"
             value={ozelDk}
             onChange={(e) => setOzelDk(e.target.value.replace(/\D/g, "").slice(0, 3))}
             placeholder="Özel süre (dk)"

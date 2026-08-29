@@ -125,14 +125,18 @@ export function PastExamClient({
     );
     const answered = answers.filter((a) => a !== null).length;
     const wrong = answered - correct;
-    void saveQuizResult({
-      subjectSlug: `__cikmis_${year}_${section}__`,
-      topicId: `cikmis-${year}-${section}`,
-      correct,
-      wrong,
-      total: questions.length,
-      durationSeconds: dur,
-    });
+    // Hiç soru işaretlenmediyse istatistiğe kayıt DÜŞMEZ — süre dolunca
+    // kendiliğinden biten, açılıp bırakılmış sınav "çözülen test" sayılmasın.
+    if (answered > 0) {
+      void saveQuizResult({
+        subjectSlug: `__cikmis_${year}_${section}__`,
+        topicId: `cikmis-${year}-${section}`,
+        correct,
+        wrong,
+        total: questions.length,
+        durationSeconds: dur,
+      });
+    }
     setPhase("result");
   }
 
@@ -315,7 +319,9 @@ export function PastExamClient({
           <p className="mb-3 text-xs font-bold uppercase tracking-wider text-rehberim-navy/55">
             {q.subject} Soruları
           </p>
-          <div className="grid grid-cols-10 gap-1.5">
+          {/* Dokunma hedefi: 10 sabit sütunda kutucuklar telefonda ~27px kalıyor,
+              yanlış soruya basılıyordu. Sütunlar en az 44px (WCAG 2.5.5). */}
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5">
             {(activeGroup?.indices ?? []).map((gi, localIdx) => {
               const isActive = gi === current;
               const answered = answers[gi] !== null;
@@ -323,7 +329,8 @@ export function PastExamClient({
                 <button
                   key={gi}
                   onClick={() => goTo(gi)}
-                  className={`flex h-9 items-center justify-center rounded-md text-xs font-bold transition ${
+                  // h-9 (36px) yerine h-11 (44px): mobil dokunma hedefi
+                  className={`flex h-11 items-center justify-center rounded-md text-xs font-bold transition ${
                     isActive
                       ? "bg-rehberim-navy text-white"
                       : answered
@@ -528,7 +535,8 @@ export function PastExamClient({
           <ClipboardList className="h-5 w-5" />
           Detaylı rapor
         </h4>
-        <div className="grid grid-cols-10 gap-1.5">
+        {/* Rapor ızgarası da aynı dokunma hedefi kuralına uyar (en az 44px). */}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(44px,1fr))] gap-1.5">
           {questions.map((q, i) => {
             const sel = answers[i];
             const status =
@@ -550,7 +558,8 @@ export function PastExamClient({
                   setReviewIndex(i);
                   setPhase("review");
                 }}
-                className={`flex h-9 items-center justify-center rounded-md text-xs font-bold transition ${cls}`}
+                // h-9 (36px) yerine h-11 (44px): mobil dokunma hedefi
+                className={`flex h-11 items-center justify-center rounded-md text-xs font-bold transition ${cls}`}
                 title={`${q.subject} ${q.no}. soru`}
               >
                 {i + 1}

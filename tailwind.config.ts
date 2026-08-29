@@ -19,6 +19,12 @@ const config: Config = {
           "accent-dark": "rgb(var(--rb-accent-dark-ch) / <alpha-value>)",
           "accent-deep": "rgb(var(--rb-accent-deep-ch) / <alpha-value>)",
           "accent-light": "rgb(var(--rb-accent-light-ch) / <alpha-value>)",
+          // Vurgu rengiyle DOLU zeminlerin (turuncu buton, gradyanlı CTA)
+          // üstündeki yazı mürekkebi. KURAL: yazı arkasındaki renge göre
+          // okunaklı olmalı — bu token her temada ölçülür.
+          "on-accent": "rgb(var(--rb-on-accent-ch) / <alpha-value>)",
+          // Soluk vurgu (accent-light) zeminlerinin mürekkebi.
+          "on-accent-light": "rgb(var(--rb-on-accent-light-ch) / <alpha-value>)",
           surface: "rgb(var(--rb-surface-ch) / <alpha-value>)",
           muted: "rgb(var(--rb-muted-ch) / <alpha-value>)",
           border: "rgb(var(--rb-border-ch) / <alpha-value>)",

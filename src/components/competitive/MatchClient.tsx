@@ -301,7 +301,7 @@ export function MatchClient({
               key={i}
               className={`h-2 flex-1 rounded-full transition-colors duration-500 ${
                 i < opponentAnswered
-                  ? "bg-gradient-to-r from-rehberim-accent to-amber-500"
+                  ? "bg-gradient-to-r from-rehberim-accent to-rehberim-accent-dark"
                   : "bg-rehberim-muted"
               }`}
             />
@@ -395,7 +395,7 @@ export function MatchClient({
           <button
             onClick={handleConfirm}
             disabled={selected === null || sending}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-amber-500 px-4 py-3 text-sm font-extrabold text-rehberim-navy shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-card"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-rehberim-accent to-rehberim-accent-dark px-4 py-3 text-sm font-extrabold text-rehberim-on-accent shadow-card transition-all duration-200 ease-smooth hover:-translate-y-px hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:shadow-card"
           >
             {sending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

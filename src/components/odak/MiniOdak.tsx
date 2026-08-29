@@ -47,6 +47,13 @@ export function MiniOdak() {
   const pathname = usePathname();
   const [, setTik] = useState(0);
 
+  // Sayfa değişince "orijinal başlık" hafızasını tazele: sayaç dashboard'da
+  // başlatılıp deneme sayfasında bitirilince sekme başlığı dashboard'ınkine
+  // dönüp orada kalıyordu.
+  useEffect(() => {
+    orijinalBaslik = null;
+  }, [pathname]);
+
   useEffect(() => {
     const kalpAtisi = () => {
       const d = odakDurumu();
