@@ -351,6 +351,17 @@ function SozlukClientInner({
                           {k.tur}
                         </span>
                       )}
+                      {/* LGS'de sık çıkan kelimeler işaretli: öğrenci önce
+                          bunlara çalışsın. Kelime testi de yalnız bunlardan
+                          soru üretir. */}
+                      {k.lgsSik && (
+                        <span
+                          title="LGS'de sözcükte anlam / cümlede anlam sorularında sık çıkar"
+                          className="rounded-full bg-rehberim-accent/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-rehberim-accent-deep"
+                        >
+                          LGS&apos;de sık
+                        </span>
+                      )}
                     </header>
                     <ol className="space-y-2">
                       {k.anlamlar.map((a, j) => {

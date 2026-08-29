@@ -2,7 +2,11 @@ import Link from "next/link";
 import { ArrowLeft, BookOpenCheck } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { KelimeTestiClient } from "@/components/sozluk/KelimeTestiClient";
-import { kelimeSorusuSayisi, kelimeTuruUret } from "@/lib/kelimeTesti";
+import {
+  kelimeSorusuSayisi,
+  kelimeTuruUret,
+  testKelimeSayisi,
+} from "@/lib/kelimeTesti";
 import { getShellUser } from "@/lib/user";
 
 export const metadata = {
@@ -51,8 +55,9 @@ export default async function KelimeTestiPage({
             <h1 className="text-xl font-extrabold tracking-tight">Kelime Testi</h1>
             <p className="mt-1 text-pretty text-sm text-white/85">
               LGS&apos;nin &ldquo;sözcükte anlam&rdquo; soruları: cümlede hangi
-              anlamda kullanılmış, gerçek mi mecaz mı? Sorular sözlükten
-              üretilir — her tur farklıdır.
+              anlamda kullanılmış, gerçek mi mecaz mı? Sorular yalnız
+              LGS&apos;de en sık çıkan {testKelimeSayisi()} kelimeden üretilir —
+              her tur farklıdır.
             </p>
           </div>
         </div>

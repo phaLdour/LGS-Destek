@@ -219,10 +219,11 @@ export const SITE_HARITASI: SiteBolumu[] = [
     rota: "/sozluk/test",
     ad: "Kelime Testi",
     ozet:
-      "Sözlükteki kelimelerden üretilen LGS tarzı sözcükte anlam testi: cümlede hangi anlamda, gerçek mi mecaz mı?",
+      "LGS'de en sık çıkan çok anlamlı kelimelerden üretilen sözcükte anlam testi: cümlede hangi anlamda, gerçek mi mecaz mı?",
     yapabilecekleri: [
       "Her tur 10 soru; her turda farklı kelimeler gelir.",
-      "Sorular sözlükteki gerçek tanım ve örnek cümlelerden üretilir — 2.700'den fazla soru vardır.",
+      "Test yalnız LGS'de en sık karşılaşılan kelimelerden soru üretir; sözlüğün tamamı (arama için) çok daha geniştir.",
+      "Sorular sözlükteki gerçek tanım ve örnek cümlelerden üretilir — 800'den fazla soru vardır.",
       "Sonuçların soru sayacına işlenir; 100 soru çözene Kelime Avcısı rozeti verilir.",
     ],
     anahtarlar: ["kelime testi", "kelime sorusu", "sozcukte anlam testi", "mecaz testi"],

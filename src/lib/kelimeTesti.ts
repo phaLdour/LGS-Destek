@@ -1,9 +1,9 @@
 /**
  * Kelime testi soru üretici.
  *
- * Sözlükteki 599 kelime ve 1600+ etiketli anlamdan, LGS'nin "sözcükte
- * anlam" sorularına birebir benzeyen sorular türetir — elle soru yazmak
- * yok, sözlük büyüdükçe test kendiliğinden zenginleşir.
+ * LGS'de en sık çıkan çok anlamlı kelimelerden (sözlükte lgsSik olarak
+ * işaretli 115 kelime), "sözcükte anlam" sorularına birebir benzeyen
+ * sorular türetir — elle soru yazmak yok.
  *
  * İki soru tipi:
  *  A) "Cümlede hangi anlamda?" — çok anlamlı bir kelimenin bir örnek
@@ -17,6 +17,17 @@
  * çünkü tohum sorudan türetilir.
  */
 import { SOZLUK, type Kelime } from "@/content/sozluk-veri";
+
+/**
+ * TESTİN KELİME HAVUZU — sözlüğün TAMAMI değil, yalnız LGS'de "sözcükte
+ * anlam" ve "cümlede anlam" sorularında en sık karşılaşılan kelimeler
+ * (sozluk-veri.ts içinde lgsSik: true ile işaretli olanlar).
+ *
+ * Neden: sözlük bir başvuru kaynağı olarak geniş kalmalı, ama test
+ * öğrencinin sınavda gerçekten karşılaşacağı kelimelere odaklanmalı.
+ * Sözlüğe yeni kelime eklemek testi kendiliğinden şişirmez.
+ */
+const TEST_HAVUZU: Kelime[] = SOZLUK.filter((k) => k.lgsSik);
 
 export type KelimeSorusu = {
   /** "kelime#anlamIndex#tip" — çözüldü/yanlış takibi için kararlı kimlik */
@@ -100,8 +111,13 @@ function tipB(k: Kelime): KelimeSorusu[] {
 /** Tüm üretilebilir soruların sayısı (tanıtım metinleri için). */
 export function kelimeSorusuSayisi(): number {
   let n = 0;
-  for (const k of SOZLUK) n += tipA(k).length + tipB(k).length;
+  for (const k of TEST_HAVUZU) n += tipA(k).length + tipB(k).length;
   return n;
+}
+
+/** Testin kaç kelimeden soru ürettiği (tanıtım metinleri için). */
+export function testKelimeSayisi(): number {
+  return TEST_HAVUZU.length;
 }
 
 /**
@@ -111,7 +127,7 @@ export function kelimeSorusuSayisi(): number {
  */
 export function kelimeTuruUret(tur: number, adet = 10): KelimeSorusu[] {
   const hepsi: KelimeSorusu[] = [];
-  for (const k of SOZLUK) {
+  for (const k of TEST_HAVUZU) {
     hepsi.push(...tipA(k), ...tipB(k));
   }
   // Tur numarası tohuma girer: her "Yeni tur" farklı bir kesit getirir,
