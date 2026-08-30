@@ -1,6 +1,6 @@
 {
   "id": "/",
-  "name": "Rehberim — LGS Çalışma Platformu",
+  "name": "Rehberim",
   "short_name": "Rehberim",
   "description": "Türkiye LGS müfredatına çalışacağın akıllı platform: dersler, konular, Hızlı Sorular, Deneme Sınavı ve daha fazlası.",
   "start_url": "/dashboard",
@@ -29,7 +29,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -37,7 +37,8 @@
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ],
   "shortcuts": [

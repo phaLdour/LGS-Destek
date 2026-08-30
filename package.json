@@ -10,7 +10,9 @@
     "lint": "next lint",
     "tema-kontrol": "node tools/tema-kontrast.mjs",
     "tema-css": "node tools/tema-css-uret.mjs",
-    "test:sw": "node tools/test-sw.mjs"
+    "test:sw": "node tools/test-sw.mjs",
+    "test:manifest": "node tools/test-manifest.mjs",
+    "test": "node tools/test-sw.mjs && node tools/test-manifest.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
