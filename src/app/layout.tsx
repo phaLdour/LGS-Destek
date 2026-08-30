@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { HataDinleyici } from "@/components/HataDinleyici";
 import { KurulumDaveti } from "@/components/pwa/KurulumDaveti";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { TEMA_ILK_BETIK } from "@/lib/tema";
@@ -90,6 +91,8 @@ export default function RootLayout({
             burada duruyor — ilk ziyaretçi de görebilsin. */}
         <KurulumDaveti />
         <ServiceWorkerRegister />
+        {/* Yakalanmamış hataları ve reddedilen sözleri bildirir. */}
+        <HataDinleyici />
       </body>
     </html>
   );

@@ -3743,3 +3743,215 @@ create index if not exists wrong_answers_due_idx
 -- (user_id, started_at >= sınır) biçiminde; indeks buna göre.
 create index if not exists study_sessions_user_started_idx
   on public.study_sessions (user_id, started_at desc);
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 15 — HIZ SINIRI VE HATA İZLEME
+-- ════════════════════════════════════════════════════════════════════
+-- İki ayrı ihtiyaç, tek blokta:
+--
+-- 1. HIZ SINIRI. 16 API adresinin hiçbirinde sınır yoktu. Meraklı bir
+--    öğrenci (ya da bir bot) baykuşa saniyede yüz soru sordurursa günlük
+--    Gemini kotası bir öğleden önce biter ve site HERKES için sessizleşir.
+--    Sayaç veritabanında tutulur, çünkü Vercel isteği her seferinde
+--    başka bir sunucu örneğine yollayabilir: bellekteki sayaç örnekler
+--    arasında paylaşılmaz ve günlük tavan hiç kurulamaz.
+--
+-- 2. HATA İZLEME. Öğrencinin ekranında bir hata çıktığında haberimiz
+--    olmuyordu. Dışarıya bir servise bağlanmak yerine hatalar kendi
+--    veritabanımıza yazılıyor: ek hesap yok, ek ücret yok, veri
+--    Rehberim'in kendi Supabase'inde kalıyor.
+--
+-- Idempotenttir: SQL editöründe tekrar tekrar çalıştırılabilir.
+
+-- ────────────────────────────────────────────────────────────────────
+-- 15.1  Hız sayacı — sabit pencere (fixed window)
+-- ────────────────────────────────────────────────────────────────────
+-- Pencere, epoch saniyesinin pencere boyuna bölünmesiyle bulunur; böylece
+-- ayrı sunucu örnekleri AYNI pencereyi hesaplar ve sayaç ortaklaşır.
+create table if not exists public.hiz_sayaci (
+  anahtar          text        not null,
+  pencere_baslangic timestamptz not null,
+  sayi             int         not null default 0,
+  primary key (anahtar, pencere_baslangic)
+);
+
+-- Temizlik taraması için: eski pencereleri hızlı bul.
+create index if not exists hiz_sayaci_pencere_idx
+  on public.hiz_sayaci (pencere_baslangic);
+
+alter table public.hiz_sayaci enable row level security;
+-- Politika BİLEREK YOK: tabloya yalnız aşağıdaki security definer
+-- fonksiyon dokunur. İstemcinin sayacı okuması ya da sıfırlaması anlamsız
+-- ve tehlikelidir (sınırı kendi kaldırır).
+revoke all on public.hiz_sayaci from public, anon, authenticated;
+
+/**
+ * Bir isteği sayar ve sınırın altında mı söyler.
+ *
+ * p_anahtar: neyi sınırlıyoruz — "chat:<user_id>" gibi. Çağıran kurar.
+ * p_limit:   pencere içinde izin verilen istek sayısı.
+ * p_pencere_sn: pencere boyu (60 = dakikalık, 86400 = günlük).
+ *
+ * Dönüş: izin (bu istek geçsin mi), kalan (bu istekten sonra kalan hak),
+ *        sifirlanma (pencerenin bitiş anı — istemciye "ne zaman" demek için).
+ *
+ * SAYMA HER ZAMAN YAPILIR, reddedilen istek de sayılır: aksi hâlde sınırı
+ * aşan bir bot, reddedildikçe sayacı ilerletmeden sonsuza dek deneyebilirdi.
+ */
+create or replace function public.hiz_siniri_dene(
+  p_anahtar text,
+  p_limit int,
+  p_pencere_sn int
+) returns table(izin boolean, kalan int, sifirlanma timestamptz)
+language plpgsql security definer
+as $$
+declare
+  v_pencere timestamptz;
+  v_sayi int;
+begin
+  if p_anahtar is null or length(p_anahtar) = 0 then
+    raise exception 'anahtar bos' using errcode = '22023';
+  end if;
+  if p_limit < 1 or p_pencere_sn < 1 then
+    raise exception 'gecersiz sinir' using errcode = '22023';
+  end if;
+
+  v_pencere := to_timestamp(
+    floor(extract(epoch from now()) / p_pencere_sn) * p_pencere_sn
+  );
+
+  insert into public.hiz_sayaci (anahtar, pencere_baslangic, sayi)
+  values (p_anahtar, v_pencere, 1)
+  on conflict (anahtar, pencere_baslangic)
+    do update set sayi = public.hiz_sayaci.sayi + 1
+  returning sayi into v_sayi;
+
+  return query select
+    v_sayi <= p_limit,
+    greatest(0, p_limit - v_sayi),
+    v_pencere + make_interval(secs => p_pencere_sn);
+end;
+$$;
+
+-- Yalnız sunucu (service role) çağırabilir. İstemciye açık olsaydı öğrenci
+-- kendi sayacını istediği anahtarla şişirip başkasını kilitleyebilirdi.
+revoke execute on function public.hiz_siniri_dene(text, int, int)
+  from public, anon, authenticated;
+grant execute on function public.hiz_siniri_dene(text, int, int) to service_role;
+
+/** Bitmiş pencereleri siler. Haftalık bakım cron'u çağırır. */
+create or replace function public.hiz_sayaci_bakim()
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_silinen int;
+begin
+  delete from public.hiz_sayaci
+   where pencere_baslangic < now() - interval '2 days';
+  get diagnostics v_silinen = row_count;
+  return v_silinen;
+end;
+$$;
+
+revoke execute on function public.hiz_sayaci_bakim() from public, anon, authenticated;
+grant execute on function public.hiz_sayaci_bakim() to service_role;
+
+-- ────────────────────────────────────────────────────────────────────
+-- 15.2  Hata kayıtları
+-- ────────────────────────────────────────────────────────────────────
+create table if not exists public.hata_kayitlari (
+  id         bigserial primary key,
+  user_id    uuid references auth.users on delete set null,
+  yol        text not null,              -- hatanın çıktığı sayfa
+  mesaj      text not null,
+  yigin      text,                       -- stack trace (kısaltılmış)
+  tarayici   text,                       -- user agent
+  surum      text,                       -- dağıtım kimliği (hangi sürümde)
+  olusturma  timestamptz not null default now()
+);
+
+create index if not exists hata_kayitlari_olusturma_idx
+  on public.hata_kayitlari (olusturma desc);
+
+alter table public.hata_kayitlari enable row level security;
+-- Politika BİLEREK YOK. Hata kayıtları yığın izi ve sayfa yolu içerir;
+-- öğrencinin başkasının hatasını okuması gereksiz. Yazma da doğrudan
+-- yapılmaz, aşağıdaki fonksiyon üzerinden olur.
+revoke all on public.hata_kayitlari from public, anon, authenticated;
+
+/**
+ * Hata kaydeder. Alanlar SUNUCUDA kısaltılır: istemciden gelen veriye
+ * güvenilmez, 2 MB'lık bir yığın izi tabloyu şişirebilir.
+ */
+create or replace function public.hata_kaydet(
+  p_user_id uuid,
+  p_yol text,
+  p_mesaj text,
+  p_yigin text,
+  p_tarayici text,
+  p_surum text
+) returns void
+language plpgsql security definer
+as $$
+begin
+  if p_mesaj is null or length(trim(p_mesaj)) = 0 then
+    return;  -- boş hata kaydetmeye değmez
+  end if;
+  insert into public.hata_kayitlari
+    (user_id, yol, mesaj, yigin, tarayici, surum)
+  values (
+    p_user_id,
+    left(coalesce(p_yol, '?'), 300),
+    left(p_mesaj, 500),
+    left(coalesce(p_yigin, ''), 4000),
+    left(coalesce(p_tarayici, ''), 300),
+    left(coalesce(p_surum, ''), 100)
+  );
+end;
+$$;
+
+revoke execute on function public.hata_kaydet(uuid, text, text, text, text, text)
+  from public, anon, authenticated;
+grant execute on function public.hata_kaydet(uuid, text, text, text, text, text)
+  to service_role;
+
+/**
+ * Son hataların özeti — aynı mesajı tekrar tekrar listelemek yerine
+ * gruplar. "Bu hafta hata var mı?" sorusunun cevabı.
+ */
+create or replace function public.hata_ozeti(p_gun int default 7)
+returns table(mesaj text, adet bigint, son timestamptz, ornek_yol text)
+language sql security definer
+as $$
+  select
+    h.mesaj,
+    count(*) as adet,
+    max(h.olusturma) as son,
+    (array_agg(h.yol order by h.olusturma desc))[1] as ornek_yol
+  from public.hata_kayitlari h
+  where h.olusturma > now() - make_interval(days => greatest(1, p_gun))
+  group by h.mesaj
+  order by count(*) desc, max(h.olusturma) desc
+  limit 50;
+$$;
+
+revoke execute on function public.hata_ozeti(int) from public, anon, authenticated;
+grant execute on function public.hata_ozeti(int) to service_role;
+
+/** 90 günden eski hata kayıtlarını siler. */
+create or replace function public.hata_kayitlari_bakim()
+returns int
+language plpgsql security definer
+as $$
+declare
+  v_silinen int;
+begin
+  delete from public.hata_kayitlari where olusturma < now() - interval '90 days';
+  get diagnostics v_silinen = row_count;
+  return v_silinen;
+end;
+$$;
+
+revoke execute on function public.hata_kayitlari_bakim() from public, anon, authenticated;
+grant execute on function public.hata_kayitlari_bakim() to service_role;

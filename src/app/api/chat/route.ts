@@ -5,6 +5,12 @@ import { getUserContext } from "@/lib/userContext";
 import { kapsamDenetle } from "@/lib/baykusKapsam";
 import { bagimsizSoruMu, onbellegeUygunMu, parmakIzi } from "@/lib/aiOnbellek";
 import { onbellegeYaz, onbellektenAra } from "@/lib/aiOnbellekSunucu";
+import {
+  cokHizliYaniti,
+  hizSinirlariDene,
+  istekKimligi,
+} from "@/lib/hizSiniri";
+import { getCurrentUser } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
@@ -47,6 +53,28 @@ export async function POST(request: Request) {
   }
 
   const sonSoru = history[history.length - 1].text;
+
+  // ── HIZ SINIRI ──────────────────────────────────────────────────
+  // Gemini çağrısından ÖNCE. Sonra yapmak sınırı anlamsız kılardı:
+  // kota zaten harcanmış olurdu.
+  //
+  // İki katman: dakikalık sınır ani seli keser, günlük sınır kotayı
+  // korur. Sayılar bir öğrencinin gerçek kullanımına göre seçildi —
+  // yoğun bir çalışma seansında 20-30 soru olağan, dakikada 15 değil.
+  const kullanici = await getCurrentUser().catch(() => null);
+  const kimlik = istekKimligi(request, kullanici?.id ?? null);
+  const { sonuc: sinir, asilan } = await hizSinirlariDene([
+    { ad: "dakika", anahtar: `chat:dk:${kimlik}`, limit: 15, pencereSn: 60 },
+    { ad: "gun", anahtar: `chat:gun:${kimlik}`, limit: 250, pencereSn: 86400 },
+  ]);
+  if (!sinir.izin) {
+    return cokHizliYaniti(
+      sinir,
+      asilan === "gun"
+        ? "Baykuş bugünlük yoruldu 🦉 Yarın yine buradayım — bu arada konu anlatımlarına ve testlere göz atabilirsin."
+        : "Biraz yavaş 🦉 Arka arkaya çok soru sordun; bir dakika sonra tekrar dene.",
+    );
+  }
 
   // 0) Kapsam denetimi: küfür, kaynak kodu ve müfredat dışı sorular AI'ya
   //    hiç gitmeden, sabit ve öngörülebilir bir cevapla reddedilir.

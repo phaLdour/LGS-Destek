@@ -48,5 +48,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, sebep: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, sonuc: data });
+  // Aynı haftalık turda diğer iki tabloyu da buda. Ayrı bir cron kurmak
+  // yerine buraya bağlandı: ikisi de "eskiyeni sil" işi ve Vercel Hobby'de
+  // cron sayısı sınırlı.
+  //
+  // Bunlar başarısız olursa önbellek bakımını GEÇERSİZ SAYMAYIZ: asıl iş
+  // yapıldı, temizlik gelecek hafta yine denenir.
+  const { data: hizSilinen } = await supabase.rpc("hiz_sayaci_bakim");
+  const { data: hataSilinen } = await supabase.rpc("hata_kayitlari_bakim");
+
+  return NextResponse.json({
+    ok: true,
+    sonuc: data,
+    hizSayaciSilinen: hizSilinen ?? null,
+    hataKaydiSilinen: hataSilinen ?? null,
+  });
 }
