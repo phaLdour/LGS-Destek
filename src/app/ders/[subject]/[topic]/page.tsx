@@ -2,6 +2,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import {
+  Archive,
   ArrowLeft,
   FileText,
   Layers,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Article } from "@/components/study/Article";
+import { KonuCikmisSorularKarti } from "@/components/study/KonuCikmisSorularKarti";
 import { LgsTips } from "@/components/study/LgsTips";
 import {
   hasTopicDiagrams,
@@ -134,6 +136,11 @@ export default async function TopicPage({
         ) : (
           <Placeholder text="Konu anlatımı makalesi yakında eklenecek." />
         )}
+      </Section>
+
+      {/* Bu konuda çıkmış sorular — gerçek LGS soruları, ayrı sayfada test */}
+      <Section icon={<Archive className="h-5 w-5" />} title="LGS'de çıkmış sorular">
+        <KonuCikmisSorularKarti subjectSlug={subject} topicId={topic} />
       </Section>
 
       {/* LGS İpucu + Test */}

@@ -31,18 +31,41 @@ function fmtClock(totalSec: number): string {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
+/**
+ * Karışık yıllı testler için soru kendi yılını taşıyabilir. Konu bazlı
+ * çıkmış soru testinde (bkz. /ders/[subject]/[topic]/cikmis-sorular)
+ * sorular 9 farklı sınavdan gelir; "Hatalarım" anahtarının doğru olması
+ * için her sorunun kendi yılı gerekir.
+ */
+export type PastExamSoru = PastQuestion & {
+  year?: number;
+  section?: "sozel" | "sayisal";
+};
+
 export function PastExamClient({
   year,
   section,
   label,
   durationMinutes,
   questions,
+  kayit,
+  geriDonusHref,
+  geriDonusMetni,
 }: {
   year: number;
   section: "sozel" | "sayisal";
   label: string;
   durationMinutes: number;
-  questions: PastQuestion[];
+  questions: PastExamSoru[];
+  /**
+   * İstatistiğe hangi ders/konu olarak yazılsın. Verilmezse sınav bazlı
+   * sentetik etiket kullanılır (yıl sayfalarındaki davranış).
+   * Konu testinde GERÇEK ders/konu geçilir; böylece çözülen sorular
+   * "Bugünün Planı" ve konu istatistiklerine doğru şekilde işler.
+   */
+  kayit?: { subjectSlug: string; topicId: string };
+  geriDonusHref?: string;
+  geriDonusMetni?: string;
 }) {
   const [phase, setPhase] = useState<Phase>("intro");
   const [current, setCurrent] = useState(0);
@@ -103,9 +126,12 @@ export function PastExamClient({
     setCurrent(i);
   }
 
-  // Soru kimliği — Hatalarım havuzuyla uyumlu (cikmis/2026-sozel/turkce#3 gibi)
-  function qKey(q: PastQuestion): string {
-    return `cikmis/${year}-${section}/${q.subjectSlug}#${q.no}`;
+  // Soru kimliği — Hatalarım havuzuyla uyumlu (cikmis/2026-sozel/turkce#3 gibi).
+  // Karışık yıllı testte her soru kendi yılını taşır; aksi hâlde konu
+  // testinde çözülen 2019 sorusu 2026 anahtarıyla kaydedilir ve öğrenci
+  // yanlışlarında yanlış soruyu görürdü.
+  function qKey(q: PastExamSoru): string {
+    return `cikmis/${q.year ?? year}-${q.section ?? section}/${q.subjectSlug}#${q.no}`;
   }
 
   function finishExam() {
@@ -129,8 +155,8 @@ export function PastExamClient({
     // kendiliğinden biten, açılıp bırakılmış sınav "çözülen test" sayılmasın.
     if (answered > 0) {
       void saveQuizResult({
-        subjectSlug: `__cikmis_${year}_${section}__`,
-        topicId: `cikmis-${year}-${section}`,
+        subjectSlug: kayit?.subjectSlug ?? `__cikmis_${year}_${section}__`,
+        topicId: kayit?.topicId ?? `cikmis-${year}-${section}`,
         correct,
         wrong,
         total: questions.length,
@@ -574,10 +600,10 @@ export function PastExamClient({
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Link
-          href={`/cikmis-sorular/${year}`}
+          href={geriDonusHref ?? `/cikmis-sorular/${year}`}
           className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-rehberim-navy px-4 py-3 text-sm font-bold text-white transition hover:bg-rehberim-navy-dark"
         >
-          {year} sınavına dön
+          {geriDonusMetni ?? `${year} sınavına dön`}
         </Link>
         <Link
           href="/cikmis-sorular"
