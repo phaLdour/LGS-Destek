@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node tools/tema-kontrast.mjs",
+    "prebuild": "node tools/tema-kontrast.mjs && npm test",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,7 +12,7 @@
     "tema-css": "node tools/tema-css-uret.mjs",
     "test:sw": "node tools/test-sw.mjs",
     "test:manifest": "node tools/test-manifest.mjs",
-    "test": "node tools/test-sw.mjs && node tools/test-manifest.mjs"
+    "test": "node tools/test-sw.mjs && node tools/test-manifest.mjs && tsx --test \"tests/**/*.test.ts\""
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

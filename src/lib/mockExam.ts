@@ -14,8 +14,12 @@ import { collectAllQuestions } from "./quickQuiz";
  * Zorluk:
  *  - "kolay": Hızlı Sorular havuzundan rastgele
  *  - "zor": Önce yeni nesil zor sorulardan (paragraf, çoklu işlem, yorum);
- *           yetmezse aynı dersin kolay sorularıyla tamamlanır. Zorda süre
- *           gerçek LGS süresinin %20 azı (zaman baskısı).
+ *           yetmezse aynı dersin kolay sorularıyla tamamlanır.
+ *
+ * SÜRE her iki zorlukta da GERÇEK LGS SÜRESİDİR. (Bu yorum eskiden "zorda
+ * süre %20 az" diyordu; kod öyle yapmıyor ve yapmamalı — deneme sınavının
+ * amacı gerçek sınav koşulunu birebir taklit etmek. tests/deneme-havuzu
+ * içindeki "zor deneme süreyi KISALTMAZ" testi bunu kilitler.)
  */
 
 export type ExamKind = "sozel" | "sayisal" | "tam";

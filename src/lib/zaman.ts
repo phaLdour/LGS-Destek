@@ -15,7 +15,11 @@
 
 const TR_OFSET_MS = 3 * 60 * 60 * 1000;
 
-/** Verilen anın Türkiye'deki takvim günü — "2026-8-27" gibi kararlı anahtar. */
+/**
+ * Verilen anın Türkiye'deki takvim günü — kararlı bir karşılaştırma anahtarı.
+ * Ay 0 TABANLIDIR (getUTCMonth): 27 Ağustos 2026 → "2026-7-27". Anahtar
+ * yalnız eşitlik karşılaştırmasında kullanılır, ekrana basılmaz.
+ */
 export function trGunAnahtari(d: Date): string {
   const tr = new Date(d.getTime() + TR_OFSET_MS);
   return `${tr.getUTCFullYear()}-${tr.getUTCMonth()}-${tr.getUTCDate()}`;

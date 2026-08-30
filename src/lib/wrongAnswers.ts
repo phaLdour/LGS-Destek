@@ -350,14 +350,34 @@ export function birlestir(
     }
 
     // DİRİLTME ENGELİ 2 — uzak (sunucu) mezar taşı.
-    // correct_streak >= 2, "bu soru ustalaşıldı" demektir; hangi cihazda
-    // olursa olsun havuza geri alınmaz. Bu işaret cihazlar arasında
-    // paylaşıldığı için, başka bir cihazın bayat localStorage'ı da soruyu
-    // dirilteMEZ (aşağıdaki pushEdilecek filtresiyle birlikte).
+    // correct_streak >= 2, "bu soru ustalaşıldı" demektir; başka bir
+    // cihazın bayat localStorage'ı soruyu dirilteMEZ.
+    //
+    // HATA DÜZELTMESİ — VERİ KAYBI: eskiden bu kural zaman damgasına
+    // BAKMADAN uyguluyordu. Senaryo: öğrenci daha önce ustalaştığı soruyu
+    // gerçekten yeniden yanlış yapar; `saveWrong` yerel kaydı tazeler ama
+    // sunucuya yazma sessizce düşer (çevrimdışı / oturum kopması). Sonraki
+    // eşitlemede uzak satır hâlâ "ustalaşıldı" der ve TAZE yerel yanlış
+    // hem silinir hem yeniden mezara konurdu — öğrencinin gerçekten
+    // yanlış yaptığı soru listeye hiç dönmezdi. Artık kural ENGEL 1 ile
+    // simetrik: yerel kayıt uzak satırdan YENİYSE, gerçek bir yeni yanlış
+    // sayılır ve korunur.
     if (row.correct_streak >= USTALASMA_ESIGI) {
-      delete birlesik[row.question_key];
-      yeniMezarlar.push(row.question_key);
-      aktifMezarlar.add(row.question_key);
+      const yerelKayit = yerel[row.question_key];
+      const yereldeYeniYanlis =
+        yerelKayit !== undefined && yerelKayit.lastWrongAt > remoteTs;
+      if (!yereldeYeniYanlis) {
+        delete birlesik[row.question_key];
+        yeniMezarlar.push(row.question_key);
+        aktifMezarlar.add(row.question_key);
+        continue;
+      }
+      // Yeni yanlış korunur: mezar taşı konmaz, kayıt havuzda kalır.
+      birlesik[row.question_key] = {
+        wrongCount: Math.max(yerelKayit.wrongCount, row.wrong_count),
+        correctStreak: 0,
+        lastWrongAt: yerelKayit.lastWrongAt,
+      };
       continue;
     }
 

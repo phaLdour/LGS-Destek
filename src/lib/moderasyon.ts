@@ -68,9 +68,29 @@ function tekrarSil(metin: string): string {
  * sözcüklerde yanlış sonuç verir.
  */
 function kelimelereBol(metin: string): string[] {
-  return turkceSadelestir(metin)
+  // HATA DÜZELTMESİ: eskiden bölme, gizleme açılmadan ÖNCE yapılıyordu.
+  // `@ € ! | $` karakterleri `[^a-z0-9]` sınıfına girdiği için ayırıcı
+  // sayılıp kelimeyi ikiye bölüyordu; böylece "s!ktir" iki parçaya
+  // ("s" + "ktir") ayrılıp süzgeçten GEÇİYORDU. Aynı açık s@lak,
+  // $erefsiz, p!c, a$alak için de vardı ve takma adlarda doğrudan
+  // sömürülebiliyordu. Artık harf yerine geçen simgeler bölmeden önce
+  // harfe çevriliyor; geri kalan işaretler ayırıcı olmayı sürdürüyor.
+  return simgeleriHarfeCevir(turkceSadelestir(metin))
     .split(/[^a-z0-9]+/)
     .filter(Boolean);
+}
+
+/**
+ * Harf yerine kullanılan simgeleri harfe çevirir. YALNIZ simgeler —
+ * rakamlar `gizlemeAc` içinde çözülür, çünkü rakamlar meşru metinde de
+ * geçer ("0 °C", "3 kere") ve orada kelime bütünlüğünü bozmazlar.
+ */
+function simgeleriHarfeCevir(metin: string): string {
+  return metin
+    .replace(/@/g, "a")
+    .replace(/€/g, "e")
+    .replace(/[!|]/g, "i")
+    .replace(/\$/g, "s");
 }
 
 /** Boşlukları koruyan, gizlemesi açılmış metin (çok kelimeli kalıplar için). */
@@ -119,9 +139,13 @@ const KOK_IFADE: string[] = [
 
 /**
  * Kelimenin İÇİNDE geçse bile küfür olan, normal bir Türkçe sözcüğün
- * parçası OLAMAYAN kökler. ("seninamk", "birorospu" gibi bitişik yazımlar
- * bu sayede yakalanmaya devam eder.) Buraya yalnız hiçbir masum kelimeye
+ * parçası OLAMAYAN kökler. ("birorospu" gibi bitişik yazımlar bu sayede
+ * yakalanmaya devam eder.) Buraya yalnız hiçbir masum kelimeye
  * gömülemeyecek kökler eklenir.
+ *
+ * NOT: "amk" burada DEĞİL, KOK_KISA'dadır ve yalnız tam kelime olarak
+ * aranır — üç harf olduğu için masum kelimelerin içine çok kolay düşüyor.
+ * Yani "seninamk" bitişik yazımı bu listeyle yakalanmaz.
  */
 const KOK_SERT: string[] = [
   // NOT: "siktir" bilerek YOKTUR — "eksiktir" (sınav sorularında çok geçen

@@ -42,9 +42,13 @@ function rng(seed: number): () => number {
 
 /**
  * "Hepsi", "Hiçbiri", "Yukarıdakilerin tümü" gibi toplayıcı şıklar sınav
- * geleneğinde her zaman en sonda durur. Karıştırma bunları araya
- * atarsa hem tuhaf okunur hem de öğrencinin sınav alışkanlığını bozar,
- * bu yüzden yerlerinde sabit tutulurlar.
+ * geleneğinde en sonda durur. Karıştırma bunları araya atarsa hem tuhaf
+ * okunur hem de öğrencinin sınav alışkanlığını bozar.
+ *
+ * DAVRANIŞ: bu şıklar BULUNDUKLARI YERDE sabitlenir — sona TAŞINMAZLAR.
+ * İçerikte hep sonda yazıldıkları için sonuç aynı; ama bir gün ortada bir
+ * çıpa yazılırsa orada kalır. (Yorum eskiden "her zaman en sonda durur"
+ * diyordu; kodun yaptığı bu değil.)
  */
 const CIPA = /^\s*(hepsi|tümü|tumu|hiçbiri|hicbiri|hiçbirinde|yukarıdakilerin)/i;
 

@@ -109,7 +109,13 @@ export function leagueOf(tier: number): League {
 
 /** Lig içindeki kademe: tier çift sayıysa "2" (alt), tekse "1" (üst). */
 export function divisionOf(tier: number): 1 | 2 {
-  return (tier % 2 === 0 ? 2 : 1) as 1 | 2;
+  // HATA DÜZELTMESİ: `leagueOf` kademeyi 0-9'a kenetliyordu, bu ise
+  // kenetlemiyordu. Veritabanından aralık dışı bir tier gelirse ikisi
+  // ayrışıyor ve öğrenciye var olmayan bir rütbe adı gösteriliyordu:
+  // rankLabel(10) → "Şampiyonlar 2" (doğrusu "Şampiyonlar 1"),
+  // rankLabel(-1) → "Gelişim 1" (doğrusu "Gelişim 2").
+  const t = clamp(tier, 0, MAX_TIER);
+  return (t % 2 === 0 ? 2 : 1) as 1 | 2;
 }
 
 /** "Yıldızlar 1", "Gelişim 2" gibi insan-okur isim. */
