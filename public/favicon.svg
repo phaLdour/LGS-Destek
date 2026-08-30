@@ -1,7 +1,14 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- tools/ikon-uret.py tarafından üretildi — ELLE DÜZENLEME.
+       Geometri o dosyada tanımlıdır; PNG ikonlar da aynı sayılardan çıkar. -->
   <rect width="200" height="200" rx="44" fill="#16244C" />
-  <circle cx="106" cy="100" r="40" fill="none" stroke="#FFFFFF" stroke-width="12" />
-  <circle cx="106" cy="100" r="16" fill="#F59E0B" />
-  <path d="M106 100 L160 46" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" />
-  <path d="M143 42 L164 38 L160 60 Z" fill="#F59E0B" />
+  <path d="M97.25 102.75 L133.68 66.32" stroke="#FFFFFF"
+        stroke-width="13.4" stroke-linecap="round" />
+  <circle cx="97.25" cy="102.75" r="44.8" fill="none"
+          stroke="#FFFFFF" stroke-width="13.4" />
+  <circle cx="97.25" cy="102.75" r="16.8" fill="#F59E0B" />
+  <path d="M97.25 102.75 L133.68 66.32" stroke="#FFFFFF"
+        stroke-width="13.4" stroke-linecap="round" />
+  <path d="M154.27 45.73 L141.6 74.24 L125.76 58.4 Z"
+        fill="#F59E0B" />
 </svg>

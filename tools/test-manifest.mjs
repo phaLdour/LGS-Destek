@@ -88,6 +88,36 @@ kontrol(
   !/<script\s+src=|<link[^>]+rel=["']stylesheet/i.test(offline),
 );
 
+console.log("\nmarka isareti");
+const favicon = fs.readFileSync(path.join(kok, "public/favicon.svg"), "utf8");
+kontrol(
+  "favicon.svg uretilmis (elle duzenlenmemis)",
+  favicon.includes("ikon-uret.py"),
+);
+// Ok ucu ucgeni govde eksenine SIMETRIK olmali. Eski surumde degildi:
+// tepe eksenden 2.8 sapmisti, taban koseleri -14.8 / +9.9 idi.
+const ucgen = favicon.match(
+  /M([\d.]+) ([\d.]+) L([\d.]+) ([\d.]+) L([\d.]+) ([\d.]+) Z/,
+);
+kontrol("ok ucu ucgeni okunabiliyor", ucgen !== null);
+if (ucgen) {
+  const [tx, ty, ax, ay, bx, by] = ucgen.slice(1).map(Number);
+  // Gövde ekseni 45 derece: yon (1,-1)/sqrt2, dik (1,1)/sqrt2
+  const k = Math.SQRT1_2;
+  const merkez = favicon.match(/<circle cx="([\d.]+)" cy="([\d.]+)" r="[\d.]+" fill="none"/);
+  const cx = Number(merkez?.[1] ?? 100);
+  const cy = Number(merkez?.[2] ?? 100);
+  const sapma = (x, y) => (x - cx) * k + (y - cy) * k;
+  kontrol(
+    `tepe noktasi eksende (sapma ${sapma(tx, ty).toFixed(2)})`,
+    Math.abs(sapma(tx, ty)) < 0.05,
+  );
+  kontrol(
+    `taban koseleri simetrik (${sapma(ax, ay).toFixed(2)} / ${sapma(bx, by).toFixed(2)})`,
+    Math.abs(sapma(ax, ay) + sapma(bx, by)) < 0.05,
+  );
+}
+
 console.log(`\n===== ${gecti} geçti, ${kaldi.length} kaldı =====`);
 if (kaldi.length) {
   console.log("Kalanlar:\n  - " + kaldi.join("\n  - "));

@@ -25,7 +25,10 @@ jobs:
       - name: Node kurulumu
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Node 22: GitHub, Node 20'yi kullanımdan kaldırıyor. Ayrıca
+          # geliştirme makinesiyle aynı sürüm olması, "yerelde geçiyor ama
+          # CI'da kırılıyor" durumunu ortadan kaldırır.
+          node-version: '22'
           cache: 'npm'
 
       - name: Bağımlılıklar
@@ -36,6 +39,11 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      # Testler `npm run build` içinde (prebuild) de koşar; burada ayrıca
+      # çağırmak, hatayı derleme çıktısının altında kaybetmeden gösterir.
+      - name: Testler
+        run: npm test
 
       # Derleme yalnızca kodun geçerliliğini sınar; bu değerler sahtedir ve
       # gerçek anahtarların yerine geçmez. Üretim anahtarları Vercel'de durur.
