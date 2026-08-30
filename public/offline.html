@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>İnternet yok — Rehberim</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f4f6fb" />
+    <!--
+      Bu sayfa service worker tarafından önbelleğe alınır ve internet
+      gittiğinde tarayıcının kendi hata ekranı yerine gösterilir.
+      Next.js'e bağlı DEĞİLDİR (uygulama yüklenemediğinde de açılmalı):
+      tüm stiller burada, dışarıdan hiçbir dosya çekmez.
+    -->
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --surface: #ffffff;
+        --border: #d7dbe4;
+        --ink: #16244c;
+        --ink-soft: #5b678a;
+        --accent: #a15c07;
+        color-scheme: light;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1228;
+          --surface: #16244c;
+          --border: #2a3b66;
+          --ink: #e8ecf7;
+          --ink-soft: #9fabc9;
+          --accent: #fbbf24;
+          color-scheme: dark;
+        }
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+        line-height: 1.6;
+      }
+      .kart {
+        width: 100%;
+        max-width: 380px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: 0 1px 2px rgba(22, 36, 76, 0.06),
+          0 8px 20px -8px rgba(22, 36, 76, 0.14);
+      }
+      .baykus { width: 88px; height: 88px; margin: 0 auto 18px; display: block; }
+      h1 { margin: 0 0 10px; font-size: 22px; line-height: 1.25; letter-spacing: -0.01em; }
+      p { margin: 0 0 20px; color: var(--ink-soft); font-size: 15px; }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 12px;
+        background: var(--ink);
+        color: var(--surface);
+        font: inherit;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 13px 16px;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      button:active { transform: scale(0.97); }
+      button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+      .ipucu {
+        margin: 18px 0 0;
+        font-size: 12.5px;
+        color: var(--ink-soft);
+      }
+      .durum {
+        margin-top: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent);
+        min-height: 20px;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .baykus { animation: sallan 3.2s ease-in-out infinite; }
+        @keyframes sallan {
+          0%, 100% { transform: translateY(0) rotate(-2deg); }
+          50% { transform: translateY(-6px) rotate(2deg); }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="kart">
+      <!-- Baykuş: dosya çekmemek için satır içi SVG -->
+      <svg class="baykus" viewBox="0 0 96 96" role="img" aria-label="Uyuyan baykuş">
+        <ellipse cx="48" cy="58" rx="30" ry="32" fill="currentColor" opacity="0.9" />
+        <path d="M20 34 L26 14 L40 26 Z" fill="currentColor" opacity="0.9" />
+        <path d="M76 34 L70 14 L56 26 Z" fill="currentColor" opacity="0.9" />
+        <circle cx="37" cy="52" r="10" fill="var(--surface)" />
+        <circle cx="59" cy="52" r="10" fill="var(--surface)" />
+        <path
+          d="M29 52 q8 6 16 0 M51 52 q8 6 16 0"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          fill="none"
+        />
+        <path d="M48 62 l-5 7 h10 Z" fill="var(--accent)" />
+      </svg>
+
+      <h1>İnternet bağlantısı yok</h1>
+      <p>
+        Rehberim açılamadı çünkü şu an internete erişemiyorsun. Bağlantın
+        gelince kaldığın yerden devam edebilirsin.
+      </p>
+
+      <button type="button" id="yeniden">Yeniden dene</button>
+      <p class="durum" id="durum" role="status" aria-live="polite"></p>
+
+      <p class="ipucu">
+        Wi-Fi&apos;ı kapatıp açmayı ya da mobil veriyi denemeyi dene.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        var dugme = document.getElementById("yeniden");
+        var durum = document.getElementById("durum");
+
+        function dene() {
+          if (!navigator.onLine) {
+            durum.textContent = "Hâlâ bağlantı yok.";
+            return;
+          }
+          durum.textContent = "Bağlanılıyor…";
+          location.reload();
+        }
+
+        dugme.addEventListener("click", dene);
+
+        // Bağlantı kendiliğinden gelirse haber ver ve tek dokunuşta gir.
+        window.addEventListener("online", function () {
+          durum.textContent = "Bağlantı geldi — yeniden deneyebilirsin.";
+        });
+        window.addEventListener("offline", function () {
+          durum.textContent = "";
+        });
+      })();
+    </script>
+  </body>
+</html>

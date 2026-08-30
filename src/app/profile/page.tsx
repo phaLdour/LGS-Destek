@@ -3,6 +3,7 @@ import { CompetitiveIdentity } from "@/components/competitive/CompetitiveIdentit
 import { NotificationSettings } from "@/components/notifications/NotificationSettings";
 import { GorunumAyarlari } from "@/components/profile/GorunumAyarlari";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
+import { KurulumDugmesi } from "@/components/pwa/KurulumDugmesi";
 import { getCurrentUser, isSupabaseConfigured } from "@/lib/supabase/server";
 import { getShellUser } from "@/lib/user";
 
@@ -29,6 +30,8 @@ export default async function ProfilePage() {
           />
         )}
         <GorunumAyarlari />
+        {/* Alt şerit kapatılınca 30 gün gelmiyor; kurulum yolu burada kalıcı. */}
+        <KurulumDugmesi />
         <NotificationSettings configured={configured} />
       </div>
     </AppShell>

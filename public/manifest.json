@@ -1,14 +1,20 @@
 {
+  "id": "/",
   "name": "Rehberim — LGS Çalışma Platformu",
   "short_name": "Rehberim",
   "description": "Türkiye LGS müfredatına çalışacağın akıllı platform: dersler, konular, Hızlı Sorular, Deneme Sınavı ve daha fazlası.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait",
   "background_color": "#F4F6FB",
   "theme_color": "#16244C",
   "lang": "tr",
+  "dir": "ltr",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -40,21 +46,43 @@
       "short_name": "Hızlı Sorular",
       "description": "Karma soru havuzunu çöz",
       "url": "/hizli-sorular",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Deneme Sınavı",
       "short_name": "Deneme",
       "description": "Gerçek LGS formatında dene",
       "url": "/deneme",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Hatalarım",
       "short_name": "Hatalarım",
       "description": "Yanlış cevap havuzunu pekiştir",
       "url": "/hatalarim",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
-  ]
+  ],
+  "categories": [
+    "education"
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "prefer_related_applications": false
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { KurulumDaveti } from "@/components/pwa/KurulumDaveti";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { TEMA_ILK_BETIK } from "@/lib/tema";
 import { VARSAYILAN_TEMA_ID, temaBul } from "@/lib/temalar";
@@ -85,6 +86,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
         {children}
+        {/* Kök layout: tanıtım sayfası AppShell kullanmadığı için davet
+            burada duruyor — ilk ziyaretçi de görebilsin. */}
+        <KurulumDaveti />
         <ServiceWorkerRegister />
       </body>
     </html>

@@ -4,17 +4,44 @@
  * Yalnız DEĞİŞMEZ varlıkları önbelleğe alır:
  *   1) Çıkmış soru görüntüleri (/cikmis-sorular/.../*.webp) — cache-first
  *   2) Next.js hash'li statik chunk'lar (/_next/static/...) — stale-while-revalidate
+ *   3) /offline.html — internet gidince gösterilecek kendi ekranımız
  *
- * HTML, API ('/api/...'), auth ve diğer dinamik istekler ASLA ele
- * alınmaz (network'e dokunulmadan geçer) → bayat içerik / oturum hatası
- * riski yok. Cache sürümü değişince eski cache temizlenir.
+ * SAYFA (HTML) ÖNBELLEĞE ALINMAZ. Bu bilinçli bir tercih: sayfaları
+ * saklamak bayat içerik ve oturum karışması riski doğurur. İnternet
+ * yokken gezinme denemesi başarısız olursa tarayıcının dinozor ekranı
+ * yerine /offline.html gösterilir — o kadar.
+ *
+ * API ('/api/...') ve auth istekleri hiç ele alınmaz.
  */
-const VERSION = "rehberim-v1";
+const VERSION = "rehberim-v2";
 const IMG_CACHE = `${VERSION}-img`;
 const STATIC_CACHE = `${VERSION}-static`;
+const KABUK_CACHE = `${VERSION}-kabuk`;
+const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
+  // Çevrimdışı ekranını ve ikonlarını şimdiden sakla: internet gittiğinde
+  // indirilecek bir şey kalmamalı.
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(KABUK_CACHE);
+      await cache.addAll([OFFLINE_URL, "/favicon.svg"]);
+    })(),
+  );
+  // NOT: skipWaiting() burada BİLEREK çağrılmıyor.
+  // Eskiden çağrılıyordu; yeni sürüm yayına çıkınca açık duran sekmenin
+  // service worker'ı anında değişiyor, sayfa ise hâlâ eski JS parçalarını
+  // istiyordu — Vercel o parçaları silmiş olduğu için sınav ortasında
+  // "ChunkLoadError" alınabiliyordu. Artık yeni sürüm beklemeye geçer,
+  // öğrenciye "yeni sürüm var" bildirimi gösterilir ve geçiş onun
+  // dokunuşuyla (aşağıdaki SKIP_WAITING mesajı) yapılır.
+});
+
+// Sayfa "hazırım, geç" derse yeni sürüme geç.
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {
@@ -77,6 +104,29 @@ self.addEventListener("fetch", (event) => {
           })
           .catch(() => hit);
         return hit || fetchPromise;
+      })(),
+    );
+    return;
+  }
+
+  // 3) Sayfa gezinmesi: önbelleğe ALINMAZ, ama internet yoksa kendi
+  //    çevrimdışı ekranımızı göster (tarayıcının hata sayfası yerine).
+  if (request.mode === "navigate") {
+    event.respondWith(
+      (async () => {
+        try {
+          return await fetch(request);
+        } catch {
+          const cache = await caches.open(KABUK_CACHE);
+          const yedek = await cache.match(OFFLINE_URL);
+          return (
+            yedek ||
+            new Response("İnternet bağlantısı yok.", {
+              status: 503,
+              headers: { "Content-Type": "text/plain; charset=utf-8" },
+            })
+          );
+        }
       })(),
     );
     return;
