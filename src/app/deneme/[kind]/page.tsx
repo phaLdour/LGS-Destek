@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ExamClient } from "@/components/exam/ExamClient";
 import {
+  EXAM_KINDS,
   buildExamPool,
   getExamConfig,
   type ExamDifficulty,
@@ -11,7 +12,10 @@ import {
 } from "@/lib/mockExam";
 import { getShellUser } from "@/lib/user";
 
-const VALID_KIND: ExamKind[] = ["sozel", "sayisal", "tam"];
+// Tek kaynak: EXAM_KINDS. Eskiden burada elle yazılı bir liste vardı;
+// branş denemeleri eklenince güncellenmediği için hepsi 404 veriyordu.
+// Elle kopyalanan liste, eklenen türü sessizce dışarıda bırakır.
+const VALID_KIND: ExamKind[] = EXAM_KINDS;
 const VALID_DIFF: ExamDifficulty[] = ["kolay", "zor"];
 
 export default async function DenemeKindPage({

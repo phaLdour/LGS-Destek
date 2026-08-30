@@ -40,7 +40,11 @@ function derseGoreBloklar(havuz: PoolQuestion[]): { slug: string; sorular: PoolQ
 // ───────────────── Sınav yapılandırması ─────────────────
 
 test("deneme türleri gerçek LGS süre ve soru sayılarını taşır", () => {
-  assert.deepEqual(EXAM_KINDS, ["sozel", "sayisal", "tam"]);
+  // Üç tam deneme türü + altı branş denemesi. Branşların kendi ayrıntılı
+  // testleri tests/brans-deneme.test.ts içinde; burada yalnız tam
+  // denemelerin bozulmadığını doğruluyoruz.
+  assert.deepEqual(EXAM_KINDS.slice(0, 3), ["sozel", "sayisal", "tam"]);
+  assert.equal(EXAM_KINDS.length, 9, "3 tam deneme + 6 branş");
   assert.deepEqual(EXAM_DIFFICULTIES, ["kolay", "zor"]);
 
   const sozel = getExamConfig("sozel");

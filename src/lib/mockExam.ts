@@ -22,7 +22,22 @@ import { collectAllQuestions } from "./quickQuiz";
  * içindeki "zor deneme süreyi KISALTMAZ" testi bunu kilitler.)
  */
 
-export type ExamKind = "sozel" | "sayisal" | "tam";
+/**
+ * Deneme türleri.
+ *
+ * "brans-*": tek derslik deneme. Gerçek LGS'deki ders başına soru sayısı ve
+ * temposuyla birebir aynı — Türkçe/Matematik/Fen 20 soru, İnkılap/Din/
+ * İngilizce 10 soru. Amaç bir dersi tek başına, sınav koşulunda ölçmek.
+ */
+export type BransKind =
+  | "brans-turkce"
+  | "brans-matematik"
+  | "brans-fen"
+  | "brans-inkilap"
+  | "brans-din"
+  | "brans-ingilizce";
+
+export type ExamKind = "sozel" | "sayisal" | "tam" | BransKind;
 export type ExamDifficulty = "kolay" | "zor";
 
 export type ExamConfig = {
@@ -46,25 +61,74 @@ const SAYISAL_DIST = [
   { subject: "fen-bilimleri", subjectName: "Fen Bilimleri", count: 20 },
 ];
 
-const BASE_DURATIONS: Record<ExamKind, number> = {
+/**
+ * Branş denemesi tanımları.
+ *
+ * SÜRE gerçek LGS temposundan HESAPLANIR, uydurulmaz:
+ *   sözel bölüm  75 dk / 50 soru = soru başına 1.5 dk
+ *   sayısal bölüm 80 dk / 40 soru = soru başına 2 dk
+ * Böylece branş denemesindeki tempo tam denemedekiyle aynı olur ve
+ * öğrencinin net tahmini yanıltıcı çıkmaz.
+ */
+export const SOZEL_DK_PER_SORU = 75 / 50; // 1.5
+export const SAYISAL_DK_PER_SORU = 80 / 40; // 2
+
+export type BransTanim = {
+  kind: BransKind;
+  subject: string;
+  subjectName: string;
+  count: number;
+  bolum: "sozel" | "sayisal";
+};
+
+export const BRANSLAR: BransTanim[] = [
+  { kind: "brans-turkce",    subject: "turkce",        subjectName: "Türkçe",              count: 20, bolum: "sozel" },
+  { kind: "brans-matematik", subject: "matematik",     subjectName: "Matematik",           count: 20, bolum: "sayisal" },
+  { kind: "brans-fen",       subject: "fen-bilimleri", subjectName: "Fen Bilimleri",       count: 20, bolum: "sayisal" },
+  { kind: "brans-inkilap",   subject: "inkilap",       subjectName: "T.C. İnkılap Tarihi", count: 10, bolum: "sozel" },
+  { kind: "brans-din",       subject: "din",           subjectName: "Din Kültürü",         count: 10, bolum: "sozel" },
+  { kind: "brans-ingilizce", subject: "ingilizce",     subjectName: "İngilizce",           count: 10, bolum: "sozel" },
+];
+
+export function bransTanim(kind: ExamKind): BransTanim | null {
+  return BRANSLAR.find((b) => b.kind === kind) ?? null;
+}
+
+/** Gerçek LGS temposunda süre. Yukarı yuvarlanır ki hiç 0 çıkmasın. */
+export function bransSuresiDk(b: BransTanim): number {
+  const dk = b.bolum === "sayisal" ? SAYISAL_DK_PER_SORU : SOZEL_DK_PER_SORU;
+  return Math.round(b.count * dk);
+}
+
+const BASE_DURATIONS: Record<"sozel" | "sayisal" | "tam", number> = {
   sozel: 75,
   sayisal: 80,
   tam: 155,
 };
 
-const KIND_LABELS: Record<ExamKind, string> = {
+const KIND_LABELS: Record<"sozel" | "sayisal" | "tam", string> = {
   sozel: "Sözel Bölüm",
   sayisal: "Sayısal Bölüm",
   tam: "Tam Deneme (Sözel + Sayısal)",
 };
 
-const KIND_TOTALS: Record<ExamKind, number> = {
+const KIND_TOTALS: Record<"sozel" | "sayisal" | "tam", number> = {
   sozel: 50,
   sayisal: 40,
   tam: 90,
 };
 
 function distFor(kind: ExamKind) {
+  const brans = bransTanim(kind);
+  if (brans) {
+    return [
+      {
+        subject: brans.subject,
+        subjectName: brans.subjectName,
+        count: brans.count,
+      },
+    ];
+  }
   if (kind === "sozel") return SOZEL_DIST;
   if (kind === "sayisal") return SAYISAL_DIST;
   return [...SOZEL_DIST, ...SAYISAL_DIST];
@@ -76,22 +140,33 @@ export function getExamConfig(
 ): ExamConfig {
   // Süre her zaman gerçek LGS süresine eşittir; zorluk yalnız soru havuzunu
   // değiştirir (zor → yeni nesil sorular).
-  const minutes = BASE_DURATIONS[kind];
+  const brans = bransTanim(kind);
+  const temelAd = brans
+    ? `${brans.subjectName} Branş Denemesi`
+    : KIND_LABELS[kind as "sozel" | "sayisal" | "tam"];
+  const minutes = brans
+    ? bransSuresiDk(brans)
+    : BASE_DURATIONS[kind as "sozel" | "sayisal" | "tam"];
   const label =
-    difficulty === "zor"
-      ? `${KIND_LABELS[kind]} — Zor`
-      : `${KIND_LABELS[kind]} — Kolay`;
+    difficulty === "zor" ? `${temelAd} — Zor` : `${temelAd} — Kolay`;
   return {
     kind,
     difficulty,
     label,
     durationMinutes: minutes,
     distribution: distFor(kind),
-    totalQuestions: KIND_TOTALS[kind],
+    totalQuestions: brans
+      ? brans.count
+      : KIND_TOTALS[kind as "sozel" | "sayisal" | "tam"],
   };
 }
 
-export const EXAM_KINDS: ExamKind[] = ["sozel", "sayisal", "tam"];
+export const EXAM_KINDS: ExamKind[] = [
+  "sozel",
+  "sayisal",
+  "tam",
+  ...BRANSLAR.map((b) => b.kind),
+];
 export const EXAM_DIFFICULTIES: ExamDifficulty[] = ["kolay", "zor"];
 
 /** Fisher-Yates karıştırma. */

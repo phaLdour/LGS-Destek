@@ -1,16 +1,19 @@
 import Link from "next/link";
 import {
+  Archive,
   ArrowLeft,
   BookOpenCheck,
   Calculator,
   FileText,
   Flame,
+  GraduationCap,
   Sparkles,
 } from "lucide-react";
 import { Suspense } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { DenemeGelisimi } from "@/components/deneme/DenemeGelisimi";
-import { getExamConfig } from "@/lib/mockExam";
+import { cikmisBransListesi } from "@/lib/cikmisBransDeneme";
+import { BRANSLAR, getExamConfig } from "@/lib/mockExam";
 import { getShellUser } from "@/lib/user";
 
 const META = [
@@ -54,8 +57,8 @@ export default async function DenemePage() {
           Deneme Sınavı
         </h1>
         <p className="mt-1 text-pretty text-sm text-rehberim-navy/55">
-          Bir tür seç, ardından <strong>Kolay</strong> ya da <strong>Zor</strong>{" "}
-          versiyonunu tıkla.
+          Tam denemeler gerçek LGS formatında. Tek bir derse yüklenmek
+          istersen aşağıdaki <strong>branş denemeleri</strong> var.
         </p>
       </header>
 
@@ -134,6 +137,93 @@ export default async function DenemePage() {
           );
         })}
       </div>
+
+      {/* ── Branş denemeleri — tek ders, gerçek LGS soru sayısı ve temposu ── */}
+      <section className="mt-8">
+        <div className="mb-3 flex items-center gap-2">
+          <GraduationCap className="h-5 w-5 text-rehberim-accent-deep" />
+          <h2 className="text-lg font-extrabold tracking-tight text-rehberim-navy">
+            Branş denemesi
+          </h2>
+        </div>
+        <p className="mb-3 max-w-prose text-sm text-rehberim-navy/55">
+          Tek ders, gerçek LGS&apos;deki soru sayısı ve temposuyla. Türkçe,
+          Matematik ve Fen 20&apos;şer soru; İnkılap, Din ve İngilizce
+          10&apos;ar.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {BRANSLAR.map((b) => {
+            const kolay = getExamConfig(b.kind, "kolay");
+            return (
+              <div
+                key={b.kind}
+                className="ring-hairline rounded-2xl border border-rehberim-border bg-white p-4 shadow-card"
+              >
+                <p className="text-sm font-extrabold text-rehberim-navy">
+                  {b.subjectName}
+                </p>
+                <p className="mt-0.5 text-xs tabular-nums text-rehberim-navy/55">
+                  {b.count} soru · {kolay.durationMinutes} dakika
+                </p>
+                <div className="mt-3 flex gap-2">
+                  <Link
+                    href={`/deneme/${b.kind}?zorluk=kolay`}
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-rehberim-border bg-rehberim-muted/40 px-3 py-2 text-xs font-bold text-rehberim-navy transition hover:border-rehberim-accent/50 hover:bg-rehberim-muted"
+                  >
+                    <Sparkles className="h-4 w-4 text-green-700" />
+                    Kolay
+                  </Link>
+                  <Link
+                    href={`/deneme/${b.kind}?zorluk=zor`}
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-rehberim-border bg-rehberim-muted/40 px-3 py-2 text-xs font-bold text-rehberim-navy transition hover:border-red-400/60 hover:bg-rehberim-muted"
+                  >
+                    <Flame className="h-4 w-4 text-red-600" />
+                    Zor
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Çıkmış sorulardan branş denemesi — gerçek LGS soruları ── */}
+      <section className="mt-8">
+        <div className="mb-3 flex items-center gap-2">
+          <Archive className="h-5 w-5 text-rehberim-accent-deep" />
+          <h2 className="text-lg font-extrabold tracking-tight text-rehberim-navy">
+            Çıkmış sorulardan branş denemesi
+          </h2>
+        </div>
+        <p className="mb-3 max-w-prose text-sm text-rehberim-navy/55">
+          Aynı soru sayısı ve süre, ama sorular 2018&#8209;2026 arasındaki{" "}
+          <strong className="text-rehberim-navy">gerçek LGS sınavlarından</strong>{" "}
+          rastgele seçilir. Her açılışta farklı bir set gelir; havuz sabit
+          olduğu için çok denersen sorular tekrar edebilir.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {cikmisBransListesi().map((c) => (
+            <Link
+              key={c.yol}
+              href={`/deneme/cikmis/${c.yol}`}
+              className="ring-hairline flex items-center gap-3 rounded-2xl border border-rehberim-border bg-white p-4 shadow-card transition hover:border-rehberim-accent hover:shadow-soft"
+            >
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-rehberim-accent text-rehberim-on-accent">
+                <Archive className="h-5 w-5" strokeWidth={2.2} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-extrabold text-rehberim-navy">
+                  {c.tanim.subjectName}
+                </span>
+                <span className="mt-0.5 block text-xs tabular-nums text-rehberim-navy/55">
+                  {c.tanim.count} soru · {c.sureDk} dakika ·{" "}
+                  {c.havuz} soruluk havuzdan
+                </span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
 
       <div className="mt-6 rounded-2xl border border-rehberim-accent/30 bg-rehberim-accent/10 p-4 text-sm text-rehberim-navy">
         <p className="font-bold">İpuçları</p>

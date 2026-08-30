@@ -78,6 +78,19 @@ export function konuCikmisSorulari(
     .sort((a, b) => (b.year !== a.year ? b.year - a.year : a.no - b.no));
 }
 
+/**
+ * Bir dersin TÜM çıkmış soruları (konu etiketi olsun olmasın) — yeniden
+ * eskiye. Çıkmış sorulardan branş denemesi bunu kullanır: orada amaç konu
+ * çalışmak değil, o dersin gerçek sınav sorularıyla karşılaşmak; etiketsiz
+ * sorular (grafik/tablo/sözel mantık) da havuza dahil olmalı.
+ */
+export function dersinCikmisSorulari(icerikDersSlug: string): KonuCikmisSoru[] {
+  const ders = cikmisDersSlug(icerikDersSlug);
+  return tumSorular()
+    .filter((q) => q.subjectSlug === ders)
+    .sort((a, b) => (b.year !== a.year ? b.year - a.year : a.no - b.no));
+}
+
 /** Konu sayfasındaki düğmede gösterilen sayı. */
 export function konuCikmisSoruSayisi(
   icerikDersSlug: string,
