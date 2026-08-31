@@ -8,9 +8,11 @@ import { BugununPlani } from "@/components/dashboard/BugununPlani";
 import { HedefOkulKarti } from "@/components/dashboard/HedefOkulKarti";
 import { GeriSayim } from "@/components/dashboard/GeriSayim";
 import { KaldiginYerCard } from "@/components/dashboard/KaldiginYerCard";
+import { TekrarZamaniKarti } from "@/components/dashboard/TekrarZamaniKarti";
 import { StatsPanel } from "@/components/stats/StatsPanel";
 import { WeeklyDigestCard } from "@/components/stats/WeeklyDigestCard";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
+import { getTopicNameMap } from "@/content";
 import { getBugununPlani } from "@/lib/bugununPlani";
 import { siradakiSinav, tarihMetni } from "@/lib/sinavTarihi";
 import { getShellUser } from "@/lib/user";
@@ -77,6 +79,11 @@ export default async function DashboardPage() {
 
       {/* Kaldığın yer — yeni kullanıcıda hiç görünmez */}
       <KaldiginYerCard veri={plan.kaldiginYer} />
+
+      {/* Vadesi gelen konu tekrarları — tekrar edilecek şey yoksa görünmez.
+          Konu adları sunucudan prop olarak geçiyor: istemci bileşeni
+          620 KB'lık @/content modülünü paketine çekmesin. */}
+      <TekrarZamaniKarti konuAdlari={getTopicNameMap()} />
 
       {/* Hedef okul — okul taramadan hedef seçilmişse görünür */}
       <HedefOkulKarti />

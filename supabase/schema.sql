@@ -3955,3 +3955,44 @@ $$;
 
 revoke execute on function public.hata_kayitlari_bakim() from public, anon, authenticated;
 grant execute on function public.hata_kayitlari_bakim() to service_role;
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 16 — KONU TEKRAR PLANI (ARALIKLI TEKRAR)
+-- ════════════════════════════════════════════════════════════════════
+-- Yanlış SORULAR için aralıklı tekrar zaten vardı (wrong_answers).
+-- KONULAR için yoktu: öğrenci konuyu "bitirdi" işaretliyor ve o konu
+-- sınava kadar bir daha karşısına çıkmıyordu. Ekimde çalışılan konu
+-- haziranda hatırlanmıyor.
+--
+-- Aralık matematiği İSTEMCİDE (src/lib/konuTekrar.ts): saf fonksiyon,
+-- doğrudan test edilebiliyor. Burada yalnız kayıt duruyor.
+--
+-- RLS yeterli, güvenlik tanımlı fonksiyona gerek YOK: tablo tamamen
+-- kullanıcıya ait, kimse başkasının satırını göremez/yazamaz. Servis
+-- rolü gerektirmemesi bilinçli — ek maliyet ve ek yüzey doğurmasın.
+
+create table if not exists public.konu_tekrar (
+  user_id      uuid        not null references auth.users on delete cascade,
+  subject_slug text        not null,
+  topic_id     text        not null,
+  -- Kaçıncı basamak (0 tabanlı). src/lib/konuTekrar.ts → BASAMAKLAR
+  basamak      int         not null default 0,
+  -- Bir sonraki tekrarın zamanı
+  vade         timestamptz not null,
+  son_tekrar   timestamptz not null default now(),
+  -- Son testin yüzdesi (öğrenciye "geçen sefer %40 almıştın" demek için)
+  son_yuzde    int,
+  primary key (user_id, subject_slug, topic_id)
+);
+
+alter table public.konu_tekrar enable row level security;
+
+drop policy if exists "own konu tekrar" on public.konu_tekrar;
+create policy "own konu tekrar" on public.konu_tekrar
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- "Bugün tekrar etmem gerekenler" sorgusu hep (user_id, vade) biçiminde.
+create index if not exists konu_tekrar_vade_idx
+  on public.konu_tekrar (user_id, vade);

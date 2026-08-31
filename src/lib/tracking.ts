@@ -9,6 +9,7 @@ import {
 } from "@/lib/tracking-core";
 // İstatistik pencerelerinin sınırı da TR gün başıdır (bkz. lib/zaman.ts).
 import { trPencereBaslangici } from "@/lib/zaman";
+import { tekrariPlanla } from "@/lib/konuTekrarDeposu";
 
 export type { Stats } from "@/lib/tracking-core";
 
@@ -106,6 +107,21 @@ export async function saveQuizResult(input: QuizResultInput): Promise<boolean> {
     total_questions: input.total,
     duration_seconds: Math.round(input.durationSeconds),
   });
+
+  // Test sonucu aynı zamanda "bu konuyu ne kadar hatirliyor?" cevabidir;
+  // tekrar plani buradan kurulur. BEKLENMEZ ve hatasi yutulur: plan
+  // kurulamadi diye test sonucunun kaydedilmemis sayilmasi yanlis olurdu.
+  // Sanal dersler (deneme/sozluk kayitlari) tekrar planina girmez --
+  // onlarin bir konusu yok.
+  if (!input.subjectSlug.startsWith("__")) {
+    void tekrariPlanla(
+      input.subjectSlug,
+      input.topicId,
+      input.correct,
+      input.total,
+    );
+  }
+
   return !error;
 }
 
