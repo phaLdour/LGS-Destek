@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import Link from "next/link";
+import { CloudDownload } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { SubjectGrid } from "@/components/subjects/SubjectGrid";
 import { SubjectHeatmap } from "@/components/stats/SubjectHeatmap";
@@ -21,6 +23,27 @@ export default async function DerslerPage() {
         <p className="mt-1 text-pretty text-sm text-rehberim-navy/55">
           LGS müfredatındaki tüm dersler ve konularındaki performansın.
         </p>
+
+        {/* Çevrimdışı davetinin yeri burası: öğrenci derslere bakarken
+            "internet olmasa da çalışayım" fikri en doğal burada gelir.
+            Ayrı bir menü maddesi yapılmadı — kaybolur. */}
+        <Link
+          href="/cevrimdisi"
+          className="mt-4 flex items-center gap-3 rounded-2xl border border-rehberim-border bg-rehberim-muted px-4 py-3 transition hover:bg-rehberim-surface"
+        >
+          <CloudDownload
+            className="h-5 w-5 shrink-0 text-rehberim-accent-dark"
+            strokeWidth={2.2}
+          />
+          <span className="min-w-0">
+            <span className="block text-sm font-bold text-rehberim-navy">
+              İnternetsiz çalış
+            </span>
+            <span className="block text-xs leading-snug text-rehberim-navy/60">
+              Dersleri telefonuna indir, bağlantı olmasa da aç
+            </span>
+          </span>
+        </Link>
       </header>
 
       <section className="mb-8">

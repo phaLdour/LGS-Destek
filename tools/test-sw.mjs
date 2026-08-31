@@ -127,5 +127,82 @@ console.log('\n6) POST istekleri hic ele alinmiyor');
   kontrol('POST istegine dokunulmadi', cagrildi === false);
 }
 
+console.log('\n7) Cevrimdisi ders paketi: agdan gelir ve SAKLANIR');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: true });
+  let cevapSozu;
+  tetikle(olaylar, 'fetch', {
+    request: { method: 'GET', mode: 'cors', url: 'https://x/cevrimdisi/veri.json' },
+    respondWith: (p) => { cevapSozu = p; },
+  });
+  const cevap = await cevapSozu;
+  kontrol('veri agdan geldi', cevap && cevap.body === 'agdan');
+  const paketDepo = depolar.get('rehberim-cevrimdisi');
+  kontrol('veri onbellege alindi', !!paketDepo && paketDepo.has('/cevrimdisi/veri.json'));
+}
+
+console.log('\n8) Internet yokken ders paketi saklanan kopyadan gelir');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: false });
+  // Once ogrenci internet varken indirmis gibi davran.
+  depolar.set('rehberim-cevrimdisi', new Map([['/cevrimdisi/veri.json', { body: 'saklanan-paket' }]]));
+  let cevapSozu;
+  tetikle(olaylar, 'fetch', {
+    request: { method: 'GET', mode: 'cors', url: 'https://x/cevrimdisi/veri.json' },
+    respondWith: (p) => { cevapSozu = p; },
+  });
+  const cevap = await cevapSozu;
+  kontrol('saklanan paket donduruldu', cevap && cevap.body === 'saklanan-paket');
+}
+
+console.log('\n9) Internet yokken /cevrimdisi sayfasi ACILIR (offline.html degil)');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: false });
+  let bekle;
+  tetikle(olaylar, 'install', { waitUntil: (p) => { bekle = p; } });
+  await bekle;
+  depolar.set('rehberim-cevrimdisi', new Map([['/cevrimdisi', { body: 'cevrimdisi-sayfasi' }]]));
+  let cevapSozu;
+  tetikle(olaylar, 'fetch', {
+    request: { method: 'GET', mode: 'navigate', url: 'https://x/cevrimdisi' },
+    respondWith: (p) => { cevapSozu = p; },
+  });
+  const cevap = await cevapSozu;
+  kontrol('cevrimdisi sayfasi saklanan kopyadan geldi', cevap && cevap.body === 'cevrimdisi-sayfasi');
+}
+
+console.log('\n10) Ogrenciye ait sayfalar HALA saklanmiyor (sadece /cevrimdisi istisna)');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: true });
+  for (const yol of ['/dashboard', '/profile', '/hatalarim', '/cevrimdisi-baska']) {
+    let cevapSozu;
+    tetikle(olaylar, 'fetch', {
+      request: { method: 'GET', mode: 'navigate', url: `https://x${yol}` },
+      respondWith: (p) => { cevapSozu = p; },
+    });
+    await cevapSozu;
+  }
+  const hicSaklanmadi = [...depolar.values()].every((d) =>
+    !d.has('https://x/dashboard') && !d.has('/dashboard') &&
+    !d.has('https://x/profile') && !d.has('/profile') &&
+    !d.has('https://x/hatalarim') && !d.has('/hatalarim') &&
+    !d.has('https://x/cevrimdisi-baska') && !d.has('/cevrimdisi-baska'),
+  );
+  kontrol('kisisel sayfalar onbellege ALINMADI', hicSaklanmadi);
+}
+
+console.log('\n11) Yeni surum yayinlaninca indirilen ders paketi SILINMEZ');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: true });
+  // Ogrencinin indirdigi paket + eski bir surum onbellegi
+  depolar.set('rehberim-cevrimdisi', new Map([['/cevrimdisi/veri.json', { body: 'paket' }]]));
+  depolar.set('rehberim-v1-img', new Map([['/eski.webp', { body: 'x' }]]));
+  let bekle;
+  tetikle(olaylar, 'activate', { waitUntil: (p) => { bekle = p; } });
+  await bekle;
+  kontrol('ders paketi korundu', depolar.has('rehberim-cevrimdisi'));
+  kontrol('eski surum onbellegi temizlendi', !depolar.has('rehberim-v1-img'));
+}
+
 console.log(`\n===== ${gecti} gecti, ${kaldi} kaldi =====`);
 process.exit(kaldi === 0 ? 0 : 1);

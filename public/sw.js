@@ -5,19 +5,36 @@
  *   1) Çıkmış soru görüntüleri (/cikmis-sorular/.../*.webp) — cache-first
  *   2) Next.js hash'li statik chunk'lar (/_next/static/...) — stale-while-revalidate
  *   3) /offline.html — internet gidince gösterilecek kendi ekranımız
+ *   4) /cevrimdisi ve /cevrimdisi/veri.json — çevrimdışı ders kütüphanesi
  *
- * SAYFA (HTML) ÖNBELLEĞE ALINMAZ. Bu bilinçli bir tercih: sayfaları
- * saklamak bayat içerik ve oturum karışması riski doğurur. İnternet
- * yokken gezinme denemesi başarısız olursa tarayıcının dinozor ekranı
- * yerine /offline.html gösterilir — o kadar.
+ * ÖĞRENCİYE AİT SAYFALAR ÖNBELLEĞE ALINMAZ. Bu bilinçli bir tercih:
+ * onları saklamak bayat içerik ve oturum karışması riski doğurur
+ * (aynı telefonu kullanan kardeş, okul tableti...). İnternet yokken
+ * gezinme denemesi başarısız olursa /offline.html gösterilir.
+ *
+ * TEK İSTİSNA /cevrimdisi'dir ve istisna olmasının sebebi var: o sayfa
+ * hiçbir kişisel veri okumaz (bkz. src/app/cevrimdisi/page.tsx), içeriği
+ * her öğrenci için birebir aynıdır. Saklanmazsa da zaten amacını
+ * yitirirdi — internet yokken açılamayan bir "çevrimdışı sayfa".
  *
  * API ('/api/...') ve auth istekleri hiç ele alınmaz.
  */
-const VERSION = "rehberim-v2";
+const VERSION = "rehberim-v3";
 const IMG_CACHE = `${VERSION}-img`;
 const STATIC_CACHE = `${VERSION}-static`;
 const KABUK_CACHE = `${VERSION}-kabuk`;
 const OFFLINE_URL = "/offline.html";
+
+/*
+ * Çevrimdışı kütüphane önbelleği. DİKKAT: adı bilerek VERSION içermiyor.
+ * Öğrencinin indirdiği 620 KB'lık ders paketi her sürümde silinmemeli —
+ * silinseydi her yayında telefon sessizce çevrimdışı yeteneğini
+ * kaybederdi. Aşağıdaki `activate` temizliği bu adı korur.
+ * src/lib/cevrimdisiIstemci.ts içindeki CEVRIMDISI_CACHE ile aynı olmalı.
+ */
+const CEVRIMDISI_CACHE = "rehberim-cevrimdisi";
+const CEVRIMDISI_YOLU = "/cevrimdisi";
+const CEVRIMDISI_VERI_YOLU = "/cevrimdisi/veri.json";
 
 self.addEventListener("install", (event) => {
   // Çevrimdışı ekranını ve ikonlarını şimdiden sakla: internet gittiğinde
@@ -50,7 +67,9 @@ self.addEventListener("activate", (event) => {
       const keys = await caches.keys();
       await Promise.all(
         keys
-          .filter((k) => !k.startsWith(VERSION))
+          // Çevrimdışı paketi sürüm temizliğinden MUAF: öğrencinin
+          // indirdiği ders içeriği yeni yayında silinmemeli.
+          .filter((k) => !k.startsWith(VERSION) && k !== CEVRIMDISI_CACHE)
           .map((k) => caches.delete(k)),
       );
       await self.clients.claim();
@@ -109,9 +128,51 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 3) Sayfa gezinmesi: önbelleğe ALINMAZ, ama internet yoksa kendi
-  //    çevrimdışı ekranımızı göster (tarayıcının hata sayfası yerine).
+  // 3) Çevrimdışı ders paketi: network-first, düşerse saklanan kopya.
+  //    Network-first, çünkü internet varken en güncel içerik gelmeli;
+  //    cache fallback, çünkü paketin tek varlık sebebi internetsizlik.
+  if (url.pathname === CEVRIMDISI_VERI_YOLU) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CEVRIMDISI_CACHE);
+        try {
+          const res = await fetch(request);
+          if (res.ok) cache.put(CEVRIMDISI_VERI_YOLU, res.clone());
+          return res;
+        } catch (e) {
+          const hit = await cache.match(CEVRIMDISI_VERI_YOLU);
+          if (hit) return hit;
+          throw e;
+        }
+      })(),
+    );
+    return;
+  }
+
+  // 4) Sayfa gezinmesi.
   if (request.mode === "navigate") {
+    // /cevrimdisi TEK İSTİSNA: kişisel veri içermez (bkz. dosya başı),
+    // saklanmazsa internet yokken açılamaz ve amacını yitirir.
+    if (url.pathname === CEVRIMDISI_YOLU) {
+      event.respondWith(
+        (async () => {
+          const cache = await caches.open(CEVRIMDISI_CACHE);
+          try {
+            const res = await fetch(request);
+            if (res.ok) cache.put(CEVRIMDISI_YOLU, res.clone());
+            return res;
+          } catch (e) {
+            const hit = await cache.match(CEVRIMDISI_YOLU);
+            if (hit) return hit;
+            throw e;
+          }
+        })(),
+      );
+      return;
+    }
+
+    // Diğer sayfalar: önbelleğe ALINMAZ, ama internet yoksa kendi
+    // çevrimdışı ekranımızı göster (tarayıcının hata sayfası yerine).
     event.respondWith(
       (async () => {
         try {
