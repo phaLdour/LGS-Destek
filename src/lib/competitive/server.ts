@@ -143,16 +143,33 @@ type ProfileRow = {
   display_name: string;
   avatar_url: string | null;
   best_tier: number;
+  takma_ad_gizli?: boolean | null;
 };
 
+/**
+ * Adı okuyan İKİ yoldan biri (öbürü SQL'deki comp_leaderboard).
+ * Gizleme burada uygulanıyor; böylece maç ekranı, profil, rozetler —
+ * profili bu fonksiyondan geçen her yer aynı anda korunuyor.
+ *
+ * Gizlenen adın yerine "Oyuncu 1234" geliyor: kimliği açık etmiyor ama
+ * ekranda boşluk da bırakmıyor. Avatar da gizleniyor; uygunsuz ad koyan
+ * hesabın resmi aynı riski taşır.
+ */
+const PROFIL_ALANLARI =
+  "user_id, nickname, display_name, avatar_url, best_tier, takma_ad_gizli";
+
 function toPublicProfile(r: ProfileRow): PublicProfile {
+  const gizli = Boolean(r.takma_ad_gizli);
   return {
     userId: r.user_id,
-    name: r.nickname ?? r.display_name ?? "Öğrenci",
-    nickname: r.nickname,
-    displayName: r.display_name ?? "Öğrenci",
-    avatarUrl: r.avatar_url,
+    name: gizli
+      ? `Oyuncu ${r.user_id.slice(-4)}`
+      : (r.nickname ?? r.display_name ?? "Öğrenci"),
+    nickname: gizli ? null : r.nickname,
+    displayName: gizli ? `Oyuncu ${r.user_id.slice(-4)}` : (r.display_name ?? "Öğrenci"),
+    avatarUrl: gizli ? null : r.avatar_url,
     bestTier: r.best_tier,
+    takmaAdGizli: gizli,
   };
 }
 
@@ -168,7 +185,7 @@ export const getPublicProfile = cache(async function getPublicProfile(
   const supabase = await createClient();
   const { data } = await supabase
     .from("comp_profiles")
-    .select("user_id, nickname, display_name, avatar_url, best_tier")
+    .select(PROFIL_ALANLARI)
     .eq("user_id", userId)
     .maybeSingle();
   return data ? toPublicProfile(data as ProfileRow) : null;
@@ -183,7 +200,7 @@ export async function getPublicProfiles(
   const supabase = await createClient();
   const { data } = await supabase
     .from("comp_profiles")
-    .select("user_id, nickname, display_name, avatar_url, best_tier")
+    .select(PROFIL_ALANLARI)
     .in("user_id", userIds);
   for (const r of (data ?? []) as ProfileRow[]) {
     map.set(r.user_id, toPublicProfile(r));

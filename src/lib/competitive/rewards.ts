@@ -21,6 +21,13 @@ export type PublicProfile = {
   avatarUrl: string | null;
   /** Tüm zamanların en yüksek kademesi (0-9) */
   bestTier: number;
+  /**
+   * Takma ad şikayet üzerine gizlendi mi (FAZ 17). Gizliyse `name`
+   * zaten nötr bir ada ("Oyuncu 1234") çevrilmiştir; bu bayrak
+   * arayüzün "bildir" düğmesini gizlemesi için var — gizlenmiş bir adı
+   * tekrar bildirmenin anlamı yok.
+   */
+  takmaAdGizli: boolean;
 };
 
 export type Trophy = {

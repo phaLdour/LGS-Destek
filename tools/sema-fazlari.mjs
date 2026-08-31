@@ -45,8 +45,31 @@ const KAYIT_ONEKI = "select public.sema_faz_kaydet(";
  *  damga eklemek parmak izini degistirir, damga hemen eskimis olurdu. */
 const DIPNOT_ONEKI = "-- @gecis";
 const BASLIK = /^-- FAZ .+$/;
-/** Başlığın üstündeki süsleme çizgisi de bloğa dahildir. */
-const CIZGI = /^-- ═+$/;
+/**
+ * Süsleme çizgisi. Hem `═` hem `=` kabul edilir: FAZ 11 ASCII kullanıyor
+ * ve çizgisi başlığın ALTINDA.
+ */
+const CIZGI = /^--\s*[═=]{5,}\s*$/;
+
+/**
+ * Bir "-- FAZ ..." satırı gerçekten blok başlığı mı?
+ *
+ * Sadece metne bakmak yetmiyor: düz yazı içinde satır başında
+ * "-- FAZ 5'teki aslına dokunulmuyor" gibi bir cümle geçebiliyor ve
+ * bloğu ikiye bölüyordu (bu tam olarak bir kez başımıza geldi).
+ * Gerçek başlığın üstünde ya da altında mutlaka bir süsleme çizgisi var;
+ * ayırt edici işaret bu.
+ */
+function baslikMi(satirlar, i) {
+  if (!BASLIK.test(satirlar[i])) return false;
+  if (i > 0 && CIZGI.test(satirlar[i - 1])) return true;
+  // Alttaki ilk boş olmayan satır çizgiyse de başlıktır.
+  for (let j = i + 1; j < satirlar.length; j++) {
+    if (satirlar[j].trim() === "") continue;
+    return CIZGI.test(satirlar[j]);
+  }
+  return false;
+}
 
 /** Bloğun kimliği: başlık satırının kendisi (hepsi benzersiz). */
 function kimlik(baslik) {
@@ -81,7 +104,7 @@ export function bloklariAyir(metin) {
   const satirlar = metin.split("\n");
   const baslangiclar = [];
   for (let i = 0; i < satirlar.length; i++) {
-    if (BASLIK.test(satirlar[i])) {
+    if (baslikMi(satirlar, i)) {
       // Üstündeki çizgi(ler) bloğa dahil olsun — kesip yapıştırınca
       // başlık görsel olarak bütün kalsın.
       let bas = i;

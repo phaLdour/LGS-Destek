@@ -4123,3 +4123,240 @@ create index if not exists konu_tekrar_vade_idx
 -- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
 select public.sema_faz_kaydet('FAZ 16 — KONU TEKRAR PLANI (ARALIKLI TEKRAR)', '0d1c2638398b7924');
 
+
+-- ════════════════════════════════════════════════════════════════════
+-- FAZ 17 — ŞİKAYET VE MODERASYON
+-- ════════════════════════════════════════════════════════════════════
+-- SİTE KURALI: "Küfür, hakaret ve yasa dışı şeylerle ilgili hiçbir şey
+-- bulunmayacak; nickname'ler de bunlar gibi bir şey olmamalı."
+--
+-- Otomatik süzgeç (src/lib/moderasyon.ts) takma ad yazılırken çalışıyor
+-- ama hiçbir süzgeç her şeyi yakalayamaz: yazım oyunları, argo, yerel
+-- hakaretler, masum görünen ama bir okulda birini hedefleyen adlar...
+-- Süzgeç kaçırdığında şu ana kadar yapılabilecek hiçbir şey yoktu:
+-- öğrenci bildiremiyordu, bizim de haberimiz olmuyordu.
+--
+-- EN ÖNEMLİ TASARIM KARARI — OTOMATİK GİZLEME: siteyi tek kişi
+-- yönetiyor ve 7/24 moderatör değil. Şikayetin "biri bakana kadar"
+-- beklemesi, uygunsuz bir adın gece boyunca liderlik tablosunda
+-- çocuklara görünmesi demek. Bu yüzden 3 FARKLI öğrenci bildirdiğinde
+-- ad OTOMATİK gizlenir; inceleme sonra yapılır. Yanlış alarm ucuz
+-- (ad "Oyuncu 1234" görünür, hesap etkilenmez, tek tıkla geri alınır),
+-- kaçırılan hakaret pahalıdır.
+--
+-- Şikayetin kendisi de kötüye kullanılabilir; bu yüzden:
+--   - kendini bildiremezsin,
+--   - aynı kişiyi bir kez bildirebilirsin (tekil kısıt),
+--   - istek hızı sunucuda sınırlanır (bkz. src/app/api/sikayet/route.ts).
+
+alter table public.comp_profiles
+  add column if not exists takma_ad_gizli boolean not null default false;
+
+create table if not exists public.sikayetler (
+  id         uuid primary key default gen_random_uuid(),
+  bildiren   uuid not null references auth.users on delete cascade,
+  hedef      uuid not null references auth.users on delete cascade,
+  sebep      text,
+  created_at timestamptz not null default now(),
+  -- Aynı kişiyi tekrar tekrar bildirip eşiği tek başına doldurmak yok.
+  unique (bildiren, hedef)
+);
+
+alter table public.sikayetler enable row level security;
+-- Kimse şikayet tablosunu doğrudan okuyamaz/yazamaz: kim kimi bildirdi
+-- bilgisi çocuklar arasında yeni bir çatışma sebebi olur. Yalnız
+-- aşağıdaki güvenlik tanımlı fonksiyonlar dokunur.
+revoke all on public.sikayetler from public, anon, authenticated;
+
+create index if not exists sikayetler_hedef_idx
+  on public.sikayetler (hedef, created_at desc);
+
+-- Eşik: kaç farklı öğrenci bildirince ad otomatik gizlensin.
+create or replace function public.sikayet_esigi() returns int
+language sql immutable as $$ select 3 $$;
+
+create or replace function public.sikayet_et(p_hedef uuid, p_sebep text)
+returns table(sayi int, gizlendi boolean)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_bildiren uuid := auth.uid();
+  v_sayi int;
+  v_gizli boolean;
+begin
+  if v_bildiren is null then
+    raise exception 'giris gerekli';
+  end if;
+  if p_hedef is null or p_hedef = v_bildiren then
+    -- Kendini bildirmek anlamsız; ayrıca eşiği tek başına doldurma yolu.
+    raise exception 'gecersiz hedef';
+  end if;
+
+  -- Bildirilecek bir ad yoksa şikayetin konusu da yok.
+  if not exists (
+    select 1 from public.comp_profiles
+     where user_id = p_hedef and nickname is not null
+  ) then
+    raise exception 'gecersiz hedef';
+  end if;
+
+  insert into public.sikayetler (bildiren, hedef, sebep)
+  values (v_bildiren, p_hedef, left(coalesce(p_sebep, ''), 200))
+  on conflict (bildiren, hedef) do nothing;
+
+  select count(distinct bildiren)::int into v_sayi
+    from public.sikayetler where hedef = p_hedef;
+
+  select takma_ad_gizli into v_gizli
+    from public.comp_profiles where user_id = p_hedef;
+
+  if v_sayi >= public.sikayet_esigi() and not coalesce(v_gizli, false) then
+    update public.comp_profiles
+       set takma_ad_gizli = true, updated_at = now()
+     where user_id = p_hedef;
+    v_gizli := true;
+  end if;
+
+  return query select v_sayi, coalesce(v_gizli, false);
+end;
+$$;
+
+revoke execute on function public.sikayet_et(uuid, text)
+  from public, anon;
+-- Öğrenci çağırabilmeli (bildiren o); hız sınırı sunucu tarafında.
+grant execute on function public.sikayet_et(uuid, text) to authenticated;
+
+-- ── İnceleme (yalnız site sahibi) ───────────────────────────────────
+
+create or replace function public.sikayet_ozeti()
+returns table(
+  hedef       uuid,
+  takma_ad    text,
+  bildiren_sayisi int,
+  gizli       boolean,
+  son_sikayet timestamptz,
+  sebepler    text[]
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select s.hedef,
+         p.nickname,
+         count(distinct s.bildiren)::int,
+         coalesce(p.takma_ad_gizli, false),
+         max(s.created_at),
+         array_agg(distinct s.sebep) filter (where s.sebep is not null and s.sebep <> '')
+    from public.sikayetler s
+    left join public.comp_profiles p on p.user_id = s.hedef
+   group by s.hedef, p.nickname, p.takma_ad_gizli
+   order by count(distinct s.bildiren) desc, max(s.created_at) desc;
+$$;
+
+revoke execute on function public.sikayet_ozeti() from public, anon, authenticated;
+grant execute on function public.sikayet_ozeti() to service_role;
+
+/*
+ * İnceleme kararı.
+ *   p_gizle = true  → ad gizli kalsın (şikayetler durur, kayıt kalsın)
+ *   p_gizle = false → ad temize çıktı; şikayetler SİLİNİR, ad geri gelir
+ *
+ * Temize çıkanda şikayetleri silmek şart: silinmezse eşik hâlâ aşılmış
+ * durumda kalır ve bir sonraki tek şikayet adı yeniden gizler.
+ */
+create or replace function public.takma_ad_karari(p_hedef uuid, p_gizle boolean)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.comp_profiles
+     set takma_ad_gizli = p_gizle, updated_at = now()
+   where user_id = p_hedef;
+  if not p_gizle then
+    delete from public.sikayetler where hedef = p_hedef;
+  end if;
+end;
+$$;
+
+revoke execute on function public.takma_ad_karari(uuid, boolean)
+  from public, anon, authenticated;
+grant execute on function public.takma_ad_karari(uuid, boolean) to service_role;
+
+-- ── Gizlenen ad hiçbir yerde görünmemeli ────────────────────────────
+--
+-- Liderlik tablosu, adı okuyan İKİ yoldan biri (öbürü TypeScript
+-- tarafındaki toPublicProfile). Fonksiyon burada yeniden tanımlanıyor;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 17 — ŞİKAYET VE MODERASYON', 'd1454dedca3765c6');
+-- (FAZ 5'teki aslına dokunulmuyor ki o bloğun damgası değişmesin.)
+--
+-- Gizlenen ada "Oyuncu 1234" deniyor: kimliği açık etmiyor ama tabloda
+-- boşluk da bırakmıyor. Sıralaması ve puanı aynen duruyor — ceza adın
+-- görünmemesi, oyundan atılmak değil.
+
+create or replace function public.comp_leaderboard(
+  p_season_id int default null,
+  p_limit int default 50
+) returns table (
+  rank_position int,
+  user_id      uuid,
+  display_name text,
+  avatar_url   text,
+  best_tier    int,
+  tier         int,
+  points       int,
+  wins         int,
+  losses       int,
+  draws        int,
+  win_streak   int,
+  is_me        boolean
+)
+language sql stable security definer
+as $$
+  with season as (
+    select coalesce(
+      p_season_id,
+      extract(year  from (now() at time zone 'Europe/Istanbul'))::int * 100
+      + extract(month from (now() at time zone 'Europe/Istanbul'))::int
+    ) as id
+  ),
+  ranked as (
+    select r.user_id, r.tier, r.points, r.wins, r.losses, r.draws, r.win_streak,
+           row_number() over (
+             order by r.tier desc, r.points desc, r.wins desc, r.updated_at asc
+           )::int as pos
+      from public.comp_ranks r, season
+     where r.season_id = season.id
+       and (r.wins + r.losses + r.draws) > 0
+  )
+  select x.pos,
+         x.user_id,
+         case
+           when coalesce(p.takma_ad_gizli, false)
+             then 'Oyuncu ' || right(x.user_id::text, 4)
+           else coalesce(p.nickname, p.display_name, 'Öğrenci')
+         end,
+         -- Gizlenen oyuncunun avatarı da gösterilmez: uygunsuz ad
+         -- koyan hesabın resmi de aynı riski taşır.
+         case when coalesce(p.takma_ad_gizli, false) then null else p.avatar_url end,
+         coalesce(p.best_tier, x.tier),
+         x.tier, x.points, x.wins, x.losses, x.draws, x.win_streak,
+         (x.user_id = auth.uid())
+    from ranked x
+    left join public.comp_profiles p on p.user_id = x.user_id
+   where auth.uid() is not null
+     and (x.pos <= least(greatest(coalesce(p_limit, 50), 1), 200)
+          or x.user_id = auth.uid())
+   order by x.pos;
+$$;
+
+grant execute on function public.comp_leaderboard(int, int) to authenticated;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowLeft, Flame, Pencil, Swords, Trophy, UserX } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
+import { BildirDugmesi } from "@/components/moderasyon/BildirDugmesi";
 import { AvatarWithCrest } from "@/components/competitive/AvatarWithCrest";
 import { LeagueBadge } from "@/components/competitive/LeagueBadge";
 import { LeagueCrest } from "@/components/competitive/LeagueCrest";
@@ -114,6 +115,18 @@ export default async function OyuncuPage({
               {trophies.length} kupa · {totalMatches} maç · %{winRate} kazanma
               {allTime.seasons > 0 && ` · ${allTime.seasons} sezon`}
             </p>
+            {/* Uygunsuz takma adı bildirme (FAZ 17). Yalnız BAŞKASININ
+                profilinde ve ad zaten gizlenmemişse görünür — gizlenmiş
+                bir adı tekrar bildirmenin anlamı yok. */}
+            {!isMe && profile.nickname && !profile.takmaAdGizli && (
+              <div className="mt-3 flex justify-center sm:justify-start">
+                <BildirDugmesi
+                  hedefKullaniciId={userId}
+                  hedefAd={profile.name}
+                />
+              </div>
+            )}
+
             {isMe && (
               <div className="mt-3 flex flex-wrap justify-center gap-2 sm:justify-start">
                 <span className="rounded-full bg-rehberim-muted px-2.5 py-1 text-[11px] font-bold text-rehberim-navy/60 ring-1 ring-rehberim-border">

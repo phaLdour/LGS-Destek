@@ -68,6 +68,39 @@ select public.sema_faz_kaydet('FAZ 2 — Bir şey', 'abc123');`,
   );
 });
 
+
+test("düz yazı içindeki '-- FAZ ...' cümlesi bloğu BÖLMEZ", () => {
+  // Bu tam olarak bir kez başımıza geldi: FAZ 17'nin içinde satır başında
+  // "-- FAZ 5'teki aslına dokunulmuyor..." diye bir yorum vardı ve blok
+  // ikiye bölündü. Gerçek başlığın üstünde ya da altında süsleme çizgisi
+  // olur; ayırt edici işaret bu.
+  const metin = `-- ════════════════════
+-- FAZ 9 — Gerçek başlık
+-- ════════════════════
+create table a (id int);
+
+-- FAZ 5'teki aslına dokunulmuyor ki damgası değişmesin.
+-- Bu bir yorum, başlık değil.
+create table b (id int);
+`;
+  const b = bloklariAyir(metin);
+  assert.deepEqual(
+    b.map((x) => x.id),
+    ["FAZ 9 — Gerçek başlık"],
+    "düz yazı yeni blok açtı",
+  );
+  assert.ok(b[0].govde.includes("create table b"), "blok erken kesildi");
+});
+
+test("çizgisi ALTINDA olan başlık da tanınır (FAZ 11 böyle)", () => {
+  const metin = `-- FAZ 11 — Alt çizgili
+-- ==========================
+create table a (id int);
+`;
+  const b = bloklariAyir(metin);
+  assert.deepEqual(b.map((x) => x.id), ["FAZ 11 — Alt çizgili"]);
+});
+
 test("gerçek şemadaki her bloğun damgası güncel", () => {
   // `npm test` bunu ayrıca komut olarak da çalıştırır; burada olması,
   // hangi bloğun bozuk olduğunu test çıktısında görebilmek için.
