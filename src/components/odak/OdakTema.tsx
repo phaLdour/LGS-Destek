@@ -18,9 +18,16 @@ export type OdakTemasi = {
   /** Tema seçicideki küçük kutunun arka planı */
   onizleme: string;
   /**
-   * Unsplash CDN fotoğrafı (ücretsiz lisans, hotlink destekli).
-   * Boyut/kalite parametreleri TemaSahnesi'nde eklenir. Fotoğraf yüklenmezse
-   * (çevrimdışı, engelli ağ...) altta duran çizim sahnesi görünür kalır.
+   * Fotoğrafın Unsplash CDN adresi.
+   *
+   * ARTIK İLK TERCİH DEĞİL: fotoğraflar `public/odak/<id>.webp` altında
+   * kendi sunucumuzda duruyor (bkz. tools/odak-fotograflarini-indir.mjs).
+   * Bu alan yalnız yedek yol olarak kaldı — dosya henüz depoya girmemiş
+   * bir ortamda Odak Modu görüntüsüz kalmasın diye.
+   *
+   * NEDEN KENDİ SUNUCUMUZ: her öğrencinin tarayıcısı unsplash.com'a
+   * istek atıyordu; IP ve yönlendiren sayfa üçüncü bir tarafa gidiyordu.
+   * Kullanıcıları çocuk olan bir sitede bunu sürdürmek doğru değil.
    */
   fotograf: string;
   /** Fotoğrafçı (Unsplash) — kaynak notu için */
@@ -624,9 +631,27 @@ function Sahil() {
  */
 export function TemaSahnesi({ tema }: { tema: string }) {
   const [yuklendi, setYuklendi] = useState<Record<string, boolean>>({});
-  const [hatali, setHatali] = useState<Record<string, boolean>>({});
+  // 0 = kendi sunucumuz, 1 = Unsplash yedeği, 2 = vazgeç (çizim kalır)
+  const [asama, setAsama] = useState<Record<string, number>>({});
   const bilgi = TEMALAR.find((t) => t.id === tema);
-  const fotoUrl = bilgi && !hatali[tema] ? `${bilgi.fotograf}?auto=format&fit=crop&w=1920&q=78` : null;
+
+  /*
+   * Fotoğraf sırası:
+   *   1. /odak/<id>.webp  — kendi sunucumuz. Üçüncü tarafa istek yok,
+   *      service worker önbelleğine girer, çevrimdışı da gelir.
+   *   2. Unsplash         — dosya henüz depoya girmemişse görüntü
+   *      kaybolmasın diye. Dosyalar eklendikten sonra bu yol hiç
+   *      kullanılmaz ve bir sonraki temizlikte kaldırılacak.
+   *   3. Hiçbiri          — alttaki çizim sahnesi zaten duruyor.
+   */
+  const adim = asama[tema] ?? 0;
+  const fotoUrl = !bilgi
+    ? null
+    : adim === 0
+      ? `/odak/${bilgi.id}.webp`
+      : adim === 1
+        ? `${bilgi.fotograf}?auto=format&fit=crop&w=1920&q=78`
+        : null;
 
   return (
     <div className="absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden>
@@ -641,12 +666,14 @@ export function TemaSahnesi({ tema }: { tema: string }) {
       {fotoUrl && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
+          // key: kaynak değişince tarayıcı gerçekten yeni isteği yapsın
+          key={fotoUrl}
           src={fotoUrl}
           alt=""
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
           style={{ opacity: yuklendi[tema] ? 1 : 0 }}
           onLoad={() => setYuklendi((y) => ({ ...y, [tema]: true }))}
-          onError={() => setHatali((h) => ({ ...h, [tema]: true }))}
+          onError={() => setAsama((a) => ({ ...a, [tema]: (a[tema] ?? 0) + 1 }))}
         />
       )}
       {/* Yazı okunurluğu için ortak, hafif karartma */}

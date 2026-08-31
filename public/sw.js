@@ -2,7 +2,7 @@
  * Rehberim — minimal, güvenli service worker.
  *
  * Yalnız DEĞİŞMEZ varlıkları önbelleğe alır:
- *   1) Çıkmış soru görüntüleri (/cikmis-sorular/.../*.webp) — cache-first
+ *   1) Değişmez görüntüler (/cikmis-sorular/, /odak/) — cache-first
  *   2) Next.js hash'li statik chunk'lar (/_next/static/...) — stale-while-revalidate
  *   3) /offline.html — internet gidince gösterilecek kendi ekranımız
  *   4) /cevrimdisi ve /cevrimdisi/veri.json — çevrimdışı ders kütüphanesi
@@ -78,9 +78,15 @@ self.addEventListener("activate", (event) => {
 });
 
 function isQuestionImage(url) {
+  const resim =
+    url.pathname.endsWith(".webp") || url.pathname.endsWith(".png");
+  if (!resim) return false;
   return (
-    url.pathname.startsWith("/cikmis-sorular/") &&
-    (url.pathname.endsWith(".webp") || url.pathname.endsWith(".png"))
+    url.pathname.startsWith("/cikmis-sorular/") ||
+    // Odak Modu tema fotoğrafları: artık kendi sunucumuzda (öneri 10).
+    // Değişmez dosyalar, cache-first uygun; ayrıca Odak Modu çevrimdışı
+    // da açılabildiği için önbellekte olmaları işe yarıyor.
+    url.pathname.startsWith("/odak/")
   );
 }
 

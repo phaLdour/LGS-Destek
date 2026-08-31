@@ -204,5 +204,29 @@ console.log('\n11) Yeni surum yayinlaninca indirilen ders paketi SILINMEZ');
   kontrol('eski surum onbellegi temizlendi', !depolar.has('rehberim-v1-img'));
 }
 
+console.log('\n12) Odak tema fotograflari onbellege aliniyor (artik kendi sunucumuzda)');
+{
+  const { olaylar, depolar } = sahteOrtamKur({ agVar: true });
+  let cevapSozu;
+  tetikle(olaylar, 'fetch', {
+    request: { method: 'GET', mode: 'no-cors', url: 'https://x/odak/orman.webp' },
+    respondWith: (p) => { cevapSozu = p; },
+  });
+  await cevapSozu;
+  const img = [...depolar.entries()].find(([k]) => k.includes('img'));
+  kontrol('odak fotografi onbellege alindi', !!img && img[1].has('https://x/odak/orman.webp'));
+}
+
+console.log('\n13) Resim olmayan /odak yolu onbellege ALINMAZ');
+{
+  const { olaylar } = sahteOrtamKur({ agVar: true });
+  let cagrildi = false;
+  tetikle(olaylar, 'fetch', {
+    request: { method: 'GET', mode: 'no-cors', url: 'https://x/odak/veri.json' },
+    respondWith: () => { cagrildi = true; },
+  });
+  kontrol('json dosyasina dokunulmadi', cagrildi === false);
+}
+
 console.log(`\n===== ${gecti} gecti, ${kaldi} kaldi =====`);
 process.exit(kaldi === 0 ? 0 : 1);
