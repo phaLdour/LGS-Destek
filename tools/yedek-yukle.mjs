@@ -24,6 +24,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { TABLOLAR } from "./yedek-al.mjs";
+import { dogrudanMiCalisiyor } from "./dogrudan-calisma.mjs";
 
 const TOPLU = 500;
 
@@ -60,7 +61,7 @@ export function yedegiOku(klasor, tablolar = TABLOLAR) {
 
 // Üst düzey `await` tsx'in CJS çıktısında desteklenmiyor (testler bu
 // dosyayı import ediyor); komut satırı bölümü async fonksiyona sarılı.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (dogrudanMiCalisiyor(import.meta.url)) {
   void (async () => {
   const klasor = process.argv[2];
   const onayli = process.argv.includes("--onayla");

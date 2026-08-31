@@ -29,6 +29,7 @@ import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
+import { dogrudanMiCalisiyor } from "./dogrudan-calisma.mjs";
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const NEXT = path.join(KOK, ".next");
@@ -100,7 +101,7 @@ function butceOku() {
   return JSON.parse(fs.readFileSync(BUTCE_DOSYASI, "utf8"));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (dogrudanMiCalisiyor(import.meta.url)) {
   const komut = process.argv[2] ?? "denetle";
   const butce = butceOku();
   const agirliklar = rotaAgirliklari();

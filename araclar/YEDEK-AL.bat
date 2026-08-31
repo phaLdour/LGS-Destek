@@ -97,6 +97,28 @@ if not "%HATA%"=="0" (
   exit /b 1
 )
 
+rem Betik "basarili" dese bile klasorde gercekten dosya var mi?
+rem Bir kez oldu: betik Windows'ta hic calismadan cikis kodu 0 dondu
+rem ve ekranda "YEDEK TAMAM" yaziyordu, klasor bombostu. Yedegi
+rem oldugunu sanan biri, yedegi olmayan biridir.
+set DOSYA_SAYISI=0
+if exist "%HEDEF%\*.json" (
+  for /f %%C in ('dir /b "%HEDEF%\*.json" 2^>nul ^| find /c /v ""') do set DOSYA_SAYISI=%%C
+)
+
+if "%DOSYA_SAYISI%"=="0" (
+  echo ============================================================
+  echo   DIKKAT: Klasorde hicbir yedek dosyasi yok.
+  echo   Betik hata vermedi ama bir sey de yazmadi.
+  echo   BU YEDEGE GUVENME. Bana haber ver.
+  echo ============================================================
+  echo.
+  pause
+  exit /b 1
+)
+
+echo %DOSYA_SAYISI% tablo dosyasi yazildi.
+
 echo ============================================================
 echo   YEDEK TAMAM
 echo ============================================================

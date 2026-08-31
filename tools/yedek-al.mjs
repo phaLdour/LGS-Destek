@@ -24,6 +24,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import { dogrudanMiCalisiyor } from "./dogrudan-calisma.mjs";
 
 /**
  * Yedeklenecek tablolar — SIRA ÖNEMLİ.
@@ -177,7 +178,7 @@ export async function yedekAl(istemci, hedef, tablolar = TABLOLAR) {
 // Testler bu dosyayı import ediyor; tsx CJS'e çevirdiğinde üst düzey
 // `await` desteklenmiyor. Bu yüzden komut satırı bölümü bir async
 // fonksiyona sarılı.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (dogrudanMiCalisiyor(import.meta.url)) {
   void (async () => {
   ortamiTamamla();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

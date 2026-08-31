@@ -59,6 +59,20 @@ if not "%HATA%"=="0" (
   exit /b 1
 )
 
+rem Betik "basarili" dese bile fotograflar gercekten indi mi?
+rem Bir kez oldu: betik Windows'ta hic calismadan cikis kodu 0 dondu.
+if not exist "public\odak\*.webp" (
+  echo.
+  echo ============================================================
+  echo   DIKKAT: Hicbir fotograf indirilmemis.
+  echo   Betik hata vermedi ama bir sey de yazmadi.
+  echo   Bana bu ekrandaki yaziyi gonder.
+  echo ============================================================
+  echo.
+  pause
+  exit /b 1
+)
+
 echo.
 echo [3/4] Depoya ekleniyor...
 git add public/odak

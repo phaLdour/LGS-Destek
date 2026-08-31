@@ -25,6 +25,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { dogrudanMiCalisiyor } from "./dogrudan-calisma.mjs";
 
 const KOK = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HEDEF = path.join(KOK, "public", "odak");
@@ -55,7 +56,7 @@ function indirmeAdresi(temelAdres) {
   return `${temelAdres}?auto=format&fit=crop&w=${GENISLIK}&q=${KALITE}&fm=webp`;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (dogrudanMiCalisiyor(import.meta.url)) {
   void (async () => {
     if (!fs.existsSync(KAYNAK)) {
       console.error(`Bulunamadı: ${KAYNAK}`);
