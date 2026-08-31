@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "node tools/tema-kontrast.mjs && npm test",
+    "postbuild": "node tools/performans-butcesi.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
