@@ -163,3 +163,76 @@ FAZ 16 — KONU TEKRAR PLANI   | UYGULANMADI |
 FAZ 15 — HIZ SINIRI          | ESKİ SÜRÜM  | 2026-08-31 00:13
 FAZ 14 — İSTATİSTİK          | güncel      | 2026-08-31 00:13
 ```
+
+## Yedekleme
+
+**Supabase'in ücretsiz planında otomatik yedek yoktur.** Otomatik günlük
+yedek yalnızca Pro ve üstü planlarda var ([Supabase Docs][1]). Yani hiçbir
+şey yapılmazsa, veritabanı silinir ya da bozulursa geri dönüşü yoktur.
+
+### Neden Supabase'in kendi tarifini kullanmıyoruz
+
+Supabase'in resmî GitHub Actions tarifi, veritabanı dökümünü **depoya
+işliyor** ([Supabase Docs][2]) ve dokümanın kendisi bunu herkese açık
+depolar için yapmamayı söylüyor. `phaLdour/LGS-Destek` herkese açık —
+öğrenci verisi oraya konulamaz. Ayrıca o tarif, veritabanı parolasını
+GitHub'a "secret" olarak koymayı gerektirir; bu proje için gereksiz bir
+risk.
+
+### Bunun yerine: iki ayrı sorumluluk
+
+| Ne | Nerede | Nasıl korunuyor |
+|---|---|---|
+| **Şema** (tablolar, fonksiyonlar, izinler) | `supabase/schema.sql`, git'te | Göç defteri, üretimle dosyanın ayrışmasını yakalar (bkz. üstteki bölüm) |
+| **Öğrenci verisi** | Yalnız Supabase + senin bilgisayarın | `araclar/YEDEK-AL.bat` |
+
+Şema zaten git'te ve sürüm sürüm izleniyor; ayrıca yedeklemeye gerek yok.
+Asıl kırılgan olan öğrenci verisi ve o **hiçbir yere yüklenmiyor** —
+senin bilgisayarına iniyor.
+
+### Veri yedeği alma
+
+1. `araclar/YEDEK-AL.bat` dosyasını çift tıkla.
+2. İstediği `service_role` anahtarını Supabase panelinden al (dosya adım
+   adım anlatıyor). **Bu anahtar veritabanının tamamını açar; kimseyle
+   paylaşma.**
+3. Yedek `Downloads\rehberim-yedek-YYYY-AA-GG\` klasörüne iner: her tablo
+   için bir `.json` dosyası ve bir `ozet.json`.
+4. Bir tablo alınamazsa betik **hata koduyla çıkar** ve `.bat` "BU YEDEĞE
+   GÜVENME" der. Sessizce eksik yedek almaz.
+5. Klasörü başka bir yere de kopyala (harici disk / USB / kendi bulutun).
+   Tek kopya yedek sayılmaz.
+
+Ayda bir yeterli; büyük bir değişiklikten önce de al.
+
+**Neden `supabase db dump` değil:** o komut Docker Desktop kurulu olmasını
+gerektiriyor. Teknik olmayan bir sahip için bu, "yedek hiç alınmaz"
+demektir — en kötü sonuç. `tools/yedek-al.mjs` yalnız `node` ve zaten
+kurulu `@supabase/supabase-js` ile çalışır.
+
+### Geri yükleme
+
+Denenmemiş yedek, yedek değildir. Sıra önemlidir:
+
+1. **Önce şema.** Supabase SQL Editor → `supabase/schema.sql` dosyasının
+   tamamını yapıştır → Run. (Bu betik tablo yaratmaz, yalnız satır yazar.)
+2. **Sonra veri:**
+
+```bash
+node tools/yedek-yukle.mjs "<yedek-klasoru>"            # ne yapacağını yazar, DOKUNMAZ
+node tools/yedek-yukle.mjs "<yedek-klasoru>" --onayla   # gerçekten yükler
+```
+
+`--onayla` olmadan hiçbir şey yazılmaz — geri yükleme üstüne yazan bir
+işlem, yanlışlıkla çalıştırılmamalı.
+
+Tablolar yabancı anahtar sırasına göre yüklenir (`comp_seasons` →
+`comp_ranks` gibi); ters sırada yüklemek hata verir. Yükleme `upsert`
+kullanır, yani yarıda kalıp tekrar çalıştırılırsa çift kayıt oluşmaz.
+
+Bir felaket ânında bunu tek başına yapman gerekmez; bana yedek klasörünün
+`ozet.json`'unu (diğer dosyaları **açmadan**) göstermen yeter, adım adım
+birlikte yaparız.
+
+[1]: https://supabase.com/docs/guides/platform/backups
+[2]: https://supabase.com/docs/guides/deployment/ci/backups
