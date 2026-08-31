@@ -17,9 +17,27 @@ echo  Yedek SENIN bilgisayarina iner. Ogrenci verisi GitHub'a
 echo  KONULMAZ; depo herkese acik.
 echo.
 
-set DEPO=%USERPROFILE%\LGS-Destek
+set "DEPO="
+if exist "%USERPROFILE%\Desktop\LGS-Destek\.git" set "DEPO=%USERPROFILE%\Desktop\LGS-Destek"
+if not defined DEPO if exist "%USERPROFILE%\LGS-Destek\.git" set "DEPO=%USERPROFILE%\LGS-Destek"
+if not defined DEPO if exist "%USERPROFILE%\Documents\LGS-Destek\.git" set "DEPO=%USERPROFILE%\Documents\LGS-Destek"
+if not defined DEPO if exist "C:\LGS-Destek\.git" set "DEPO=C:\LGS-Destek"
+
+if not defined DEPO (
+  echo HATA: LGS-Destek klasoru bulunamadi.
+  echo Su yerlere baktim:
+  echo   %USERPROFILE%\Desktop\LGS-Destek
+  echo   %USERPROFILE%\LGS-Destek
+  echo   %USERPROFILE%\Documents\LGS-Destek
+  echo   C:\LGS-Destek
+  echo Klasor baska bir yerdeyse bana soyle.
+  echo.
+  pause
+  exit /b 1
+)
+
 if not exist "%DEPO%\tools\yedek-al.mjs" (
-  echo HATA: Depo bulunamadi: %DEPO%
+  echo HATA: Depo bulundu ama guncel degil: %DEPO%
   echo Once paketleri calistirip depoyu guncellemis olmalisin.
   echo.
   pause
@@ -38,31 +56,22 @@ if not exist "node_modules\@supabase\supabase-js" (
   )
 )
 
-echo ============================================================
-echo   ANAHTAR NASIL ALINIR
-echo ============================================================
+echo Depo: %DEPO%
 echo.
-echo  1. supabase.com/dashboard adresine gir
-echo  2. Projeyi ac
-echo  3. Sol altta Project Settings ^> API Keys
-echo  4. "service_role" ^(secret^) anahtarini kopyala
+echo  Anahtar depodaki .env.local dosyasindan okunur.
+echo  Orada yoksa asagiya elle yapistirabilirsin (bos birakip
+echo  Enter'a basarsan dosyadan okumayi dener).
+echo.
+echo  Anahtari almak icin: supabase.com/dashboard ^> proje ^>
+echo  Project Settings ^> API Keys ^> service_role (secret)
 echo.
 echo  NOT: Bu anahtar veritabaninin tamamini acar. Kimseyle
 echo  paylasma, bana da gonderme.
 echo.
 
 set "ANAHTAR="
-set /p ANAHTAR=service_role anahtarini yapistir (Enter): 
-if "%ANAHTAR%"=="" (
-  echo.
-  echo Anahtar girilmedi. Yedek alinmadi.
-  pause
-  exit /b 1
-)
-
-set "ADRES="
-set /p ADRES=Proje adresi (bos birak = https://olvlrgduwpmxrfwiijsm.supabase.co): 
-if "%ADRES%"=="" set ADRES=https://olvlrgduwpmxrfwiijsm.supabase.co
+set /p ANAHTAR=service_role anahtari (bos = .env.local'dan oku): 
+if not "%ANAHTAR%"=="" set SUPABASE_SERVICE_ROLE_KEY=%ANAHTAR%
 
 for /f "tokens=1-3 delims=/." %%a in ("%DATE%") do set BUGUN=%%c-%%b-%%a
 set HEDEF=%USERPROFILE%\Downloads\rehberim-yedek-%BUGUN%
@@ -72,12 +81,9 @@ echo Yedek aliniyor...
 echo Klasor: %HEDEF%
 echo.
 
-set NEXT_PUBLIC_SUPABASE_URL=%ADRES%
-set SUPABASE_SERVICE_ROLE_KEY=%ANAHTAR%
 call node tools\yedek-al.mjs "%HEDEF%"
 set HATA=%errorlevel%
 
-set NEXT_PUBLIC_SUPABASE_URL=
 set SUPABASE_SERVICE_ROLE_KEY=
 
 echo.

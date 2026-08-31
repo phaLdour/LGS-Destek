@@ -78,6 +78,41 @@ export const YEDEKLENMEYENLER = [
 const SAYFA = 1000;
 
 /**
+ * Ortam değişkenleri yoksa depodaki `.env.local`'dan okur.
+ *
+ * NEDEN: yoksa sahibin her yedekte servis anahtarını elle yapıştırması
+ * gerekir. Gizli bir anahtarı elle taşımak hem zahmetli hem risklidir
+ * (panoda kalır, yanlış yere yapıştırılır). Anahtar zaten o dosyada
+ * duruyorsa oradan okumak hem kolay hem güvenli.
+ *
+ * `.env.local` git'e girmez (.gitignore); yalnız sahibin makinesinde.
+ */
+export function ortamiTamamla(kok = process.cwd()) {
+  if (process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    return;
+  }
+  const dosya = path.join(kok, ".env.local");
+  if (!fs.existsSync(dosya)) return;
+  for (const satir of fs.readFileSync(dosya, "utf8").split(/\r?\n/)) {
+    const t = satir.trim();
+    if (!t || t.startsWith("#")) continue;
+    const esit = t.indexOf("=");
+    if (esit < 1) continue;
+    const ad = t.slice(0, esit).trim();
+    let deger = t.slice(esit + 1).trim();
+    // Tırnak içine alınmış değerler
+    if (
+      (deger.startsWith('"') && deger.endsWith('"')) ||
+      (deger.startsWith("'") && deger.endsWith("'"))
+    ) {
+      deger = deger.slice(1, -1);
+    }
+    // Zaten tanımlıysa DOKUNMA: komut satırından verilen kazanmalı.
+    if (!process.env[ad]) process.env[ad] = deger;
+  }
+}
+
+/**
  * Bir tablonun tüm satırlarını sayfa sayfa okur.
  * Sayfalama şart: Supabase tek istekte en fazla 1000 satır döndürür,
  * sayfalamadan büyük tablo SESSİZCE kırpılır — yedeğin en tehlikeli
@@ -144,12 +179,17 @@ export async function yedekAl(istemci, hedef, tablolar = TABLOLAR) {
 // fonksiyona sarılı.
 if (import.meta.url === `file://${process.argv[1]}`) {
   void (async () => {
+  ortamiTamamla();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anahtar = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !anahtar) {
     console.error(
-      "NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY gerekli.",
+      "NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY bulunamadi.",
     );
+    console.error(
+      "Depodaki .env.local dosyasinda SUPABASE_SERVICE_ROLE_KEY yoksa,",
+    );
+    console.error("Supabase panelinden alip oraya ekleyebilirsin.");
     process.exit(1);
   }
 
