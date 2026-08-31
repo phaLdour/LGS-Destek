@@ -122,3 +122,44 @@ sonuçlarının kalıcı saklanması için bir tablo daha eklendi.
    yeni `quiz_results` tablosu eklenir. Tekrar çalıştırmak güvenlidir.)
 3. Artık her test sonucu kaydedilir ve dashboard'daki **Çözülen test / Doğru
    oranı / Çözülen soru** kartları dolar.
+
+## Şema göç defteri — "üretimde hangi blok uygulandı?"
+
+`supabase/schema.sql` tek parça ve elle uygulanıyor. Bu üç şeyin sessizce
+ters gitmesine açıktı:
+
+- bir blok üretime hiç uygulanmadı → özellik çalışmıyor ama kimse bilmiyor;
+- uygulanmış bir blok sonradan düzenlendi ve yeniden uygulanmadı → üretim
+  dosyadan farklı;
+- "üretimde şu an ne var?" sorusunun cevabı hiçbir yerde yazmıyor.
+
+Artık her `-- FAZ ...` bloğunun sonunda tek satırlık bir damga var:
+
+```sql
+select public.sema_faz_kaydet('FAZ 16 — ...', '0d1c2638398b7924');
+```
+
+Blok üretimde çalıştığında kendini `public.sema_gecisleri` tablosuna yazar.
+Blok hata verirse o satıra hiç gelinmez — yani defter yalnız **gerçekten
+çalışmış** blokları gösterir.
+
+### Günlük kullanım
+
+| Ne zaman | Komut |
+|---|---|
+| Şemaya blok ekledin / düzenledin | `node tools/sema-fazlari.mjs damgala` |
+| Damgalar güncel mi? | `node tools/sema-fazlari.mjs kontrol` |
+| Yalnız bir fazın SQL'ini al | `node tools/sema-fazlari.mjs cikar "FAZ 16"` |
+| Üretimde ne var? | `node tools/sema-fazlari.mjs denetim` → çıkan sorguyu SQL Editor'de çalıştır |
+
+`kontrol`, `npm test` içinde çalışır; damgası eskimiş bir blokla derleme
+durur. Yani "bloğu değiştirdim ama üretime uygulamayı unuttum" hatası
+Vercel'de yayına çıkmadan yakalanır.
+
+Denetim sorgusu sorunlu fazları en üste koyar:
+
+```
+FAZ 16 — KONU TEKRAR PLANI   | UYGULANMADI |
+FAZ 15 — HIZ SINIRI          | ESKİ SÜRÜM  | 2026-08-31 00:13
+FAZ 14 — İSTATİSTİK          | güncel      | 2026-08-31 00:13
+```

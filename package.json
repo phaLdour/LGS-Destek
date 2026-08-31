@@ -12,7 +12,7 @@
     "tema-css": "node tools/tema-css-uret.mjs",
     "test:sw": "node tools/test-sw.mjs",
     "test:manifest": "node tools/test-manifest.mjs",
-    "test": "node tools/test-sw.mjs && node tools/test-manifest.mjs && node tools/testleri-calistir.mjs"
+    "test": "node tools/test-sw.mjs && node tools/test-manifest.mjs && node tools/sema-fazlari.mjs kontrol && node tools/testleri-calistir.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",

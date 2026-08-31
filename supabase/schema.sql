@@ -1,6 +1,50 @@
 -- Rehberim — Çalışma takibi şeması
 -- Supabase paneli → SQL Editor → New query → bu dosyanın tamamını yapıştır → Run
 
+-- ════════════════════════════════════════════════════════════════════
+-- GÖÇ DEFTERİ — üretimde hangi blokların uygulandığını tutar
+-- ════════════════════════════════════════════════════════════════════
+-- Bu dosya tek parça ve elle uygulanıyor. Üç şey sessizce ters
+-- gidebiliyordu: (a) bir blok üretime hiç uygulanmadı, (b) uygulanmış
+-- bir blok sonradan düzenlendi ve yeniden uygulanmadı, (c) "üretimde şu
+-- an ne var?" sorusunun cevabı hiçbir yerde yazmıyordu.
+--
+-- Artık her blok, sonundaki tek satırla kendini buraya yazıyor. Blok
+-- hata verirse (ON_ERROR_STOP) o satıra hiç gelinmez — yani defter
+-- yalnız GERÇEKTEN çalışmış blokları gösterir.
+--
+-- Damgaları üreten ve denetleyen araç: tools/sema-fazlari.mjs
+-- Üretimle dosyayı karşılaştırmak için:
+--   node tools/sema-fazlari.mjs denetim   → çıkan sorguyu SQL Editor'de çalıştır
+
+create table if not exists public.sema_gecisleri (
+  faz         text primary key,
+  parmak_izi  text        not null,
+  uygulanma   timestamptz not null default now()
+);
+
+-- Defter yalnız bizim içindir; öğrencinin bunu görmesine gerek yok.
+alter table public.sema_gecisleri enable row level security;
+revoke all on public.sema_gecisleri from public, anon, authenticated;
+
+create or replace function public.sema_faz_kaydet(p_faz text, p_parmak text)
+returns void
+language sql
+security definer
+set search_path = public
+as $$
+  insert into public.sema_gecisleri (faz, parmak_izi, uygulanma)
+  values (p_faz, p_parmak, now())
+  on conflict (faz) do update
+    set parmak_izi = excluded.parmak_izi,
+        uygulanma  = excluded.uygulanma;
+$$;
+
+-- Yalnız şemayı uygulayan (postgres/service_role) çağırabilir.
+revoke execute on function public.sema_faz_kaydet(text, text)
+  from public, anon, authenticated;
+grant execute on function public.sema_faz_kaydet(text, text) to service_role;
+
 -- Çalışma oturumları
 create table if not exists public.study_sessions (
   id uuid primary key default gen_random_uuid(),
@@ -383,6 +427,11 @@ end;
 $$;
 
 grant execute on function public.match_make(uuid, int, int, text, text[]) to authenticated;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('TEMEL', '88745b339e575659');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 2 — Atomik maç hayatı: sezon, cevap, finalize, queue join/tick
@@ -930,6 +979,11 @@ begin
   end;
 end $$;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 2 — Atomik maç hayatı: sezon, cevap, finalize, queue join/tick', 'b21ccea7c819e97a');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 3 — Eşleşme rampası + stale cleanup + manuel reset
 -- ════════════════════════════════════════════════════════════════════
@@ -1149,6 +1203,11 @@ $$;
 
 grant execute on function public.comp_opponent_progress(uuid) to authenticated;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 3 — Eşleşme rampası + stale cleanup + manuel reset', 'a99be604c2ddc42f');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 4 — Hükmen Mağlubiyet (Forfeit)
 -- ════════════════════════════════════════════════════════════════════
@@ -1292,6 +1351,11 @@ end;
 $$;
 
 grant execute on function public.comp_forfeit_match(uuid) to authenticated;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 4 — Hükmen Mağlubiyet (Forfeit)', 'eb94f2fbc1c050e6');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 5 — Rank ödülleri: herkese açık profil, lig nişanı, sezon kupaları,
@@ -1676,6 +1740,10 @@ select public.comp_upsert_profile(u.user_id)
   from (select distinct user_id from public.comp_ranks) u;
 select public.comp_close_open_seasons();
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 5 — Rank ödülleri: herkese açık profil, lig nişanı, sezon kupaları,', '0b8aa8c0bde50608');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 5 HOT-FIX — Şampiyonlar tavanı, süresi dolan maçlar, takma ad tekilliği
@@ -1863,6 +1931,11 @@ update public.comp_ranks
    set best_win_streak = greatest(best_win_streak, win_streak)
  where best_win_streak < win_streak;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 5 HOT-FIX — Şampiyonlar tavanı, süresi dolan maçlar, takma ad tekilliği', 'eba8a1cb74d996cd');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 7 — Sezon özeti, rakip kopma tespiti, soru tekrarı önleme
 -- ════════════════════════════════════════════════════════════════════
@@ -1975,6 +2048,11 @@ end;
 $$;
 
 grant execute on function public.comp_claim_abandoned(uuid) to authenticated;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 7 — Sezon özeti, rakip kopma tespiti, soru tekrarı önleme', 'b700e2cc46d5a406');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 8 — Arkadaş düellosu (davet linki)
@@ -2253,6 +2331,10 @@ $$;
 revoke execute on function public.comp_cancel_invite() from public, anon;
 grant execute on function public.comp_cancel_invite() to authenticated;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 8 — Arkadaş düellosu (davet linki)', '592f9dfb5e0ad752');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 8 — Geri bildirim
@@ -2310,6 +2392,11 @@ create policy "own feedback read" on public.feedback
   for select to authenticated
   using (auth.uid() = user_id);
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 8 — Geri bildirim', '9f303e53c1514dfa');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 9 — Telefon (Web Push) bildirim abonelikleri
 -- Uygulamayı telefonuna kuranların bildirim iznine karşılık gelen
@@ -2334,6 +2421,11 @@ create policy "own push subs" on public.push_subscriptions
 
 create index if not exists push_subscriptions_user_idx
   on public.push_subscriptions (user_id);
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 9 — Telefon (Web Push) bildirim abonelikleri', '790d7f7b80c52908');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 10 — Haftalık görevler (rekabet)
@@ -2481,6 +2573,11 @@ end;
 $$;
 
 -- ============================================================================
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 10 — Haftalık görevler (rekabet)', '6265e0cecaa13cff');
+
 -- FAZ 11 — ÖĞRENEN ÖNBELLEK (baykuşun AI cevaplarını kalıcı hâle getirmesi)
 -- ============================================================================
 -- Amaç: Kullanıcının sorduğu, bizim önceden kalıp yazmadığımız bir soruya AI
@@ -2727,6 +2824,11 @@ grant execute on function public.comp_set_nickname(text) to authenticated;
 grant execute on function public.ai_onbellek_ara(text) to anon, authenticated;
 grant execute on function public.ai_onbellek_yaz(text, text, text, text, text) to authenticated;
 grant execute on function public.uygunsuz_metin(text) to anon, authenticated;
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 11 — ÖĞRENEN ÖNBELLEK (baykuşun AI cevaplarını kalıcı hâle getirmesi)', 'a1703950d3699493');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 12 — REKABET GÜVENLİK DÜZELTMELERİ
@@ -3352,6 +3454,11 @@ grant execute on function public.comp_ensure_kendi_rutbem() to authenticated;
 revoke execute on function public.comp_ensure_season_and_rank(uuid)
   from public, anon, authenticated;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 12 — REKABET GÜVENLİK DÜZELTMELERİ', '12ee6a2e1d7c8140');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 13 — ÖNBELLEK VE MODERASYON DÜZELTMELERİ
 -- ════════════════════════════════════════════════════════════════════
@@ -3639,6 +3746,11 @@ grant execute on function public.ai_onbellek_ara(text) to anon, authenticated;
 revoke execute on function public.ai_onbellek_bakim() from public, anon, authenticated;
 grant execute on function public.ai_onbellek_bakim() to service_role;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 13 — ÖNBELLEK VE MODERASYON DÜZELTMELERİ', '5d47010958b5e9a6');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 14 — İSTATİSTİK DÜZELTMELERİ
 -- ════════════════════════════════════════════════════════════════════
@@ -3743,6 +3855,11 @@ create index if not exists wrong_answers_due_idx
 -- (user_id, started_at >= sınır) biçiminde; indeks buna göre.
 create index if not exists study_sessions_user_started_idx
   on public.study_sessions (user_id, started_at desc);
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 14 — İSTATİSTİK DÜZELTMELERİ', '03106987ea43606c');
+
 
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 15 — HIZ SINIRI VE HATA İZLEME
@@ -3956,6 +4073,11 @@ $$;
 revoke execute on function public.hata_kayitlari_bakim() from public, anon, authenticated;
 grant execute on function public.hata_kayitlari_bakim() to service_role;
 
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 15 — HIZ SINIRI VE HATA İZLEME', '7c96abe6fcf0f86c');
+
+
 -- ════════════════════════════════════════════════════════════════════
 -- FAZ 16 — KONU TEKRAR PLANI (ARALIKLI TEKRAR)
 -- ════════════════════════════════════════════════════════════════════
@@ -3996,3 +4118,8 @@ create policy "own konu tekrar" on public.konu_tekrar
 -- "Bugün tekrar etmem gerekenler" sorgusu hep (user_id, vade) biçiminde.
 create index if not exists konu_tekrar_vade_idx
   on public.konu_tekrar (user_id, vade);
+
+-- @gecis Bu blok uygulandığında kendini göç defterine yazar.
+-- @gecis Elle düzenlemeyin: node tools/sema-fazlari.mjs damgala
+select public.sema_faz_kaydet('FAZ 16 — KONU TEKRAR PLANI (ARALIKLI TEKRAR)', '0d1c2638398b7924');
+
